@@ -1,0 +1,94 @@
+
+renderingOptions:
+  submitButtonLabel: Submit
+type: Form
+identifier: contactformcustom
+label: 'Contact form custom'
+prototypeName: standard
+renderables:
+  -
+    renderingOptions:
+      previousButtonLabel: 'Previous step'
+      nextButtonLabel: 'Next step'
+    type: Page
+    identifier: page-1
+    label: 'Contact form'
+    renderables:
+      -
+        type: GridRow
+        identifier: gridrow-1
+        label: 'Grid: Row'
+        renderables:
+          -
+            defaultValue: ''
+            type: Text
+            identifier: text-1
+            label: 'First name'
+            properties:
+              fluidAdditionalAttributes:
+                required: required
+              gridColumnClassAutoConfiguration:
+                viewPorts:
+                  xxl:
+                    numbersOfColumnsToUse: '6'
+            validators:
+              -
+                identifier: NotEmpty
+          -
+            defaultValue: ''
+            type: Text
+            identifier: text-2
+            label: Name
+            properties:
+              gridColumnClassAutoConfiguration:
+                viewPorts:
+                  xxl:
+                    numbersOfColumnsToUse: '6'
+              fluidAdditionalAttributes:
+                required: required
+            validators:
+              -
+                identifier: NotEmpty
+      -
+        type: GridRow
+        identifier: gridrow-2
+        label: 'Grid: Row'
+        renderables:
+          -
+            defaultValue: ''
+            type: Email
+            identifier: email-1
+            label: 'Email address'
+            properties:
+              fluidAdditionalAttributes:
+                required: required
+              gridColumnClassAutoConfiguration:
+                viewPorts:
+                  xxl:
+                    numbersOfColumnsToUse: '6'
+            validators:
+              -
+                identifier: EmailAddress
+              -
+                identifier: NotEmpty
+          -
+            defaultValue: ''
+            type: Text
+            identifier: text-3
+            label: Company
+            properties:
+              gridColumnClassAutoConfiguration:
+                viewPorts:
+                  xxl:
+                    numbersOfColumnsToUse: '6'
+      -
+        defaultValue: ''
+        type: Textarea
+        identifier: textarea-1
+        label: 'Your message'
+        properties:
+          fluidAdditionalAttributes:
+            required: required
+        validators:
+          -
+            identifier: NotEmpty
