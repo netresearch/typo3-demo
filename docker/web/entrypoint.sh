@@ -1,9 +1,11 @@
 #!/bin/sh
 set -eu
 
+DB_CMD="MYSQL_PWD=${MARIADB_PASSWORD:-typo3} mariadb -h${MARIADB_HOST:-db} -u${MARIADB_USER:-typo3} ${MARIADB_DATABASE:-typo3}"
+
 echo "Waiting for database..."
 n=0
-until MYSQL_PWD="${MARIADB_PASSWORD:-typo3}" mariadb -h"${MARIADB_HOST:-db}" -u"${MARIADB_USER:-typo3}" -e "SELECT 1" >/dev/null 2>&1; do
+until eval "$DB_CMD -e 'SELECT 1'" >/dev/null 2>&1; do
     n=$((n + 1))
     if [ "$n" -ge 60 ]; then
         echo "ERROR: Database not ready after 60s, aborting." >&2
@@ -12,6 +14,18 @@ until MYSQL_PWD="${MARIADB_PASSWORD:-typo3}" mariadb -h"${MARIADB_HOST:-db}" -u"
     sleep 1
 done
 echo "Database ready."
+
+echo "Waiting for seed import to complete..."
+n=0
+until eval "$DB_CMD -e 'SELECT 1 FROM be_users LIMIT 1'" >/dev/null 2>&1; do
+    n=$((n + 1))
+    if [ "$n" -ge 120 ]; then
+        echo "ERROR: Seed import not complete after 120s, aborting." >&2
+        exit 1
+    fi
+    sleep 1
+done
+echo "Seed import verified."
 
 mkdir -p var/log var/cache var/lock var/charset var/labels \
     public/fileadmin public/typo3temp/assets/_processed_ config/system
@@ -25,7 +39,7 @@ if [ -d /seed/fileadmin ] && [ -z "$(ls -A public/fileadmin 2>/dev/null)" ]; the
 fi
 
 if [ ! -f config/system/settings.php ]; then
-    ENCRYPTION_KEY=$(openssl rand -hex 48)
+    ENCRYPTION_KEY="${TYPO3_ENCRYPTION_KEY:-$(openssl rand -hex 48)}"
 
     # Derive trustedHostsPattern from TYPO3_DOMAIN
     DOMAIN="${TYPO3_DOMAIN:-localhost}"
@@ -109,7 +123,7 @@ EOPHP
     # Safely substitute placeholders — handles special chars in passwords
     # First escape single quotes for PHP, then escape sed metacharacters
     escape_for_php() { printf '%s' "$1" | sed "s/'/\\\\'/g"; }
-    escape_sed() { printf '%s' "$1" | sed 's/[&/\|]/\\&/g'; }
+    escape_sed() { printf '%s' "$1" | sed -e 's/\\/\\\\/g' -e 's/[&|]/\\&/g'; }
     sed -i "s|%%MARIADB_HOST%%|$(escape_sed "$(escape_for_php "${MARIADB_HOST:-db}")")|g" config/system/settings.php
     sed -i "s|%%MARIADB_DATABASE%%|$(escape_sed "$(escape_for_php "${MARIADB_DATABASE:-typo3}")")|g" config/system/settings.php
     sed -i "s|%%MARIADB_USER%%|$(escape_sed "$(escape_for_php "${MARIADB_USER:-typo3}")")|g" config/system/settings.php
