@@ -1,13 +1,21 @@
 #!/bin/sh
-set -e
+set -eu
+
 echo "Waiting for database..."
-until mariadb -h"${MARIADB_HOST:-db}" -u"${MARIADB_USER:-typo3}" -p"${MARIADB_PASSWORD:-typo3}" -e "SELECT 1" >/dev/null 2>&1; do
+n=0
+until MYSQL_PWD="${MARIADB_PASSWORD:-typo3}" mariadb -h"${MARIADB_HOST:-db}" -u"${MARIADB_USER:-typo3}" -e "SELECT 1" >/dev/null 2>&1; do
+    n=$((n + 1))
+    if [ "$n" -ge 60 ]; then
+        echo "ERROR: Database not ready after 60s, aborting." >&2
+        exit 1
+    fi
     sleep 1
 done
 echo "Database ready."
+
 mkdir -p var/log var/cache var/lock var/charset var/labels \
     public/fileadmin public/typo3temp/assets/_processed_ config/system
-chown -R www-data:www-data var public/fileadmin public/typo3temp 2>/dev/null || true
+chown -R www-data:www-data var public/fileadmin public/typo3temp
 
 if [ -d /seed/fileadmin ] && [ -z "$(ls -A public/fileadmin 2>/dev/null)" ]; then
     echo "Seeding fileadmin from image..."
@@ -17,33 +25,72 @@ if [ -d /seed/fileadmin ] && [ -z "$(ls -A public/fileadmin 2>/dev/null)" ]; the
 fi
 
 if [ ! -f config/system/settings.php ]; then
-    ENCRYPTION_KEY=$(head -c 48 /dev/urandom | od -An -tx1 | tr -d " \n")
+    ENCRYPTION_KEY=$(openssl rand -hex 48)
+
+    # Derive trustedHostsPattern from TYPO3_DOMAIN
+    DOMAIN="${TYPO3_DOMAIN:-localhost}"
+    if [ "$DOMAIN" = "localhost" ]; then
+        TRUSTED_PATTERN='.*'
+    else
+        # Escape dots for regex, anchor pattern
+        TRUSTED_PATTERN="^$(echo "$DOMAIN" | sed 's/\./\\\\./g')$"
+    fi
+
     echo "First boot: generating settings.php..."
-    cat > config/system/settings.php <<EOF
+    # Use quoted heredoc to prevent shell expansion, then substitute with sed
+    cat > config/system/settings.php <<'EOPHP'
 <?php
 return [
     'DB' => [
         'Connections' => [
             'Default' => [
-                'charset' => 'utf8',
+                'charset' => 'utf8mb4',
                 'driver' => 'mysqli',
-                'host' => '${MARIADB_HOST:-db}',
+                'host' => '%%MARIADB_HOST%%',
                 'port' => 3306,
-                'dbname' => '${MARIADB_DATABASE:-typo3}',
-                'user' => '${MARIADB_USER:-typo3}',
-                'password' => '${MARIADB_PASSWORD:-typo3}',
+                'dbname' => '%%MARIADB_DATABASE%%',
+                'user' => '%%MARIADB_USER%%',
+                'password' => '%%MARIADB_PASSWORD%%',
             ],
         ],
     ],
     'SYS' => [
-        'encryptionKey' => '${ENCRYPTION_KEY}',
-        'trustedHostsPattern' => '.*',
+        'encryptionKey' => '%%ENCRYPTION_KEY%%',
+        'trustedHostsPattern' => '%%TRUSTED_PATTERN%%',
         'sitename' => 'Netresearch TYPO3 Demo',
+        'caching' => [
+            'cacheConfigurations' => [
+                'hash' => [
+                    'backend' => \TYPO3\CMS\Core\Cache\Backend\RedisBackend::class,
+                    'options' => [
+                        'hostname' => 'valkey',
+                        'port' => 6379,
+                        'database' => 0,
+                    ],
+                ],
+                'pages' => [
+                    'backend' => \TYPO3\CMS\Core\Cache\Backend\RedisBackend::class,
+                    'options' => [
+                        'hostname' => 'valkey',
+                        'port' => 6379,
+                        'database' => 1,
+                    ],
+                ],
+                'rootline' => [
+                    'backend' => \TYPO3\CMS\Core\Cache\Backend\RedisBackend::class,
+                    'options' => [
+                        'hostname' => 'valkey',
+                        'port' => 6379,
+                        'database' => 2,
+                    ],
+                ],
+            ],
+        ],
     ],
     'BE' => [
         'debug' => false,
         'passwordHashing' => [
-            'className' => 'TYPO3\\\\CMS\\\\Core\\\\Crypto\\\\PasswordHashing\\\\Argon2idPasswordHashing',
+            'className' => \TYPO3\CMS\Core\Crypto\PasswordHashing\Argon2idPasswordHashing::class,
         ],
     ],
     'FE' => [
@@ -54,20 +101,30 @@ return [
         ],
     ],
     'MAIL' => [
-        'transport' => 'sendmail',
-        'transport_sendmail_command' => '/usr/sbin/sendmail -t -i',
+        'transport' => 'null',
     ],
 ];
-EOF
+EOPHP
+
+    # Safely substitute placeholders — handles special chars in passwords
+    # First escape single quotes for PHP, then escape sed metacharacters
+    escape_for_php() { printf '%s' "$1" | sed "s/'/\\\\'/g"; }
+    escape_sed() { printf '%s' "$1" | sed 's/[&/\|]/\\&/g'; }
+    sed -i "s|%%MARIADB_HOST%%|$(escape_sed "$(escape_for_php "${MARIADB_HOST:-db}")")|g" config/system/settings.php
+    sed -i "s|%%MARIADB_DATABASE%%|$(escape_sed "$(escape_for_php "${MARIADB_DATABASE:-typo3}")")|g" config/system/settings.php
+    sed -i "s|%%MARIADB_USER%%|$(escape_sed "$(escape_for_php "${MARIADB_USER:-typo3}")")|g" config/system/settings.php
+    sed -i "s|%%MARIADB_PASSWORD%%|$(escape_sed "$(escape_for_php "${MARIADB_PASSWORD:-typo3}")")|g" config/system/settings.php
+    sed -i "s|%%ENCRYPTION_KEY%%|$(escape_sed "$ENCRYPTION_KEY")|g" config/system/settings.php
+    sed -i "s|%%TRUSTED_PATTERN%%|$(escape_sed "$TRUSTED_PATTERN")|g" config/system/settings.php
     echo "settings.php generated."
 
     echo "Cleaning up legacy sys_template records..."
-    mariadb -h"${MARIADB_HOST:-db}" -u"${MARIADB_USER:-typo3}" -p"${MARIADB_PASSWORD:-typo3}" "${MARIADB_DATABASE:-typo3}" \
+    MYSQL_PWD="${MARIADB_PASSWORD:-typo3}" mariadb -h"${MARIADB_HOST:-db}" -u"${MARIADB_USER:-typo3}" "${MARIADB_DATABASE:-typo3}" \
         -e "DELETE FROM sys_template;" 2>/dev/null || true
 fi
 
-vendor/bin/typo3 extension:setup || true
-vendor/bin/typo3 cache:flush || true
-vendor/bin/typo3 cache:warmup || true
-chown -R www-data:www-data var config/system public/typo3temp 2>/dev/null || true
+vendor/bin/typo3 extension:setup 2>&1 || echo "WARNING: extension:setup failed" >&2
+vendor/bin/typo3 cache:flush 2>&1 || echo "WARNING: cache:flush failed" >&2
+vendor/bin/typo3 cache:warmup 2>&1 || echo "WARNING: cache:warmup failed" >&2
+chown -R www-data:www-data var config/system public/typo3temp
 exec "$@"

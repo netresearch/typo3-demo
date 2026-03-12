@@ -5,6 +5,14 @@ page {
     meta {
         description = Netresearch TYPO3 Demo
         author = Netresearch DTM GmbH
-        robots = INDEX,FOLLOW
+        robots = NOINDEX,NOFOLLOW
     }
+}
+
+config {
+    compressJs = 1
+    compressCss = 1
+    cache_period = 86400
+    sendCacheHeaders = 1
+    contentObjectExceptionHandler = 1
 }

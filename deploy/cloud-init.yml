@@ -9,6 +9,7 @@ packages:
   - git-lfs
   - ufw
   - fail2ban
+  - make
 
 runcmd:
   - systemctl enable docker
@@ -18,6 +19,7 @@ runcmd:
   - ufw allow 22/tcp
   - ufw allow 80/tcp
   - ufw allow 443/tcp
+  - ufw allow 443/udp
   - ufw --force enable
   - git lfs install --system
   - useradd -m -s /bin/bash -G docker deploy

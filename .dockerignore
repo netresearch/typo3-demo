@@ -7,7 +7,17 @@ public/fileadmin/_processed_
 var
 node_modules
 .env
+.env.*
+!.env.example
 docker-compose.override.yml
+compose.yml
+compose.dev.yml
 deploy
 .github
 docs
+*.md
+Makefile
+docker-bake.hcl
+LICENSE
+.editorconfig
+.gitattributes

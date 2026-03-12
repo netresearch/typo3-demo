@@ -1,0 +1,16 @@
+services:
+  web:
+    build:
+      target: dev
+    environment:
+      TYPO3_CONTEXT: Development/Docker
+      XDEBUG_MODE: ${XDEBUG_MODE:-debug,develop}
+    volumes:
+      - ./packages:/var/www/packages
+      - ./config:/var/www/config
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  db:
+    ports:
+      - "127.0.0.1:${DB_PORT:-3306}:3306"

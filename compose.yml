@@ -8,21 +8,28 @@ services:
     depends_on:
       db:
         condition: service_healthy
-      redis:
-        condition: service_started
+      valkey:
+        condition: service_healthy
     environment:
       MARIADB_HOST: db
       MARIADB_DATABASE: ${MARIADB_DATABASE:-typo3}
       MARIADB_USER: ${MARIADB_USER:-typo3}
       MARIADB_PASSWORD: ${MARIADB_PASSWORD:-typo3}
       TYPO3_CONTEXT: ${TYPO3_CONTEXT:-Development/Docker}
-      TYPO3_SETUP_ADMIN_USERNAME: ${TYPO3_SETUP_ADMIN_USERNAME:-admin}
-      TYPO3_SETUP_ADMIN_PASSWORD: ${TYPO3_SETUP_ADMIN_PASSWORD:-changeme!2026}
+      TYPO3_DOMAIN: ${TYPO3_DOMAIN:-localhost}
     volumes:
       - typo3-fileadmin:/var/www/public/fileadmin
       - typo3-var:/var/www/var
       - typo3-config:/var/www/config/system
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1/"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 120s
     restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
     deploy:
       resources:
         limits:
@@ -46,24 +53,37 @@ services:
       retries: 5
       start_period: 30s
     restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
     deploy:
       resources:
         limits:
           memory: 512M
 
-  redis:
-    image: redis:7-alpine
+  valkey:
+    image: valkey/valkey:8-alpine
+    healthcheck:
+      test: ["CMD", "valkey-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
     restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
     deploy:
       resources:
         limits:
           memory: 128M
 
   caddy:
-    image: caddy:2-alpine
+    build:
+      context: docker/caddy
+      dockerfile: Dockerfile
     ports:
       - "${CADDY_HTTP_PORT:-80}:80"
       - "${CADDY_HTTPS_PORT:-443}:443"
+      - "${CADDY_HTTPS_PORT:-443}:443/udp"
     volumes:
       - ./docker/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy-data:/data
@@ -71,8 +91,15 @@ services:
     environment:
       TYPO3_DOMAIN: ${TYPO3_DOMAIN:-localhost}
     depends_on:
-      - web
+      web:
+        condition: service_healthy
     restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          memory: 256M
 
 volumes:
   typo3-db:

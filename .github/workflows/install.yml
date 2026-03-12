@@ -7,6 +7,9 @@ on:
         description: "Type 'yes' to confirm full data reset"
         required: true
 
+permissions:
+  contents: read
+
 concurrency:
   group: deploy
   cancel-in-progress: false
@@ -17,12 +20,8 @@ jobs:
     runs-on: ubuntu-latest
     environment: production
     steps:
-      - uses: actions/checkout@v4
-        with:
-          lfs: true
-
       - name: Deploy to Hetzner
-        uses: appleboy/ssh-action@v1
+        uses: appleboy/ssh-action@0ff4204d59e8e51228ff73bce53f80d53301dee2 # v1.2.5
         with:
           host: ${{ secrets.HETZNER_SSH_HOST }}
           username: ${{ secrets.HETZNER_SSH_USER }}
