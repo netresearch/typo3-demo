@@ -1,0 +1,21 @@
+{
+    "name": "netresearch/typo3-demo-site",
+    "description": "Netresearch TYPO3 Demo — Site Package",
+    "license": "GPL-2.0-or-later",
+    "type": "typo3-cms-extension",
+    "require": {
+        "typo3/cms-core": "^14.1",
+        "bk2k/bootstrap-package": "^16.0",
+        "georgringer/news": "^14.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Netresearch\\DemoSite\\": "Classes/"
+        }
+    },
+    "extra": {
+        "typo3/cms": {
+            "extension-key": "netresearch_demo_site"
+        }
+    }
+}

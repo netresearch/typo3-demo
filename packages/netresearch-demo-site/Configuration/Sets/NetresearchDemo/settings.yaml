@@ -1,0 +1,5 @@
+name: netresearch/demo-site
+label: Netresearch Demo Site
+dependencies:
+  - bk2k/bootstrap-package
+  - georgringer/news

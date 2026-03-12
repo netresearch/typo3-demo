@@ -1,0 +1,9 @@
+# Netresearch Demo Site Setup
+# Extends bootstrap_package configuration
+
+page {
+    meta {
+        description = Netresearch TYPO3 Demo
+        author = Netresearch DTM GmbH
+    }
+}
