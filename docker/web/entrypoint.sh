@@ -1,11 +1,12 @@
 #!/bin/sh
 set -eu
 
-DB_CMD="MYSQL_PWD=${MARIADB_PASSWORD:-typo3} mariadb -h${MARIADB_HOST:-db} -u${MARIADB_USER:-typo3} ${MARIADB_DATABASE:-typo3}"
+echo "DB connection: host=${MARIADB_HOST:-db} user=${MARIADB_USER:-typo3} db=${MARIADB_DATABASE:-typo3}"
+echo "Checking mariadb client: $(which mariadb 2>&1 || echo 'NOT FOUND')"
 
 echo "Waiting for database..."
 n=0
-until eval "$DB_CMD -e 'SELECT 1'" >/dev/null 2>&1; do
+until MYSQL_PWD="${MARIADB_PASSWORD:-typo3}" mariadb -h"${MARIADB_HOST:-db}" -u"${MARIADB_USER:-typo3}" "${MARIADB_DATABASE:-typo3}" -e 'SELECT 1' >/dev/null 2>&1; do
     n=$((n + 1))
     if [ "$n" -ge 60 ]; then
         echo "ERROR: Database not ready after 60s, aborting." >&2
@@ -15,16 +16,28 @@ until eval "$DB_CMD -e 'SELECT 1'" >/dev/null 2>&1; do
 done
 echo "Database ready."
 
-echo "Waiting for seed import to complete..."
-n=0
-until eval "$DB_CMD -e 'SELECT 1 FROM be_users LIMIT 1'" >/dev/null 2>&1; do
-    n=$((n + 1))
-    if [ "$n" -ge 120 ]; then
-        echo "ERROR: Seed import not complete after 120s, aborting." >&2
-        exit 1
-    fi
-    sleep 1
-done
+echo "Checking seed data..."
+TABLES=$(MYSQL_PWD="${MARIADB_PASSWORD:-typo3}" mariadb -h"${MARIADB_HOST:-db}" -u"${MARIADB_USER:-typo3}" "${MARIADB_DATABASE:-typo3}" -e 'SHOW TABLES' 2>&1) || true
+TABLE_COUNT=$(echo "$TABLES" | wc -l)
+echo "Tables found: $TABLE_COUNT"
+if echo "$TABLES" | grep -q "be_users"; then
+    echo "be_users table found."
+else
+    echo "WARNING: be_users table NOT found. Available tables:"
+    echo "$TABLES" | head -20
+    echo "Waiting for seed import to complete..."
+    n=0
+    until MYSQL_PWD="${MARIADB_PASSWORD:-typo3}" mariadb -h"${MARIADB_HOST:-db}" -u"${MARIADB_USER:-typo3}" "${MARIADB_DATABASE:-typo3}" -e 'SELECT 1 FROM be_users LIMIT 1' >/dev/null 2>&1; do
+        n=$((n + 1))
+        if [ "$n" -ge 120 ]; then
+            echo "ERROR: Seed import not complete after 120s, aborting." >&2
+            echo "Final table check:"
+            MYSQL_PWD="${MARIADB_PASSWORD:-typo3}" mariadb -h"${MARIADB_HOST:-db}" -u"${MARIADB_USER:-typo3}" "${MARIADB_DATABASE:-typo3}" -e 'SHOW TABLES' 2>&1 || true
+            exit 1
+        fi
+        sleep 1
+    done
+fi
 echo "Seed import verified."
 
 mkdir -p var/log var/cache var/lock var/charset var/labels \
