@@ -7,7 +7,13 @@ TYPO3       := $(COMPOSE) exec -T web vendor/bin/typo3
 help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
 
-up: ## Start all services (fresh seed if DB is empty)
+up: ## Start all services (pulls pre-built images from GHCR)
+	@test -f .env || { test -f .env.example && cp .env.example .env || { echo "ERROR: .env.example not found"; exit 1; }; }
+	$(COMPOSE) pull
+	$(COMPOSE) up -d --wait
+	@echo "TYPO3 Demo running at $${TYPO3_DOMAIN:-localhost}"
+
+up-build: ## Start all services (builds images locally)
 	@test -f .env || { test -f .env.example && cp .env.example .env || { echo "ERROR: .env.example not found"; exit 1; }; }
 	$(COMPOSE) up -d --build --wait
 	@echo "TYPO3 Demo running at $${TYPO3_DOMAIN:-localhost}"
@@ -30,7 +36,6 @@ reset: ## Full reset: purge app data and re-seed (preserves Caddy TLS certs)
 
 update: ## Update code without purging data
 	$(COMPOSE) pull
-	$(COMPOSE) build
 	$(COMPOSE) up -d --wait
 	$(TYPO3) database:updateschema || true
 	$(TYPO3) extension:setup || true

@@ -1,5 +1,5 @@
 group "default" {
-  targets = ["web", "caddy"]
+  targets = ["web"]
 }
 
 variable "REGISTRY" {
@@ -22,20 +22,6 @@ target "web" {
     "${REGISTRY}/typo3-demo:sha-${GIT_SHA}",
   ] : [
     "${REGISTRY}/typo3-demo:${TAG}",
-  ]
-  platforms  = ["linux/amd64", "linux/arm64"]
-  cache-from = ["type=gha"]
-  cache-to   = ["type=gha,mode=max"]
-}
-
-target "caddy" {
-  context    = "docker/caddy"
-  dockerfile = "Dockerfile"
-  tags       = GIT_SHA != "" ? [
-    "${REGISTRY}/typo3-demo-caddy:${TAG}",
-    "${REGISTRY}/typo3-demo-caddy:sha-${GIT_SHA}",
-  ] : [
-    "${REGISTRY}/typo3-demo-caddy:${TAG}",
   ]
   platforms  = ["linux/amd64", "linux/arm64"]
   cache-from = ["type=gha"]
