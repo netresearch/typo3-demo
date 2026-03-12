@@ -5,15 +5,15 @@ COPY composer.json composer.lock* ./
 COPY packages/ packages/
 RUN composer install --no-dev --prefer-dist --no-interaction --ignore-platform-reqs --optimize-autoloader
 
-FROM php:8.4-fpm-alpine AS runtime
+FROM php:8.5-fpm-alpine AS runtime
 RUN apk add --no-cache --virtual .build-deps \
         freetype-dev libjpeg-turbo-dev libpng-dev libzip-dev icu-dev linux-headers $PHPIZE_DEPS \
     && apk add --no-cache \
         nginx mariadb-client openssl freetype libjpeg-turbo libpng libzip icu-libs \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install -j$(nproc) gd intl mysqli pdo_mysql opcache zip \
+    && docker-php-ext-install -j$(nproc) gd intl mysqli pdo_mysql zip \
     && pecl install redis \
-    && docker-php-ext-enable opcache redis \
+    && docker-php-ext-enable redis \
     && apk del .build-deps
 RUN { \
     echo 'opcache.memory_consumption=256'; \
