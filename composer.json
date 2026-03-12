@@ -1,0 +1,51 @@
+{
+    "name": "netresearch/typo3-demo",
+    "description": "Netresearch TYPO3 Demo — reproducible, disposable TYPO3 14 showcase",
+    "license": "GPL-2.0-or-later",
+    "type": "project",
+    "require": {
+        "typo3/cms-backend": "^14.1",
+        "typo3/cms-core": "^14.1",
+        "typo3/cms-extbase": "^14.1",
+        "typo3/cms-filelist": "^14.1",
+        "typo3/cms-fluid": "^14.1",
+        "typo3/cms-frontend": "^14.1",
+        "typo3/cms-impexp": "^14.1",
+        "typo3/cms-install": "^14.1",
+        "typo3/cms-rte-ckeditor": "^14.1",
+        "typo3/cms-seo": "^14.1",
+        "typo3/cms-setup": "^14.1",
+        "typo3/cms-tstemplate": "^14.1",
+        "typo3/cms-redirects": "^14.1",
+        "typo3/cms-recycler": "^14.1",
+        "typo3/cms-reports": "^14.1",
+        "typo3/cms-info": "^14.1",
+        "typo3/cms-lowlevel": "^14.1",
+        "bk2k/bootstrap-package": "^16.0",
+        "georgringer/news": "^14.0",
+        "netresearch/typo3-demo-site": "@dev"
+    },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "packages/*"
+        }
+    ],
+    "config": {
+        "allow-plugins": {
+            "typo3/class-alias-loader": true,
+            "typo3/cms-composer-installers": true
+        },
+        "platform": {
+            "php": "8.4"
+        },
+        "sort-packages": true
+    },
+    "extra": {
+        "typo3/cms": {
+            "web-dir": "public"
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}

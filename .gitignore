@@ -1,0 +1,23 @@
+# TYPO3
+/vendor/
+/public/typo3/
+/public/typo3conf/ext/
+/public/index.php
+/public/fileadmin/_processed_/
+/var/
+/config/system/settings.php
+
+# Environment
+.env
+!.env.example
+
+# IDE
+.idea/
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+docker-compose.override.yml
