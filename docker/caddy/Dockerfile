@@ -1,6 +1,2 @@
-# syntax=docker/dockerfile:1
-FROM caddy:2-builder AS builder
-RUN GOPROXY=https://proxy.golang.org,direct xcaddy build --with github.com/ueffel/caddy-brotli
-
+# No custom build needed — stock Caddy supports zstd + gzip natively
 FROM caddy:2-alpine
-COPY --from=builder /usr/bin/caddy /usr/bin/caddy

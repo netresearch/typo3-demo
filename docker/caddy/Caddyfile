@@ -7,7 +7,7 @@
             write_timeout 120s
         }
     }
-    encode zstd br gzip
+    encode zstd gzip
     header {
         X-Content-Type-Options "nosniff"
         X-Frame-Options "SAMEORIGIN"
