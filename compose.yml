@@ -55,7 +55,6 @@ services:
     volumes:
       - typo3-db:/var/lib/mysql
       - ./data/db.sql.gz:/docker-entrypoint-initdb.d/db.sql.gz:ro
-      - ./docker/db/initdb.d/import.sh:/docker-entrypoint-initdb.d/01-import.sh:ro
     healthcheck:
       test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
       interval: 10s
