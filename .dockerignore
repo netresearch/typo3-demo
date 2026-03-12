@@ -1,0 +1,13 @@
+.git
+.bare
+vendor
+public/typo3
+public/index.php
+public/fileadmin/_processed_
+var
+node_modules
+.env
+docker-compose.override.yml
+deploy
+.github
+docs
