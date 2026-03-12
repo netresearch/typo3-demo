@@ -20,8 +20,7 @@ RUN { \
     echo 'opcache.interned_strings_buffer=16'; \
     echo 'opcache.max_accelerated_files=20000'; \
     echo 'opcache.validate_timestamps=0'; \
-    echo 'opcache.jit=tracing'; \
-    echo 'opcache.jit_buffer_size=128M'; \
+    echo 'opcache.jit=off'; \
     echo 'upload_max_filesize=50M'; \
     echo 'post_max_size=50M'; \
     echo 'memory_limit=512M'; \
@@ -53,19 +52,9 @@ ENTRYPOINT ["/entrypoint.sh"]
 CMD ["sh", "-c", "php-fpm -D && nginx -g 'daemon off;'"]
 
 FROM runtime AS dev
-RUN apk add --no-cache $PHPIZE_DEPS linux-headers \
-    && pecl install xdebug \
-    && docker-php-ext-enable xdebug \
-    && apk del $PHPIZE_DEPS linux-headers
 RUN { \
     echo 'opcache.validate_timestamps=1'; \
     echo 'opcache.revalidate_freq=0'; \
-    echo 'opcache.jit=off'; \
     echo 'display_errors=On'; \
     echo 'error_reporting=E_ALL'; \
-    echo 'xdebug.mode=debug,develop'; \
-    echo 'xdebug.start_with_request=trigger'; \
-    echo 'xdebug.client_host=host.docker.internal'; \
-    echo 'xdebug.client_port=9003'; \
-    echo 'xdebug.idekey=PHPSTORM'; \
 } > /usr/local/etc/php/conf.d/zz-dev.ini
