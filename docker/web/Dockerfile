@@ -5,7 +5,7 @@ COPY composer.json composer.lock* ./
 COPY packages/ packages/
 RUN composer install --no-dev --prefer-dist --no-interaction --ignore-platform-reqs --optimize-autoloader
 
-FROM php:8.4-fpm-alpine AS runtime
+FROM php:8.5-fpm-alpine AS runtime
 RUN apk add --no-cache --virtual .build-deps \
         freetype-dev libjpeg-turbo-dev libpng-dev libzip-dev icu-dev linux-headers $PHPIZE_DEPS \
     && apk add --no-cache \
