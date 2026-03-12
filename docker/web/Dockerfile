@@ -47,7 +47,7 @@ RUN chmod +x /entrypoint.sh \
     && mkdir -p public/fileadmin public/typo3temp/assets/_processed_ var/log var/cache var/lock var/charset var/labels \
     && chown -R www-data:www-data public/fileadmin public/typo3temp var
 EXPOSE 80
-HEALTHCHECK --interval=30s --timeout=5s --start-period=120s --retries=3 \
+HEALTHCHECK --interval=30s --timeout=5s --start-period=300s --retries=3 \
     CMD wget -q -O /dev/null http://127.0.0.1/ || exit 1
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["sh", "-c", "php-fpm -D && nginx -g 'daemon off;'"]
