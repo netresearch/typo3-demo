@@ -37,8 +37,9 @@ if [ ! -f config/system/settings.php ]; then
     if [ "$DOMAIN" = "localhost" ]; then
         TRUSTED_PATTERN='.*'
     else
-        # Escape dots for regex, anchor pattern
-        TRUSTED_PATTERN="^$(echo "$DOMAIN" | sed 's/\./\\\\./g')$"
+        # Allow configured domain + localhost/127.0.0.1 for healthchecks
+        ESCAPED_DOMAIN="$(echo "$DOMAIN" | sed 's/\./\\\\./g')"
+        TRUSTED_PATTERN="^(${ESCAPED_DOMAIN}|localhost|127\\\\.0\\\\.0\\\\.1)$"
     fi
 
     echo "First boot: generating settings.php..."
