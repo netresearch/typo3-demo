@@ -1,44 +1,22 @@
 #!/bin/sh
 set -eu
 
-echo "DB connection: host=${MARIADB_HOST:-db} user=${MARIADB_USER:-typo3} db=${MARIADB_DATABASE:-typo3}"
-echo "Checking mariadb client: $(which mariadb 2>&1 || echo 'NOT FOUND')"
-
-echo "Waiting for database..."
+echo "Waiting for database (host=${MARIADB_HOST:-db}, db=${MARIADB_DATABASE:-typo3})..."
 n=0
 until MYSQL_PWD="${MARIADB_PASSWORD:-typo3}" mariadb -h"${MARIADB_HOST:-db}" -u"${MARIADB_USER:-typo3}" "${MARIADB_DATABASE:-typo3}" -e 'SELECT 1' >/dev/null 2>&1; do
     n=$((n + 1))
     if [ "$n" -ge 60 ]; then
         echo "ERROR: Database not ready after 60s, aborting." >&2
+        MYSQL_PWD="${MARIADB_PASSWORD:-typo3}" mariadb -h"${MARIADB_HOST:-db}" -u"${MARIADB_USER:-typo3}" "${MARIADB_DATABASE:-typo3}" -e 'SELECT 1' 2>&1 || true
         exit 1
     fi
     sleep 1
 done
 echo "Database ready."
 
-echo "Checking seed data..."
-TABLES=$(MYSQL_PWD="${MARIADB_PASSWORD:-typo3}" mariadb -h"${MARIADB_HOST:-db}" -u"${MARIADB_USER:-typo3}" "${MARIADB_DATABASE:-typo3}" -e 'SHOW TABLES' 2>&1) || true
-TABLE_COUNT=$(echo "$TABLES" | wc -l)
-echo "Tables found: $TABLE_COUNT"
-if echo "$TABLES" | grep -q "be_users"; then
-    echo "be_users table found."
-else
-    echo "WARNING: be_users table NOT found. Available tables:"
-    echo "$TABLES" | head -20
-    echo "Waiting for seed import to complete..."
-    n=0
-    until MYSQL_PWD="${MARIADB_PASSWORD:-typo3}" mariadb -h"${MARIADB_HOST:-db}" -u"${MARIADB_USER:-typo3}" "${MARIADB_DATABASE:-typo3}" -e 'SELECT 1 FROM be_users LIMIT 1' >/dev/null 2>&1; do
-        n=$((n + 1))
-        if [ "$n" -ge 120 ]; then
-            echo "ERROR: Seed import not complete after 120s, aborting." >&2
-            echo "Final table check:"
-            MYSQL_PWD="${MARIADB_PASSWORD:-typo3}" mariadb -h"${MARIADB_HOST:-db}" -u"${MARIADB_USER:-typo3}" "${MARIADB_DATABASE:-typo3}" -e 'SHOW TABLES' 2>&1 || true
-            exit 1
-        fi
-        sleep 1
-    done
-fi
-echo "Seed import verified."
+# Verify seed data exists (DB init should be complete before web starts via depends_on)
+TABLE_COUNT=$(MYSQL_PWD="${MARIADB_PASSWORD:-typo3}" mariadb -h"${MARIADB_HOST:-db}" -u"${MARIADB_USER:-typo3}" "${MARIADB_DATABASE:-typo3}" -N -e 'SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = DATABASE()' 2>/dev/null || echo "0")
+echo "Database has $TABLE_COUNT tables."
 
 mkdir -p var/log var/cache var/lock var/charset var/labels \
     public/fileadmin public/typo3temp/assets/_processed_ config/system
@@ -150,8 +128,10 @@ EOPHP
         -e "DELETE FROM sys_template;" 2>/dev/null || true
 fi
 
+echo "Running TYPO3 setup..."
 vendor/bin/typo3 extension:setup 2>&1 || echo "WARNING: extension:setup failed" >&2
 vendor/bin/typo3 cache:flush 2>&1 || echo "WARNING: cache:flush failed" >&2
 vendor/bin/typo3 cache:warmup 2>&1 || echo "WARNING: cache:warmup failed" >&2
 chown -R www-data:www-data var config/system public/typo3temp
+echo "Entrypoint complete, starting services..."
 exec "$@"

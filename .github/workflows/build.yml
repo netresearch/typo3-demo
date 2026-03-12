@@ -48,7 +48,15 @@ jobs:
         run: |
           cp .env.example .env
           docker compose pull
-          docker compose up -d --wait --timeout 300
+          docker compose up -d --wait --timeout 300 || {
+            echo "=== DB logs ==="
+            docker compose logs db
+            echo "=== Web logs ==="
+            docker compose logs web
+            echo "=== Container status ==="
+            docker compose ps -a
+            exit 1
+          }
 
       - name: Verify TYPO3 responds
         run: |
