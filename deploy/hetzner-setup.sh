@@ -58,6 +58,16 @@ chmod 700 "$DEPLOY_SSH_DIR"
 chmod 600 "$DEPLOY_SSH_DIR/authorized_keys"
 chown -R deploy:deploy "$DEPLOY_SSH_DIR"
 
+echo "=== Hardening SSH ==="
+sed -i 's/^#\?PermitRootLogin.*/PermitRootLogin no/' /etc/ssh/sshd_config
+sed -i 's/^#\?PasswordAuthentication.*/PasswordAuthentication no/' /etc/ssh/sshd_config
+systemctl reload sshd
+
+echo "=== Enabling automatic security updates ==="
+apt-get install -y -qq unattended-upgrades
+echo 'Unattended-Upgrade::Automatic-Reboot "false";' > /etc/apt/apt.conf.d/51auto-upgrades
+dpkg-reconfigure -f noninteractive unattended-upgrades
+
 echo "=== Installing Git LFS ==="
 git lfs install --system
 
