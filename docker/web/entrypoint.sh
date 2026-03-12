@@ -35,7 +35,7 @@ if [ ! -f config/system/settings.php ]; then
     # Derive trustedHostsPattern from TYPO3_DOMAIN
     DOMAIN="${TYPO3_DOMAIN:-localhost}"
     if [ "$DOMAIN" = "localhost" ]; then
-        TRUSTED_PATTERN='.*'
+        TRUSTED_PATTERN='^(localhost|127\\.0\\.0\\.1)$'
     else
         # Allow configured domain + localhost/127.0.0.1 for healthchecks
         ESCAPED_DOMAIN="$(echo "$DOMAIN" | sed 's/\./\\\\./g')"
@@ -124,9 +124,9 @@ EOPHP
     sed -i "s|%%TRUSTED_PATTERN%%|$(escape_sed "$TRUSTED_PATTERN")|g" config/system/settings.php
     echo "settings.php generated."
 
-    echo "Cleaning up legacy sys_template records..."
+    echo "Cleaning up legacy sys_template records (v11 TypoScript, replaced by Site Sets)..."
     MYSQL_PWD="${MARIADB_PASSWORD:-typo3}" mariadb -h"${MARIADB_HOST:-db}" -u"${MARIADB_USER:-typo3}" "${MARIADB_DATABASE:-typo3}" \
-        -e "DELETE FROM sys_template;" 2>/dev/null || true
+        -e "DELETE FROM sys_template WHERE config LIKE '%EXT:bootstrap_package%' OR config LIKE '%EXT:fluid_styled_content%';" 2>/dev/null || true
 fi
 
 echo "Running TYPO3 setup..."
