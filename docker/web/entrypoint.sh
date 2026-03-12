@@ -96,7 +96,7 @@ return [
     'BE' => [
         'debug' => false,
         'passwordHashing' => [
-            'className' => \TYPO3\CMS\Core\Crypto\PasswordHashing\Argon2idPasswordHashing::class,
+            'className' => \TYPO3\CMS\Core\Crypto\PasswordHashing\Argon2idPasswordHash::class,
         ],
     ],
     'FE' => [
