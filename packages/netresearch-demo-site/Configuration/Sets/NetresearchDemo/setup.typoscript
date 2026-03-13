@@ -31,10 +31,16 @@ page {
                v11/v12 had no separate toggle button. No setting to disable this. */
             .nav-link-toggle { display: none !important; }
 
-            /* BS Package v16: color-contrast() sets frame text to white for secondary bg,
-               which propagates into .card elements (white text on white card bg = invisible).
-               v12 didn't propagate frame color into cards. No setting to control this. */
-            .frame-background-secondary .card { color: var(--bs-body-color); }
+            /* BS Package v16: color-contrast() sets --frame-color/--frame-header-color to
+               white for secondary bg. These propagate into .card elements via element-level
+               selectors (h4, p, etc.), causing white text on white card bg.
+               v12 didn't have this CSS custom property system. Reset on .card scope. */
+            .frame-background-secondary .card {
+                --frame-color: var(--bs-body-color);
+                --frame-header-color: var(--bs-body-color);
+                --frame-link-color: var(--bs-link-color);
+                --frame-link-hover-color: var(--bs-link-hover-color);
+            }
             </style>
         )
     }
