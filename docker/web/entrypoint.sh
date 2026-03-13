@@ -138,29 +138,24 @@ vendor/bin/typo3 cache:flush 2>&1 || echo "WARNING: cache:flush failed" >&2
 vendor/bin/typo3 cache:warmup 2>&1 || echo "WARNING: cache:warmup failed" >&2
 
 # Workaround: Bootstrap Package 16.0.0 has a bug in GoogleFontService.php where
-# $response->getBody()->getContents() is called twice, producing an empty webfont.css.
-# Download Google Fonts manually if the generated file is empty.
-FONT_CSS=$(find public/typo3temp/assets/bootstrappackage/fonts -name "webfont.css" 2>/dev/null | head -1)
-if [ -n "$FONT_CSS" ] && [ ! -s "$FONT_CSS" ]; then
-    FONT_DIR=$(dirname "$FONT_CSS")
-    echo "Fixing empty webfont.css (Bootstrap Package bug)..."
-    GFONT_URL="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,700"
-    if wget -q -O /tmp/gfont.css --header="User-Agent: Mozilla/5.0 Firefox/94.0" "$GFONT_URL" 2>/dev/null; then
-        grep -o 'https://[^)]*' /tmp/gfont.css | sort -u > /tmp/font_urls.txt
-        while read -r URL; do
-            FNAME=$(basename "$URL")
-            wget -q -O "$FONT_DIR/$FNAME" "$URL" 2>/dev/null || true
-        done < /tmp/font_urls.txt
-        cp /tmp/gfont.css "$FONT_DIR/webfont.css"
-        while read -r URL; do
-            FNAME=$(basename "$URL")
-            sed -i "s|$URL|$FNAME|g" "$FONT_DIR/webfont.css"
-        done < /tmp/font_urls.txt
-        rm -f /tmp/gfont.css /tmp/font_urls.txt
-        echo "Google Fonts downloaded ($(ls "$FONT_DIR"/*.woff2 2>/dev/null | wc -l) files)."
-    else
-        echo "WARNING: Could not download Google Fonts" >&2
-    fi
+# $response->getBody()->getContents() is called twice — the second call returns empty
+# because the stream was already consumed, producing a 0-byte webfont.css.
+# Replace the duplicate call with a stream rewind so the second read works.
+GFONT_SVC="vendor/bk2k/bootstrap-package/Classes/Service/GoogleFontService.php"
+if [ -f "$GFONT_SVC" ] && [ "$(grep -c 'getBody()->getContents()' "$GFONT_SVC")" = "2" ]; then
+    echo "Patching Bootstrap Package GoogleFontService (duplicate getContents bug)..."
+    php -r "
+        \$f = file_get_contents('$GFONT_SVC');
+        \$needle = '\$content = \$response->getBody()->getContents();';
+        \$pos = strpos(\$f, \$needle);
+        if (\$pos !== false) {
+            \$pos2 = strpos(\$f, \$needle, \$pos + strlen(\$needle));
+            if (\$pos2 !== false) {
+                \$f = substr(\$f, 0, \$pos2) . '\$response->getBody()->rewind(); \$content = \$response->getBody()->getContents();' . substr(\$f, \$pos2 + strlen(\$needle));
+                file_put_contents('$GFONT_SVC', \$f);
+            }
+        }
+    "
 fi
 
 chown -R www-data:www-data var config/system public/typo3temp
