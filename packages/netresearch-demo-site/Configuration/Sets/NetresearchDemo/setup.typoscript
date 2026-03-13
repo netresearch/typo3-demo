@@ -9,32 +9,20 @@ page {
     }
 
     # CSS overrides for BS4→BS5 behavioral changes with no configuration equivalent.
-    # Colors, backgrounds, nav style, and footer are handled by settings.yaml (SCSS variables
-    # and Site Set settings) — NOT by CSS overrides.
+    # Most colors/backgrounds are handled by settings.yaml (SCSS variables including
+    # min-contrast-ratio, link-decoration) — NOT by CSS overrides.
     # NOTE: key 99 is used by Bootstrap Package GTM set (has if.isTrue condition), use 199
     headerData {
         199 = TEXT
         199.value (
             <style>
-            /* BS4→BS5: links gained underlines by default. No SCSS setting exposed. */
-            a { text-decoration: none !important; }
-            a:hover { text-decoration: underline !important; }
-
-            /* BS4→BS5: WCAG contrast changed btn-secondary text from white to black.
-               Our secondary=#2f99a4 (teal) needs white text for the v11 look. */
-            .btn-secondary, .btn-secondary:hover, .btn-secondary:focus { color: #fff !important; }
-
-            /* BS Package v16: nav links have higher default opacity than v12. */
+            /* BS Package v16: nav links have higher default opacity than v12.
+               $navbar-light-color is hardcoded at rgba(0,0,0,.65) in BS5. */
             .navbar-nav .nav-link { opacity: .55 !important; }
 
-            /* BS Package v16: separate <button class="nav-link-toggle"> for submenu carets.
-               v11/v12 had no separate toggle button. No setting to disable this. */
-            .nav-link-toggle { display: none !important; }
-
-            /* BS Package v16: color-contrast() sets --frame-color/--frame-header-color to
-               white for secondary bg. These propagate into .card elements via element-level
-               selectors (h4, p, etc.), causing white text on white card bg.
-               v12 didn't have this CSS custom property system. Reset on .card scope. */
+            /* BS5 color-contrast() with min-contrast-ratio:3 correctly returns white for
+               frame-background-secondary (#2f99a4). But cards inside inherit white text,
+               invisible on white card bg. Reset frame custom properties on card scope. */
             .frame-background-secondary .card {
                 --frame-color: var(--bs-body-color);
                 --frame-header-color: var(--bs-body-color);
@@ -49,6 +37,8 @@ page {
 config {
     compressJs = 1
     compressCss = 1
+    concatenateJs = 1
+    concatenateCss = 1
     cache_period = 86400
     sendCacheHeaders = 1
     contentObjectExceptionHandler = 1

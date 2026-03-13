@@ -40,6 +40,16 @@ plugin.bootstrap_package.settings.scss.quaternary: '#1d6069'
 plugin.bootstrap_package.settings.scss.link-color: '#2f99a4'
 plugin.bootstrap_package.settings.scss.link-shade-percentage: '0%'
 
+# BS5 link underlines: BS4 had none, BS5 added by default.
+# Use SCSS variables instead of CSS !important overrides.
+plugin.bootstrap_package.settings.scss.link-decoration: 'none'
+plugin.bootstrap_package.settings.scss.link-hover-decoration: 'underline'
+
+# BS5 WCAG contrast ratio: BS5 defaults to 4.5 which makes color-contrast(#2f99a4)
+# return black (bad for btn-secondary text and frame-background-secondary headings).
+# BS4 had no contrast function — lowering to 3 restores v11 visual behavior.
+plugin.bootstrap_package.settings.scss.min-contrast-ratio: '3'
+
 # Footer backgrounds: match v11 (content=#cccdcc, meta=white)
 plugin.bootstrap_package.settings.scss.dark: '#cccdcc'
 plugin.bootstrap_package.settings.scss.darker: '#ffffff'
