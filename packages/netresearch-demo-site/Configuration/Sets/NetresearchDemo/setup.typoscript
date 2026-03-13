@@ -33,11 +33,10 @@ page {
             /* Nav links: match v11 opacity */
             .navbar-nav .nav-link { opacity: .55 !important; }
 
-            /* Secondary background sections: white text like v11 */
+            /* Secondary background sections: white heading like v11, but cards keep dark text */
             .frame-background-secondary { --frame-color: #fff; --frame-link-color: #fff; --frame-header-color: #fff; }
-            .frame-background-secondary, .frame-background-secondary h1,
-            .frame-background-secondary h2, .frame-background-secondary h3,
-            .frame-background-secondary h4, .frame-background-secondary p { color: #fff !important; }
+            .frame-background-secondary .frame-header,
+            .frame-background-secondary .frame-header * { color: #fff !important; }
 
             /* Header: transparent overlay on hero like v11 (position:fixed) */
             .navbar-fixed-top { position: fixed !important; background: transparent !important; transition: background 0.3s; }
