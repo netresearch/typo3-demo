@@ -45,6 +45,40 @@ config {
 }
 
 #
+# Inner pages: force opaque navbar with dark text.
+# V11 used per-page sys_template records to set navbar-default on inner pages and
+# navbar-default-transition on homepage only. V14 site sets are global (no per-page override).
+# The transition SCSS sets white text + transparent bg before scroll — invisible on inner pages
+# without a full-width hero image. This condition restores the v11 per-page behavior.
+#
+[traverse(page, "uid") != 1]
+    page.headerData {
+        200 = TEXT
+        200.value (
+            <style>
+            @media (min-width: 992px) {
+                .navbar-default-transition:not(.navbar-transition) {
+                    background: #fff !important;
+                    box-shadow: 0 2px 4px rgba(0,0,0,.04);
+                }
+                .navbar-default-transition:not(.navbar-transition) .navbar-nav > li > .nav-link {
+                    --bs-nav-link-color: rgba(0,0,0,.55);
+                    --bs-nav-link-hover-color: rgba(0,0,0,.7);
+                    --bs-navbar-active-color: rgba(0,0,0,.9);
+                }
+                .navbar-default-transition:not(.navbar-transition) .navbar-brand > .navbar-brand-logo-normal {
+                    display: block;
+                }
+                .navbar-default-transition:not(.navbar-transition) .navbar-brand > .navbar-brand-logo-inverted {
+                    display: none;
+                }
+            }
+            </style>
+        )
+    }
+[END]
+
+#
 # Layout Demo: Colored grid boxes for Page Layout subpages (pid=66)
 # Replaces the old sys_template TypoScript that was removed during v11->v14 migration.
 # Bootstrap Package Fluid templates pass colPos as a data field to lib.dynamicContent,
