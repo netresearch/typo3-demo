@@ -4,6 +4,9 @@ page.logo.fileInverted: fileadmin/user_upload/images/netresearch-typo3-demo-whit
 page.logo.height: 52
 page.logo.width: 180
 
+# Navigation: sticky header like original v11 site
+page.theme.navigation.type: top
+
 # Footer navigation (disable sitemap-style navigation)
 page.theme.footernavigation.enable: false
 
@@ -16,3 +19,13 @@ page.theme.socialmedia.channels.github.label: GitHub
 page.theme.socialmedia.channels.github.url: https://netresearch.github.io/
 page.theme.socialmedia.channels.youtube.label: YouTube
 page.theme.socialmedia.channels.youtube.url: https://www.youtube.com/user/NetresearchGMBH
+
+# SCSS color overrides to match original v11 Netresearch theme
+# Old site primary accent: #2f99a4 (teal), used for buttons, links, headings
+plugin.bootstrap_package.settings.scss.primary: '#2f99a4'
+plugin.bootstrap_package.settings.scss.secondary: '#585961'
+plugin.bootstrap_package.settings.scss.tertiary: '#8bc0c6'
+plugin.bootstrap_package.settings.scss.quaternary: '#1d6069'
+plugin.bootstrap_package.settings.scss.dark: '$gray-200'
+plugin.bootstrap_package.settings.scss.darker: '$gray-300'
+plugin.bootstrap_package.settings.scss.link-color: '#2f99a4'
