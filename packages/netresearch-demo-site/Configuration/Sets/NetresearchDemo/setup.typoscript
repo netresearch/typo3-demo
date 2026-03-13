@@ -7,6 +7,13 @@ page {
         author = Netresearch DTM GmbH
         robots = NOINDEX,NOFOLLOW
     }
+
+    # Match v11 visual style: remove link underlines, fix footer text colors
+    # NOTE: key 99 is used by Bootstrap Package GTM set (has if.isTrue condition), use 199
+    headerData {
+        199 = TEXT
+        199.value = <style>a{text-decoration:none!important}a:hover{text-decoration:underline!important}.footer-section{color:#333}.footer-section h1,.footer-section h2,.footer-section h3,.footer-section h4,.footer-section h5{color:#333}.footer-section a{color:#2f99a4}.footer-section a:hover{color:#1d6069}.footer-section-content{background-color:#cccdcc!important}.footer-section-meta{background-color:#fff!important}</style>
+    }
 }
 
 config {
@@ -15,14 +22,6 @@ config {
     cache_period = 86400
     sendCacheHeaders = 1
     contentObjectExceptionHandler = 1
-}
-
-# Match v11 visual style: remove link underlines, fix footer text colors
-page {
-    headerData {
-        99 = TEXT
-        99.value = <style>a{text-decoration:none!important}a:hover{text-decoration:underline!important}.footer-section{color:#333}.footer-section h1,.footer-section h2,.footer-section h3,.footer-section h4,.footer-section h5{color:#333}.footer-section a{color:#2f99a4}.footer-section a:hover{color:#1d6069}.footer-section-content{background-color:#cccdcc!important}.footer-section-meta{background-color:#fff!important}</style>
-    }
 }
 
 #
