@@ -7,8 +7,16 @@ page.logo.width: 180
 # Navigation: sticky header like original v11 site
 page.theme.navigation.type: top
 
+# Breadcrumb: disable (old v11 site had none)
+page.theme.breadcrumb.enable: false
+
 # Footer navigation (disable sitemap-style navigation)
 page.theme.footernavigation.enable: false
+
+# Footer meta: disable site name, language selector, copyright (old site only had social icons)
+page.theme.meta.enable: false
+page.theme.language.enable: false
+page.theme.copyright.enable: false
 
 # Social media
 page.theme.socialmedia.channels.facebook.label: Facebook
