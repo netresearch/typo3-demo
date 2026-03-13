@@ -142,7 +142,7 @@ vendor/bin/typo3 cache:warmup 2>&1 || echo "WARNING: cache:warmup failed" >&2
 # because the stream was already consumed, producing a 0-byte webfont.css.
 # Replace the duplicate call with a stream rewind so the second read works.
 GFONT_SVC="vendor/bk2k/bootstrap-package/Classes/Service/GoogleFontService.php"
-if [ -f "$GFONT_SVC" ] && [ "$(grep -c 'getBody()->getContents()' "$GFONT_SVC")" = "2" ]; then
+if [ -f "$GFONT_SVC" ] && [ "$(grep -c '\$content = \$response->getBody()->getContents()' "$GFONT_SVC")" = "2" ]; then
     echo "Patching Bootstrap Package GoogleFontService (duplicate getContents bug)..."
     php -r "
         \$f = file_get_contents('$GFONT_SVC');
