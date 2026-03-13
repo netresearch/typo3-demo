@@ -96,6 +96,11 @@ return [
             ],
         ],
     ],
+    'GFX' => [
+        'processor' => 'ImageMagick',
+        'processor_path' => '/usr/bin/',
+        'processor_effects' => true,
+    ],
     'BE' => [
         'debug' => false,
         'passwordHashing' => [

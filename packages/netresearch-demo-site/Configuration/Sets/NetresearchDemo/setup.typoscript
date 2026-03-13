@@ -8,18 +8,13 @@ page {
         robots = NOINDEX,NOFOLLOW
     }
 
-    # CSS overrides for BS4→BS5 behavioral changes with no configuration equivalent.
-    # Most colors/backgrounds are handled by settings.yaml (SCSS variables including
-    # min-contrast-ratio, link-decoration) — NOT by CSS overrides.
+    # CSS overrides for BS4→BS5 behavioral changes with no SCSS/settings equivalent.
+    # Nav link opacity is now handled via $navbar-light-color SCSS variable in settings.yaml.
     # NOTE: key 99 is used by Bootstrap Package GTM set (has if.isTrue condition), use 199
     headerData {
         199 = TEXT
         199.value (
             <style>
-            /* BS Package v16: nav links have higher default opacity than v12.
-               $navbar-light-color is hardcoded at rgba(0,0,0,.65) in BS5. */
-            .navbar-nav .nav-link { opacity: .55 !important; }
-
             /* BS5 color-contrast() with min-contrast-ratio:3 correctly returns white for
                frame-background-secondary (#2f99a4). But cards inside inherit white text,
                invisible on white card bg. Reset frame custom properties on card scope. */
@@ -28,6 +23,18 @@ page {
                 --frame-header-color: var(--bs-body-color);
                 --frame-link-color: var(--bs-link-color);
                 --frame-link-hover-color: var(--bs-link-hover-color);
+            }
+
+            /* Footer text/link colors: BS5 color-contrast() with #cccdcc bg returns #000000
+               instead of v11's #333333. No SCSS variable controls frame text on specific bg. */
+            .footer-section-content {
+                --frame-color: #333;
+                --frame-header-color: #333;
+                --frame-link-color: #2f99a4;
+                --frame-link-hover-color: #2c8e98;
+            }
+            .footer-section-meta {
+                --frame-color: #212121;
             }
             </style>
         )

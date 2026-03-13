@@ -50,6 +50,10 @@ plugin.bootstrap_package.settings.scss.link-hover-decoration: 'underline'
 # BS4 had no contrast function — lowering to 3 restores v11 visual behavior.
 plugin.bootstrap_package.settings.scss.min-contrast-ratio: '3'
 
+# BS5 navbar link color: BS Package v16 defaults to rgba(0,0,0,.65) which is
+# lighter than v11. Override to match the v11 opacity (.55).
+plugin.bootstrap_package.settings.scss.navbar-light-color: 'rgba(0,0,0,.55)'
+
 # Footer backgrounds: match v11 (content=#cccdcc, meta=white)
 plugin.bootstrap_package.settings.scss.dark: '#cccdcc'
 plugin.bootstrap_package.settings.scss.darker: '#ffffff'

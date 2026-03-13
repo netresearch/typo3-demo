@@ -9,7 +9,7 @@ FROM php:8.5-fpm-alpine AS runtime
 RUN apk add --no-cache --virtual .build-deps \
         freetype-dev libjpeg-turbo-dev libpng-dev libzip-dev icu-dev linux-headers $PHPIZE_DEPS \
     && apk add --no-cache \
-        nginx mariadb-client openssl freetype libjpeg-turbo libpng libzip icu-libs \
+        nginx mariadb-client openssl freetype libjpeg-turbo libpng libzip icu-libs imagemagick \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j$(nproc) gd intl mysqli pdo_mysql zip \
     && pecl install redis \
