@@ -17,6 +17,22 @@ config {
     contentObjectExceptionHandler = 1
 }
 
+# Match v11 visual style: remove link underlines, fix footer text colors
+page.cssInline {
+    10 = TEXT
+    10.value (
+        /* Remove default BS5 link underlines (BS4 had none) */
+        a { text-decoration: none; }
+        a:hover { text-decoration: underline; }
+
+        /* Footer text color to match v11 (#333) */
+        .footer-section { color: #333; }
+        .footer-section h4 { color: #333; }
+        .footer-section a { color: #2f99a4; }
+        .footer-section a:hover { color: #1d6069; }
+    )
+}
+
 #
 # Layout Demo: Colored grid boxes for Page Layout subpages (pid=66)
 # Replaces the old sys_template TypoScript that was removed during v11->v14 migration.

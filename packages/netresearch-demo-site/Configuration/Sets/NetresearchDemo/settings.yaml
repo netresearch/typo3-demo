@@ -27,6 +27,9 @@ plugin.bootstrap_package.settings.scss.primary: '#585961'
 plugin.bootstrap_package.settings.scss.secondary: '#2f99a4'
 plugin.bootstrap_package.settings.scss.tertiary: '#8bc0c6'
 plugin.bootstrap_package.settings.scss.quaternary: '#1d6069'
-plugin.bootstrap_package.settings.scss.dark: '$gray-200'
-plugin.bootstrap_package.settings.scss.darker: '$gray-300'
 plugin.bootstrap_package.settings.scss.link-color: '#2f99a4'
+plugin.bootstrap_package.settings.scss.link-shade-percentage: '0%'
+
+# Footer backgrounds: match v11 (content=#cccdcc, meta=white)
+plugin.bootstrap_package.settings.scss.dark: '#cccdcc'
+plugin.bootstrap_package.settings.scss.darker: '#ffffff'
