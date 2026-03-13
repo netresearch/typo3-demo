@@ -1,1 +1,18 @@
+# Logo
+page.logo.file: fileadmin/user_upload/images/netresearch-typo3-demo.png
+page.logo.fileInverted: fileadmin/user_upload/images/netresearch-typo3-demo-white.png
+page.logo.height: 52
+page.logo.width: 180
+
+# Footer navigation (disable sitemap-style navigation)
 page.theme.footernavigation.enable: false
+
+# Social media
+page.theme.socialmedia.channels.facebook.label: Facebook
+page.theme.socialmedia.channels.facebook.url: https://www.facebook.com/netresearch
+page.theme.socialmedia.channels.x.label: Twitter
+page.theme.socialmedia.channels.x.url: https://twitter.com/netresearch
+page.theme.socialmedia.channels.github.label: GitHub
+page.theme.socialmedia.channels.github.url: https://netresearch.github.io/
+page.theme.socialmedia.channels.youtube.label: YouTube
+page.theme.socialmedia.channels.youtube.url: https://www.youtube.com/user/NetresearchGMBH
