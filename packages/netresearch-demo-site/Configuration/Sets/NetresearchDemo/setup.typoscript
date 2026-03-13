@@ -20,7 +20,8 @@ config {
 #
 # Layout Demo: Colored grid boxes for Page Layout subpages (pid=66)
 # Replaces the old sys_template TypoScript that was removed during v11->v14 migration.
-# Bootstrap Package Fluid templates set register:colPos before calling lib.dynamicContent.
+# Bootstrap Package Fluid templates pass colPos as a data field to lib.dynamicContent,
+# which uses LOAD_REGISTER to store it in register:colPos before rendering.
 #
 [traverse(page, "pid") == 66]
     page.cssInline {
@@ -39,71 +40,89 @@ config {
     }
 
     lib.dynamicContent >
-    lib.dynamicContent = CASE
+    lib.dynamicContent = COA
     lib.dynamicContent {
-        key.data = register:colPos
+        5 = LOAD_REGISTER
+        5 {
+            colPos.cObject = TEXT
+            colPos.cObject {
+                field = colPos
+                ifEmpty.cObject = TEXT
+                ifEmpty.cObject {
+                    value.current = 1
+                    ifEmpty = 0
+                }
+            }
+        }
 
-        0 = TEXT
-        0.value = <div class="example-grid">Main colPos = 0</div>
+        20 = CASE
+        20 {
+            key.data = register:colPos
 
-        1 = TEXT
-        1.value = <div class="example-grid">Left colPos = 1</div>
+            0 = TEXT
+            0.value = <div class="example-grid">Main colPos = 0</div>
 
-        2 = TEXT
-        2.value = <div class="example-grid">Right colPos = 2</div>
+            1 = TEXT
+            1.value = <div class="example-grid">Left colPos = 1</div>
 
-        3 = TEXT
-        3.value = <div class="example-grid">Border colPos = 3</div>
+            2 = TEXT
+            2.value = <div class="example-grid">Right colPos = 2</div>
 
-        4 = TEXT
-        4.value = <div class="example-grid">Main 2 colPos = 4</div>
+            3 = TEXT
+            3.value = <div class="example-grid">Border colPos = 3</div>
 
-        8 = TEXT
-        8.value = <div class="example-grid">Content Before colPos = 8</div>
+            4 = TEXT
+            4.value = <div class="example-grid">Main 2 colPos = 4</div>
 
-        9 = TEXT
-        9.value = <div class="example-grid">Content After colPos = 9</div>
+            8 = TEXT
+            8.value = <div class="example-grid">Content Before colPos = 8</div>
 
-        10 = TEXT
-        10.value = <div class="example-grid">Footer Column 1 colPos = 10</div>
+            9 = TEXT
+            9.value = <div class="example-grid">Content After colPos = 9</div>
 
-        11 = TEXT
-        11.value = <div class="example-grid">Footer Column 2 colPos = 11</div>
+            10 = TEXT
+            10.value = <div class="example-grid">Footer Column 1 colPos = 10</div>
 
-        12 = TEXT
-        12.value = <div class="example-grid">Footer Column 3 colPos = 12</div>
+            11 = TEXT
+            11.value = <div class="example-grid">Footer Column 2 colPos = 11</div>
 
-        20 = TEXT
-        20.value = <div class="example-grid">Middle 1 colPos = 20</div>
+            12 = TEXT
+            12.value = <div class="example-grid">Footer Column 3 colPos = 12</div>
 
-        21 = TEXT
-        21.value = <div class="example-grid">Middle 2 colPos = 21</div>
+            20 = TEXT
+            20.value = <div class="example-grid">Middle 1 colPos = 20</div>
 
-        22 = TEXT
-        22.value = <div class="example-grid">Middle 3 colPos = 22</div>
+            21 = TEXT
+            21.value = <div class="example-grid">Middle 2 colPos = 21</div>
 
-        30 = TEXT
-        30.value = <div class="example-grid">Special Feature 1 colPos = 30</div>
+            22 = TEXT
+            22.value = <div class="example-grid">Middle 3 colPos = 22</div>
 
-        31 = TEXT
-        31.value = <div class="example-grid">Special Feature 2 colPos = 31</div>
+            30 = TEXT
+            30.value = <div class="example-grid">Special Feature 1 colPos = 30</div>
 
-        32 = TEXT
-        32.value = <div class="example-grid">Special Feature 3 colPos = 32</div>
+            31 = TEXT
+            31.value = <div class="example-grid">Special Feature 2 colPos = 31</div>
 
-        33 = TEXT
-        33.value = <div class="example-grid">Special Feature 4 colPos = 33</div>
+            32 = TEXT
+            32.value = <div class="example-grid">Special Feature 3 colPos = 32</div>
 
-        34 = TEXT
-        34.value = <div class="example-grid">Special Feature 5 colPos = 34</div>
+            33 = TEXT
+            33.value = <div class="example-grid">Special Feature 4 colPos = 33</div>
 
-        35 = TEXT
-        35.value = <div class="example-grid">Special Feature 6 colPos = 35</div>
+            34 = TEXT
+            34.value = <div class="example-grid">Special Feature 5 colPos = 34</div>
 
-        36 = TEXT
-        36.value = <div class="example-grid">Special Feature 7 colPos = 36</div>
+            35 = TEXT
+            35.value = <div class="example-grid">Special Feature 6 colPos = 35</div>
 
-        37 = TEXT
-        37.value = <div class="example-grid">Special Feature 8 colPos = 37</div>
+            36 = TEXT
+            36.value = <div class="example-grid">Special Feature 7 colPos = 36</div>
+
+            37 = TEXT
+            37.value = <div class="example-grid">Special Feature 8 colPos = 37</div>
+        }
+
+        90 = RESTORE_REGISTER
     }
 [END]
