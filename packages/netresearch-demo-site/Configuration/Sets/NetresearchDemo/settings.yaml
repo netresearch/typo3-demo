@@ -21,9 +21,10 @@ page.theme.socialmedia.channels.youtube.label: YouTube
 page.theme.socialmedia.channels.youtube.url: https://www.youtube.com/user/NetresearchGMBH
 
 # SCSS color overrides to match original v11 Netresearch theme
-# Old site primary accent: #2f99a4 (teal), used for buttons, links, headings
-plugin.bootstrap_package.settings.scss.primary: '#2f99a4'
-plugin.bootstrap_package.settings.scss.secondary: '#585961'
+# Old site: --bs-primary=#585961, --bs-secondary=#2f99a4 (teal)
+# Buttons use btn-secondary, so secondary must be teal
+plugin.bootstrap_package.settings.scss.primary: '#585961'
+plugin.bootstrap_package.settings.scss.secondary: '#2f99a4'
 plugin.bootstrap_package.settings.scss.tertiary: '#8bc0c6'
 plugin.bootstrap_package.settings.scss.quaternary: '#1d6069'
 plugin.bootstrap_package.settings.scss.dark: '$gray-200'

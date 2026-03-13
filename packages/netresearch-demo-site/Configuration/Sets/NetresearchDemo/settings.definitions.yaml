@@ -1,0 +1,28 @@
+settings:
+  # Override Bootstrap Package SCSS colors for Netresearch teal theme
+  plugin.bootstrap_package.settings.scss.primary:
+    type: string
+    default: '#585961'
+  plugin.bootstrap_package.settings.scss.secondary:
+    type: string
+    default: '#2f99a4'
+  plugin.bootstrap_package.settings.scss.tertiary:
+    type: string
+    default: '#8bc0c6'
+  plugin.bootstrap_package.settings.scss.quaternary:
+    type: string
+    default: '#1d6069'
+  plugin.bootstrap_package.settings.scss.dark:
+    type: string
+    default: '$gray-200'
+  plugin.bootstrap_package.settings.scss.darker:
+    type: string
+    default: '$gray-300'
+  plugin.bootstrap_package.settings.scss.link-color:
+    type: string
+    default: '#2f99a4'
+
+  # Sticky navigation
+  page.theme.navigation.type:
+    type: string
+    default: 'top'
