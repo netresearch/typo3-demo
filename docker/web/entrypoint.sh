@@ -63,6 +63,9 @@ return [
     'SYS' => [
         'encryptionKey' => '%%ENCRYPTION_KEY%%',
         'trustedHostsPattern' => '%%TRUSTED_PATTERN%%',
+        'reverseProxyIP' => '*',
+        'reverseProxyHeaderMultiValue' => 'first',
+        'reverseProxySSL' => '*',
         'sitename' => 'Netresearch TYPO3 Demo',
         'caching' => [
             'cacheConfigurations' => [
