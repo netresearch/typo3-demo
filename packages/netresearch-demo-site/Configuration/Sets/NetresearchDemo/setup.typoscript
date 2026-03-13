@@ -30,6 +30,11 @@ page {
             /* BS Package v16: separate <button class="nav-link-toggle"> for submenu carets.
                v11/v12 had no separate toggle button. No setting to disable this. */
             .nav-link-toggle { display: none !important; }
+
+            /* BS Package v16: color-contrast() sets frame text to white for secondary bg,
+               which propagates into .card elements (white text on white card bg = invisible).
+               v12 didn't propagate frame color into cards. No setting to control this. */
+            .frame-background-secondary .card { color: var(--bs-body-color); }
             </style>
         )
     }
