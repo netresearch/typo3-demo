@@ -33,6 +33,13 @@ page {
             /* Nav links: match v11 opacity */
             .navbar-nav .nav-link { opacity: .55 !important; }
 
+            /* Hide submenu dropdown carets (v11 had none) */
+            .nav-link-toggle { display: none !important; }
+
+            /* Nav text: white on transparent header (over hero), dark after scroll */
+            .navbar-fixed-top:not(.navbar-transition) .navbar-nav .nav-link { color: #fff !important; opacity: .85 !important; }
+            .navbar-fixed-top:not(.navbar-transition) .navbar-brand img { filter: brightness(0) invert(1); }
+
             /* Secondary background sections: white heading like v11, but cards keep dark text */
             .frame-background-secondary { --frame-color: #fff; --frame-link-color: #fff; --frame-header-color: #fff; }
             .frame-background-secondary .frame-header,
@@ -41,6 +48,14 @@ page {
             /* Header: transparent overlay on hero like v11 (position:fixed) */
             .navbar-fixed-top { position: fixed !important; background: transparent !important; transition: background 0.3s; }
             .navbar-fixed-top.navbar-transition { background: #fff !important; }
+
+            /* Blog: image-left/text-right layout like v11 */
+            .news-list-view .article { display: grid; grid-template-columns: 200px 1fr; grid-template-rows: auto auto auto; gap: 0 1.5rem; }
+            .news-list-view .article .news-img-wrap { grid-column: 1; grid-row: 1 / -1; }
+            .news-list-view .article .news-img-wrap img { width: 100%; height: auto; }
+            .news-list-view .article .header { grid-column: 2; }
+            .news-list-view .article .teaser-text { grid-column: 2; }
+            .news-list-view .article .footer { grid-column: 1 / -1; }
             </style>
         )
     }
