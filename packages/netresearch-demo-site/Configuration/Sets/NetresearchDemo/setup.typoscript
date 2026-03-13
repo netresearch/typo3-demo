@@ -18,26 +18,11 @@ config {
 }
 
 # Match v11 visual style: remove link underlines, fix footer text colors
-page.headerData {
-    99 = TEXT
-    99.value (
-        <style>
-        /* Remove default BS5 link underlines (BS4 had none) */
-        a { text-decoration: none !important; }
-        a:hover { text-decoration: underline !important; }
-
-        /* Footer text color to match v11 (#333) */
-        .footer-section { color: #333; }
-        .footer-section h1, .footer-section h2, .footer-section h3,
-        .footer-section h4, .footer-section h5 { color: #333; }
-        .footer-section a { color: #2f99a4; }
-        .footer-section a:hover { color: #1d6069; }
-
-        /* Footer content section background */
-        .footer-section-content { background-color: #cccdcc !important; }
-        .footer-section-meta { background-color: #fff !important; }
-        </style>
-    )
+page {
+    headerData {
+        99 = TEXT
+        99.value = <style>a{text-decoration:none!important}a:hover{text-decoration:underline!important}.footer-section{color:#333}.footer-section h1,.footer-section h2,.footer-section h3,.footer-section h4,.footer-section h5{color:#333}.footer-section a{color:#2f99a4}.footer-section a:hover{color:#1d6069}.footer-section-content{background-color:#cccdcc!important}.footer-section-meta{background-color:#fff!important}</style>
+    }
 }
 
 #
