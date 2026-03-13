@@ -8,54 +8,28 @@ page {
         robots = NOINDEX,NOFOLLOW
     }
 
-    # Match v11 visual style: remove link underlines, fix footer text colors
+    # CSS overrides for BS4→BS5 behavioral changes with no configuration equivalent.
+    # Colors, backgrounds, nav style, and footer are handled by settings.yaml (SCSS variables
+    # and Site Set settings) — NOT by CSS overrides.
     # NOTE: key 99 is used by Bootstrap Package GTM set (has if.isTrue condition), use 199
     headerData {
         199 = TEXT
         199.value (
             <style>
-            /* Links: remove BS5 underlines (BS4 had none) */
+            /* BS4→BS5: links gained underlines by default. No SCSS setting exposed. */
             a { text-decoration: none !important; }
             a:hover { text-decoration: underline !important; }
 
-            /* Footer: match v11 colors */
-            .footer-section { color: #333; --frame-link-color: #2f99a4; --frame-link-hover-color: #1d6069; }
-            .footer-section h1, .footer-section h2, .footer-section h3,
-            .footer-section h4, .footer-section h5 { color: #333; }
-            .footer-section a { color: #2f99a4 !important; }
-            .footer-section a:hover { color: #1d6069 !important; }
-            .footer-section-content { background-color: #cccdcc !important; }
-            .footer-section-meta { background-color: #fff !important; }
-
-            /* Buttons: white text on teal (BS5 WCAG changed to black) */
+            /* BS4→BS5: WCAG contrast changed btn-secondary text from white to black.
+               Our secondary=#2f99a4 (teal) needs white text for the v11 look. */
             .btn-secondary, .btn-secondary:hover, .btn-secondary:focus { color: #fff !important; }
 
-            /* Nav links: match v11 opacity */
+            /* BS Package v16: nav links have higher default opacity than v12. */
             .navbar-nav .nav-link { opacity: .55 !important; }
 
-            /* Hide submenu dropdown carets (v11 had none) */
+            /* BS Package v16: separate <button class="nav-link-toggle"> for submenu carets.
+               v11/v12 had no separate toggle button. No setting to disable this. */
             .nav-link-toggle { display: none !important; }
-
-            /* Nav text: white on transparent header (over hero), dark after scroll */
-            .navbar-fixed-top:not(.navbar-transition) .navbar-nav .nav-link { color: #fff !important; opacity: .85 !important; }
-            .navbar-fixed-top:not(.navbar-transition) .navbar-brand img { filter: brightness(0) invert(1); }
-
-            /* Secondary background sections: white heading like v11, but cards keep dark text */
-            .frame-background-secondary { --frame-color: #fff; --frame-link-color: #fff; --frame-header-color: #fff; }
-            .frame-background-secondary .frame-header,
-            .frame-background-secondary .frame-header * { color: #fff !important; }
-
-            /* Header: transparent overlay on hero like v11 (position:fixed) */
-            .navbar-fixed-top { position: fixed !important; background: transparent !important; transition: background 0.3s; }
-            .navbar-fixed-top.navbar-transition { background: #fff !important; }
-
-            /* Blog: image-left/text-right layout like v11 */
-            .news-list-view .article { display: grid; grid-template-columns: 200px 1fr; grid-template-rows: auto auto auto; gap: 0 1.5rem; }
-            .news-list-view .article .news-img-wrap { grid-column: 1; grid-row: 1 / -1; }
-            .news-list-view .article .news-img-wrap img { width: 100%; height: auto; }
-            .news-list-view .article .header { grid-column: 2; }
-            .news-list-view .article .teaser-text { grid-column: 2; }
-            .news-list-view .article .footer { grid-column: 1 / -1; }
             </style>
         )
     }

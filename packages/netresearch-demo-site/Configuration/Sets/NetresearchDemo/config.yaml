@@ -3,3 +3,4 @@ label: Netresearch Demo Site
 dependencies:
   - bootstrap-package/full
   - georgringer/news
+  - georgringer/news-twb5

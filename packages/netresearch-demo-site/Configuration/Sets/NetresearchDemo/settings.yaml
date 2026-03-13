@@ -4,8 +4,10 @@ page.logo.fileInverted: fileadmin/user_upload/images/netresearch-typo3-demo-whit
 page.logo.height: 52
 page.logo.width: 180
 
-# Navigation: sticky header like original v11 site
+# Navigation: fixed header with transparent→white scroll transition (like v11)
+# 'top' = sticky/fixed position, 'default-transition' = transparent over hero, white on scroll
 page.theme.navigation.type: top
+page.theme.navigation.style: 'default-transition'
 
 # Breadcrumb: disable (old v11 site had none)
 page.theme.breadcrumb.enable: false
