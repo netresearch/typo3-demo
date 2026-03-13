@@ -12,7 +12,7 @@ page {
     # NOTE: key 99 is used by Bootstrap Package GTM set (has if.isTrue condition), use 199
     headerData {
         199 = TEXT
-        199.value = <style>a{text-decoration:none!important}a:hover{text-decoration:underline!important}.footer-section{color:#333}.footer-section h1,.footer-section h2,.footer-section h3,.footer-section h4,.footer-section h5{color:#333}.footer-section a{color:#2f99a4}.footer-section a:hover{color:#1d6069}.footer-section-content{background-color:#cccdcc!important}.footer-section-meta{background-color:#fff!important}</style>
+        199.value = <style>a{text-decoration:none!important}a:hover{text-decoration:underline!important}.footer-section{color:#333;--frame-link-color:#2f99a4;--frame-link-hover-color:#1d6069}.footer-section h1,.footer-section h2,.footer-section h3,.footer-section h4,.footer-section h5{color:#333}.footer-section a{color:#2f99a4!important}.footer-section a:hover{color:#1d6069!important}.footer-section-content{background-color:#cccdcc!important}.footer-section-meta{background-color:#fff!important}.btn-secondary,.btn-secondary:hover,.btn-secondary:focus{color:#fff!important}.navbar-nav .nav-link{opacity:.55!important}</style>
     }
 }
 
