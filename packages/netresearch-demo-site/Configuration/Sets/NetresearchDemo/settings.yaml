@@ -9,8 +9,9 @@ page.logo.width: 180
 page.theme.navigation.type: top
 page.theme.navigation.style: 'default-transition'
 
-# Breadcrumb: disable (old v11 site had none)
-page.theme.breadcrumb.enable: false
+# Breadcrumb: show on subpages at depth >= 2 (matches v11 behavior).
+# Default enableLevel=2 means breadcrumbs appear on pages two or more levels deep.
+page.theme.breadcrumb.enable: true
 
 # Footer navigation (disable sitemap-style navigation)
 page.theme.footernavigation.enable: false
