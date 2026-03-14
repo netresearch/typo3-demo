@@ -75,19 +75,6 @@ page {
     }
 }
 
-# Fix BS Package v16 sticky header scroll flicker (Chromium bug).
-# https://github.com/benjaminkott/bootstrap_package/issues/1468
-# Drop the buggy stickyheader JS and replace with fixed version that uses
-# getBoundingClientRect().bottom as dynamic threshold instead of hardcoded 120px.
-page {
-    includeJSFooterlibs {
-        bootstrap_stickyheader >
-    }
-    includeJSFooter {
-        stickyheader_fix = EXT:netresearch_demo_site/Resources/Public/JavaScript/stickyheader.js
-    }
-}
-
 config {
     compressJs = 1
     compressCss = 1
