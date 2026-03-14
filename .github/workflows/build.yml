@@ -53,6 +53,10 @@ jobs:
             docker compose logs db
             echo "=== Web logs ==="
             docker compose logs web
+            echo "=== TYPO3 error log ==="
+            docker compose exec -T web sh -c "cat var/log/typo3_*.log 2>/dev/null | tail -50" || true
+            echo "=== HTTP response ==="
+            docker compose exec -T web sh -c "curl -sL http://127.0.0.1/ 2>&1 | head -50" || true
             echo "=== Container status ==="
             docker compose ps -a
             exit 1
