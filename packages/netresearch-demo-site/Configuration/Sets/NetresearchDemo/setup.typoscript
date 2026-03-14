@@ -118,9 +118,7 @@ config {
             .example-grid {
                 border: 1px solid rgba(117, 167, 90, 0.5);
                 background-color: rgba(117, 167, 90, 0.25);
-                padding: 2em;
-                margin: 2rem 0;
-                text-align: left;
+                padding: 1em;
             }
             </style>
         )
