@@ -45,11 +45,19 @@ page {
 
             /* BS Package v16 sticky header flicker fix:
                v16 changed .navbar-fixed-top from position:fixed (v11) to position:sticky.
-               With sticky, height changes (110→70px on scroll) shift content, oscillating
-               scrollY around the 120px threshold. Fix: lock navbar height so only visual
-               properties (background, color, logo) change on scroll, not layout. */
-            .navbar-mainnavigation.navbar-transition {
-                --mainnavigation-nav-height: inherit;
+               With sticky, the navbar-transition class forces --mainnavigation-nav-height
+               to 70px (from 100-110px), shrinking the navbar, shifting document content,
+               oscillating scrollY around 120px. Fix: keep height constant per breakpoint.
+               Only visual properties (background, color, logo) change on scroll. */
+            @media (min-width: 992px) {
+                .navbar-mainnavigation.navbar-transition {
+                    --mainnavigation-nav-height: 100px;
+                }
+            }
+            @media (min-width: 1200px) {
+                .navbar-mainnavigation.navbar-transition {
+                    --mainnavigation-nav-height: 110px;
+                }
             }
 
             /* BS Package v16 removed dropdown-hover class entirely — now uses split link/button.
