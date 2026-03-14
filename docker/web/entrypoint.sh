@@ -134,7 +134,7 @@ EOPHP
 
     echo "Cleaning up legacy sys_template records (v11 TypoScript, replaced by Site Sets)..."
     MYSQL_PWD="${MARIADB_PASSWORD:-typo3}" mariadb -h"${MARIADB_HOST:-db}" -u"${MARIADB_USER:-typo3}" "${MARIADB_DATABASE:-typo3}" \
-        -e "DELETE FROM sys_template WHERE config LIKE '%EXT:bootstrap_package%' OR config LIKE '%EXT:fluid_styled_content%';" 2>/dev/null || true
+        -e "DELETE FROM sys_template;" 2>/dev/null || true
 fi
 
 echo "Running TYPO3 setup..."
