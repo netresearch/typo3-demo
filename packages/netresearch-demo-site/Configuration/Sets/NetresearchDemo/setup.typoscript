@@ -44,11 +44,15 @@ page {
             }
 
             /* BS Package v16 removed dropdown-hover class entirely — now uses split link/button.
-               Restore hover-to-open behavior on desktop for accessibility-compatible experience.
-               The button toggle still works for click/touch; this adds hover as secondary trigger. */
+               Restore hover-to-open on desktop. Scoped to nav-style-* items (have children).
+               BS5 only sets top:100% via data-bs-popper (JS). CSS-only hover needs it explicit. */
             @media (min-width: 992px) {
-                .navbar-mainnavigation .nav-item:hover > .dropdown-menu {
+                .navbar-mainnavigation .nav-item.nav-style-simple:hover > .dropdown-menu,
+                .navbar-mainnavigation .nav-item.nav-style-mega:hover > .dropdown-menu {
                     display: block;
+                    top: 100%;
+                    left: 0;
+                    margin-top: 0;
                 }
             }
             </style>
