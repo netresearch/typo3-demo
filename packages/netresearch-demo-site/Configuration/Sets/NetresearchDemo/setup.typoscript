@@ -43,6 +43,21 @@ page {
                 max-width: 50%;
             }
 
+            /* BS Package v16 sticky header: position:sticky means navbar height changes
+               affect document height, causing scrollbar jumps. Compensate by adding
+               margin-bottom equal to the height reduction when navbar-transition is active.
+               Default heights: lg=100px, xl/xxl=110px. Transition forces 70px. */
+            @media (min-width: 992px) {
+                .navbar-mainnavigation.navbar-transition {
+                    margin-bottom: 30px;
+                }
+            }
+            @media (min-width: 1200px) {
+                .navbar-mainnavigation.navbar-transition {
+                    margin-bottom: 40px;
+                }
+            }
+
             /* BS Package v16 removed dropdown-hover class entirely — now uses split link/button.
                Restore hover-to-open on desktop. Scoped to nav-style-* items (have children).
                BS5 only sets top:100% via data-bs-popper (JS). CSS-only hover needs it explicit. */
