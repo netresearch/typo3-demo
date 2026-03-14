@@ -43,20 +43,6 @@ page {
                 max-width: 50%;
             }
 
-            /* BS Package v16 sticky header flicker fix:
-               v16 changed .navbar-fixed-top from position:fixed (v11) to position:sticky.
-               With sticky, navbar height changes shift document content, oscillating scrollY
-               around the 120px threshold. Restore v11 behavior: position:fixed removes the
-               navbar from document flow, so height changes don't affect scroll position.
-               Body padding-top compensates for the navbar being out of flow. */
-            .navbar-mainnavigation.navbar-fixed-top {
-                position: fixed !important;
-                width: 100%;
-            }
-            body {
-                padding-top: var(--mainnavigation-nav-height);
-            }
-
             /* BS Package v16 removed dropdown-hover class entirely — now uses split link/button.
                Restore hover-to-open on desktop. Scoped to nav-style-* items (have children).
                BS5 only sets top:100% via data-bs-popper (JS). CSS-only hover needs it explicit. */
@@ -71,6 +57,19 @@ page {
             }
             </style>
         )
+    }
+}
+
+# Fix BS Package v16 sticky header scroll flicker (Chromium bug).
+# https://github.com/benjaminkott/bootstrap_package/issues/1468
+# Drop the buggy stickyheader JS and replace with fixed version that uses
+# getBoundingClientRect().bottom as dynamic threshold instead of hardcoded 120px.
+page {
+    includeJSFooterlibs {
+        bootstrap_stickyheader >
+    }
+    includeJSFooter {
+        stickyheader_fix = EXT:netresearch_demo_site/Resources/Public/JavaScript/stickyheader.js
     }
 }
 
