@@ -43,6 +43,17 @@ page {
                 max-width: 50%;
             }
 
+            /* BS Package v16 sticky header: transition:all animates height/padding changes,
+               which with position:sticky causes scroll-position oscillation at the threshold
+               (scrollY ~120px). Restrict to visual-only properties to prevent flicker. */
+            @media (min-width: 992px) {
+                .navbar-mainnavigation {
+                    transition: background-color .27s cubic-bezier(0, 0, .58, 1),
+                                box-shadow .27s cubic-bezier(0, 0, .58, 1),
+                                color .27s cubic-bezier(0, 0, .58, 1) !important;
+                }
+            }
+
             /* BS Package v16 removed dropdown-hover class entirely — now uses split link/button.
                Restore hover-to-open on desktop. Scoped to nav-style-* items (have children).
                BS5 only sets top:100% via data-bs-popper (JS). CSS-only hover needs it explicit. */
