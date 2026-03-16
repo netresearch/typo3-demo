@@ -4,3 +4,4 @@ dependencies:
   - bootstrap-package/full
   - georgringer/news
   - georgringer/news-twb5
+  - netresearch/rte-ckeditor-image
