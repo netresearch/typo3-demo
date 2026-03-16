@@ -174,3 +174,33 @@ VALUES (406, 108, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'text', 'Automatic Cache I
 <p>Works transparently with all content types that use TYPO3 starttime/endtime fields. No configuration needed for basic usage.</p>
 <p><a href="https://github.com/netresearch/t3x-nr-temporal-cache" target="_blank" rel="noopener">GitHub: netresearch/t3x-nr-temporal-cache</a></p>',
 0, 100, 0, 0);
+INSERT IGNORE INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
+VALUES (410, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'text', 'Netresearch TYPO3 Extensions',
+'<p>This demo site showcases Netresearch open-source TYPO3 extensions, all compatible with TYPO3 v14.</p>
+
+<h2>Content &amp; Editing</h2>
+<ul>
+<li><a href="/extensions/rte-ckeditor-image/">RTE CKEditor Image</a> — Block images, inline images, click-to-enlarge, and linked images directly in the rich text editor</li>
+<li><a href="/extensions/cowriter/">AI Cowriter</a> — AI-powered content rewriting, summarizing, translating, and grammar fixing in CKEditor</li>
+<li><a href="/extensions/landing-page/">Landing Page Generator</a> — Create complete landing pages using AI via a backend wizard</li>
+</ul>
+
+<h2>AI Foundation</h2>
+<ul>
+<li><a href="/extensions/nr-llm/">NR LLM</a> — Shared AI foundation for TYPO3. One LLM setup for every extension on your site (providers, models, tasks)</li>
+</ul>
+
+<h2>Security &amp; Authentication</h2>
+<ul>
+<li><a href="/extensions/passkeys-be/">Passkeys Backend</a> — Passwordless WebAuthn/FIDO2 authentication for backend users</li>
+<li><a href="/extensions/passkeys-fe/">Passkeys Frontend</a> — Passkey-first authentication for frontend users (fe_users)</li>
+<li><a href="/extensions/vault/">Secrets Vault</a> — Envelope encryption, access control, and audit logging for secrets management</li>
+</ul>
+
+<h2>Performance</h2>
+<ul>
+<li><a href="/extensions/temporal-cache/">Temporal Cache</a> — Automatic cache invalidation for content with start/end times</li>
+</ul>
+
+<p>All extensions are open source and available on <a href="https://github.com/netresearch" target="_blank" rel="noopener">GitHub</a>.</p>',
+0, 100, 0, 0);
