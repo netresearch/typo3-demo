@@ -15,20 +15,23 @@ INSERT IGNORE INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext
 VALUES (400, 102, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'text', 'RTE CKEditor Image',
 '<p>Advanced image handling for CKEditor 5 in TYPO3. This extension adds block images, inline images, click-to-enlarge, and linked images directly in the rich text editor.</p>
 
-<h2>Block Image with Caption</h2>
-<figure class="image">
-<img src="/fileadmin/user_upload/images/Home/CH5_7354.jpg" alt="Demo block image" width="800">
-<figcaption>A block image with caption — inserted via CKEditor using the image button</figcaption>
-</figure>
+<h2>Block Image</h2>
+<p>A standalone image inserted via CKEditor — rendered as a processed TYPO3 image with responsive srcset:</p>
+<p><img src="/fileadmin/user_upload/images/Home/CH5_7354.jpg" alt="Team photo demo" width="800" data-htmlarea-file-uid="190" data-htmlarea-file-table="sys_file"></p>
+
+<h2>Click-to-Enlarge (Lightbox)</h2>
+<p>Adding <code>data-htmlarea-zoom=\"true\"</code> enables lightbox on click:</p>
+<p><img src="/fileadmin/user_upload/images/Home/CH5_7203.jpg" alt="Click to enlarge demo" width="400" data-htmlarea-file-uid="188" data-htmlarea-file-table="sys_file" data-htmlarea-zoom="true"></p>
+<p><em>Click the image above to see the lightbox popup.</em></p>
 
 <h2>Inline Image in Text</h2>
-<p>Text can contain inline images like this <img class="image image-inline" src="/fileadmin/user_upload/images/netresearch-typo3-demo.png" alt="inline logo" width="80"> logo that flows naturally with the surrounding content. Inline images use <code>class="image image-inline"</code>.</p>
+<p>Text can contain inline images like this <img class="image image-inline" src="/fileadmin/user_upload/images/netresearch-typo3-demo.png" alt="inline logo" width="60" data-htmlarea-file-uid="1" data-htmlarea-file-table="sys_file"> logo that flows naturally within the paragraph.</p>
 
 <h2>Features</h2>
 <ul>
 <li><strong>Block images</strong> with captions and alignment (left, center, right)</li>
 <li><strong>Inline images</strong> that flow with text content</li>
-<li><strong>Click-to-enlarge</strong> via lightbox (<code>data-htmlarea-zoom="true"</code>)</li>
+<li><strong>Click-to-enlarge</strong> via lightbox (<code>data-htmlarea-zoom=\"true\"</code>)</li>
 <li><strong>Linked images</strong> wrapping images in hyperlinks to pages or URLs</li>
 <li><strong>Image alignment matrix</strong> — all combinations of alignment and caption</li>
 </ul>
