@@ -86,10 +86,10 @@ VALUES (403, 105, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'text', 'AI Landing Page G
 0, 100, 0, 0);
 
 -- =============================================================================
--- Passkeys (backend authentication)
+-- Passkeys Backend (backend authentication)
 -- =============================================================================
 INSERT IGNORE INTO pages (uid, pid, tstamp, crdate, title, slug, doktype, sorting, hidden, deleted)
-VALUES (106, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'Passkey Authentication', '/extensions/passkeys', 1, 500, 0, 0);
+VALUES (106, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'Passkeys (Backend)', '/extensions/passkeys-be', 1, 500, 0, 0);
 
 INSERT IGNORE INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
 VALUES (404, 106, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'text', 'Passwordless Backend Login with Passkeys',
@@ -103,6 +103,26 @@ VALUES (404, 106, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'text', 'Passwordless Back
 </ul>
 <p>Manage passkeys in the TYPO3 backend under User Settings &gt; Passkeys. Administrators configure enforcement in backend user group settings.</p>
 <p><a href="https://github.com/netresearch/t3x-nr-passkeys-be" target="_blank" rel="noopener">GitHub: netresearch/t3x-nr-passkeys-be</a></p>',
+0, 100, 0, 0);
+
+-- =============================================================================
+-- Passkeys Frontend (frontend authentication)
+-- =============================================================================
+INSERT IGNORE INTO pages (uid, pid, tstamp, crdate, title, slug, doktype, sorting, hidden, deleted)
+VALUES (109, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'Passkeys (Frontend)', '/extensions/passkeys-fe', 1, 510, 0, 0);
+
+INSERT IGNORE INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
+VALUES (407, 109, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'text', 'Passkey-First Frontend Authentication',
+'<p>WebAuthn/FIDO2 Passkey authentication for TYPO3 frontend users (fe_users). Features:</p>
+<ul>
+<li><strong>Passkey-first login</strong> — frontend users authenticate with biometrics instead of passwords</li>
+<li><strong>Passkey registration</strong> — users register passkeys via their frontend profile</li>
+<li><strong>Conditional UI</strong> — browser autofill integration for seamless passkey discovery</li>
+<li><strong>Fallback to password</strong> — graceful degradation when passkeys are unavailable</li>
+<li><strong>Multi-device support</strong> — users can register passkeys on multiple devices</li>
+</ul>
+<p>Integrates with felogin. Users manage their passkeys via a frontend plugin. Try the <a href="/login">Login page</a> to see the passkey login in action.</p>
+<p><a href="https://github.com/netresearch/t3x-nr-passkeys-fe" target="_blank" rel="noopener">GitHub: netresearch/t3x-nr-passkeys-fe</a></p>',
 0, 100, 0, 0);
 
 -- =============================================================================
