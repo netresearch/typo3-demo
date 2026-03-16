@@ -38,6 +38,7 @@ COPY docker/web/nginx.conf /etc/nginx/nginx.conf
 COPY docker/web/php-fpm.conf /usr/local/etc/php-fpm.d/zz-typo3.conf
 COPY docker/web/entrypoint.sh /entrypoint.sh
 COPY data/fileadmin/ /seed/fileadmin/
+COPY data/seed-*.sql data/
 COPY --from=composer-builder /app/vendor/ vendor/
 COPY --from=composer-builder /app/public/ public/
 COPY config/ config/

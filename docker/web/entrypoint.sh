@@ -135,6 +135,12 @@ EOPHP
     echo "Cleaning up legacy sys_template records (v11 TypoScript, replaced by Site Sets)..."
     MYSQL_PWD="${MARIADB_PASSWORD:-typo3}" mariadb -h"${MARIADB_HOST:-db}" -u"${MARIADB_USER:-typo3}" "${MARIADB_DATABASE:-typo3}" \
         -e "DELETE FROM sys_template;" 2>/dev/null || true
+
+    echo "Importing extension demo pages..."
+    if [ -f /var/www/data/seed-extensions.sql ]; then
+        MYSQL_PWD="${MARIADB_PASSWORD:-typo3}" mariadb -h"${MARIADB_HOST:-db}" -u"${MARIADB_USER:-typo3}" "${MARIADB_DATABASE:-typo3}" \
+            < /var/www/data/seed-extensions.sql 2>/dev/null || echo "WARNING: seed-extensions.sql import failed" >&2
+    fi
 fi
 
 echo "Running TYPO3 setup..."
