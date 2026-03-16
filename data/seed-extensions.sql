@@ -13,15 +13,26 @@ VALUES (102, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'RTE CKEditor Image', '/ex
 
 INSERT IGNORE INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
 VALUES (400, 102, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'text', 'RTE CKEditor Image',
-'<p>Advanced image handling for CKEditor 5 in TYPO3. Adds support for:</p>
+'<p>Advanced image handling for CKEditor 5 in TYPO3. This extension adds block images, inline images, click-to-enlarge, and linked images directly in the rich text editor.</p>
+
+<h2>Block Image with Caption</h2>
+<figure class="image">
+<img src="/fileadmin/user_upload/images/Home/CH5_7354.jpg" alt="Demo block image" width="800">
+<figcaption>A block image with caption — inserted via CKEditor using the image button</figcaption>
+</figure>
+
+<h2>Inline Image in Text</h2>
+<p>Text can contain inline images like this <img class="image image-inline" src="/fileadmin/user_upload/images/netresearch-typo3-demo.png" alt="inline logo" width="80"> logo that flows naturally with the surrounding content. Inline images use <code>class="image image-inline"</code>.</p>
+
+<h2>Features</h2>
 <ul>
-<li><strong>Block images</strong> with captions and alignment</li>
-<li><strong>Inline images</strong> that flow with text</li>
-<li><strong>Click-to-enlarge</strong> via lightbox (data-htmlarea-zoom)</li>
-<li><strong>Linked images</strong> wrapping images in hyperlinks</li>
-<li><strong>Image alignment</strong> (left, center, right)</li>
+<li><strong>Block images</strong> with captions and alignment (left, center, right)</li>
+<li><strong>Inline images</strong> that flow with text content</li>
+<li><strong>Click-to-enlarge</strong> via lightbox (<code>data-htmlarea-zoom="true"</code>)</li>
+<li><strong>Linked images</strong> wrapping images in hyperlinks to pages or URLs</li>
+<li><strong>Image alignment matrix</strong> — all combinations of alignment and caption</li>
 </ul>
-<p>Edit this page in the TYPO3 backend to see the CKEditor image features in action. The RTE toolbar includes image insertion with all these capabilities.</p>
+<p>Edit this page in the TYPO3 backend to see the CKEditor image toolbar button in action.</p>
 <p><a href="https://github.com/netresearch/t3x-rte_ckeditor_image" target="_blank" rel="noopener">GitHub: netresearch/t3x-rte_ckeditor_image</a></p>',
 0, 100, 0, 0);
 

@@ -1,0 +1,42 @@
+# Netresearch Demo Site RTE Configuration
+# Extends Bootstrap Package with rte_ckeditor_image and cowriter plugins
+imports:
+    - { resource: "EXT:bootstrap_package/Configuration/RTE/Default.yaml" }
+    - { resource: "EXT:rte_ckeditor_image/Configuration/RTE/Plugin.yaml" }
+
+editor:
+    config:
+        importModules:
+            - { module: '@netresearch/t3_cowriter/cowriter', exports: ['Cowriter'] }
+
+        toolbar:
+            items:
+                - style
+                - heading
+                - '|'
+                - bold
+                - italic
+                - underline
+                - strikethrough
+                - subscript
+                - superscript
+                - softhyphen
+                - '|'
+                - insertimage
+                - link
+                - '|'
+                - alignment
+                - '|'
+                - bulletedList
+                - numberedList
+                - indent
+                - outdent
+                - '|'
+                - specialCharacters
+                - insertTable
+                - horizontalLine
+                - '|'
+                - removeFormat
+                - sourceEditing
+                - '|'
+                - cowriter
