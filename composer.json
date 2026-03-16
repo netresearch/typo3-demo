@@ -25,12 +25,27 @@
         "typo3/cms-lowlevel": "^14.1",
         "bk2k/bootstrap-package": "^16.0",
         "georgringer/news": "^14.0",
+        "netresearch/nr-landingpage": "@dev",
+        "netresearch/nr-llm": "^0.4 || ^0.5",
+        "netresearch/nr-passkeys-be": "^0.6",
+        "netresearch/nr-temporal-cache": "@dev",
+        "netresearch/nr-vault": "^0.4",
+        "netresearch/rte-ckeditor-image": "^13.8",
+        "netresearch/t3-cowriter": "^3.1",
         "netresearch/typo3-demo-site": "@dev"
     },
     "repositories": [
         {
             "type": "path",
             "url": "packages/*"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/netresearch/nr-landingpage.git"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/netresearch/t3x-nr-temporal-cache.git"
         }
     ],
     "config": {
