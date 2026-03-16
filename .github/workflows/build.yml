@@ -29,6 +29,7 @@ jobs:
       - uses: docker/bake-action@82490499d2e5613fcead7e128237ef0b0ea210f7 # v7.0.0
         env:
           GIT_SHA: ${{ github.sha }}
+          COMPOSER_AUTH: '{"github-oauth": {"github.com": "${{ secrets.GITHUB_TOKEN }}"}}'
         with:
           push: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
           set: |

@@ -14,9 +14,16 @@ variable "GIT_SHA" {
   default = ""
 }
 
+variable "COMPOSER_AUTH" {
+  default = ""
+}
+
 target "web" {
   context    = "."
   dockerfile = "docker/web/Dockerfile"
+  args = {
+    COMPOSER_AUTH = COMPOSER_AUTH
+  }
   tags       = GIT_SHA != "" ? [
     "${REGISTRY}/typo3-demo:${TAG}",
     "${REGISTRY}/typo3-demo:sha-${GIT_SHA}",
