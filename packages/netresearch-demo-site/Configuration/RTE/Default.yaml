@@ -1,5 +1,7 @@
 # Netresearch Demo Site RTE Configuration
-# Extends Bootstrap Package with rte_ckeditor_image and cowriter plugins
+# Extends Bootstrap Package with rte_ckeditor_image and cowriter plugins.
+# IMPORTANT: YAML arrays override (don't merge), so importModules must
+# list ALL modules from all imported presets plus our additions.
 imports:
     - { resource: "EXT:bootstrap_package/Configuration/RTE/Default.yaml" }
     - { resource: "EXT:rte_ckeditor_image/Configuration/RTE/Plugin.yaml" }
@@ -7,6 +9,15 @@ imports:
 editor:
     config:
         importModules:
+            # Bootstrap Package plugins (from EXT:bootstrap_package/Configuration/RTE/Default.yaml)
+            - { module: '@bk2k/bootstrap-package/rte_ckeditor/address-plugin.js', exports: ['BootstrapPackageAddress'] }
+            - { module: '@bk2k/bootstrap-package/rte_ckeditor/box-plugin.js', exports: ['BootstrapPackageBox'] }
+            - { module: '@bk2k/bootstrap-package/rte_ckeditor/table-plugin.js', exports: ['BootstrapPackageTablePlugin'] }
+            - { module: '@bk2k/bootstrap-package/rte_ckeditor/text-column-plugin.js', exports: ['BootstrapPackageTextColumn'] }
+            - { module: '@bk2k/bootstrap-package/rte_ckeditor/text-indent-plugin.js', exports: ['BootstrapPackageTextIndent'] }
+            # RTE CKEditor Image plugin (from EXT:rte_ckeditor_image/Configuration/RTE/Plugin.yaml)
+            - '@netresearch/rte-ckeditor-image/Plugins/typo3image.js'
+            # Cowriter plugin
             - { module: '@netresearch/t3_cowriter/cowriter', exports: ['Cowriter'] }
 
         toolbar:
