@@ -31,7 +31,7 @@
         "netresearch/nr-passkeys-fe": "@dev",
         "netresearch/nr-temporal-cache": "@dev",
         "netresearch/nr-vault": "^0.4",
-        "netresearch/rte-ckeditor-image": "dev-bugfix/skip-images-without-file-uid as 13.8.1",
+        "netresearch/rte-ckeditor-image": "dev-main as 13.8.1",
         "netresearch/t3-cowriter": "^3.1",
         "netresearch/typo3-demo-site": "@dev"
     },
