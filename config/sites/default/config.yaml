@@ -1,4 +1,4 @@
-base: /
+base: https://typo3-demo.netresearch.de/
 languages:
   - title: English
     enabled: true
