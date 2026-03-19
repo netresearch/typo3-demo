@@ -158,96 +158,48 @@
 
 <div class="login-showcase">
 
-    <div class="row g-3 g-lg-4">
+    <!-- Single card — felogin renders as a separate frame alongside via CSS grid -->
+    <div class="ls-card card shadow-sm ls-accent-teal">
+        <div class="card-body p-4">
 
-        <!-- ════════════════════════════════════════════════
-             ROW 1 LEFT — What are Passkeys?  (col-lg-7)
-             ════════════════════════════════════════════════ -->
-        <div class="col-lg-7">
-            <div class="ls-card card h-100 shadow-sm ls-accent-teal">
-                <div class="card-body p-4 d-flex flex-column">
-
-                    <div class="ls-section-label" style="color: var(--ls-teal);">About Passkeys</div>
-
-                    <div class="d-flex align-items-center gap-2 mb-2">
-                        <svg class="ls-icon" viewBox="0 0 16 16" fill="var(--ls-teal)"><path d="M8 0c-.69 0-1.843.265-2.928.56-1.11.3-2.229.655-2.887.87a1.54 1.54 0 0 0-1.044 1.262c-.596 4.477.787 7.795 2.465 9.99a11.777 11.777 0 0 0 2.517 2.453c.386.273.744.482 1.048.625.28.132.581.24.829.24s.548-.108.829-.24a7.159 7.159 0 0 0 1.048-.625 11.775 11.775 0 0 0 2.517-2.453c1.678-2.195 3.061-5.513 2.465-9.99a1.541 1.541 0 0 0-1.044-1.263 62.467 62.467 0 0 0-2.887-.87C9.843.266 8.69 0 8 0zm0 1c.468 0 1.58.25 2.642.537 1.07.29 2.16.64 2.795.848a.479.479 0 0 1 .328.39c.554 4.157-.726 7.19-2.253 9.188a10.725 10.725 0 0 1-2.287 2.233c-.346.244-.652.42-.893.533a2.124 2.124 0 0 1-.293.118 2.124 2.124 0 0 1-.293-.118 6.087 6.087 0 0 1-.893-.533 10.725 10.725 0 0 1-2.287-2.233C3.274 9.795 1.993 6.761 2.548 2.604a.479.479 0 0 1 .328-.39c.636-.209 1.724-.556 2.795-.848C6.742 1.083 7.856.834 8.325.834L8 1z"/></svg>
-                        <h5 class="mb-0" style="color: var(--ls-teal); font-weight: 700; font-size: 1.05rem;">
-                            {f:if(condition: data.info_heading, then: data.info_heading, else: 'What are Passkeys?')}
-                        </h5>
-                    </div>
-
-                    <p style="color: var(--ls-dark); font-size: 0.88rem; line-height: 1.6; margin-bottom: 1.1rem;">
-                        {f:if(condition: data.info_text, then: data.info_text, else: 'Passkeys replace passwords with biometric authentication — fingerprint, face recognition, or security keys. Phishing-resistant, faster, and more secure than passwords.')}
-                    </p>
-
-                    <h6 style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ls-dark); font-weight: 700; margin-bottom: 0.65rem;">Try it yourself</h6>
-
-                    <div class="mb-auto">
-                        <div class="ls-step">
-                            <span class="ls-number text-white" style="background: var(--ls-teal);">1</span>
-                            <p>Log in with <strong>demo / demo</strong> using the form below</p>
-                        </div>
-                        <div class="ls-step">
-                            <span class="ls-number text-white" style="background: var(--ls-teal);">2</span>
-                            <p>Register a passkey in the management panel that appears after login</p>
-                        </div>
-                        <div class="ls-step">
-                            <span class="ls-number text-white" style="background: var(--ls-teal);">3</span>
-                            <p>Log out and return to this page</p>
-                        </div>
-                        <div class="ls-step">
-                            <span class="ls-number text-white" style="background: var(--ls-orange);">4</span>
-                            <p>Use the <strong>Passkey</strong> tab — no password needed</p>
-                        </div>
-                    </div>
-
-                    <div class="d-flex gap-2 flex-wrap mt-3 pt-2" style="border-top: 1px solid rgba(0,0,0,0.06);">
-                        <span class="ls-badge" style="color: var(--ls-teal); border-color: rgba(47,153,164,0.3);">WebAuthn / FIDO2</span>
-                        <span class="ls-badge" style="color: var(--ls-dark); border-color: rgba(88,89,97,0.3);">TouchID &middot; FaceID</span>
-                        <span class="ls-badge" style="color: var(--ls-orange); border-color: rgba(255,77,0,0.3);">YubiKey</span>
-                        <span class="ls-badge" style="color: var(--ls-warm); border-color: rgba(29,96,105,0.3);">Windows Hello</span>
-                    </div>
-
-                </div>
+            <div class="d-flex align-items-center gap-2 mb-2">
+                <svg class="ls-icon" viewBox="0 0 16 16" fill="var(--ls-teal)"><path d="M8 0c-.69 0-1.843.265-2.928.56-1.11.3-2.229.655-2.887.87a1.54 1.54 0 0 0-1.044 1.262c-.596 4.477.787 7.795 2.465 9.99a11.777 11.777 0 0 0 2.517 2.453c.386.273.744.482 1.048.625.28.132.581.24.829.24s.548-.108.829-.24a7.159 7.159 0 0 0 1.048-.625 11.775 11.775 0 0 0 2.517-2.453c1.678-2.195 3.061-5.513 2.465-9.99a1.541 1.541 0 0 0-1.044-1.263 62.467 62.467 0 0 0-2.887-.87C9.843.266 8.69 0 8 0zm0 1c.468 0 1.58.25 2.642.537 1.07.29 2.16.64 2.795.848a.479.479 0 0 1 .328.39c.554 4.157-.726 7.19-2.253 9.188a10.725 10.725 0 0 1-2.287 2.233c-.346.244-.652.42-.893.533a2.124 2.124 0 0 1-.293.118 2.124 2.124 0 0 1-.293-.118 6.087 6.087 0 0 1-.893-.533 10.725 10.725 0 0 1-2.287-2.233C3.274 9.795 1.993 6.761 2.548 2.604a.479.479 0 0 1 .328-.39c.636-.209 1.724-.556 2.795-.848C6.742 1.083 7.856.834 8.325.834L8 1z"/></svg>
+                <h5 class="mb-0" style="color: var(--ls-teal); font-weight: 700; font-size: 1.05rem;">
+                    {f:if(condition: data.info_heading, then: data.info_heading, else: 'What are Passkeys?')}
+                </h5>
             </div>
-        </div>
 
-        <!-- ════════════════════════════════════════════════
-             ROW 1 RIGHT — Demo Access  (col-lg-5)
-             ════════════════════════════════════════════════ -->
-        <div class="col-lg-5">
-            <div class="ls-card card h-100 shadow-sm" style="background: linear-gradient(160deg, #f0f4f5 0%, #e8edef 50%, #f5f7f8 100%);">
-                <div class="card-body p-4 d-flex flex-column">
+            <p style="color: var(--ls-dark); font-size: 0.88rem; line-height: 1.6; margin-bottom: 1.1rem;">
+                {f:if(condition: data.info_text, then: data.info_text, else: 'Passkeys replace passwords with biometric authentication — fingerprint, face recognition, or security keys. Phishing-resistant, faster, and more secure than passwords.')}
+            </p>
 
-                    <div class="ls-section-label" style="color: #8b949e;">Credentials</div>
+            <h6 style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ls-dark); font-weight: 700; margin-bottom: 0.65rem;">Try it yourself</h6>
 
-                    <div class="d-flex align-items-center gap-2 mb-3">
-                        <svg class="ls-icon" viewBox="0 0 16 16" fill="var(--ls-dark)"><path d="M3.5 11.5a3.5 3.5 0 1 1 3.163-5H14L15.5 8 14 10l-1-1-1 1-1-1-1 1-1.337-1H6.663a3.5 3.5 0 0 1-3.163 2zM2.5 9a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/></svg>
-                        <h5 class="mb-0" style="color: var(--ls-dark); font-weight: 700; font-size: 1.05rem;">Demo Access</h5>
-                    </div>
-
-                    <p style="color: #6c757d; font-size: 0.84rem; line-height: 1.5;">Use these credentials to explore the passkey features:</p>
-
-                    <div class="mb-3">
-                        <label style="font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.08em; color: #8b949e; font-weight: 600;" class="d-block mb-1">Username</label>
-                        <span class="ls-credential">{f:if(condition: data.demo_username, then: data.demo_username, else: 'demo')}</span>
-                    </div>
-                    <div class="mb-3">
-                        <label style="font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.08em; color: #8b949e; font-weight: 600;" class="d-block mb-1">Password</label>
-                        <span class="ls-credential">{f:if(condition: data.demo_password, then: data.demo_password, else: 'demo')}</span>
-                    </div>
-
-                    <div class="mt-auto pt-2" style="border-top: 1px solid rgba(0,0,0,0.06);">
-                        <p style="font-size: 0.74rem; color: #8b949e; margin: 0; line-height: 1.5;">
-                            <svg width="14" height="14" viewBox="0 0 16 16" fill="#8b949e" style="vertical-align: -2px; margin-right: 3px;"><path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.399l-.442-.07.079-.398 2.283-.568zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/></svg>
-                            This is a shared demo account. Passkeys you register are tied to your device and session.
-                        </p>
-                    </div>
-
-                </div>
+            <div class="ls-step">
+                <span class="ls-number text-white" style="background: var(--ls-teal);">1</span>
+                <p>Log in with <span class="ls-credential" style="font-size: 0.84rem; padding: 0.15rem 0.5rem;">demo</span> / <span class="ls-credential" style="font-size: 0.84rem; padding: 0.15rem 0.5rem;">demo</span> using the login form</p>
             </div>
-        </div>
+            <div class="ls-step">
+                <span class="ls-number text-white" style="background: var(--ls-teal);">2</span>
+                <p>Register a passkey in the management panel that appears after login</p>
+            </div>
+            <div class="ls-step">
+                <span class="ls-number text-white" style="background: var(--ls-teal);">3</span>
+                <p>Log out and return to this page</p>
+            </div>
+            <div class="ls-step">
+                <span class="ls-number text-white" style="background: var(--ls-orange);">4</span>
+                <p>Use the <strong>Passkey</strong> tab — no password needed</p>
+            </div>
 
+            <div class="d-flex gap-2 flex-wrap mt-3 pt-2" style="border-top: 1px solid rgba(0,0,0,0.06);">
+                <span class="ls-badge" style="color: var(--ls-teal); border-color: rgba(47,153,164,0.3);">WebAuthn / FIDO2</span>
+                <span class="ls-badge" style="color: var(--ls-dark); border-color: rgba(88,89,97,0.3);">TouchID &middot; FaceID</span>
+                <span class="ls-badge" style="color: var(--ls-orange); border-color: rgba(255,77,0,0.3);">YubiKey</span>
+                <span class="ls-badge" style="color: var(--ls-warm); border-color: rgba(29,96,105,0.3);">Windows Hello</span>
+            </div>
+
+        </div>
     </div>
 
     <!-- ════════════════════════════════════════════════════
