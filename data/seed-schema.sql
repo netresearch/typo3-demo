@@ -51,3 +51,12 @@ CREATE TABLE IF NOT EXISTS tx_nrpasskeysfe_recovery_code (
     PRIMARY KEY (uid),
     KEY fe_user (fe_user)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Passkey management page (login-restricted, hidden from nav)
+-- fe_group=-2 means "show at any login" (any authenticated fe_user)
+INSERT IGNORE INTO pages (uid, pid, tstamp, crdate, sorting, title, slug, doktype, fe_group, is_siteroot, hidden, deleted, perms_userid, perms_groupid, perms_user, perms_group, perms_everybody, nav_hide)
+VALUES (110, 1, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 9300, 'My Passkeys', '/my-passkeys', 1, '-2', 0, 0, 0, 1, 1, 31, 27, 1, 1);
+
+-- Passkey management plugin on that page
+INSERT IGNORE INTO tt_content (uid, pid, tstamp, crdate, sorting, CType, header, header_layout, colPos, hidden, deleted)
+VALUES (444, 110, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 256, 'nrpasskeysfe_passkeymanagement', 'Manage Your Passkeys', 100, 0, 0, 0);

@@ -85,9 +85,8 @@ page {
     }
 }
 
-# nr_passkeys_fe: felogin template override for passkey login tab.
-# The extension has no site set yet, so include its TypoScript directly.
-plugin.tx_felogin_login.view.templateRootPaths.100 = EXT:nr_passkeys_fe/Resources/Private/Templates/Felogin/
+# nr_passkeys_fe: no site set yet, include its TypoScript directly.
+@import 'EXT:nr_passkeys_fe/Configuration/TypoScript/setup.typoscript'
 
 config {
     compressJs = 1

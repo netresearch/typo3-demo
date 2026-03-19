@@ -70,12 +70,74 @@
     flex-shrink: 0;
     opacity: 0.7;
 }
+.login-showcase .ls-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background 0.15s ease, transform 0.1s ease;
+}
+.login-showcase .ls-cta:hover {
+    transform: translateY(-1px);
+}
+.login-showcase .ls-cta-primary {
+    background: var(--ls-teal);
+    color: #fff;
+}
+.login-showcase .ls-cta-primary:hover {
+    background: var(--ls-warm);
+    color: #fff;
+}
+.login-showcase .ls-cta-outline {
+    background: transparent;
+    border: 1.5px solid var(--ls-teal);
+    color: var(--ls-teal);
+}
+.login-showcase .ls-cta-outline:hover {
+    background: rgba(47, 153, 164, 0.06);
+}
+.login-showcase .ls-logged-in-banner {
+    background: linear-gradient(135deg, rgba(47, 153, 164, 0.08), rgba(47, 153, 164, 0.02));
+    border: 1px solid rgba(47, 153, 164, 0.2);
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+}
 @media (min-width: 992px) {
     .login-showcase .row { min-height: 380px; }
+    .login-showcase .ls-arrow-desktop { display: inline; }
+    .login-showcase .ls-arrow-mobile { display: none; }
+}
+@media (max-width: 991.98px) {
+    .login-showcase .ls-arrow-desktop { display: none; }
+    .login-showcase .ls-arrow-mobile { display: inline; }
 }
 </style>
 
 <div class="login-showcase">
+
+    <!-- Logged-in state: show passkey registration CTA -->
+    <f:if condition="{TSFE.fe_user.user.uid}">
+        <f:then>
+            <div class="ls-logged-in-banner mb-3 d-flex flex-column flex-md-row align-items-md-center gap-3">
+                <div class="flex-grow-1">
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                        <svg width="20" height="20" viewBox="0 0 16 16" fill="var(--ls-teal)"><path fill-rule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/></svg>
+                        <strong style="color: var(--ls-dark); font-size: 0.95rem;">You're logged in — now try passkeys</strong>
+                    </div>
+                    <p style="color: #6c757d; font-size: 0.82rem; margin: 0;">Register a passkey to experience passwordless login. After registering, log out and use the <strong>Passkey</strong> tab to sign back in.</p>
+                </div>
+                <a href="/my-passkeys" class="ls-cta ls-cta-primary flex-shrink-0">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M5.338 1.59a61.44 61.44 0 0 0-2.837.856.481.481 0 0 0-.328.39c-.554 4.157.726 7.19 2.253 9.188a10.725 10.725 0 0 0 2.287 2.233c.346.244.652.42.893.533.12.057.218.095.293.118a.55.55 0 0 0 .101.025.615.615 0 0 0 .1-.025c.076-.023.174-.061.294-.118.24-.113.547-.29.893-.533a10.726 10.726 0 0 0 2.287-2.233c1.527-1.997 2.807-5.031 2.253-9.188a.48.48 0 0 0-.328-.39c-.651-.213-1.75-.56-2.837-.855C6.845 1.133 5.658 1 5.338 1.59z"/></svg>
+                    Register a Passkey
+                </a>
+            </div>
+        </f:then>
+    </f:if>
+
     <div class="row g-3 align-items-stretch">
 
         <!-- Column 1 — Demo Credentials -->
@@ -107,7 +169,7 @@
             </div>
         </div>
 
-        <!-- Column 2 — Passkey Explanation -->
+        <!-- Column 2 — Passkey Explanation + Flow -->
         <div class="col-lg-5">
             <div class="ls-card card h-100 shadow-sm" style="border-top: 3px solid var(--ls-teal);">
                 <div class="card-body p-4 d-flex flex-column">
@@ -124,11 +186,11 @@
                     <div class="mb-auto">
                         <div class="ls-step">
                             <span class="ls-number text-white" style="background: var(--ls-teal);">1</span>
-                            <p style="color: var(--ls-dark);">Log in with <strong>demo / demo</strong> using the form</p>
+                            <p style="color: var(--ls-dark);">Log in with <strong>demo / demo</strong> using the login form <span class="ls-arrow-desktop">&#8594;</span><span class="ls-arrow-mobile">&#8595;</span></p>
                         </div>
                         <div class="ls-step">
                             <span class="ls-number text-white" style="background: var(--ls-teal);">2</span>
-                            <p style="color: var(--ls-dark);">Register a passkey in your profile area</p>
+                            <p style="color: var(--ls-dark);"><a href="/my-passkeys" style="color: var(--ls-teal); font-weight: 600; text-decoration: none;">Register a passkey</a> on the management page</p>
                         </div>
                         <div class="ls-step">
                             <span class="ls-number text-white" style="background: var(--ls-teal);">3</span>
@@ -142,7 +204,7 @@
 
                     <div class="d-flex gap-2 flex-wrap mt-3 pt-2" style="border-top: 1px solid rgba(0,0,0,0.06);">
                         <span class="ls-badge" style="color: var(--ls-teal); border-color: rgba(47,153,164,0.3);">WebAuthn / FIDO2</span>
-                        <span class="ls-badge" style="color: var(--ls-dark); border-color: rgba(88,89,97,0.3);">TouchID · FaceID</span>
+                        <span class="ls-badge" style="color: var(--ls-dark); border-color: rgba(88,89,97,0.3);">TouchID &middot; FaceID</span>
                         <span class="ls-badge" style="color: var(--ls-orange); border-color: rgba(255,77,0,0.3);">YubiKey</span>
                         <span class="ls-badge" style="color: var(--ls-warm); border-color: rgba(29,96,105,0.3);">Windows Hello</span>
                     </div>
@@ -151,7 +213,7 @@
             </div>
         </div>
 
-        <!-- Column 3 — Login Form (felogin renders here via CSS flex from the next frame) -->
+        <!-- Column 3 — Sign In / Integration Info -->
         <div class="col-lg-4">
             <div class="ls-card card h-100 shadow-sm" style="border-top: 3px solid var(--ls-orange);">
                 <div class="card-body p-4 d-flex flex-column">
@@ -159,12 +221,29 @@
                         <svg class="ls-icon" viewBox="0 0 16 16" fill="var(--ls-orange)"><path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/><path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/></svg>
                         <h5 class="mb-0" style="color: var(--ls-orange); font-weight: 700; font-size: 1rem;">Sign In</h5>
                     </div>
-                    <p style="color: #6c757d; font-size: 0.82rem; margin-bottom: 1rem;">Choose the <strong>Password</strong> tab to log in with credentials, or the <strong>Passkey</strong> tab to authenticate with biometrics.</p>
-                    <div class="text-center py-4" style="color: #adb5bd; font-size: 0.8rem;">
-                        <svg width="40" height="40" viewBox="0 0 16 16" fill="#dee2e6" class="mb-2 d-block mx-auto"><path d="M2 2v12h12V2H2zm1 1h10v10H3V3z"/><path d="M5.5 5.5A.5.5 0 0 1 6 6v4a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zM8 5.5a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5z"/></svg>
-                        ↓ Login form below ↓
+
+                    <p style="color: #6c757d; font-size: 0.82rem; margin-bottom: 1rem;">The login form below uses standard <strong>felogin</strong> — the nr_passkeys_fe extension adds a <strong>Passkey</strong> tab automatically. No custom login form needed.</p>
+
+                    <div class="mb-3" style="background: rgba(255,77,0,0.04); border: 1px solid rgba(255,77,0,0.12); border-radius: 8px; padding: 0.75rem;">
+                        <p style="font-size: 0.78rem; color: var(--ls-dark); margin: 0; line-height: 1.5;">
+                            <strong style="color: var(--ls-orange);">For integrators:</strong> This demo uses the standard TYPO3 felogin plugin. The passkey tab, management UI, and enrollment nudges are all provided by <a href="/extensions/passkeys-fe/" style="color: var(--ls-teal); text-decoration: none; font-weight: 600;">nr_passkeys_fe</a> with zero template customization.
+                        </p>
                     </div>
-                    <div class="mt-auto pt-2 text-center" style="border-top: 1px solid rgba(0,0,0,0.06);">
+
+                    <div class="mt-auto d-flex flex-column gap-2">
+                        <div class="d-flex gap-2 flex-wrap">
+                            <a href="/extensions/passkeys-fe/" class="ls-cta ls-cta-outline" style="font-size: 0.75rem;">
+                                <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M1 2.828c.885-.37 2.154-.769 3.388-.893 1.33-.134 2.458.063 3.112.752v9.746c-.935-.53-2.12-.603-3.213-.493-1.18.12-2.37.461-3.287.811V2.828zm7.5-.141c.654-.689 1.782-.886 3.112-.752 1.234.124 2.503.523 3.388.893v9.923c-.918-.35-2.107-.692-3.287-.81-1.094-.111-2.278-.039-3.213.492V2.687zM8 1.783C7.015.936 5.587.81 4.287.94c-1.514.153-3.042.672-3.994 1.105A.5.5 0 0 0 0 2.5v11a.5.5 0 0 0 .707.455c.882-.4 2.303-.881 3.68-1.02 1.409-.142 2.59.087 3.223.877a.5.5 0 0 0 .78 0c.633-.79 1.814-1.019 3.222-.877 1.378.139 2.8.62 3.681 1.02A.5.5 0 0 0 16 13.5v-11a.5.5 0 0 0-.293-.455c-.952-.433-2.48-.952-3.994-1.105C10.413.809 8.985.936 8 1.783z"/></svg>
+                                Documentation
+                            </a>
+                            <a href="https://github.com/netresearch/t3x-nr-passkeys-fe" class="ls-cta ls-cta-outline" style="font-size: 0.75rem;">
+                                <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+                                GitHub
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="mt-2 pt-2" style="border-top: 1px solid rgba(0,0,0,0.06);">
                         <small style="color: #8b949e;">Powered by <a href="/extensions/passkeys-fe/" style="color: var(--ls-teal); text-decoration: none;">nr_passkeys_fe</a></small>
                     </div>
                 </div>

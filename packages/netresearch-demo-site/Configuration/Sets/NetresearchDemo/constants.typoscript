@@ -1,1 +1,5 @@
 # Netresearch Demo Site Constants
+
+# nr_passkeys_fe: page UIDs for passkey flow
+plugin.tx_nrpasskeysfe.settings.loginPageUid = 93
+plugin.tx_nrpasskeysfe.settings.managementPageUid = 110
