@@ -123,6 +123,31 @@ config {
     }
 [END]
 
+# Login page: 3-column layout (info cards + felogin form side-by-side on desktop)
+[traverse(page, "uid") == 93]
+    page.headerData {
+        201 = TEXT
+        201.value (
+            <style>
+            @media (min-width: 992px) {
+                .bp-page-content .section-default {
+                    display: flex;
+                    gap: 1.5rem;
+                    align-items: stretch;
+                }
+                .bp-page-content .section-default > .frame {
+                    flex: 1;
+                    margin-bottom: 0;
+                }
+                .bp-page-content .section-default > .frame-type-html {
+                    flex: 2;
+                }
+            }
+            </style>
+        )
+    }
+[END]
+
 #
 # Layout Demo: Colored grid boxes for Page Layout subpages (pid=66)
 # Replaces the old sys_template TypoScript that was removed during v11->v14 migration.
