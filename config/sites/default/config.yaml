@@ -1,4 +1,4 @@
-base: https://typo3-demo.netresearch.de/
+base: '%env(TYPO3_SITE_BASE)%'
 languages:
   - title: English
     enabled: true

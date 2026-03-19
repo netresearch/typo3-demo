@@ -25,6 +25,7 @@ services:
       MARIADB_PASSWORD: ${MARIADB_PASSWORD:-typo3}
       TYPO3_CONTEXT: ${TYPO3_CONTEXT:-Development/Docker}
       TYPO3_DOMAIN: ${TYPO3_DOMAIN:-localhost}
+      TYPO3_SITE_BASE: ${TYPO3_SITE_BASE:-/}
       TYPO3_ENCRYPTION_KEY: ${TYPO3_ENCRYPTION_KEY:-}
     volumes:
       - typo3-fileadmin:/var/www/public/fileadmin

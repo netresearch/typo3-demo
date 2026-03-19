@@ -26,7 +26,7 @@ jobs:
           host: ${{ secrets.HETZNER_SSH_HOST }}
           username: ${{ secrets.HETZNER_SSH_USER }}
           key: ${{ secrets.HETZNER_SSH_KEY }}
-          envs: TYPO3_DOMAIN,MARIADB_ROOT_PASSWORD,MARIADB_PASSWORD,TYPO3_ENCRYPTION_KEY
+          envs: TYPO3_DOMAIN,TYPO3_SITE_BASE,MARIADB_ROOT_PASSWORD,MARIADB_PASSWORD,TYPO3_ENCRYPTION_KEY
           script: |
             cd /opt/typo3-demo
             git pull --ff-only
@@ -34,6 +34,7 @@ jobs:
             printf '%s\n' \
               "COMPOSE_PROJECT_NAME=typo3-demo" \
               "TYPO3_DOMAIN=${TYPO3_DOMAIN}" \
+              "TYPO3_SITE_BASE=${TYPO3_SITE_BASE}" \
               "MARIADB_ROOT_PASSWORD=${MARIADB_ROOT_PASSWORD}" \
               "MARIADB_DATABASE=typo3" \
               "MARIADB_USER=typo3" \
@@ -45,6 +46,7 @@ jobs:
             make up
         env:
           TYPO3_DOMAIN: ${{ secrets.TYPO3_DOMAIN }}
+          TYPO3_SITE_BASE: ${{ secrets.TYPO3_SITE_BASE }}
           MARIADB_ROOT_PASSWORD: ${{ secrets.MARIADB_ROOT_PASSWORD }}
           MARIADB_PASSWORD: ${{ secrets.MARIADB_PASSWORD }}
           TYPO3_ENCRYPTION_KEY: ${{ secrets.TYPO3_ENCRYPTION_KEY }}
