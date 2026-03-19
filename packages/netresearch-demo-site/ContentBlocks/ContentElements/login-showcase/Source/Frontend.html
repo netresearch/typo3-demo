@@ -90,11 +90,11 @@
 
                     <div class="mb-3">
                         <label style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: #8b949e; font-weight: 600;" class="d-block mb-1">Username</label>
-                        <span class="ls-credential d-inline-block">{cb:data(identifier: 'demo_username') -> f:format.htmlspecialchars()}</span>
+                        <span class="ls-credential d-inline-block">{data.demo_username}</span>
                     </div>
                     <div class="mb-3">
                         <label style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: #8b949e; font-weight: 600;" class="d-block mb-1">Password</label>
-                        <span class="ls-credential d-inline-block">{cb:data(identifier: 'demo_password') -> f:format.htmlspecialchars()}</span>
+                        <span class="ls-credential d-inline-block">{data.demo_password}</span>
                     </div>
 
                     <div class="mt-auto pt-2" style="border-top: 1px solid rgba(0,0,0,0.06);">
@@ -112,10 +112,10 @@
 
                     <div class="d-flex align-items-center gap-2 mb-2">
                         <svg class="ls-icon" viewBox="0 0 16 16" fill="var(--ls-teal)"><path d="M5.338 1.59a61.44 61.44 0 0 0-2.837.856.481.481 0 0 0-.328.39c-.554 4.157.726 7.19 2.253 9.188a10.725 10.725 0 0 0 2.287 2.233c.346.244.652.42.893.533.12.057.218.095.293.118a.55.55 0 0 0 .101.025.615.615 0 0 0 .1-.025c.076-.023.174-.061.294-.118.24-.113.547-.29.893-.533a10.726 10.726 0 0 0 2.287-2.233c1.527-1.997 2.807-5.031 2.253-9.188a.48.48 0 0 0-.328-.39c-.651-.213-1.75-.56-2.837-.855C6.845 1.133 5.658 1 5.338 1.59zM8 4.5a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5z"/><path d="M8 0c-.69 0-1.843.265-2.928.56-1.11.3-2.229.655-2.887.87a1.54 1.54 0 0 0-1.044 1.262c-.596 4.477.787 7.795 2.465 9.99a11.777 11.777 0 0 0 2.517 2.453c.386.273.744.482 1.048.625.28.132.581.24.829.24s.548-.108.829-.24a7.159 7.159 0 0 0 1.048-.625 11.775 11.775 0 0 0 2.517-2.453c1.678-2.195 3.061-5.513 2.465-9.99a1.541 1.541 0 0 0-1.044-1.263 62.467 62.467 0 0 0-2.887-.87C9.843.266 8.69 0 8 0zm0 1c.468 0 1.58.25 2.642.537 1.07.29 2.16.64 2.795.848a.479.479 0 0 1 .328.39c.554 4.157-.726 7.19-2.253 9.188a10.725 10.725 0 0 1-2.287 2.233c-.346.244-.652.42-.893.533a2.124 2.124 0 0 1-.293.118 2.124 2.124 0 0 1-.293-.118 6.087 6.087 0 0 1-.893-.533 10.725 10.725 0 0 1-2.287-2.233C3.274 9.795 1.993 6.761 2.548 2.604a.479.479 0 0 1 .328-.39c.636-.209 1.724-.556 2.795-.848C6.742 1.083 7.856.834 8.325.834L8 1z"/></svg>
-                        <h5 class="mb-0" style="color: var(--ls-teal); font-weight: 700; font-size: 1rem;">{cb:data(identifier: 'info_heading') -> f:format.htmlspecialchars()}</h5>
+                        <h5 class="mb-0" style="color: var(--ls-teal); font-weight: 700; font-size: 1rem;">{data.info_heading}</h5>
                     </div>
 
-                    <p style="color: #6c757d; font-size: 0.85rem; line-height: 1.55; margin-bottom: 1rem;">{cb:data(identifier: 'info_text') -> f:format.htmlspecialchars()}</p>
+                    <p style="color: #6c757d; font-size: 0.85rem; line-height: 1.55; margin-bottom: 1rem;">{data.info_text}</p>
 
                     <h6 style="font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ls-dark); font-weight: 700; margin-bottom: 0.7rem;">Try it yourself</h6>
 
