@@ -2,13 +2,27 @@
 # Extends bootstrap_package configuration
 
 # Content Blocks v2 + Bootstrap Package bridge:
-# lib.contentBlock is a bare FLUIDTEMPLATE without BS Package frame wrapping.
-# Copy BS Package's layout/partial paths and settings so Content Block templates
-# can use <f:layout/> and <f:section name="Main"> for proper frame rendering.
+# lib.contentBlock is a bare FLUIDTEMPLATE. BS Package's lib.contentElement adds
+# layout/partial paths, data processors (frame attributes, background images),
+# settings (responsive images, lightbox), and variables (backendlayout).
+# Without these, CB frames render with missing/incorrect attributes.
 lib.contentBlock {
+    # Layout + partials (includes BS Package's Default.html with <bk2k:frame>)
     layoutRootPaths.0 < lib.contentElement.layoutRootPaths.0
     partialRootPaths.0 < lib.contentElement.partialRootPaths.0
+
+    # Settings (responsive images, lightbox, media popup config)
     settings < lib.contentElement.settings
+
+    # Data processors (frame attributes, background image, flex form)
+    dataProcessing {
+        1509614342 < lib.contentElement.dataProcessing.1509614342
+        1532626753 < lib.contentElement.dataProcessing.1532626753
+        1682424577 < lib.contentElement.dataProcessing.1682424577
+    }
+
+    # Variables (backendlayout for responsive image variant resolution)
+    variables < lib.contentElement.variables
 }
 
 page {
@@ -132,28 +146,12 @@ config {
     }
 [END]
 
-# Login page: 2-row layout — showcase top, felogin + passkey management bottom
+# Login page: use BS Package 2-column 50/50 layout (no CSS grid hacks)
 [traverse(page, "uid") == 93]
     page.headerData {
         201 = TEXT
         201.value (
-            <style>
-            @media (min-width: 992px) {
-                .bp-page-content .section-default {
-                    display: grid;
-                    grid-template-columns: 1fr 1fr;
-                    gap: 1.5rem;
-                    align-items: start;
-                }
-                .bp-page-content .section-default > .frame {
-                    margin-bottom: 0;
-                }
-                /* passkey management (3rd element, logged-in only): full width below */
-                .bp-page-content .section-default > .frame:nth-child(3) {
-                    grid-column: 1 / -1;
-                }
-            }
-            </style>
+            <style></style>
         )
     }
 [END]
