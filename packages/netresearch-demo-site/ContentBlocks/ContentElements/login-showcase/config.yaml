@@ -1,6 +1,6 @@
 name: netresearch/login-showcase
 title: Login Showcase
-description: Three-column login page with demo credentials, passkey explanation, and embedded login form.
+description: 2x2 grid login page with passkey explanation, demo credentials, and contextual info panel.
 group: common
 prefixFields: true
 fields:

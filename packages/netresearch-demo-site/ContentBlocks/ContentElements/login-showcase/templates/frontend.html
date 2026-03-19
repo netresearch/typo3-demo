@@ -9,81 +9,116 @@
 <f:section name="Main">
 
 <style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@500&display=swap');
+
 .login-showcase {
     --ls-teal: #2F99A4;
     --ls-dark: #585961;
     --ls-orange: #FF4D00;
     --ls-warm: #1d6069;
-    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    --ls-bg-subtle: #f6f8f9;
+    font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
 }
+
+/* ── Card base ────────────────────────────────────────── */
 .login-showcase .ls-card {
-    border: none;
-    border-radius: 12px;
+    border: 1px solid rgba(0,0,0,0.06);
+    border-radius: 14px;
     overflow: hidden;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition: transform 0.22s ease, box-shadow 0.22s ease;
+    background: #fff;
 }
 .login-showcase .ls-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 36px rgba(0,0,0,0.1);
 }
+
+/* ── Section label ────────────────────────────────────── */
+.login-showcase .ls-section-label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+}
+
+/* ── Step indicators ──────────────────────────────────── */
 .login-showcase .ls-number {
-    width: 28px;
-    height: 28px;
+    width: 26px;
+    height: 26px;
     border-radius: 50%;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     font-weight: 700;
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     flex-shrink: 0;
-}
-.login-showcase .ls-credential {
-    font-family: 'SF Mono', 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
-    font-size: 1.1rem;
-    letter-spacing: 0.05em;
-    background: rgba(47, 153, 164, 0.08);
-    border: 1px solid rgba(47, 153, 164, 0.2);
-    padding: 0.35rem 0.9rem;
-    border-radius: 6px;
-    color: var(--ls-dark);
-}
-.login-showcase .ls-badge {
-    font-size: 0.68rem;
-    font-weight: 600;
-    letter-spacing: 0.04em;
-    padding: 0.3rem 0.6rem;
-    border-radius: 20px;
-    border: 1px solid;
-    background: transparent;
+    line-height: 1;
 }
 .login-showcase .ls-step {
     display: flex;
-    gap: 0.65rem;
+    gap: 0.6rem;
     align-items: flex-start;
-    margin-bottom: 0.6rem;
+    margin-bottom: 0.55rem;
 }
 .login-showcase .ls-step:last-child { margin-bottom: 0; }
-.login-showcase .ls-step p { margin: 0; font-size: 0.85rem; line-height: 1.4; }
+.login-showcase .ls-step p {
+    margin: 0;
+    font-size: 0.84rem;
+    line-height: 1.45;
+    color: var(--ls-dark);
+}
+
+/* ── Credential mono ──────────────────────────────────── */
+.login-showcase .ls-credential {
+    font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+    font-size: 1.05rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    background: rgba(47, 153, 164, 0.07);
+    border: 1px solid rgba(47, 153, 164, 0.18);
+    padding: 0.3rem 0.85rem;
+    border-radius: 6px;
+    color: var(--ls-dark);
+    display: inline-block;
+}
+
+/* ── Badges ───────────────────────────────────────────── */
+.login-showcase .ls-badge {
+    font-size: 0.66rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    padding: 0.25rem 0.55rem;
+    border-radius: 20px;
+    border: 1px solid;
+    background: transparent;
+    white-space: nowrap;
+}
+
+/* ── Icons ────────────────────────────────────────────── */
 .login-showcase .ls-icon {
     width: 20px;
     height: 20px;
     flex-shrink: 0;
-    opacity: 0.7;
+    opacity: 0.75;
 }
+
+/* ── CTAs ─────────────────────────────────────────────── */
 .login-showcase .ls-cta {
     display: inline-flex;
     align-items: center;
     gap: 0.4rem;
     padding: 0.5rem 1rem;
     border-radius: 8px;
-    font-size: 0.82rem;
+    font-size: 0.8rem;
     font-weight: 600;
     text-decoration: none;
-    transition: background 0.15s ease, transform 0.1s ease;
+    transition: background 0.15s ease, transform 0.12s ease;
+    border: none;
+    cursor: pointer;
 }
-.login-showcase .ls-cta:hover {
-    transform: translateY(-1px);
-}
+.login-showcase .ls-cta:hover { transform: translateY(-1px); }
+
 .login-showcase .ls-cta-primary {
     background: var(--ls-teal);
     color: #fff;
@@ -100,14 +135,25 @@
 .login-showcase .ls-cta-outline:hover {
     background: rgba(47, 153, 164, 0.06);
 }
+
+/* ── Logged-in banner ─────────────────────────────────── */
 .login-showcase .ls-logged-in-banner {
     background: linear-gradient(135deg, rgba(47, 153, 164, 0.08), rgba(47, 153, 164, 0.02));
     border: 1px solid rgba(47, 153, 164, 0.2);
     border-radius: 10px;
     padding: 1rem 1.25rem;
 }
+
+/* ── Integrator note ──────────────────────────────────── */
+.login-showcase .ls-integrator-note {
+    background: rgba(255,77,0,0.03);
+    border: 1px solid rgba(255,77,0,0.12);
+    border-radius: 8px;
+    padding: 0.75rem;
+}
+
+/* ── Arrow direction indicators ───────────────────────── */
 @media (min-width: 992px) {
-    .login-showcase .row { min-height: 380px; }
     .login-showcase .ls-arrow-desktop { display: inline; }
     .login-showcase .ls-arrow-mobile { display: none; }
 }
@@ -115,90 +161,54 @@
     .login-showcase .ls-arrow-desktop { display: none; }
     .login-showcase .ls-arrow-mobile { display: inline; }
 }
+
+/* ── Accent lines on featured cards ───────────────────── */
+.login-showcase .ls-accent-teal { border-top: 3px solid var(--ls-teal); }
+.login-showcase .ls-accent-orange { border-top: 3px solid var(--ls-orange); }
 </style>
 
 <div class="login-showcase">
 
-    <!-- Logged-in state: show passkey registration CTA -->
-    <f:if condition="{TSFE.fe_user.user.uid}">
-        <f:then>
-            <div class="ls-logged-in-banner mb-3 d-flex flex-column flex-md-row align-items-md-center gap-3">
-                <div class="flex-grow-1">
-                    <div class="d-flex align-items-center gap-2 mb-1">
-                        <svg width="20" height="20" viewBox="0 0 16 16" fill="var(--ls-teal)"><path fill-rule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/></svg>
-                        <strong style="color: var(--ls-dark); font-size: 0.95rem;">You're logged in — now try passkeys</strong>
-                    </div>
-                    <p style="color: #6c757d; font-size: 0.82rem; margin: 0;">Register a passkey to experience passwordless login. After registering, log out and use the <strong>Passkey</strong> tab to sign back in.</p>
-                </div>
-                <a href="/my-passkeys" class="ls-cta ls-cta-primary flex-shrink-0">
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M5.338 1.59a61.44 61.44 0 0 0-2.837.856.481.481 0 0 0-.328.39c-.554 4.157.726 7.19 2.253 9.188a10.725 10.725 0 0 0 2.287 2.233c.346.244.652.42.893.533.12.057.218.095.293.118a.55.55 0 0 0 .101.025.615.615 0 0 0 .1-.025c.076-.023.174-.061.294-.118.24-.113.547-.29.893-.533a10.726 10.726 0 0 0 2.287-2.233c1.527-1.997 2.807-5.031 2.253-9.188a.48.48 0 0 0-.328-.39c-.651-.213-1.75-.56-2.837-.855C6.845 1.133 5.658 1 5.338 1.59z"/></svg>
-                    Register a Passkey
-                </a>
-            </div>
-        </f:then>
-    </f:if>
+    <div class="row g-3 g-lg-4">
 
-    <div class="row g-3 align-items-stretch">
-
-        <!-- Column 1 — Demo Credentials -->
-        <div class="col-lg-3">
-            <div class="ls-card card h-100 shadow-sm" style="background: linear-gradient(160deg, #f0f4f5 0%, #e8edef 50%, #f5f7f8 100%);">
+        <!-- ════════════════════════════════════════════════
+             ROW 1 LEFT — What are Passkeys?  (col-lg-7)
+             ════════════════════════════════════════════════ -->
+        <div class="col-lg-7">
+            <div class="ls-card card h-100 shadow-sm ls-accent-teal">
                 <div class="card-body p-4 d-flex flex-column">
 
-                    <div class="d-flex align-items-center gap-2 mb-3">
-                        <svg class="ls-icon" viewBox="0 0 16 16" fill="var(--ls-dark)"><path d="M3.5 11.5a3.5 3.5 0 1 1 3.163-5H14L15.5 8 14 10l-1-1-1 1-1-1-1 1-1.337-1H6.663a3.5 3.5 0 0 1-3.163 2zM2.5 9a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/></svg>
-                        <h5 class="mb-0" style="color: var(--ls-dark); font-weight: 700; font-size: 1rem;">Demo Access</h5>
-                    </div>
-
-                    <p style="color: #6c757d; font-size: 0.82rem; line-height: 1.5;">Use these credentials to explore the passkey features:</p>
-
-                    <div class="mb-3">
-                        <label style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: #8b949e; font-weight: 600;" class="d-block mb-1">Username</label>
-                        <span class="ls-credential d-inline-block">{f:if(condition: data.demo_username, then: data.demo_username, else: 'demo')}</span>
-                    </div>
-                    <div class="mb-3">
-                        <label style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: #8b949e; font-weight: 600;" class="d-block mb-1">Password</label>
-                        <span class="ls-credential d-inline-block">{f:if(condition: data.demo_password, then: data.demo_password, else: 'demo')}</span>
-                    </div>
-
-                    <div class="mt-auto pt-2" style="border-top: 1px solid rgba(0,0,0,0.06);">
-                        <p style="font-size: 0.72rem; color: #8b949e; margin: 0;">Demo data resets periodically. Your registered passkeys persist for the session.</p>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-
-        <!-- Column 2 — Passkey Explanation + Flow -->
-        <div class="col-lg-5">
-            <div class="ls-card card h-100 shadow-sm" style="border-top: 3px solid var(--ls-teal);">
-                <div class="card-body p-4 d-flex flex-column">
+                    <div class="ls-section-label" style="color: var(--ls-teal);">About Passkeys</div>
 
                     <div class="d-flex align-items-center gap-2 mb-2">
-                        <svg class="ls-icon" viewBox="0 0 16 16" fill="var(--ls-teal)"><path d="M5.338 1.59a61.44 61.44 0 0 0-2.837.856.481.481 0 0 0-.328.39c-.554 4.157.726 7.19 2.253 9.188a10.725 10.725 0 0 0 2.287 2.233c.346.244.652.42.893.533.12.057.218.095.293.118a.55.55 0 0 0 .101.025.615.615 0 0 0 .1-.025c.076-.023.174-.061.294-.118.24-.113.547-.29.893-.533a10.726 10.726 0 0 0 2.287-2.233c1.527-1.997 2.807-5.031 2.253-9.188a.48.48 0 0 0-.328-.39c-.651-.213-1.75-.56-2.837-.855C6.845 1.133 5.658 1 5.338 1.59zM8 4.5a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5z"/><path d="M8 0c-.69 0-1.843.265-2.928.56-1.11.3-2.229.655-2.887.87a1.54 1.54 0 0 0-1.044 1.262c-.596 4.477.787 7.795 2.465 9.99a11.777 11.777 0 0 0 2.517 2.453c.386.273.744.482 1.048.625.28.132.581.24.829.24s.548-.108.829-.24a7.159 7.159 0 0 0 1.048-.625 11.775 11.775 0 0 0 2.517-2.453c1.678-2.195 3.061-5.513 2.465-9.99a1.541 1.541 0 0 0-1.044-1.263 62.467 62.467 0 0 0-2.887-.87C9.843.266 8.69 0 8 0zm0 1c.468 0 1.58.25 2.642.537 1.07.29 2.16.64 2.795.848a.479.479 0 0 1 .328.39c.554 4.157-.726 7.19-2.253 9.188a10.725 10.725 0 0 1-2.287 2.233c-.346.244-.652.42-.893.533a2.124 2.124 0 0 1-.293.118 2.124 2.124 0 0 1-.293-.118 6.087 6.087 0 0 1-.893-.533 10.725 10.725 0 0 1-2.287-2.233C3.274 9.795 1.993 6.761 2.548 2.604a.479.479 0 0 1 .328-.39c.636-.209 1.724-.556 2.795-.848C6.742 1.083 7.856.834 8.325.834L8 1z"/></svg>
-                        <h5 class="mb-0" style="color: var(--ls-teal); font-weight: 700; font-size: 1rem;">{f:if(condition: data.info_heading, then: data.info_heading, else: 'What are Passkeys?')}</h5>
+                        <svg class="ls-icon" viewBox="0 0 16 16" fill="var(--ls-teal)"><path d="M8 0c-.69 0-1.843.265-2.928.56-1.11.3-2.229.655-2.887.87a1.54 1.54 0 0 0-1.044 1.262c-.596 4.477.787 7.795 2.465 9.99a11.777 11.777 0 0 0 2.517 2.453c.386.273.744.482 1.048.625.28.132.581.24.829.24s.548-.108.829-.24a7.159 7.159 0 0 0 1.048-.625 11.775 11.775 0 0 0 2.517-2.453c1.678-2.195 3.061-5.513 2.465-9.99a1.541 1.541 0 0 0-1.044-1.263 62.467 62.467 0 0 0-2.887-.87C9.843.266 8.69 0 8 0zm0 1c.468 0 1.58.25 2.642.537 1.07.29 2.16.64 2.795.848a.479.479 0 0 1 .328.39c.554 4.157-.726 7.19-2.253 9.188a10.725 10.725 0 0 1-2.287 2.233c-.346.244-.652.42-.893.533a2.124 2.124 0 0 1-.293.118 2.124 2.124 0 0 1-.293-.118 6.087 6.087 0 0 1-.893-.533 10.725 10.725 0 0 1-2.287-2.233C3.274 9.795 1.993 6.761 2.548 2.604a.479.479 0 0 1 .328-.39c.636-.209 1.724-.556 2.795-.848C6.742 1.083 7.856.834 8.325.834L8 1z"/></svg>
+                        <h5 class="mb-0" style="color: var(--ls-teal); font-weight: 700; font-size: 1.05rem;">
+                            {f:if(condition: data.info_heading, then: data.info_heading, else: 'What are Passkeys?')}
+                        </h5>
                     </div>
 
-                    <p style="color: #6c757d; font-size: 0.85rem; line-height: 1.55; margin-bottom: 1rem;">{f:if(condition: data.info_text, then: data.info_text, else: 'Passkeys replace passwords with biometric authentication — fingerprint, face recognition, or security keys. Phishing-resistant, faster, and more secure than passwords.')}</p>
+                    <p style="color: var(--ls-dark); font-size: 0.88rem; line-height: 1.6; margin-bottom: 1.1rem;">
+                        {f:if(condition: data.info_text, then: data.info_text, else: 'Passkeys replace passwords with biometric authentication — fingerprint, face recognition, or security keys. Phishing-resistant, faster, and more secure than passwords.')}
+                    </p>
 
-                    <h6 style="font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ls-dark); font-weight: 700; margin-bottom: 0.7rem;">Try it yourself</h6>
+                    <h6 style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ls-dark); font-weight: 700; margin-bottom: 0.65rem;">Try it yourself</h6>
 
                     <div class="mb-auto">
                         <div class="ls-step">
                             <span class="ls-number text-white" style="background: var(--ls-teal);">1</span>
-                            <p style="color: var(--ls-dark);">Log in with <strong>demo / demo</strong> using the login form <span class="ls-arrow-desktop">&#8594;</span><span class="ls-arrow-mobile">&#8595;</span></p>
+                            <p>Log in with <strong>demo / demo</strong> using the form <span class="ls-arrow-desktop">below</span><span class="ls-arrow-mobile">below</span></p>
                         </div>
                         <div class="ls-step">
                             <span class="ls-number text-white" style="background: var(--ls-teal);">2</span>
-                            <p style="color: var(--ls-dark);"><a href="/my-passkeys" style="color: var(--ls-teal); font-weight: 600; text-decoration: none;">Register a passkey</a> on the management page</p>
+                            <p>Register a passkey in the management panel that appears after login</p>
                         </div>
                         <div class="ls-step">
                             <span class="ls-number text-white" style="background: var(--ls-teal);">3</span>
-                            <p style="color: var(--ls-dark);">Log out and return to this page</p>
+                            <p>Log out and return to this page</p>
                         </div>
                         <div class="ls-step">
                             <span class="ls-number text-white" style="background: var(--ls-orange);">4</span>
-                            <p style="color: var(--ls-dark);">Use the <strong>Passkey</strong> tab — no password needed</p>
+                            <p>Use the <strong>Passkey</strong> tab — no password needed</p>
                         </div>
                     </div>
 
@@ -213,42 +223,127 @@
             </div>
         </div>
 
-        <!-- Column 3 — Sign In / Integration Info -->
-        <div class="col-lg-4">
-            <div class="ls-card card h-100 shadow-sm" style="border-top: 3px solid var(--ls-orange);">
+        <!-- ════════════════════════════════════════════════
+             ROW 1 RIGHT — Demo Access  (col-lg-5)
+             ════════════════════════════════════════════════ -->
+        <div class="col-lg-5">
+            <div class="ls-card card h-100 shadow-sm" style="background: linear-gradient(160deg, #f0f4f5 0%, #e8edef 50%, #f5f7f8 100%);">
                 <div class="card-body p-4 d-flex flex-column">
+
+                    <div class="ls-section-label" style="color: #8b949e;">Credentials</div>
+
                     <div class="d-flex align-items-center gap-2 mb-3">
-                        <svg class="ls-icon" viewBox="0 0 16 16" fill="var(--ls-orange)"><path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/><path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/></svg>
-                        <h5 class="mb-0" style="color: var(--ls-orange); font-weight: 700; font-size: 1rem;">Sign In</h5>
+                        <svg class="ls-icon" viewBox="0 0 16 16" fill="var(--ls-dark)"><path d="M3.5 11.5a3.5 3.5 0 1 1 3.163-5H14L15.5 8 14 10l-1-1-1 1-1-1-1 1-1.337-1H6.663a3.5 3.5 0 0 1-3.163 2zM2.5 9a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/></svg>
+                        <h5 class="mb-0" style="color: var(--ls-dark); font-weight: 700; font-size: 1.05rem;">Demo Access</h5>
                     </div>
 
-                    <p style="color: #6c757d; font-size: 0.82rem; margin-bottom: 1rem;">The login form below uses standard <strong>felogin</strong> — the nr_passkeys_fe extension adds a <strong>Passkey</strong> tab automatically. No custom login form needed.</p>
+                    <p style="color: #6c757d; font-size: 0.84rem; line-height: 1.5;">Use these credentials to explore the passkey features:</p>
 
-                    <div class="mb-3" style="background: rgba(255,77,0,0.04); border: 1px solid rgba(255,77,0,0.12); border-radius: 8px; padding: 0.75rem;">
-                        <p style="font-size: 0.78rem; color: var(--ls-dark); margin: 0; line-height: 1.5;">
-                            <strong style="color: var(--ls-orange);">For integrators:</strong> This demo uses the standard TYPO3 felogin plugin. The passkey tab, management UI, and enrollment nudges are all provided by <a href="/extensions/passkeys-fe/" style="color: var(--ls-teal); text-decoration: none; font-weight: 600;">nr_passkeys_fe</a> with zero template customization.
+                    <div class="mb-3">
+                        <label style="font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.08em; color: #8b949e; font-weight: 600;" class="d-block mb-1">Username</label>
+                        <span class="ls-credential">{f:if(condition: data.demo_username, then: data.demo_username, else: 'demo')}</span>
+                    </div>
+                    <div class="mb-3">
+                        <label style="font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.08em; color: #8b949e; font-weight: 600;" class="d-block mb-1">Password</label>
+                        <span class="ls-credential">{f:if(condition: data.demo_password, then: data.demo_password, else: 'demo')}</span>
+                    </div>
+
+                    <div class="mt-auto pt-2" style="border-top: 1px solid rgba(0,0,0,0.06);">
+                        <p style="font-size: 0.74rem; color: #8b949e; margin: 0; line-height: 1.5;">
+                            <svg width="14" height="14" viewBox="0 0 16 16" fill="#8b949e" style="vertical-align: -2px; margin-right: 3px;"><path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.399l-.442-.07.079-.398 2.283-.568zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/></svg>
+                            This is a shared demo account. Passkeys you register are tied to your device and session.
                         </p>
                     </div>
 
-                    <div class="mt-auto d-flex flex-column gap-2">
-                        <div class="d-flex gap-2 flex-wrap">
-                            <a href="/extensions/passkeys-fe/" class="ls-cta ls-cta-outline" style="font-size: 0.75rem;">
-                                <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M1 2.828c.885-.37 2.154-.769 3.388-.893 1.33-.134 2.458.063 3.112.752v9.746c-.935-.53-2.12-.603-3.213-.493-1.18.12-2.37.461-3.287.811V2.828zm7.5-.141c.654-.689 1.782-.886 3.112-.752 1.234.124 2.503.523 3.388.893v9.923c-.918-.35-2.107-.692-3.287-.81-1.094-.111-2.278-.039-3.213.492V2.687zM8 1.783C7.015.936 5.587.81 4.287.94c-1.514.153-3.042.672-3.994 1.105A.5.5 0 0 0 0 2.5v11a.5.5 0 0 0 .707.455c.882-.4 2.303-.881 3.68-1.02 1.409-.142 2.59.087 3.223.877a.5.5 0 0 0 .78 0c.633-.79 1.814-1.019 3.222-.877 1.378.139 2.8.62 3.681 1.02A.5.5 0 0 0 16 13.5v-11a.5.5 0 0 0-.293-.455c-.952-.433-2.48-.952-3.994-1.105C10.413.809 8.985.936 8 1.783z"/></svg>
-                                Documentation
-                            </a>
-                            <a href="https://github.com/netresearch/t3x-nr-passkeys-fe" class="ls-cta ls-cta-outline" style="font-size: 0.75rem;">
-                                <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
-                                GitHub
-                            </a>
-                        </div>
-                    </div>
-
-                    <div class="mt-2 pt-2" style="border-top: 1px solid rgba(0,0,0,0.06);">
-                        <small style="color: #8b949e;">Powered by <a href="/extensions/passkeys-fe/" style="color: var(--ls-teal); text-decoration: none;">nr_passkeys_fe</a></small>
-                    </div>
                 </div>
             </div>
         </div>
+
+        <!-- ════════════════════════════════════════════════
+             ROW 2 LEFT — Login form placeholder  (col-lg-7)
+             The felogin plugin renders as a separate CE below.
+             This column is intentionally left empty — the
+             TypoScript flex layout places the felogin frame here.
+             ════════════════════════════════════════════════ -->
+
+        <!-- ════════════════════════════════════════════════
+             ROW 2 RIGHT — For Integrators / Passkey Mgmt  (col-lg-5)
+             ════════════════════════════════════════════════ -->
+        <f:if condition="{TSFE.fe_user.user.uid}">
+            <f:then>
+                <!-- Logged in: show passkey management CTA -->
+                <div class="col-lg-5 ms-lg-auto">
+                    <div class="ls-card card h-100 shadow-sm ls-accent-teal">
+                        <div class="card-body p-4 d-flex flex-column">
+
+                            <div class="ls-section-label" style="color: var(--ls-teal);">Your Passkeys</div>
+
+                            <div class="d-flex align-items-center gap-2 mb-2">
+                                <svg class="ls-icon" viewBox="0 0 16 16" fill="var(--ls-teal)"><path fill-rule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/></svg>
+                                <h5 class="mb-0" style="color: var(--ls-teal); font-weight: 700; font-size: 1.05rem;">
+                                    You're logged in
+                                </h5>
+                            </div>
+
+                            <p style="color: var(--ls-dark); font-size: 0.84rem; line-height: 1.55; margin-bottom: 1rem;">
+                                Register a passkey to experience passwordless login. After registering, log out and use the <strong>Passkey</strong> tab to sign back in.
+                            </p>
+
+                            <a href="/my-passkeys" class="ls-cta ls-cta-primary mb-3">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M5.338 1.59a61.44 61.44 0 0 0-2.837.856.481.481 0 0 0-.328.39c-.554 4.157.726 7.19 2.253 9.188a10.725 10.725 0 0 0 2.287 2.233c.346.244.652.42.893.533.12.057.218.095.293.118a.55.55 0 0 0 .101.025.615.615 0 0 0 .1-.025c.076-.023.174-.061.294-.118.24-.113.547-.29.893-.533a10.726 10.726 0 0 0 2.287-2.233c1.527-1.997 2.807-5.031 2.253-9.188a.48.48 0 0 0-.328-.39c-.651-.213-1.75-.56-2.837-.855C6.845 1.133 5.658 1 5.338 1.59z"/></svg>
+                                Register a Passkey
+                            </a>
+
+                            <div class="mt-auto ls-integrator-note">
+                                <p style="font-size: 0.78rem; color: var(--ls-dark); margin: 0; line-height: 1.5;">
+                                    <strong style="color: var(--ls-orange);">For integrators:</strong>
+                                    The passkey management UI is provided by <a href="/extensions/passkeys-fe/" style="color: var(--ls-teal); text-decoration: none; font-weight: 600;">nr_passkeys_fe</a> as a standard TYPO3 plugin. Drop it on any page.
+                                </p>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </f:then>
+            <f:else>
+                <!-- Not logged in: show integrator info -->
+                <div class="col-lg-5 ms-lg-auto">
+                    <div class="ls-card card h-100 shadow-sm ls-accent-orange">
+                        <div class="card-body p-4 d-flex flex-column">
+
+                            <div class="ls-section-label" style="color: var(--ls-orange);">For Integrators</div>
+
+                            <div class="d-flex align-items-center gap-2 mb-2">
+                                <svg class="ls-icon" viewBox="0 0 16 16" fill="var(--ls-orange)"><path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/><path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/></svg>
+                                <h5 class="mb-0" style="color: var(--ls-orange); font-weight: 700; font-size: 1.05rem;">Zero-config Integration</h5>
+                            </div>
+
+                            <p style="color: var(--ls-dark); font-size: 0.84rem; line-height: 1.55; margin-bottom: 1rem;">
+                                This login form uses standard <strong>felogin</strong>. The passkey tab, management UI, and enrollment nudges are all provided by <a href="/extensions/passkeys-fe/" style="color: var(--ls-teal); text-decoration: none; font-weight: 600;">nr_passkeys_fe</a> with zero template customization.
+                            </p>
+
+                            <div class="mb-auto ls-integrator-note">
+                                <p style="font-size: 0.78rem; color: var(--ls-dark); margin: 0; line-height: 1.5;">
+                                    <strong style="color: var(--ls-orange);">How it works:</strong> Install the extension, include the static TypoScript, place the management plugin on a page. The felogin template override adds the passkey tab automatically.
+                                </p>
+                            </div>
+
+                            <div class="d-flex gap-2 flex-wrap mt-3">
+                                <a href="/extensions/passkeys-fe/" class="ls-cta ls-cta-outline" style="font-size: 0.75rem;">
+                                    <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M1 2.828c.885-.37 2.154-.769 3.388-.893 1.33-.134 2.458.063 3.112.752v9.746c-.935-.53-2.12-.603-3.213-.493-1.18.12-2.37.461-3.287.811V2.828zm7.5-.141c.654-.689 1.782-.886 3.112-.752 1.234.124 2.503.523 3.388.893v9.923c-.918-.35-2.107-.692-3.287-.81-1.094-.111-2.278-.039-3.213.492V2.687zM8 1.783C7.015.936 5.587.81 4.287.94c-1.514.153-3.042.672-3.994 1.105A.5.5 0 0 0 0 2.5v11a.5.5 0 0 0 .707.455c.882-.4 2.303-.881 3.68-1.02 1.409-.142 2.59.087 3.223.877a.5.5 0 0 0 .78 0c.633-.79 1.814-1.019 3.222-.877 1.378.139 2.8.62 3.681 1.02A.5.5 0 0 0 16 13.5v-11a.5.5 0 0 0-.293-.455c-.952-.433-2.48-.952-3.994-1.105C10.413.809 8.985.936 8 1.783z"/></svg>
+                                    Documentation
+                                </a>
+                                <a href="https://github.com/netresearch/t3x-nr-passkeys-fe" class="ls-cta ls-cta-outline" style="font-size: 0.75rem;">
+                                    <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+                                    GitHub
+                                </a>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </f:else>
+        </f:if>
 
     </div>
 </div>
