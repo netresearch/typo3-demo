@@ -1,0 +1,18 @@
+name: netresearch/login-showcase
+title: Login Showcase
+description: Three-column login page with demo credentials, passkey explanation, and embedded login form.
+group: common
+prefixFields: true
+fields:
+  - identifier: demo_username
+    type: Text
+    default: 'demo'
+  - identifier: demo_password
+    type: Text
+    default: 'demo'
+  - identifier: info_heading
+    type: Text
+    default: 'What are Passkeys?'
+  - identifier: info_text
+    type: Textarea
+    default: 'Passkeys replace passwords with biometric authentication — fingerprint, face recognition, or security keys. Phishing-resistant, faster, and more secure than passwords.'

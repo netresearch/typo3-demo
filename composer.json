@@ -33,6 +33,7 @@
         "netresearch/nr-vault": "^0.4",
         "netresearch/rte-ckeditor-image": "dev-main as 13.8.1",
         "netresearch/t3-cowriter": "^3.1",
+        "friendsoftypo3/content-blocks": "^2.0",
         "netresearch/typo3-demo-site": "@dev"
     },
     "repositories": [

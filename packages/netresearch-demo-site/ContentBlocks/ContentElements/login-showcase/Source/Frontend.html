@@ -1,0 +1,176 @@
+<html data-namespace-typo3-fluid="true"
+      xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+      xmlns:cb="http://typo3.org/ns/TYPO3/CMS/ContentBlocks/ViewHelpers">
+
+<f:layout name="Default" />
+
+<f:section name="Main">
+
+<style>
+.login-showcase {
+    --ls-teal: #2F99A4;
+    --ls-dark: #585961;
+    --ls-orange: #FF4D00;
+    --ls-warm: #1d6069;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+.login-showcase .ls-card {
+    border: none;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.login-showcase .ls-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+}
+.login-showcase .ls-number {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.75rem;
+    flex-shrink: 0;
+}
+.login-showcase .ls-credential {
+    font-family: 'SF Mono', 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+    font-size: 1.1rem;
+    letter-spacing: 0.05em;
+    background: rgba(47, 153, 164, 0.08);
+    border: 1px solid rgba(47, 153, 164, 0.2);
+    padding: 0.35rem 0.9rem;
+    border-radius: 6px;
+    color: var(--ls-dark);
+}
+.login-showcase .ls-badge {
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    padding: 0.3rem 0.6rem;
+    border-radius: 20px;
+    border: 1px solid;
+    background: transparent;
+}
+.login-showcase .ls-step {
+    display: flex;
+    gap: 0.65rem;
+    align-items: flex-start;
+    margin-bottom: 0.6rem;
+}
+.login-showcase .ls-step:last-child { margin-bottom: 0; }
+.login-showcase .ls-step p { margin: 0; font-size: 0.85rem; line-height: 1.4; }
+.login-showcase .ls-icon {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    opacity: 0.7;
+}
+@media (min-width: 992px) {
+    .login-showcase .row { min-height: 380px; }
+}
+</style>
+
+<div class="login-showcase">
+    <div class="row g-3 align-items-stretch">
+
+        {f:comment('Column 1 — Demo Credentials')}
+        <div class="col-lg-3">
+            <div class="ls-card card h-100 shadow-sm" style="background: linear-gradient(160deg, #f0f4f5 0%, #e8edef 50%, #f5f7f8 100%);">
+                <div class="card-body p-4 d-flex flex-column">
+
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                        <svg class="ls-icon" viewBox="0 0 16 16" fill="var(--ls-dark)"><path d="M3.5 11.5a3.5 3.5 0 1 1 3.163-5H14L15.5 8 14 10l-1-1-1 1-1-1-1 1-1.337-1H6.663a3.5 3.5 0 0 1-3.163 2zM2.5 9a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/></svg>
+                        <h5 class="mb-0" style="color: var(--ls-dark); font-weight: 700; font-size: 1rem;">Demo Access</h5>
+                    </div>
+
+                    <p style="color: #6c757d; font-size: 0.82rem; line-height: 1.5;">Use these credentials to explore the passkey features:</p>
+
+                    <div class="mb-3">
+                        <label style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: #8b949e; font-weight: 600;" class="d-block mb-1">Username</label>
+                        <span class="ls-credential d-inline-block">{cb:data(identifier: 'demo_username') -> f:format.htmlspecialchars()}</span>
+                    </div>
+                    <div class="mb-3">
+                        <label style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: #8b949e; font-weight: 600;" class="d-block mb-1">Password</label>
+                        <span class="ls-credential d-inline-block">{cb:data(identifier: 'demo_password') -> f:format.htmlspecialchars()}</span>
+                    </div>
+
+                    <div class="mt-auto pt-2" style="border-top: 1px solid rgba(0,0,0,0.06);">
+                        <p style="font-size: 0.72rem; color: #8b949e; margin: 0;">Demo data resets periodically. Your registered passkeys persist for the session.</p>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        {f:comment('Column 2 — Passkey Explanation')}
+        <div class="col-lg-5">
+            <div class="ls-card card h-100 shadow-sm" style="border-top: 3px solid var(--ls-teal);">
+                <div class="card-body p-4 d-flex flex-column">
+
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <svg class="ls-icon" viewBox="0 0 16 16" fill="var(--ls-teal)"><path d="M5.338 1.59a61.44 61.44 0 0 0-2.837.856.481.481 0 0 0-.328.39c-.554 4.157.726 7.19 2.253 9.188a10.725 10.725 0 0 0 2.287 2.233c.346.244.652.42.893.533.12.057.218.095.293.118a.55.55 0 0 0 .101.025.615.615 0 0 0 .1-.025c.076-.023.174-.061.294-.118.24-.113.547-.29.893-.533a10.726 10.726 0 0 0 2.287-2.233c1.527-1.997 2.807-5.031 2.253-9.188a.48.48 0 0 0-.328-.39c-.651-.213-1.75-.56-2.837-.855C6.845 1.133 5.658 1 5.338 1.59zM8 4.5a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5z"/><path d="M8 0c-.69 0-1.843.265-2.928.56-1.11.3-2.229.655-2.887.87a1.54 1.54 0 0 0-1.044 1.262c-.596 4.477.787 7.795 2.465 9.99a11.777 11.777 0 0 0 2.517 2.453c.386.273.744.482 1.048.625.28.132.581.24.829.24s.548-.108.829-.24a7.159 7.159 0 0 0 1.048-.625 11.775 11.775 0 0 0 2.517-2.453c1.678-2.195 3.061-5.513 2.465-9.99a1.541 1.541 0 0 0-1.044-1.263 62.467 62.467 0 0 0-2.887-.87C9.843.266 8.69 0 8 0zm0 1c.468 0 1.58.25 2.642.537 1.07.29 2.16.64 2.795.848a.479.479 0 0 1 .328.39c.554 4.157-.726 7.19-2.253 9.188a10.725 10.725 0 0 1-2.287 2.233c-.346.244-.652.42-.893.533a2.124 2.124 0 0 1-.293.118 2.124 2.124 0 0 1-.293-.118 6.087 6.087 0 0 1-.893-.533 10.725 10.725 0 0 1-2.287-2.233C3.274 9.795 1.993 6.761 2.548 2.604a.479.479 0 0 1 .328-.39c.636-.209 1.724-.556 2.795-.848C6.742 1.083 7.856.834 8.325.834L8 1z"/></svg>
+                        <h5 class="mb-0" style="color: var(--ls-teal); font-weight: 700; font-size: 1rem;">{cb:data(identifier: 'info_heading') -> f:format.htmlspecialchars()}</h5>
+                    </div>
+
+                    <p style="color: #6c757d; font-size: 0.85rem; line-height: 1.55; margin-bottom: 1rem;">{cb:data(identifier: 'info_text') -> f:format.htmlspecialchars()}</p>
+
+                    <h6 style="font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ls-dark); font-weight: 700; margin-bottom: 0.7rem;">Try it yourself</h6>
+
+                    <div class="mb-auto">
+                        <div class="ls-step">
+                            <span class="ls-number text-white" style="background: var(--ls-teal);">1</span>
+                            <p style="color: var(--ls-dark);">Log in with <strong>demo / demo</strong> using the form</p>
+                        </div>
+                        <div class="ls-step">
+                            <span class="ls-number text-white" style="background: var(--ls-teal);">2</span>
+                            <p style="color: var(--ls-dark);">Register a passkey in your profile area</p>
+                        </div>
+                        <div class="ls-step">
+                            <span class="ls-number text-white" style="background: var(--ls-teal);">3</span>
+                            <p style="color: var(--ls-dark);">Log out and return to this page</p>
+                        </div>
+                        <div class="ls-step">
+                            <span class="ls-number text-white" style="background: var(--ls-orange);">4</span>
+                            <p style="color: var(--ls-dark);">Use the <strong>Passkey</strong> tab — no password needed</p>
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2 flex-wrap mt-3 pt-2" style="border-top: 1px solid rgba(0,0,0,0.06);">
+                        <span class="ls-badge" style="color: var(--ls-teal); border-color: rgba(47,153,164,0.3);">WebAuthn / FIDO2</span>
+                        <span class="ls-badge" style="color: var(--ls-dark); border-color: rgba(88,89,97,0.3);">TouchID · FaceID</span>
+                        <span class="ls-badge" style="color: var(--ls-orange); border-color: rgba(255,77,0,0.3);">YubiKey</span>
+                        <span class="ls-badge" style="color: var(--ls-warm); border-color: rgba(29,96,105,0.3);">Windows Hello</span>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        {f:comment('Column 3 — Login Form (felogin renders here via CSS flex from the next frame)')}
+        <div class="col-lg-4">
+            <div class="ls-card card h-100 shadow-sm" style="border-top: 3px solid var(--ls-orange);">
+                <div class="card-body p-4 d-flex flex-column">
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                        <svg class="ls-icon" viewBox="0 0 16 16" fill="var(--ls-orange)"><path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/><path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/></svg>
+                        <h5 class="mb-0" style="color: var(--ls-orange); font-weight: 700; font-size: 1rem;">Sign In</h5>
+                    </div>
+                    <p style="color: #6c757d; font-size: 0.82rem; margin-bottom: 1rem;">Choose the <strong>Password</strong> tab to log in with credentials, or the <strong>Passkey</strong> tab to authenticate with biometrics.</p>
+                    <div class="text-center py-4" style="color: #adb5bd; font-size: 0.8rem;">
+                        <svg width="40" height="40" viewBox="0 0 16 16" fill="#dee2e6" class="mb-2 d-block mx-auto"><path d="M2 2v12h12V2H2zm1 1h10v10H3V3z"/><path d="M5.5 5.5A.5.5 0 0 1 6 6v4a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zM8 5.5a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5z"/></svg>
+                        ↓ Login form below ↓
+                    </div>
+                    <div class="mt-auto pt-2 text-center" style="border-top: 1px solid rgba(0,0,0,0.06);">
+                        <small style="color: #8b949e;">Powered by <a href="/extensions/passkeys-fe/" style="color: var(--ls-teal); text-decoration: none;">nr_passkeys_fe</a></small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+</f:section>
+</html>
