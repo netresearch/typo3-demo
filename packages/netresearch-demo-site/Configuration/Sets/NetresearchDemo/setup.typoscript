@@ -138,9 +138,7 @@ config {
                 .bp-page-content .section-default > .frame {
                     flex: 1;
                     margin-bottom: 0;
-                }
-                .bp-page-content .section-default > .frame-type-html {
-                    flex: 2;
+                    min-width: 0;
                 }
             }
             </style>
