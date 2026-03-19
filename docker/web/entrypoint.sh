@@ -145,6 +145,15 @@ fi
 
 echo "Running TYPO3 setup..."
 vendor/bin/typo3 extension:setup 2>&1 || echo "WARNING: extension:setup failed" >&2
+
+# Apply extension DB schemas that TCA auto-schema cannot derive.
+# extension:setup handles TCA-derived columns (int, varchar, text) but not
+# varbinary, blob, char, or custom indexes from ext_tables.sql.
+echo "Applying extension database schemas..."
+if [ -f /var/www/data/seed-schema.sql ]; then
+    MYSQL_PWD="${MARIADB_PASSWORD:-typo3}" mariadb -h"${MARIADB_HOST:-db}" -u"${MARIADB_USER:-typo3}" "${MARIADB_DATABASE:-typo3}" \
+        < /var/www/data/seed-schema.sql 2>/dev/null || echo "WARNING: seed-schema.sql import failed" >&2
+fi
 vendor/bin/typo3 cache:flush 2>&1 || echo "WARNING: cache:flush failed" >&2
 vendor/bin/typo3 cache:warmup 2>&1 || echo "WARNING: cache:warmup failed" >&2
 
