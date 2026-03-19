@@ -14,15 +14,10 @@ lib.contentBlock {
     # Settings (responsive images, lightbox, media popup config)
     settings < lib.contentElement.settings
 
-    # Data processors (frame attributes, background image, flex form)
-    dataProcessing {
-        1509614342 < lib.contentElement.dataProcessing.1509614342
-        1532626753 < lib.contentElement.dataProcessing.1532626753
-        1682424577 < lib.contentElement.dataProcessing.1682424577
-    }
-
-    # Variables (backendlayout for responsive image variant resolution)
-    variables < lib.contentElement.variables
+    # NOTE: BS Package data processors (FlexFormProcessor, FilesProcessor,
+    # ArrayProcessor) are NOT compatible with Content Blocks — they expect
+    # array data but CB passes ContentBlockData objects. Do NOT copy them.
+    # The layout/partial/settings bridge is sufficient for frame rendering.
 }
 
 page {
