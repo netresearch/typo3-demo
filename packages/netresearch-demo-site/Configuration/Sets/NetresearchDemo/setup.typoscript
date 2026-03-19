@@ -1,6 +1,16 @@
 # Netresearch Demo Site Setup
 # Extends bootstrap_package configuration
 
+# Content Blocks v2 + Bootstrap Package bridge:
+# lib.contentBlock is a bare FLUIDTEMPLATE without BS Package frame wrapping.
+# Copy BS Package's layout/partial paths and settings so Content Block templates
+# can use <f:layout/> and <f:section name="Main"> for proper frame rendering.
+lib.contentBlock {
+    layoutRootPaths.0 < lib.contentElement.layoutRootPaths.0
+    partialRootPaths.0 < lib.contentElement.partialRootPaths.0
+    settings < lib.contentElement.settings
+}
+
 page {
     meta {
         description = Netresearch TYPO3 Demo
