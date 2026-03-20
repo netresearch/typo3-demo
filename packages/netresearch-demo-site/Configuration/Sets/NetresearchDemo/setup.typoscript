@@ -146,7 +146,33 @@ config {
     page.headerData {
         201 = TEXT
         201.value (
-            <style></style>
+            <style>
+            /* Style the felogin frame to match the Content Block card */
+            .frame-type-felogin_login > .frame-group-container > .frame-group-inner > .frame-container > .frame-inner {
+                background: #fff;
+                border: 1px solid rgba(0,0,0,0.06);
+                border-top: 3px solid #FF4D00;
+                border-radius: 14px;
+                padding: 1.5rem;
+                box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+            }
+            /* Style the passkey management frame similarly */
+            .frame-type-nrpasskeysfe_passkeymanagement > .frame-group-container > .frame-group-inner > .frame-container > .frame-inner {
+                background: #fff;
+                border: 1px solid rgba(47,153,164,0.15);
+                border-radius: 14px;
+                padding: 1.5rem;
+                box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+            }
+            /* Make "For integrators" note span full width below both columns */
+            .frame-type-netresearch_loginshowcase .ls-integrator-note,
+            .frame-type-netresearch_loginshowcase .ls-logged-in-banner {
+                margin-left: -1.5rem;
+                margin-right: -1.5rem;
+                margin-bottom: -1.5rem;
+                border-radius: 0 0 14px 14px;
+            }
+            </style>
         )
     }
 [END]
