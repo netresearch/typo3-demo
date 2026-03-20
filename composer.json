@@ -28,7 +28,7 @@
         "netresearch/nr-landingpage": "@dev",
         "netresearch/nr-llm": "^0.4 || ^0.5",
         "netresearch/nr-passkeys-be": "^0.6",
-        "netresearch/nr-passkeys-fe": "^0.1.2",
+        "netresearch/nr-passkeys-fe": "^0.1.3",
         "netresearch/nr-temporal-cache": "@dev",
         "netresearch/nr-vault": "^0.4",
         "netresearch/rte-ckeditor-image": "dev-main as 13.8.1",
