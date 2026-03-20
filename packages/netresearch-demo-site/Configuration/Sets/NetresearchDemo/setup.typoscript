@@ -147,30 +147,44 @@ config {
         201 = TEXT
         201.value (
             <style>
-            /* Style the felogin frame to match the Content Block card */
+            @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap');
+
+            /* Felogin frame — clean card with gradient top accent */
             .frame-type-felogin_login > .frame-group-container > .frame-group-inner > .frame-container > .frame-inner {
                 background: #fff;
                 border: 1px solid rgba(0,0,0,0.06);
-                border-top: 3px solid #FF4D00;
-                border-radius: 14px;
-                padding: 1.5rem;
-                box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+                border-radius: 16px;
+                padding: 1.75rem;
+                box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+                position: relative;
+                overflow: hidden;
             }
-            /* Style the passkey management frame similarly */
+            .frame-type-felogin_login > .frame-group-container > .frame-group-inner > .frame-container > .frame-inner::before {
+                content: '';
+                position: absolute;
+                top: 0; left: 0; right: 0;
+                height: 3px;
+                background: linear-gradient(90deg, #FF4D00, #2F99A4);
+            }
+            /* Felogin form typography */
+            .frame-type-felogin_login h3,
+            .frame-type-felogin_login legend {
+                font-family: 'Outfit', system-ui, sans-serif;
+                font-weight: 700;
+            }
+
+            /* Passkey management frame */
             .frame-type-nrpasskeysfe_passkeymanagement > .frame-group-container > .frame-group-inner > .frame-container > .frame-inner {
                 background: #fff;
-                border: 1px solid rgba(47,153,164,0.15);
-                border-radius: 14px;
-                padding: 1.5rem;
-                box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+                border: 1px solid rgba(47,153,164,0.1);
+                border-radius: 16px;
+                padding: 1.75rem;
+                box-shadow: 0 1px 4px rgba(0,0,0,0.04);
             }
-            /* Make "For integrators" note span full width below both columns */
-            .frame-type-netresearch_loginshowcase .ls-integrator-note,
-            .frame-type-netresearch_loginshowcase .ls-logged-in-banner {
-                margin-left: -1.5rem;
-                margin-right: -1.5rem;
-                margin-bottom: -1.5rem;
-                border-radius: 0 0 14px 14px;
+            .frame-type-nrpasskeysfe_passkeymanagement h2 {
+                font-family: 'Outfit', system-ui, sans-serif;
+                font-weight: 700;
+                font-size: 1.15rem;
             }
             </style>
         )
