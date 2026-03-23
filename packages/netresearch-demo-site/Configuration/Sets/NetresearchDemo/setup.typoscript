@@ -147,44 +147,38 @@ config {
         201 = TEXT
         201.value (
             <style>
-            @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap');
-
-            /* Felogin frame — clean card with gradient top accent */
+            /* Felogin frame — clean card with solid teal top accent */
             .frame-type-felogin_login > .frame-group-container > .frame-group-inner > .frame-container > .frame-inner {
                 background: #fff;
                 border: 1px solid rgba(0,0,0,0.06);
-                border-radius: 16px;
-                padding: 1.75rem;
+                border-top: 3px solid #2F99A4;
+                border-radius: .75rem;
+                padding: 0;
                 box-shadow: 0 1px 4px rgba(0,0,0,0.04);
-                position: relative;
                 overflow: hidden;
             }
-            .frame-type-felogin_login > .frame-group-container > .frame-group-inner > .frame-container > .frame-inner::before {
-                content: '';
-                position: absolute;
-                top: 0; left: 0; right: 0;
-                height: 3px;
-                background: linear-gradient(90deg, #FF4D00, #2F99A4);
+            /* Login form (tabbed card) needs its own padding */
+            .frame-type-felogin_login .nr-passkeys-fe-card {
+                padding: 1.5rem;
             }
-            /* Felogin form typography */
-            .frame-type-felogin_login h3,
-            .frame-type-felogin_login legend {
-                font-family: 'Outfit', system-ui, sans-serif;
-                font-weight: 700;
+
+            /* Showcase card — solid teal top accent */
+            .frame-type-netresearch_loginshowcase > .frame-group-container > .frame-group-inner > .frame-container > .frame-inner {
+                background: #fff;
+                border: 1px solid rgba(0,0,0,0.06);
+                border-top: 3px solid #2F99A4;
+                border-radius: .75rem;
+                box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+                overflow: hidden;
             }
 
             /* Passkey management frame */
             .frame-type-nrpasskeysfe_passkeymanagement > .frame-group-container > .frame-group-inner > .frame-container > .frame-inner {
                 background: #fff;
                 border: 1px solid rgba(47,153,164,0.1);
-                border-radius: 16px;
-                padding: 1.75rem;
+                border-radius: .75rem;
+                padding: 1.5rem;
                 box-shadow: 0 1px 4px rgba(0,0,0,0.04);
-            }
-            .frame-type-nrpasskeysfe_passkeymanagement h2 {
-                font-family: 'Outfit', system-ui, sans-serif;
-                font-weight: 700;
-                font-size: 1.15rem;
             }
             </style>
         )
