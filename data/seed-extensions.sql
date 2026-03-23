@@ -619,12 +619,4 @@ VALUES (410, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'Netresearch TYPO3
 INSERT IGNORE INTO fe_users (uid, pid, tstamp, crdate, username, password, usergroup, name, email, disable, deleted)
 VALUES (2, 2, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'demo', '$argon2i$v=19$m=65536,t=4,p=1$L2kzRUEvbEdCbk5mWlViNA$2E5UgTQxfndqZIrMAKJHjuJvB9tQphrK/yCGsX7UQao', '1', 'Demo User', 'demo@example.com', 0, 0);
 
--- Demo credentials hint on login page
-INSERT IGNORE INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
-VALUES (440, 93, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'text', 'Try the Demo Login',
-'<div class="alert alert-info">
-<p><strong>Demo credentials:</strong></p>
-<p>Username: <code>demo</code><br>Password: <code>demo</code></p>
-<p>After logging in, you can register a Passkey under your account settings and use it for future logins — try the <strong>Passkey</strong> tab below!</p>
-</div>',
-0, 100, 0, 0);
+-- Demo credentials hint removed — info is already in the login showcase Content Block
