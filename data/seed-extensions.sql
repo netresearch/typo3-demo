@@ -12,7 +12,7 @@ INSERT IGNORE INTO pages (uid, pid, tstamp, crdate, title, slug, doktype, sortin
 VALUES (102, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'RTE CKEditor Image', '/extensions/rte-ckeditor-image', 1, 100, 0, 0);
 
 INSERT IGNORE INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
-VALUES (400, 102, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'text', 'RTE CKEditor Image',
+VALUES (400, 102, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'RTE CKEditor Image',
 '<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(47,153,164,0.06), rgba(47,153,164,0.02));">
   <div class="d-flex align-items-center gap-2 mb-2">
     <span class="badge rounded-pill text-white" style="background: #2F99A4; font-size: 0.7rem;">CKEditor</span>
@@ -80,7 +80,7 @@ INSERT IGNORE INTO pages (uid, pid, tstamp, crdate, title, slug, doktype, sortin
 VALUES (103, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'AI Cowriter', '/extensions/cowriter', 1, 200, 0, 0);
 
 INSERT IGNORE INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
-VALUES (401, 103, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'text', 'AI Cowriter',
+VALUES (401, 103, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'AI Cowriter',
 '<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(47,153,164,0.06), rgba(47,153,164,0.02));">
   <div class="d-flex align-items-center gap-2 mb-2">
     <span class="badge rounded-pill text-white" style="background: #2F99A4; font-size: 0.7rem;">AI</span>
@@ -156,7 +156,7 @@ INSERT IGNORE INTO pages (uid, pid, tstamp, crdate, title, slug, doktype, sortin
 VALUES (104, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'LLM Foundation', '/extensions/nr-llm', 1, 300, 0, 0);
 
 INSERT IGNORE INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
-VALUES (402, 104, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'text', 'NR LLM — AI Foundation for TYPO3',
+VALUES (402, 104, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'NR LLM — AI Foundation for TYPO3',
 '<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(88,89,97,0.06), rgba(88,89,97,0.02));">
   <div class="d-flex align-items-center gap-2 mb-2">
     <span class="badge rounded-pill text-white" style="background: #585961; font-size: 0.7rem;">Core</span>
@@ -218,7 +218,7 @@ INSERT IGNORE INTO pages (uid, pid, tstamp, crdate, title, slug, doktype, sortin
 VALUES (105, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'Landing Page Generator', '/extensions/landing-page', 1, 400, 0, 0);
 
 INSERT IGNORE INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
-VALUES (403, 105, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'text', 'AI Landing Page Generator',
+VALUES (403, 105, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'AI Landing Page Generator',
 '<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(47,153,164,0.06), rgba(47,153,164,0.02));">
   <div class="d-flex align-items-center gap-2 mb-2">
     <span class="badge rounded-pill text-white" style="background: #2F99A4; font-size: 0.7rem;">AI</span>
@@ -264,7 +264,7 @@ INSERT IGNORE INTO pages (uid, pid, tstamp, crdate, title, slug, doktype, sortin
 VALUES (106, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'Passkeys (Backend)', '/extensions/passkeys-be', 1, 500, 0, 0);
 
 INSERT IGNORE INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
-VALUES (404, 106, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'text', 'Passwordless Backend Login with Passkeys',
+VALUES (404, 106, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'Passwordless Backend Login with Passkeys',
 '<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(255,77,0,0.04), rgba(255,77,0,0.01));">
   <div class="d-flex align-items-center gap-2 mb-2">
     <span class="badge rounded-pill text-white" style="background: #FF4D00; font-size: 0.7rem;">Security</span>
@@ -324,7 +324,7 @@ INSERT IGNORE INTO pages (uid, pid, tstamp, crdate, title, slug, doktype, sortin
 VALUES (109, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'Passkeys (Frontend)', '/extensions/passkeys-fe', 1, 510, 0, 0);
 
 INSERT IGNORE INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
-VALUES (407, 109, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'text', 'Passkey-First Frontend Authentication',
+VALUES (407, 109, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'Passkey-First Frontend Authentication',
 '<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(255,77,0,0.04), rgba(255,77,0,0.01));">
   <div class="d-flex align-items-center gap-2 mb-2">
     <span class="badge rounded-pill text-white" style="background: #FF4D00; font-size: 0.7rem;">Security</span>
@@ -407,7 +407,7 @@ INSERT IGNORE INTO pages (uid, pid, tstamp, crdate, title, slug, doktype, sortin
 VALUES (107, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'Secrets Vault', '/extensions/vault', 1, 600, 0, 0);
 
 INSERT IGNORE INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
-VALUES (405, 107, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'text', 'NR Vault — Secure Secrets Management',
+VALUES (405, 107, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'NR Vault — Secure Secrets Management',
 '<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(255,77,0,0.04), rgba(255,77,0,0.01));">
   <div class="d-flex align-items-center gap-2 mb-2">
     <span class="badge rounded-pill text-white" style="background: #FF4D00; font-size: 0.7rem;">Security</span>
@@ -465,7 +465,7 @@ INSERT IGNORE INTO pages (uid, pid, tstamp, crdate, title, slug, doktype, sortin
 VALUES (108, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'Temporal Cache', '/extensions/temporal-cache', 1, 700, 0, 0);
 
 INSERT IGNORE INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
-VALUES (406, 108, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'text', 'Automatic Cache Invalidation for Timed Content',
+VALUES (406, 108, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'Automatic Cache Invalidation for Timed Content',
 '<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(88,89,97,0.06), rgba(88,89,97,0.02));">
   <div class="d-flex align-items-center gap-2 mb-2">
     <span class="badge rounded-pill text-white" style="background: #585961; font-size: 0.7rem;">Cache</span>
@@ -508,7 +508,7 @@ VALUES (406, 108, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'text', 'Automatic Cache I
 -- Overview Hub (/extensions)
 -- =============================================================================
 INSERT IGNORE INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
-VALUES (410, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'text', 'Netresearch TYPO3 Extensions',
+VALUES (410, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'Netresearch TYPO3 Extensions',
 '<div class="text-center mb-4">
   <p class="lead text-muted mx-auto" style="max-width: 600px;">Open-source extensions for TYPO3 v14. Built for editors, integrators, and developers.</p>
 </div>
