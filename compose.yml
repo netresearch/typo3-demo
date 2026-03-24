@@ -27,6 +27,7 @@ services:
       TYPO3_DOMAIN: ${TYPO3_DOMAIN:-localhost}
       TYPO3_SITE_BASE: ${TYPO3_SITE_BASE:-/}
       TYPO3_ENCRYPTION_KEY: ${TYPO3_ENCRYPTION_KEY:-}
+      TYPO3_INSTALL_TOOL_PASSWORD: ${TYPO3_INSTALL_TOOL_PASSWORD:-joh316}
     volumes:
       - typo3-fileadmin:/var/www/public/fileadmin
       - typo3-var:/var/www/var

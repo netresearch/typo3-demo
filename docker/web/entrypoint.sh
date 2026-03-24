@@ -143,6 +143,19 @@ EOPHP
     fi
 fi
 
+# Ensure installToolPassword is set (required by TYPO3; may be absent in older settings.php)
+if [ -f config/system/settings.php ]; then
+    TYPO3_INSTALL_TOOL_PASSWORD_PLAIN="${TYPO3_INSTALL_TOOL_PASSWORD:-joh316}" php -r '
+        $f = "config/system/settings.php";
+        $cfg = include $f;
+        if (!is_array($cfg) || !empty($cfg["BE"]["installToolPassword"])) { exit(0); }
+        $pw = getenv("TYPO3_INSTALL_TOOL_PASSWORD_PLAIN") ?: "joh316";
+        $cfg["BE"]["installToolPassword"] = password_hash($pw, PASSWORD_ARGON2ID);
+        file_put_contents($f, "<?php\nreturn " . var_export($cfg, true) . ";\n");
+        echo "installToolPassword added to settings.php." . PHP_EOL;
+    '
+fi
+
 echo "Running TYPO3 setup..."
 vendor/bin/typo3 extension:setup 2>&1 || echo "WARNING: extension:setup failed" >&2
 
