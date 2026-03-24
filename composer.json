@@ -27,7 +27,7 @@
         "georgringer/news": "^14.0",
         "netresearch/nr-landingpage": "^0.1",
         "netresearch/nr-llm": "^0.6",
-        "netresearch/nr-mcp-agent": "^0.1",
+        "netresearch/nr-mcp-agent": "^0.2",
         "netresearch/nr-passkeys-be": "^0.6",
         "netresearch/nr-passkeys-fe": "dev-main",
         "netresearch/nr-temporal-cache": "@dev",
