@@ -35,7 +35,7 @@
         "netresearch/rte-ckeditor-image": "dev-main as 13.8.1",
         "netresearch/t3-cowriter": "^3.1",
         "friendsoftypo3/content-blocks": "^2.0",
-        "hn/typo3-mcp-server": "^0.1 || ^1.0",
+        "hn/typo3-mcp-server": "^0.2",
         "netresearch/typo3-demo-site": "@dev"
     },
     "repositories": [
