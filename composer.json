@@ -60,11 +60,11 @@
         },
         {
             "type": "vcs",
-            "url": "https://github.com/netresearch/t3x-nr-mcp-agent.git"
+            "url": "https://github.com/netresearch/t3x-nr-llm.git"
         },
         {
             "type": "vcs",
-            "url": "https://github.com/netresearch/t3x-nr-llm.git"
+            "url": "https://github.com/netresearch/t3x-nr-mcp-agent.git"
         }
     ],
     "config": {
