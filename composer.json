@@ -25,7 +25,7 @@
         "typo3/cms-lowlevel": "^14.1",
         "bk2k/bootstrap-package": "^16.0",
         "georgringer/news": "^14.0",
-        "netresearch/nr-landingpage": "@dev",
+        "netresearch/nr-landingpage": "^0.1",
         "netresearch/nr-llm": "^0.6",
         "netresearch/nr-mcp-agent": "^0.1",
         "netresearch/nr-passkeys-be": "^0.6",
