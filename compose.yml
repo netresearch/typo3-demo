@@ -48,23 +48,26 @@ services:
 
   # Symfony Messenger consumer for nr-repurpose's async generation jobs
   # (doctrine transport). Reuses the web image; the web service has already
-  # run the entrypoint setup by the time this starts. The loop survives the
-  # deliberate time/memory limits that recycle the worker.
+  # run the entrypoint setup by the time this starts. The consumer exits
+  # after its time/memory limits and on fatal errors — the restart policy
+  # recycles it either way, with Docker-visible backoff on crash loops.
   worker:
     image: ghcr.io/netresearch/typo3-demo:latest
     logging: *default-logging
     depends_on:
       web:
         condition: service_healthy
+    # www-data so generated artifacts (podcasts, PNGs) on the shared
+    # fileadmin/var volumes stay manageable by the web container's php-fpm.
+    user: www-data
     entrypoint: ["sh", "-c"]
     command:
-      - |
-        while true; do
-          vendor/bin/typo3 messenger:consume doctrine \
-            --time-limit=3600 --memory-limit=512M --sleep=2 || true
-          sleep 2
-        done
+      - >
+        vendor/bin/typo3 messenger:consume doctrine
+        --time-limit=3600 --memory-limit=512M --sleep=2
     environment:
+      # Writable HOME for chromium (www-data has no home dir in the image)
+      HOME: /var/www/var
       MARIADB_HOST: db
       MARIADB_DATABASE: ${MARIADB_DATABASE:-typo3}
       MARIADB_USER: ${MARIADB_USER:-typo3}
