@@ -46,6 +46,44 @@ services:
         limits:
           memory: 1G
 
+  # Symfony Messenger consumer for nr-repurpose's async generation jobs
+  # (doctrine transport). Reuses the web image; the web service has already
+  # run the entrypoint setup by the time this starts. The loop survives the
+  # deliberate time/memory limits that recycle the worker.
+  worker:
+    image: ghcr.io/netresearch/typo3-demo:latest
+    logging: *default-logging
+    depends_on:
+      web:
+        condition: service_healthy
+    entrypoint: ["sh", "-c"]
+    command:
+      - |
+        while true; do
+          vendor/bin/typo3 messenger:consume doctrine \
+            --time-limit=3600 --memory-limit=512M --sleep=2 || true
+          sleep 2
+        done
+    environment:
+      MARIADB_HOST: db
+      MARIADB_DATABASE: ${MARIADB_DATABASE:-typo3}
+      MARIADB_USER: ${MARIADB_USER:-typo3}
+      MARIADB_PASSWORD: ${MARIADB_PASSWORD:-typo3}
+      TYPO3_CONTEXT: ${TYPO3_CONTEXT:-Development/Docker}
+      TYPO3_DOMAIN: ${TYPO3_DOMAIN:-localhost}
+      TYPO3_SITE_BASE: ${TYPO3_SITE_BASE:-/}
+    volumes:
+      - typo3-fileadmin:/var/www/public/fileadmin
+      - typo3-var:/var/www/var
+      - typo3-config:/var/www/config/system
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+
   db:
     image: mariadb:11
     logging: *default-logging

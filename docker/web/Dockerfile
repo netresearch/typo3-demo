@@ -11,6 +11,7 @@ RUN apk add --no-cache --virtual .build-deps \
         freetype-dev libjpeg-turbo-dev libpng-dev libzip-dev icu-dev linux-headers $PHPIZE_DEPS \
     && apk add --no-cache \
         nginx mariadb-client openssl freetype libjpeg-turbo libpng libzip icu-libs imagemagick \
+        ffmpeg poppler-utils chromium font-liberation nodejs \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j$(nproc) gd intl mysqli pdo_mysql zip \
     && pecl install redis \
@@ -48,6 +49,9 @@ COPY packages/ packages/
 RUN chmod +x /entrypoint.sh \
     && mkdir -p public/fileadmin public/typo3temp/assets/_processed_ var/log var/cache var/lock var/charset var/labels \
     && chown -R www-data:www-data public/fileadmin public/typo3temp var
+# nr-repurpose renders HTML -> PNG via the system chromium (no Playwright download)
+ENV CHROMIUM_PATH=/usr/bin/chromium-browser \
+    PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
 EXPOSE 80
 HEALTHCHECK --interval=30s --timeout=5s --start-period=300s --retries=3 \
     CMD wget -q -O /dev/null --header="Host: ${TYPO3_DOMAIN:-localhost}" http://127.0.0.1/ || exit 1
