@@ -84,7 +84,9 @@ services:
     # nginx) with a consumer-process check. `disable: true` is not enough:
     # `up --wait` errors on services with no healthcheck configured.
     healthcheck:
-      test: ["CMD-SHELL", "pgrep -f 'messenger:consume' || exit 1"]
+      # [m] bracket trick: keeps the healthcheck shell's own cmdline from
+      # matching, which would report healthy even with a dead consumer.
+      test: ["CMD-SHELL", "pgrep -f '[m]essenger:consume' || exit 1"]
       interval: 30s
       timeout: 5s
       retries: 3
