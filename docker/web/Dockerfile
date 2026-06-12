@@ -36,6 +36,7 @@ RUN { \
 WORKDIR /var/www
 # COPY ordered: rarely-changed infra first, frequently-changed app code last
 COPY docker/web/nginx.conf /etc/nginx/nginx.conf
+COPY docker/web/security-headers.conf /etc/nginx/security-headers.conf
 COPY docker/web/php-fpm.conf /usr/local/etc/php-fpm.d/zz-typo3.conf
 COPY docker/web/entrypoint.sh /entrypoint.sh
 COPY data/fileadmin/ /seed/fileadmin/
