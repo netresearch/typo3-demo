@@ -80,10 +80,15 @@ services:
       - typo3-fileadmin:/var/www/public/fileadmin
       - typo3-var:/var/www/var
       - typo3-config:/var/www/config/system
-    # The web image bakes in an nginx HEALTHCHECK; the worker runs no nginx,
-    # so the inherited check can never pass and `up --wait` would fail.
+    # Override the web image's baked-in nginx HEALTHCHECK (the worker runs no
+    # nginx) with a consumer-process check. `disable: true` is not enough:
+    # `up --wait` errors on services with no healthcheck configured.
     healthcheck:
-      disable: true
+      test: ["CMD-SHELL", "pgrep -f 'messenger:consume' || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
     restart: unless-stopped
     security_opt:
       - no-new-privileges:true
