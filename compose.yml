@@ -63,11 +63,12 @@ services:
     entrypoint: ["sh", "-c"]
     command:
       - >
-        vendor/bin/typo3 messenger:consume doctrine
+        exec vendor/bin/typo3 messenger:consume doctrine
         --time-limit=3600 --memory-limit=512M --sleep=2
     environment:
-      # Writable HOME for chromium (www-data has no home dir in the image)
-      HOME: /var/www/var
+      # Writable HOME for chromium (www-data has no home dir in the image);
+      # /tmp keeps browser cache litter off the persistent var volume.
+      HOME: /tmp
       MARIADB_HOST: db
       MARIADB_DATABASE: ${MARIADB_DATABASE:-typo3}
       MARIADB_USER: ${MARIADB_USER:-typo3}
