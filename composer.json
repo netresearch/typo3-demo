@@ -33,7 +33,7 @@
         "netresearch/nr-temporal-cache": "@dev",
         "netresearch/nr-vault": "^0.10",
         "netresearch/rte-ckeditor-image": "^13.10",
-        "netresearch/t3-cowriter": "^3.1",
+        "netresearch/t3-cowriter": "^3.2",
         "friendsoftypo3/content-blocks": "^2.0",
         "hn/typo3-mcp-server": "^0.4",
         "netresearch/typo3-demo-site": "@dev",
