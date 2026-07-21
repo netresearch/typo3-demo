@@ -58,7 +58,7 @@ jobs:
               q "be passkey credentials" "SELECT be_user, label, aaguid, transports, FROM_UNIXTIME(created_at) created_at, FROM_UNIXTIME(last_used_at) last_used_at, revoked_at FROM tx_nrpasskeysbe_credential;"
               q "fe passkey credentials" "SELECT COUNT(*) fe_passkeys FROM tx_nrpasskeysfe_credential;"
               q "sys_log span" "SELECT COUNT(*) cnt, FROM_UNIXTIME(MIN(tstamp)) oldest, FROM_UNIXTIME(MAX(tstamp)) newest FROM sys_log;"
-              q "login log (type=255)" "SELECT FROM_UNIXTIME(tstamp) t, error, details FROM sys_log WHERE type=255 ORDER BY tstamp DESC LIMIT 60;"
+              q "login log (type=255)" "SELECT FROM_UNIXTIME(tstamp) t, error, details, LEFT(log_data, 200) log_data_head FROM sys_log WHERE type=255 ORDER BY tstamp DESC LIMIT 60;"
               q "be_users history" "SELECT FROM_UNIXTIME(tstamp) t, recuid, userid, actiontype, LEFT(history_data, 200) data_head FROM sys_history WHERE tablename='be_users' ORDER BY tstamp DESC LIMIT 20;"
               q "recent errors" "SELECT FROM_UNIXTIME(tstamp) t, type, error, LEFT(details, 160) details_head FROM sys_log WHERE error > 0 ORDER BY tstamp DESC LIMIT 30;"
               q "nr-llm providers" "SELECT uid, identifier, adapter_type, endpoint_url, LENGTH(api_key) api_key_len, is_active FROM tx_nrllm_provider;"
