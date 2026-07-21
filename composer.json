@@ -32,7 +32,7 @@
         "netresearch/nr-passkeys-be": "^0.10",
         "netresearch/nr-passkeys-fe": "^0.3.1",
         "netresearch/nr-temporal-cache": "@dev",
-        "netresearch/nr-vault": "^0.10",
+        "netresearch/nr-vault": "^0.11",
         "netresearch/rte-ckeditor-image": "^13.10",
         "netresearch/t3-cowriter": "^3.2",
         "friendsoftypo3/content-blocks": "^2.0",
