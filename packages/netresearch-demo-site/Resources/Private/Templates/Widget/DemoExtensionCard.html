@@ -1,0 +1,20 @@
+<f:layout name="Widget/Widget"/>
+<f:section name="main">
+
+    <p>{description}</p>
+
+    <f:if condition="{howTo}">
+        <h4>How to demo it</h4>
+        <ol>
+            <f:for each="{howTo}" as="step">
+                <li>{step}</li>
+            </f:for>
+        </ol>
+    </f:if>
+
+</f:section>
+<f:section name="footer">
+    <f:if condition="{moduleUri}">
+        <a href="{moduleUri}" class="widget-cta">{buttonLabel}</a>
+    </f:if>
+</f:section>

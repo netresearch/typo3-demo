@@ -1,4 +1,4 @@
-.PHONY: up down reset update logs shell db-shell seed export-seed build clean dev dev-down help
+.PHONY: up down reset update logs shell db-shell seed seed-extensions export-seed build clean dev dev-down help
 
 COMPOSE     := docker compose
 COMPOSE_DEV := docker compose -f compose.yml -f compose.dev.yml
@@ -41,6 +41,7 @@ update: ## Update code without purging data
 	$(COMPOSE) pull
 	$(COMPOSE) up -d --wait
 	$(TYPO3) database:updateschema || true
+	$(MAKE) seed-extensions
 	$(TYPO3) extension:setup || true
 	$(TYPO3) cache:flush
 	$(TYPO3) cache:warmup
@@ -48,6 +49,9 @@ update: ## Update code without purging data
 seed: ## Seed fileadmin from data/ into volume
 	$(COMPOSE) cp data/fileadmin/. web:/var/www/public/fileadmin/
 	$(COMPOSE) exec -T web chown -R www-data:www-data /var/www/public/fileadmin
+
+seed-extensions: ## Apply data/seed-extensions.sql to the DB (idempotent — INSERT IGNORE only)
+	$(COMPOSE) exec -T db sh -c 'MYSQL_PWD="$$MARIADB_PASSWORD" mariadb -u "$$MARIADB_USER" "$$MARIADB_DATABASE"' < data/seed-extensions.sql
 
 export-seed: ## Export current DB as new seed
 	$(COMPOSE) exec -T db sh -c 'MYSQL_PWD="$$MARIADB_ROOT_PASSWORD" mariadb-dump -u root "$$MARIADB_DATABASE" --single-transaction --quick --skip-lock-tables' | gzip > data/db.sql.gz
