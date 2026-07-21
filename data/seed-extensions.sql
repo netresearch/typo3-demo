@@ -620,3 +620,48 @@ INSERT IGNORE INTO fe_users (uid, pid, tstamp, crdate, username, password, userg
 VALUES (2, 2, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'demo', '$argon2i$v=19$m=65536,t=4,p=1$L2kzRUEvbEdCbk5mWlViNA$2E5UgTQxfndqZIrMAKJHjuJvB9tQphrK/yCGsX7UQao', '1', 'Demo User', 'demo@example.com', 0, 0);
 
 -- Demo credentials hint removed — info is already in the login showcase Content Block
+
+-- =============================================================================
+-- Landing Page Generator — wizard templates (tx_nrlandingpage_domain_model_template)
+-- pid=0 per the extension docs; be_groups empty = visible to every backend user;
+-- llm_configuration=0 = system default configuration.
+-- =============================================================================
+INSERT IGNORE INTO tx_nrlandingpage_domain_model_template
+(uid, pid, tstamp, crdate, deleted, hidden, title, identifier, description, llm_configuration, system_prompt, allowed_ctypes, page_fields, briefing_mode, publish_mode, be_groups, backend_layout, generation_mode, color_primary, color_secondary, color_background, color_text, animation_enabled)
+VALUES
+(901, 0, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0,
+ 'Product Launch', 'product-launch',
+ 'Conversion-focused launch page: hero, feature highlights, social proof, and a strong call to action.',
+ 0,
+ 'You are a senior conversion copywriter creating a product launch landing page. Open with a hero section that states the product name and its single most compelling benefit in one clear headline plus a supporting subline. Follow with a feature section of three to six concise benefits (outcome first, feature second). Add one credibility element such as a quote or key metric. Close with exactly one clear call to action repeated near the top and at the end. Keep sentences short, use active voice, address the reader directly, and avoid superlatives and filler. Write in the language of the briefing.',
+ 'header,text,textmedia,card_group,icon_group,panel,quote',
+ 'seo_title,description,og_title,og_description',
+ 'required', 'hidden', '', '', 'structured',
+ '#2F99A4', '#FF4D00', '', '', 1),
+(902, 0, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0,
+ 'Event Promotion', 'event-promotion',
+ 'Event page focused on date, venue, agenda, and registration — ideal for conferences, meetups, and webinars.',
+ 0,
+ 'You are creating an event promotion landing page. The date, venue (or online platform), and registration deadline from the briefing are the most important facts: state them prominently in the hero and repeat them beside the closing call to action. Structure the page as: hero with event name, date, and location; a short "why attend" section with three concrete takeaways; an agenda or schedule as a timeline or table; speaker or host introductions if provided; and a final registration call to action with the deadline. Create urgency through concrete facts (limited seats, deadline), never through hype. Write in the language of the briefing.',
+ 'header,text,textmedia,timeline,card_group,panel,table',
+ 'seo_title,description,og_title,og_description',
+ 'required', 'hidden', '', '', 'structured',
+ '#2F99A4', '#FF4D00', '', '', 1),
+(903, 0, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0,
+ 'Creative One-Pager', 'creative-one-pager',
+ 'Free-form storytelling page: the AI chooses structure and dramaturgy to fit the briefing.',
+ 0,
+ 'You are a creative editorial writer building a narrative one-page site. Instead of a fixed marketing structure, tell a story: hook the reader with an unexpected opening, build tension or curiosity across two or three scenes, and resolve with what the subject of the briefing means for the reader. Vary rhythm between short punchy statements and longer flowing passages. Metaphors are welcome when they clarify rather than decorate. End with a gentle, fitting invitation to act rather than a hard sales pitch. Write in the language of the briefing.',
+ '',
+ 'seo_title,description,og_title,og_description',
+ 'optional', 'hidden', '', '', 'creative',
+ '#2F99A4', '#FF4D00', '', '', 1),
+(904, 0, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0,
+ 'SaaS Feature Page', 'saas-feature-page',
+ 'Feature deep-dive for a software product: problem, solution, how it works, FAQ, and trial call to action.',
+ 0,
+ 'You are writing a SaaS feature page for a technical yet business-minded audience. Structure: hero naming the feature and the job it does for the user; a problem section describing the pain in the user''s own words; a solution section explaining how the feature removes that pain; a "how it works" walkthrough in three to five steps; an FAQ answering the most likely objections (pricing, integration, security, migration); and a closing call to action offering a trial or demo. Be specific and factual, quantify benefits where the briefing provides numbers, and never invent metrics. Write in the language of the briefing.',
+ 'header,text,textmedia,card_group,accordion,icon_group,table',
+ 'seo_title,description,og_title,og_description',
+ 'optional', 'hidden', '', '', 'structured',
+ '#2F99A4', '#FF4D00', '', '', 1);
