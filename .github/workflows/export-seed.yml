@@ -1,0 +1,79 @@
+name: Export DB Seed
+
+# Runs scripts/export-seed-sanitized.sh on the demo host (API keys, vault
+# secrets, logs, sessions and caches stripped), fetches the dump and uploads
+# it as an artifact, encrypted with DIAG_PASSPHRASE — the repo is public and
+# the dump is only published after local review via a pull request.
+# Decrypt locally:
+#   openssl enc -d -aes-256-cbc -pbkdf2 -pass file:passphrase.txt \
+#     -in seed.sql.gz.enc -out seed.sql.gz
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/id_deploy
+          chmod 600 ~/.ssh/id_deploy
+        env:
+          SSH_KEY: ${{ secrets.HETZNER_SSH_KEY }}
+
+      - name: Run sanitized export on the demo host
+        run: |
+          ssh -i ~/.ssh/id_deploy -o StrictHostKeyChecking=accept-new \
+            "$SSH_USER@$SSH_HOST" \
+            'cd /opt/typo3-demo && git pull --ff-only >/dev/null && bash scripts/export-seed-sanitized.sh'
+        env:
+          SSH_HOST: ${{ secrets.HETZNER_SSH_HOST }}
+          SSH_USER: ${{ secrets.HETZNER_SSH_USER }}
+
+      - name: Fetch dump and clean up remote
+        run: |
+          scp -i ~/.ssh/id_deploy -o StrictHostKeyChecking=accept-new \
+            "$SSH_USER@$SSH_HOST:/tmp/typo3-demo-seed.sql.gz" seed.sql.gz
+          ssh -i ~/.ssh/id_deploy -o StrictHostKeyChecking=accept-new \
+            "$SSH_USER@$SSH_HOST" 'rm -f /tmp/typo3-demo-seed.sql.gz'
+        env:
+          SSH_HOST: ${{ secrets.HETZNER_SSH_HOST }}
+          SSH_USER: ${{ secrets.HETZNER_SSH_USER }}
+
+      - name: Verify and summarize
+        run: |
+          echo "Size: $(du -h seed.sql.gz | cut -f1)"
+          if zcat seed.sql.gz | grep -q 'INSERT INTO .tx_nrvault_secret.'; then
+            echo "ERROR: vault rows present in dump" >&2
+            exit 1
+          fi
+          echo "Insert statements per table:"
+          zcat seed.sql.gz | grep -oE 'INSERT INTO .[a-z_0-9]+.' | sort | uniq -c | sort -rn
+
+      - name: Encrypt for artifact upload
+        run: |
+          if [ -z "$DIAG_PASSPHRASE" ]; then
+            echo "ERROR: DIAG_PASSPHRASE secret is not set" >&2
+            exit 1
+          fi
+          openssl enc -aes-256-cbc -pbkdf2 -pass env:DIAG_PASSPHRASE \
+            -in seed.sql.gz -out seed.sql.gz.enc
+        env:
+          DIAG_PASSPHRASE: ${{ secrets.DIAG_PASSPHRASE }}
+
+      - name: Upload encrypted seed artifact
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: seed-sql-encrypted
+          path: seed.sql.gz.enc
+          retention-days: 3
