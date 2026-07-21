@@ -1,0 +1,63 @@
+name: Reset BE Admin Password
+
+# Resets the TYPO3 backend admin password to the value of the
+# TYPO3_BE_ADMIN_PASSWORD repository secret. Manual trigger only.
+# The password never appears in logs — it travels as a masked secret
+# and only its Argon2id hash reaches the database.
+
+on:
+  workflow_dispatch:
+    inputs:
+      username:
+        description: "Backend username to reset"
+        required: true
+        default: "nr_admin"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+jobs:
+  reset:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Reset backend admin password on Hetzner
+        uses: appleboy/ssh-action@0ff4204d59e8e51228ff73bce53f80d53301dee2 # v1.2.5
+        with:
+          host: ${{ secrets.HETZNER_SSH_HOST }}
+          username: ${{ secrets.HETZNER_SSH_USER }}
+          key: ${{ secrets.HETZNER_SSH_KEY }}
+          envs: TYPO3_BE_ADMIN_PASSWORD,BE_USERNAME
+          script: |
+            set -e
+            cd /opt/typo3-demo
+            if [ -z "$TYPO3_BE_ADMIN_PASSWORD" ]; then
+              echo "ERROR: TYPO3_BE_ADMIN_PASSWORD secret is not set" >&2
+              exit 1
+            fi
+            case "$BE_USERNAME" in
+              *[!A-Za-z0-9._-]*|'') echo "ERROR: invalid username" >&2; exit 1 ;;
+            esac
+            HASH=$(docker compose exec -T -e PW="$TYPO3_BE_ADMIN_PASSWORD" web \
+              php -r 'echo password_hash(getenv("PW"), PASSWORD_ARGON2ID);')
+            docker compose exec -T db sh -c \
+              'MYSQL_PWD="$MARIADB_PASSWORD" mariadb -u "$MARIADB_USER" "$MARIADB_DATABASE"' <<SQL
+            UPDATE be_users
+              SET password='$HASH', admin=1, deleted=0, disable=0,
+                  starttime=0, endtime=0, tstamp=UNIX_TIMESTAMP()
+              WHERE username='$BE_USERNAME';
+            INSERT INTO be_users (pid, username, password, admin, tstamp, crdate)
+              SELECT 0, '$BE_USERNAME', '$HASH', 1, UNIX_TIMESTAMP(), UNIX_TIMESTAMP()
+              WHERE NOT EXISTS (SELECT 1 FROM be_users WHERE username='$BE_USERNAME');
+            SELECT CONCAT('active admin rows for $BE_USERNAME: ', COUNT(*))
+              FROM be_users
+              WHERE username='$BE_USERNAME' AND deleted=0 AND disable=0 AND admin=1;
+            SQL
+            echo "Password reset applied for $BE_USERNAME."
+        env:
+          TYPO3_BE_ADMIN_PASSWORD: ${{ secrets.TYPO3_BE_ADMIN_PASSWORD }}
+          BE_USERNAME: ${{ github.event.inputs.username }}
