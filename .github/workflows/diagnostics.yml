@@ -1,0 +1,80 @@
+name: Remote Diagnostics
+
+# Read-only diagnostics of the live instance (DB login history, backend
+# users, passkey credentials, container/volume state). The repo is public,
+# so the collected report is encrypted with the DIAG_PASSPHRASE secret
+# before it reaches the workflow log. Decrypt locally with:
+#   sed -n '/^DIAG-BEGIN$/,/^DIAG-END$/p' log | sed '1d;$d' \
+#     | openssl enc -d -aes-256-cbc -pbkdf2 -pass file:passphrase.txt -a -A | gunzip
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Collect diagnostics on Hetzner
+        uses: appleboy/ssh-action@0ff4204d59e8e51228ff73bce53f80d53301dee2 # v1.2.5
+        with:
+          host: ${{ secrets.HETZNER_SSH_HOST }}
+          username: ${{ secrets.HETZNER_SSH_USER }}
+          key: ${{ secrets.HETZNER_SSH_KEY }}
+          envs: DIAG_PASSPHRASE
+          script: |
+            set -e
+            cd /opt/typo3-demo
+            if [ -z "$DIAG_PASSPHRASE" ]; then
+              echo "ERROR: DIAG_PASSPHRASE secret is not set" >&2
+              exit 1
+            fi
+            q() {
+              echo "===== $1"
+              printf '%s' "$2" | docker compose exec -T db sh -c \
+                'MYSQL_PWD="$MARIADB_PASSWORD" mariadb -t -u "$MARIADB_USER" "$MARIADB_DATABASE"' 2>&1 || true
+              echo
+            }
+            collect() {
+              echo "===== host"
+              date -u; uptime; last reboot 2>/dev/null | head -3
+              echo "===== deployed revision"
+              git log -1 --format='%h %ci %s'; ls -la .env 2>/dev/null | awk '{print $6, $7, $8, $9}'
+              echo "===== containers"
+              docker ps --format '{{.Names}}\t{{.CreatedAt}}\t{{.Status}}'
+              echo "===== volumes"
+              for v in typo3-db typo3-fileadmin typo3-var typo3-config; do
+                printf '%s\t' "typo3-demo_$v"
+                docker volume inspect "typo3-demo_$v" --format '{{.CreatedAt}}' 2>/dev/null || echo missing
+              done
+              q "be_users" "SELECT uid, username, admin, deleted, disable, FROM_UNIXTIME(crdate) crdate, FROM_UNIXTIME(tstamp) tstamp, FROM_UNIXTIME(lastlogin) lastlogin FROM be_users;"
+              q "be passkey credentials" "SELECT be_user, label, aaguid, transports, FROM_UNIXTIME(created_at) created_at, FROM_UNIXTIME(last_used_at) last_used_at, revoked_at FROM tx_nrpasskeysbe_credential;"
+              q "fe passkey credentials" "SELECT COUNT(*) fe_passkeys FROM tx_nrpasskeysfe_credential;"
+              q "sys_log span" "SELECT COUNT(*) cnt, FROM_UNIXTIME(MIN(tstamp)) oldest, FROM_UNIXTIME(MAX(tstamp)) newest FROM sys_log;"
+              q "login log (type=255)" "SELECT FROM_UNIXTIME(tstamp) t, error, details FROM sys_log WHERE type=255 ORDER BY tstamp DESC LIMIT 60;"
+              q "be_users history" "SELECT FROM_UNIXTIME(tstamp) t, recuid, userid, actiontype, LEFT(history_data, 200) data_head FROM sys_history WHERE tablename='be_users' ORDER BY tstamp DESC LIMIT 20;"
+              q "recent errors" "SELECT FROM_UNIXTIME(tstamp) t, type, error, LEFT(details, 160) details_head FROM sys_log WHERE error > 0 ORDER BY tstamp DESC LIMIT 30;"
+              q "nr-llm providers" "SELECT uid, identifier, adapter_type, endpoint_url, LENGTH(api_key) api_key_len, is_active FROM tx_nrllm_provider;"
+              q "nr-vault secrets" "SELECT COUNT(*) vault_secrets FROM tx_nrvault_secret;"
+            }
+            enc() {
+              if command -v openssl >/dev/null 2>&1; then
+                openssl enc -aes-256-cbc -pbkdf2 -pass env:DIAG_PASSPHRASE -a -A
+              else
+                docker compose exec -T -e DIAG_PASSPHRASE web \
+                  openssl enc -aes-256-cbc -pbkdf2 -pass env:DIAG_PASSPHRASE -a -A
+              fi
+            }
+            echo "DIAG-BEGIN"
+            collect | gzip | enc
+            echo
+            echo "DIAG-END"
+        env:
+          DIAG_PASSPHRASE: ${{ secrets.DIAG_PASSPHRASE }}
