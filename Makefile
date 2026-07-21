@@ -2,7 +2,10 @@
 
 COMPOSE     := docker compose
 COMPOSE_DEV := docker compose -f compose.yml -f compose.dev.yml
-TYPO3       := $(COMPOSE) exec -T web vendor/bin/typo3
+# Run the TYPO3 CLI as the php-fpm user: a root exec creates root-owned
+# cache/log files that php-fpm (www-data) can no longer write, which breaks
+# the backend on the next warning-level log record.
+TYPO3       := $(COMPOSE) exec -T -u www-data web vendor/bin/typo3
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
