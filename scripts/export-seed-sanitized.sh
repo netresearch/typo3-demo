@@ -13,23 +13,24 @@ cd "$(dirname "$0")/.."
 
 OUT=/tmp/typo3-demo-seed.sql.gz
 SCRATCH=seed_export
+DB_NAME=$(docker compose exec -T db sh -c 'printf %s "${MARIADB_DATABASE:-typo3}"')
 
-sql() { # sql <db-args...>: run SQL from stdin as root against the db container
+sql() { # sql [mariadb-args...]: run SQL from stdin as root against the db container
     docker compose exec -T db sh -c \
-        "MYSQL_PWD=\"\$MARIADB_ROOT_PASSWORD\" mariadb -u root $*"
+        'MYSQL_PWD="$MARIADB_ROOT_PASSWORD" mariadb -u root "$@"' sh "$@"
 }
 
 dump() { # dump <database>: mariadb-dump a database to stdout
     docker compose exec -T db sh -c \
-        "MYSQL_PWD=\"\$MARIADB_ROOT_PASSWORD\" mariadb-dump -u root --single-transaction --quick --skip-lock-tables $1"
+        'MYSQL_PWD="$MARIADB_ROOT_PASSWORD" mariadb-dump -u root --single-transaction --quick --skip-lock-tables "$@"' sh "$@"
 }
 
-echo "Cloning live database into scratch schema '$SCRATCH'..."
-echo "DROP DATABASE IF EXISTS $SCRATCH; CREATE DATABASE $SCRATCH;" | sql ""
-dump '"$MARIADB_DATABASE"' | sql "$SCRATCH"
+echo "Cloning live database '$DB_NAME' into scratch schema '$SCRATCH'..."
+echo "DROP DATABASE IF EXISTS $SCRATCH; CREATE DATABASE $SCRATCH;" | sql
+dump "$DB_NAME" | sql "$SCRATCH"
 
 echo "Sanitizing..."
-echo "UPDATE $SCRATCH.tx_nrllm_provider SET api_key = '';" | sql ""
+echo "UPDATE tx_nrllm_provider SET api_key = '';" | sql "$SCRATCH"
 
 # Volatile and sensitive tables: publish structure, never content.
 echo "SELECT table_name FROM information_schema.tables
@@ -47,14 +48,14 @@ echo "SELECT table_name FROM information_schema.tables
             'tx_nrllm_ai_session', 'tx_nrllm_ai_session_message',
             'tx_nrllm_tool_state', 'tx_nrllm_tool_group_state'
           ));" \
-    | sql "-N $SCRATCH" \
+    | sql -N "$SCRATCH" \
     | while read -r t; do echo "TRUNCATE TABLE \`$t\`;"; done \
     | sql "$SCRATCH"
 
 echo "Verifying sanitization..."
-KEYS=$(echo "SELECT COALESCE(MAX(LENGTH(api_key)), 0) FROM $SCRATCH.tx_nrllm_provider;" | sql -N)
-SECRETS=$(echo "SELECT COUNT(*) FROM $SCRATCH.tx_nrvault_secret;" | sql -N)
-LOGS=$(echo "SELECT COUNT(*) FROM $SCRATCH.sys_log;" | sql -N)
+KEYS=$(echo "SELECT COALESCE(MAX(LENGTH(api_key)), 0) FROM tx_nrllm_provider;" | sql -N "$SCRATCH")
+SECRETS=$(echo "SELECT COUNT(*) FROM tx_nrvault_secret;" | sql -N "$SCRATCH")
+LOGS=$(echo "SELECT COUNT(*) FROM sys_log;" | sql -N "$SCRATCH")
 if [ "$KEYS" != "0" ] || [ "$SECRETS" != "0" ] || [ "$LOGS" != "0" ]; then
     echo "ERROR: sanitization failed (api_key_len=$KEYS vault_rows=$SECRETS sys_log_rows=$LOGS)" >&2
     exit 1
@@ -62,11 +63,11 @@ fi
 
 echo "Exporting to $OUT..."
 dump "$SCRATCH" | gzip > "$OUT"
-echo "DROP DATABASE $SCRATCH;" | sql ""
+echo "DROP DATABASE $SCRATCH;" | sql
 
-if zcat "$OUT" | grep -q 'INSERT INTO `tx_nrvault_secret`'; then
+if zcat "$OUT" | grep -q 'INSERT INTO .tx_nrvault_secret.'; then
     echo "ERROR: vault rows present in dump" >&2
     exit 1
 fi
-PASSKEYS=$(zcat "$OUT" | grep -c 'INSERT INTO `tx_nrpasskeysbe_credential`' || true)
+PASSKEYS=$(zcat "$OUT" | grep -c 'INSERT INTO .tx_nrpasskeysbe_credential.' || true)
 echo "Done: $(du -h "$OUT" | cut -f1), BE passkey insert statements: $PASSKEYS"
