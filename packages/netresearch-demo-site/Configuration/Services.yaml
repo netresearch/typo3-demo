@@ -1,0 +1,220 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: false
+
+  Netresearch\DemoSite\:
+    resource: '../Classes/*'
+
+  # ---------------------------------------------------------------------------
+  # Dashboard cards — one per Netresearch demo extension.
+  # All share the DemoExtensionCardWidget class; content is options-driven.
+  # ---------------------------------------------------------------------------
+
+  dashboard.widget.nrdemo.llm:
+    class: 'Netresearch\DemoSite\Widgets\DemoExtensionCardWidget'
+    arguments:
+      $options:
+        description: 'The shared AI/LLM foundation for TYPO3: centralized provider management, encrypted API keys, and chat, translation, vision, and embedding services used by all other AI extensions on this site.'
+        howTo:
+          - 'Open Admin Tools > LLM in the module menu.'
+          - 'Review the configured providers, models, and task templates.'
+          - 'Open the Analytics section to see requests made by Cowriter, Landing Pages, and the AI Agent.'
+        moduleRoute: 'nrllm'
+        buttonLabel: 'Open LLM module'
+    tags:
+      - name: 'dashboard.widget'
+        identifier: 'nrdemo.llm'
+        groupNames: 'netresearch'
+        title: 'NR LLM'
+        description: 'AI/LLM foundation — providers, models, and usage analytics'
+        iconIdentifier: 'module-nrllm'
+        height: 'medium'
+        width: 'medium'
+
+  dashboard.widget.nrdemo.mcpagent:
+    class: 'Netresearch\DemoSite\Widgets\DemoExtensionCardWidget'
+    arguments:
+      $options:
+        description: 'An AI chat assistant inside the TYPO3 backend. It combines nr-llm with the MCP server, so the agent can use tools to inspect and operate the site while chatting with you.'
+        howTo:
+          - 'Open Admin Tools > AI Agent in the module menu.'
+          - 'Ask a question about the site, e.g. "List the latest news records".'
+          - 'Watch the agent call MCP tools and compose an answer from the results.'
+        moduleRoute: 'nr_mcp_agent_chat'
+        buttonLabel: 'Open AI Agent'
+    tags:
+      - name: 'dashboard.widget'
+        identifier: 'nrdemo.mcpagent'
+        groupNames: 'netresearch'
+        title: 'NR MCP Agent'
+        description: 'Tool-using AI chat assistant in the TYPO3 backend'
+        iconIdentifier: 'module-nr-mcp-agent'
+        height: 'medium'
+        width: 'medium'
+
+  dashboard.widget.nrdemo.passkeysbe:
+    class: 'Netresearch\DemoSite\Widgets\DemoExtensionCardWidget'
+    arguments:
+      $options:
+        description: 'Passwordless TYPO3 backend authentication with passkeys (WebAuthn/FIDO2): per-group enforcement policies, enrollment prompts, and an adoption dashboard.'
+        howTo:
+          - 'Open System > Passkeys to see the adoption dashboard.'
+          - 'Register a passkey for your account via User Settings > Passkeys.'
+          - 'Log out and sign in again using your fingerprint, face, or security key.'
+        moduleRoute: 'admin_passkeys'
+        buttonLabel: 'Open Passkeys module'
+    tags:
+      - name: 'dashboard.widget'
+        identifier: 'nrdemo.passkeysbe'
+        groupNames: 'netresearch'
+        title: 'NR Passkeys (Backend)'
+        description: 'Passwordless backend login via WebAuthn/FIDO2'
+        iconIdentifier: 'passkeys-be-module'
+        height: 'medium'
+        width: 'small'
+
+  dashboard.widget.nrdemo.passkeysfe:
+    class: 'Netresearch\DemoSite\Widgets\DemoExtensionCardWidget'
+    arguments:
+      $options:
+        description: 'Passkey-first login for website users (fe_users): Touch ID, Face ID, Windows Hello, or hardware keys instead of passwords, as a drop-in felogin override.'
+        howTo:
+          - 'Open Web > Frontend Passkeys for the admin overview.'
+          - 'Visit /login on the site and log in as demo / demo.'
+          - 'Register a passkey via the management plugin, then log in again with it.'
+        moduleRoute: 'nr_passkeys_fe'
+        buttonLabel: 'Open Frontend Passkeys'
+    tags:
+      - name: 'dashboard.widget'
+        identifier: 'nrdemo.passkeysfe'
+        groupNames: 'netresearch'
+        title: 'NR Passkeys (Frontend)'
+        description: 'Passkey-first frontend login for website users'
+        iconIdentifier: 'nr-passkeys-fe-module'
+        height: 'medium'
+        width: 'small'
+
+  dashboard.widget.nrdemo.repurpose:
+    class: 'Netresearch\DemoSite\Widgets\DemoExtensionCardWidget'
+    arguments:
+      $options:
+        description: 'Turns a web page or PDF into a podcast, a diagram, and an Instagram story — content repurposing built on the nr-llm foundation.'
+        howTo:
+          - 'Open Web > Repurpose in the module menu.'
+          - 'Create a new job and paste a page URL or upload a PDF.'
+          - 'Open the finished job to preview the generated podcast, diagram, and story.'
+        moduleRoute: 'web_nrrepurpose'
+        buttonLabel: 'Open Repurpose module'
+    tags:
+      - name: 'dashboard.widget'
+        identifier: 'nrdemo.repurpose'
+        groupNames: 'netresearch'
+        title: 'NR Repurpose'
+        description: 'Turn pages and PDFs into podcasts, diagrams, and stories'
+        iconIdentifier: 'tx-nrrepurpose-module'
+        height: 'medium'
+        width: 'small'
+
+  dashboard.widget.nrdemo.vault:
+    class: 'Netresearch\DemoSite\Widgets\DemoExtensionCardWidget'
+    arguments:
+      $options:
+        description: 'Secure secrets management for TYPO3 with envelope encryption, access control, and audit logging. It stores the API keys used by nr-llm on this site.'
+        howTo:
+          - 'Open Admin Tools > Vault in the module menu.'
+          - 'Inspect the stored secrets and their access scopes.'
+          - 'Open the audit log to see who accessed which secret and when.'
+        moduleRoute: 'admin_vault'
+        buttonLabel: 'Open Vault module'
+    tags:
+      - name: 'dashboard.widget'
+        identifier: 'nrdemo.vault'
+        groupNames: 'netresearch'
+        title: 'NR Vault'
+        description: 'Encrypted secrets management with audit logging'
+        iconIdentifier: 'module-vault'
+        height: 'medium'
+        width: 'small'
+
+  dashboard.widget.nrdemo.temporalcache:
+    class: 'Netresearch\DemoSite\Widgets\DemoExtensionCardWidget'
+    arguments:
+      $options:
+        description: 'Automatic page-cache invalidation for time-controlled content (starttime/endtime) — addresses the long-standing TYPO3 Forge issue #14277.'
+        howTo:
+          - 'Open Admin Tools > Temporal Cache in the module menu.'
+          - 'Review the upcoming visibility transitions found on this site.'
+          - 'Set a starttime on any content element and watch it appear in the schedule.'
+        moduleRoute: 'tools_TemporalCache'
+        buttonLabel: 'Open Temporal Cache'
+    tags:
+      - name: 'dashboard.widget'
+        identifier: 'nrdemo.temporalcache'
+        groupNames: 'netresearch'
+        title: 'NR Temporal Cache'
+        description: 'Automatic cache invalidation for timed content'
+        iconIdentifier: 'temporal-cache-module'
+        height: 'medium'
+        width: 'small'
+
+  dashboard.widget.nrdemo.landingpage:
+    class: 'Netresearch\DemoSite\Widgets\DemoExtensionCardWidget'
+    arguments:
+      $options:
+        description: 'Generates complete landing pages with AI from a short briefing: structured content elements, brand colors, and SEO fields — driven by reusable wizard templates.'
+        howTo:
+          - 'Open Web > Landing Pages in the module menu.'
+          - 'Pick a template, e.g. "Product Launch" or "Creative One-Pager".'
+          - 'Enter a short briefing and generate — then review the created page in Web > Page.'
+        moduleRoute: 'nr_landingpage'
+        buttonLabel: 'Open Landing Pages'
+    tags:
+      - name: 'dashboard.widget'
+        identifier: 'nrdemo.landingpage'
+        groupNames: 'netresearch'
+        title: 'NR Landing Page'
+        description: 'AI-generated landing pages from wizard templates'
+        iconIdentifier: 'nr-landingpage-module'
+        height: 'medium'
+        width: 'medium'
+
+  dashboard.widget.nrdemo.cowriter:
+    class: 'Netresearch\DemoSite\Widgets\DemoExtensionCardWidget'
+    arguments:
+      $options:
+        description: 'An AI writing assistant in CKEditor: rewrite, summarize, translate, or fix grammar of the selected text — right where editors work.'
+        howTo:
+          - 'Open Web > Page and edit a text element, e.g. on the "AI Cowriter" demo page.'
+          - 'Select some text in the rich text editor.'
+          - 'Click the Cowriter button in the editor toolbar and choose a task such as "Rewrite".'
+          - 'Review the AI suggestion and apply it with one click.'
+    tags:
+      - name: 'dashboard.widget'
+        identifier: 'nrdemo.cowriter'
+        groupNames: 'netresearch'
+        title: 'T3 Cowriter'
+        description: 'AI writing assistant inside CKEditor'
+        iconIdentifier: 'content-widget-text'
+        height: 'medium'
+        width: 'small'
+
+  dashboard.widget.nrdemo.rteimage:
+    class: 'Netresearch\DemoSite\Widgets\DemoExtensionCardWidget'
+    arguments:
+      $options:
+        description: 'Image support inside the CKEditor 5 rich text editor: insert FAL images, responsive magic-image processing, captions, and click-to-enlarge — no separate image content elements needed.'
+        howTo:
+          - 'Open Web > Page and edit the text element on the "RTE CKEditor Image" demo page.'
+          - 'Click the image button in the editor toolbar.'
+          - 'Pick an image from fileadmin, set alternative text, and save — the frontend renders it responsively.'
+    tags:
+      - name: 'dashboard.widget'
+        identifier: 'nrdemo.rteimage'
+        groupNames: 'netresearch'
+        title: 'RTE CKEditor Image'
+        description: 'FAL image handling inside the rich text editor'
+        iconIdentifier: 'content-image'
+        height: 'medium'
+        width: 'small'
