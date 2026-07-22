@@ -113,8 +113,10 @@ services:
     image: typo3solr/ext-solr:14.0.0-RC1
     logging: *default-logging
     environment:
-      # Official Solr image heap var; sets both -Xms and -Xmx to 256m.
-      SOLR_HEAP: "256m"
+      # Official Solr image heap var; sets both -Xms and -Xmx. 384m is the
+      # practical floor for Solr 10 to start and stay healthy with a tiny demo
+      # index; kept low for the 4GB host (see the memory limit below).
+      SOLR_HEAP: "384m"
     volumes:
       # Named volume is seeded from the image's baked-in TYPO3 cores on first
       # creation, then persists the index across restarts. SOLR_HOME is
@@ -133,7 +135,10 @@ services:
     deploy:
       resources:
         limits:
-          memory: 512M
+          # 384m heap + JVM overhead (metaspace, threads, off-heap) fits under
+          # 640M. Total committed: web 1G + worker 768M + db 512M + valkey 128M
+          # + caddy 256M + solr 640M = 3.3G on the 4GB host.
+          memory: 640M
 
   db:
     image: mariadb:11
