@@ -902,3 +902,120 @@ WHERE uid = 1;
 -- matching once set, so re-running make seed-extensions is a no-op.
 UPDATE tx_nrllm_model SET cost_input = 125, cost_output = 1000
 WHERE deleted = 0 AND cost_input = 0 AND cost_output = 0;
+
+-- =============================================================================
+-- AI Search & Chat (nr_ai_search) — RAG embeddings + chat configuration
+-- =============================================================================
+-- nr_ai_search grounds an anonymous frontend search box and chat widget in the
+-- site's own content via a Vektor (SQLite) store. It never talks to an LLM API
+-- directly: every embedding and chat call goes through nr_llm, so it needs one
+-- embeddings-capable and one tool/chat-capable nr_llm Configuration record, plus
+-- a dedicated NON-admin technical be_user every anonymous frontend call is
+-- attributed to (so nr_llm's budget ceiling applies to frontend traffic). All
+-- statements are idempotent so `make seed-extensions` can re-run each deploy.
+-- The runtime extension configuration (embeddingConfiguration/chatConfiguration/
+-- embeddingDimensions/technicalBeUserUid/...) is written by
+-- docker/web/entrypoint.sh; the lochmueller/index configuration record and the
+-- indexing run live there too (its table is created by extension:setup, which
+-- runs after this seed import).
+
+-- 1) Embeddings model: OpenAI text-embedding-3-small (1536-dim), bound to the
+--    seeded OpenAI provider (uid 1). The extension config's embeddingDimensions
+--    MUST equal this model's dimensions (1536). cost_input is cents per 1M
+--    tokens (embeddings bill input only). Fixed uid 90 is above the seed maxima
+--    (tx_nrllm_model max uid 1) and keeps the row idempotent on its PK. Placed
+--    after the blanket cost UPDATE above so it keeps its own embeddings price.
+INSERT IGNORE INTO tx_nrllm_model
+    (uid, pid, tstamp, crdate, deleted, hidden, identifier, name, description,
+     provider_uid, model_id, context_length, max_output_tokens, capabilities,
+     default_timeout, cost_input, cost_output, is_active, is_default, dimensions)
+VALUES (90, 0, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0,
+     'text-embedding-3-small', 'OpenAI Text Embedding 3 Small',
+     'Embedding model used by nr_ai_search for content indexing and query-time retrieval.',
+     1, 'text-embedding-3-small', 8191, 0, 'embeddings',
+     60, 2, 0, 1, 0, 1536);
+
+-- 2a) Embeddings configuration. Its identifier matches the extension's shipped
+--     default and the nr_ai_search.embeddings preset. Idempotent on identifier
+--     (mirrors the backend-ai-chat pattern above).
+INSERT INTO tx_nrllm_configuration
+    (pid, tstamp, crdate, identifier, name, description, model_uid, model_selection_mode,
+     system_prompt, temperature, max_tokens, is_active, is_default)
+SELECT
+    0, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'nr_ai_search.embeddings', 'AI Search: Embeddings',
+    'Embedding vectorization used by nr_ai_search for content indexing and retrieval.',
+    COALESCE((SELECT uid FROM tx_nrllm_model WHERE identifier = 'text-embedding-3-small' AND deleted = 0 ORDER BY uid ASC LIMIT 1), 0),
+    'fixed', '', 0.00, 0, 1, 0
+FROM DUAL
+WHERE NOT EXISTS (
+    SELECT 1 FROM tx_nrllm_configuration WHERE identifier = 'nr_ai_search.embeddings' AND deleted = 0
+);
+
+-- 2b) Chat configuration. Its identifier matches the extension's shipped default
+--     and the nr_ai_search.chat preset. Bound to a tool-capable chat model.
+INSERT INTO tx_nrllm_configuration
+    (pid, tstamp, crdate, identifier, name, description, model_uid, model_selection_mode,
+     system_prompt, temperature, max_tokens, is_active, is_default)
+SELECT
+    0, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'nr_ai_search.chat', 'AI Search: Chat',
+    'Tool-calling chat used by nr_ai_search to generate answers grounded exclusively in retrieved website content.',
+    COALESCE((SELECT uid FROM tx_nrllm_model WHERE FIND_IN_SET('tools', capabilities) AND deleted = 0 ORDER BY is_default DESC, uid ASC LIMIT 1), 0),
+    'fixed', '', 0.30, 4096, 1, 0
+FROM DUAL
+WHERE NOT EXISTS (
+    SELECT 1 FROM tx_nrllm_configuration WHERE identifier = 'nr_ai_search.chat' AND deleted = 0
+);
+
+-- 2c) Refresh both model bindings on every deploy (idempotent UPDATEs), so the
+--     configs keep resolving a live model even if the seeded model set changes.
+UPDATE tx_nrllm_configuration
+SET model_uid = COALESCE(
+        (SELECT uid FROM tx_nrllm_model WHERE identifier = 'text-embedding-3-small' AND deleted = 0 ORDER BY uid ASC LIMIT 1),
+        model_uid),
+    is_active = 1
+WHERE identifier = 'nr_ai_search.embeddings' AND deleted = 0;
+
+UPDATE tx_nrllm_configuration
+SET model_uid = COALESCE(
+        (SELECT uid FROM tx_nrllm_model WHERE FIND_IN_SET('tools', capabilities) AND deleted = 0 ORDER BY is_default DESC, uid ASC LIMIT 1),
+        model_uid),
+    is_active = 1
+WHERE identifier = 'nr_ai_search.chat' AND deleted = 0;
+
+-- 3) Dedicated NON-admin technical backend user (admin=0, disable=0). Every
+--    anonymous frontend search/chat call is attributed to this uid so nr_llm's
+--    budget applies to frontend traffic (technicalBeUserUid in the extension
+--    config, written by entrypoint.sh). It never logs in: the password is a
+--    deliberately invalid hash string. Fixed uid 990 is above the seed maxima
+--    (be_users max uid 5).
+INSERT IGNORE INTO be_users
+    (uid, pid, tstamp, crdate, deleted, disable, admin, username, password, realName, description)
+VALUES (990, 0, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0, 0,
+     'nr_ai_search_technical', '!nr_ai_search_technical_no_login',
+     'AI Search technical user',
+     'Synthetic non-admin identity; all anonymous frontend nr_ai_search calls are attributed here for nr_llm budget accounting. Not for interactive login.');
+
+-- 4) Frontend showcase page under "Extensions" (uid 101) carrying the two
+--    nr_ai_search plugin content elements. Page uid 158 and tt_content uids
+--    602-604 are above the seed maxima (pages 157, tt_content 601). Both plugins
+--    are CType-based (registerPlugin + configurePlugin PLUGIN_TYPE_CONTENT_ELEMENT);
+--    neither has a FlexForm (ADR-009), so pi_flexform stays empty (NULL) and all
+--    configuration is instance-wide via the extension configuration.
+INSERT IGNORE INTO pages (uid, pid, tstamp, crdate, title, slug, doktype, sorting, hidden, deleted)
+VALUES (158, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'AI Search', '/extensions/ai-search', 1, 800, 0, 0);
+
+INSERT IGNORE INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
+VALUES (602, 158, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', '',
+'<div class="card border-0 mb-4" style="background: #f8f9fa;">
+  <div class="card-body py-4">
+    <h1 class="h3 fw-bold mb-3">AI Search &amp; Chat</h1>
+    <p class="mb-2" style="max-width: 720px;">Ask this website a question in natural language. nr_ai_search embeds the site content into a vector store and grounds every answer strictly in what it retrieves &mdash; the search box returns a synthesised answer with sources, and the chat widget holds a short grounded conversation.</p>
+    <p class="text-muted mb-0" style="font-size: 0.9rem; max-width: 720px;">Runtime note: answers require an OpenAI API key configured in the Vault module (frontend-accessible) and content that has been indexed and embedded. Without both, the widgets render but report that they cannot answer.</p>
+  </div>
+</div>', 0, 100, 0, 0);
+
+INSERT IGNORE INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
+VALUES (603, 158, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'nraisearch_search', 'AI Search', '', 0, 200, 0, 0);
+
+INSERT IGNORE INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
+VALUES (604, 158, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'nraisearch_chat', 'AI Chat', '', 0, 300, 0, 0);
