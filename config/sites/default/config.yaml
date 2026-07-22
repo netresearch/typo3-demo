@@ -20,4 +20,3 @@ solr_port_read: 8983
 solr_path_read: /
 dependencies:
   - netresearch/demo-site
-  - apache-solr-for-typo3/solr
