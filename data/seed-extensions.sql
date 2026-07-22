@@ -61,10 +61,6 @@ VALUES (400, 102, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'RTE CKEditor Imag
 <p class="text-muted mb-2" style="font-size: 0.88rem;">A standalone image inserted via CKEditor — rendered with responsive srcset:</p>
 <p><img src="/fileadmin/user_upload/images/Home/CH5_7354.jpg" alt="Team photo demo" width="800" data-htmlarea-file-uid="190" data-htmlarea-file-table="sys_file"></p>
 
-<h3 class="fw-bold mb-2 mt-4" style="font-size: 1rem;">Click-to-Enlarge (Lightbox)</h3>
-<p class="text-muted mb-2" style="font-size: 0.88rem;">Click the image below to see the lightbox popup:</p>
-<p><img src="/fileadmin/user_upload/images/Home/CH5_7203.jpg" alt="Click to enlarge" width="400" data-htmlarea-file-uid="188" data-htmlarea-file-table="sys_file" data-htmlarea-zoom="true"></p>
-
 <h3 class="fw-bold mb-2 mt-4" style="font-size: 1rem;">Inline Image in Text</h3>
 <p style="font-size: 0.88rem;">Text can contain inline images like this <img class="image image-inline" src="/fileadmin/user_upload/images/netresearch-typo3-demo.png" alt="inline logo" width="60" data-htmlarea-file-uid="1" data-htmlarea-file-table="sys_file"> logo that flows naturally within the paragraph.</p>
 
@@ -72,6 +68,18 @@ VALUES (400, 102, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'RTE CKEditor Imag
   <strong style="color: #2F99A4;">For integrators:</strong> Edit this page in the TYPO3 backend to see the CKEditor image toolbar button in action. All images above are inserted via CKEditor, not the standard image content element.
 </div>',
 0, 100, 0, 0);
+
+-- Click-to-Enlarge (Lightbox) live demo — relocated out of the CType=html block
+-- above into a regular CType=text element so its rich text runs through
+-- lib.parseFunc_RTE. Only then does rte_ckeditor_image convert the
+-- data-htmlarea-zoom image into a click-to-enlarge (zoom popup) link; inside a
+-- raw html element parseFunc_RTE never runs and the img stays bare.
+-- Free uid above the base-dump tt_content max (522).
+INSERT IGNORE INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
+VALUES (601, 102, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'text', 'Click-to-Enlarge (Lightbox) — Live Demo',
+'<p class="text-muted mb-2" style="font-size: 0.88rem;">Click the image below to see the zoom popup. Because this is a regular Text element, its rich text is processed by <code>lib.parseFunc_RTE</code>, so rte_ckeditor_image turns the <code>data-htmlarea-zoom</code> image into a click-to-enlarge link:</p>
+<p><img src="/fileadmin/user_upload/images/Home/CH5_7203.jpg" alt="Click to enlarge" width="400" data-htmlarea-file-uid="188" data-htmlarea-file-table="sys_file" data-htmlarea-zoom="true"></p>',
+0, 150, 0, 0);
 
 -- =============================================================================
 -- AI Cowriter
