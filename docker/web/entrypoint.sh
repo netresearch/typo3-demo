@@ -235,7 +235,9 @@ echo "Probing Apache Solr at ${SOLR_HOST}:${SOLR_PORT}..."
 solr_ok=0
 n=0
 while [ "$n" -lt 15 ]; do
-    if wget -q -O /dev/null "http://${SOLR_HOST}:${SOLR_PORT}/solr/admin/cores?action=STATUS" 2>/dev/null; then
+    # NOSONAR (shell:S5332): Solr is an internal-only container on the compose
+    # network with no TLS; http:// is the only scheme it serves.
+    if wget -q -O /dev/null "http://${SOLR_HOST}:${SOLR_PORT}/solr/admin/cores?action=STATUS" 2>/dev/null; then # NOSONAR
         solr_ok=1
         break
     fi
