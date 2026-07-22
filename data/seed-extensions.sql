@@ -507,11 +507,18 @@ VALUES (406, 108, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'Automatic Cache I
 -- =============================================================================
 -- AI Chat Agent
 -- =============================================================================
+-- uid 157 (not 110): the base dump (data/db.sql.gz) already has pages up to
+-- uid 156, so uid 110 collided with an existing page and INSERT IGNORE skipped
+-- it (404). tt_content uid 522 is likewise above the base dump's max (521).
+-- Remove any stray content from the earlier mis-seed (uid 408 attached to the
+-- pre-existing page 110) so it does not linger on that page.
+DELETE FROM tt_content WHERE uid = 408 AND pid = 110 AND CType = 'html';
+
 INSERT IGNORE INTO pages (uid, pid, tstamp, crdate, title, slug, doktype, sorting, hidden, deleted)
-VALUES (110, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'AI Chat Agent', '/extensions/ai-agent', 1, 800, 0, 0);
+VALUES (157, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'AI Chat Agent', '/extensions/ai-agent', 1, 800, 0, 0);
 
 INSERT IGNORE INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
-VALUES (408, 110, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'Conversational AI in the TYPO3 Backend',
+VALUES (522, 157, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'Conversational AI in the TYPO3 Backend',
 '<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(47,153,164,0.06), rgba(47,153,164,0.02));">
   <div class="d-flex align-items-center gap-2 mb-2">
     <span class="badge rounded-pill text-white" style="background: #2F99A4; font-size: 0.7rem;">AI</span>
