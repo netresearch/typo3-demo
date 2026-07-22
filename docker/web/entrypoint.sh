@@ -187,6 +187,48 @@ if [ -f config/system/settings.php ]; then
     ' || echo "WARNING: failed to write additional.php" >&2
 fi
 
+# Configure nr_ai_search (RAG frontend Search + Chat) and lochmueller/index.
+# Same managed-block approach as nr_mcp_agent above: a single marked block is
+# (re)written each boot; any other additional.php content is preserved.
+# - nr_ai_search points at the seeded nr_llm embeddings/chat configurations and
+#   the seeded non-admin technical be_user (uid 990, data/seed-extensions.sql).
+#   embeddingDimensions (1536) MUST equal the seeded embedding model's real
+#   output width.
+# - index (lochmueller/index) is told to index synchronously in Development
+#   context, so the single `index:queue` further below emits IndexPageEvent
+#   inline instead of persisting to a separate 'index' transport that would
+#   otherwise need its own long-running consumer.
+if [ -f config/system/settings.php ]; then
+    php -r '
+        $f = "config/system/additional.php";
+        $begin = "// >>> nr_ai_search (managed by entrypoint, do not edit this block)";
+        $end   = "// <<< nr_ai_search";
+        $block = $begin . "\n"
+            . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"nr_ai_search\"][\"embeddingConfiguration\"] = \"nr_ai_search.embeddings\";\n"
+            . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"nr_ai_search\"][\"chatConfiguration\"] = \"nr_ai_search.chat\";\n"
+            . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"nr_ai_search\"][\"embeddingDimensions\"] = \"1536\";\n"
+            . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"nr_ai_search\"][\"technicalBeUserUid\"] = \"990\";\n"
+            . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"nr_ai_search\"][\"rateLimitPerMinute\"] = \"10\";\n"
+            . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"nr_ai_search\"][\"hybridSearchEnabled\"] = \"0\";\n"
+            . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"index\"][\"defaultTransportInDevelopmentContext\"] = \"1\";\n"
+            . $end;
+        $existing = is_file($f) ? (string) file_get_contents($f) : "";
+        if (strpos($existing, "<?php") === false) {
+            $existing = "<?php\n" . ($existing === "" ? "" : $existing . "\n");
+        }
+        $b = strpos($existing, $begin);
+        if ($b !== false) {
+            $e = strpos($existing, $end, $b);
+            $existing = $e !== false
+                ? substr($existing, 0, $b) . substr($existing, $e + strlen($end))
+                : substr($existing, 0, $b);
+        }
+        $existing = rtrim($existing, "\n") . "\n\n" . $block . "\n";
+        file_put_contents($f, $existing);
+        echo "additional.php: nr_ai_search configured (technicalBeUserUid=990, dims=1536), index dev-sync on." . PHP_EOL;
+    ' || echo "WARNING: failed to write nr_ai_search additional.php block" >&2
+fi
+
 echo "Running TYPO3 setup..."
 vendor/bin/typo3 extension:setup 2>&1 || echo "WARNING: extension:setup failed" >&2
 
@@ -200,6 +242,58 @@ if [ -f /var/www/data/seed-schema.sql ]; then
 fi
 vendor/bin/typo3 cache:flush 2>&1 || echo "WARNING: cache:flush failed" >&2
 vendor/bin/typo3 cache:warmup 2>&1 || echo "WARNING: cache:warmup failed" >&2
+
+# ---------------------------------------------------------------------------
+# nr_ai_search content vectorization (best-effort, never blocks boot).
+# ---------------------------------------------------------------------------
+# lochmueller/index's configuration table (tx_index_domain_model_configuration)
+# is created by extension:setup above — so its seed row is applied HERE, not in
+# data/seed-extensions.sql (which is imported before setup, when the table does
+# not yet exist). Then one synchronous index run (Development context, see the
+# index dev-sync flag in additional.php above) emits IndexPageEvent per page;
+# nr_ai_search turns each into an embedding job on its own 'nr_ai_search'
+# Messenger queue, drained by the bounded consume below.
+#
+# The one-shot sentinel keeps this off the hot restart path: it runs once per
+# fresh data volume (a `make reset` purges the volume and re-triggers it).
+#
+# IMPORTANT — this produces embeddings only once a real OpenAI API key is stored
+# in the Vault module (marked frontend-accessible) and bound to the seeded
+# OpenAI provider, exactly like every other AI feature in this demo. Without a
+# key the jobs still queue but fail on the embedding call, the vektor store at
+# var/nr_ai_search/ stays empty, and the widgets report that they cannot answer.
+# After adding a key, re-run `vendor/bin/typo3 index:queue` then
+# `vendor/bin/typo3 messenger:consume nr_ai_search`, or `make reset`.
+SENTINEL="var/nr_ai_search/.bootstrap-indexed"
+if [ -f config/system/settings.php ] && [ ! -f "$SENTINEL" ]; then
+    echo "Seeding lochmueller/index configuration for nr_ai_search..."
+    MYSQL_PWD="${MARIADB_PASSWORD:-typo3}" mariadb -h"${MARIADB_HOST:-db}" -u"${MARIADB_USER:-typo3}" "${MARIADB_DATABASE:-typo3}" 2>/dev/null <<'SQL' || echo "WARNING: index configuration seed failed" >&2
+INSERT INTO tx_index_domain_model_configuration
+    (pid, tstamp, crdate, deleted, hidden, title, technology, content_indexing,
+     skip_no_search_pages, levels, languages, configuration, partial_indexing,
+     file_mounts, file_types, content_processors)
+SELECT 1, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0, 'Demo content (nr_ai_search)',
+     'database', 1, 0, 30, '0', '{}', '', '', '', ''
+FROM DUAL
+WHERE NOT EXISTS (
+    SELECT 1 FROM tx_index_domain_model_configuration WHERE pid = 1 AND deleted = 0
+);
+SQL
+
+    echo "Filling index queue (synchronous) — emits page-index events for nr_ai_search..."
+    TYPO3_SITE_BASE="https://${TYPO3_DOMAIN:-localhost}/" \
+        vendor/bin/typo3 index:queue 2>&1 \
+        || echo "WARNING: index:queue failed — content not vectorized until re-run" >&2
+
+    echo "Draining nr_ai_search embedding queue (bounded; needs an OpenAI key to succeed)..."
+    vendor/bin/typo3 messenger:consume nr_ai_search \
+        --limit=100 --time-limit=60 --memory-limit=512M 2>&1 \
+        || echo "WARNING: messenger:consume nr_ai_search ended non-zero (expected until an OpenAI key is set in Vault)" >&2
+
+    mkdir -p var/nr_ai_search
+    touch "$SENTINEL"
+    chown -R www-data:www-data var/nr_ai_search 2>/dev/null || true
+fi
 
 # Workaround: Bootstrap Package 16.0.0 has a bug in GoogleFontService.php where
 # $response->getBody()->getContents() is called twice — the second call returns empty
