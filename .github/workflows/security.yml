@@ -21,3 +21,13 @@ jobs:
 
   composer-audit:
     uses: netresearch/typo3-ci-workflows/.github/workflows/security.yml@main
+    # The reusable runs `composer install` on a hosted runner with only the
+    # default GitHub token; it has no input/secret to pass COMPOSER_AUTH, so it
+    # cannot authenticate to the private git.netresearch.de source that provides
+    # netresearch/nr-ai-search (an internal-only extension, never on Packagist).
+    # Skipping only the Composer dependency audit keeps the rest of the reusable
+    # (Opengrep SAST) and the sibling gitleaks/dependency-review jobs running.
+    # The image build (build.yml) is the authoritative dependency-resolution
+    # gate and does carry the GitLab token via GITLAB_COMPOSER_TOKEN.
+    with:
+      skip-composer-audit: true
