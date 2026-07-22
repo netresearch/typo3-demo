@@ -22,10 +22,24 @@ host pulls and updates itself. There is no manual server editing.
 | `netresearch/t3-cowriter` | AI writing assistant inside CKEditor | Tools › Cowriter Status |
 | `netresearch/nr-temporal-cache` | Time-based page-cache invalidation | Tools › Temporal Cache |
 | `netresearch/rte-ckeditor-image` | Image support inside the RTE | (RTE toolbar) |
+| `apache-solr-for-typo3/solr` | Full-text search over the demo content (spike) | Search module (Index Queue / Info) |
 
 The backend has two dashboards: **Netresearch Demo** (one explainer card per
 extension, each with a "how to demo it" recipe) and **Netresearch Widgets**
 (the extensions' own live dashboard widgets).
+
+### Apache Solr (spike)
+
+EXT:solr is a **release-candidate** dependency (`14.0.0-RC1`; there is no stable
+v14 yet, hence the `@RC` constraint in `composer.json`). The `solr` service runs
+always-on but memory-bounded for the 4GB host: a **256M JVM heap** under a
+**512M** container limit, and the `worker` service was trimmed from 1G to 768M
+to make room. It is internal-only (no published ports; reached at `solr:8983`
+over the compose network) and its connection is configured in the site
+`config.yaml` (`solr_host_read` etc.). A larger host (**8GB**) is recommended
+for comfortable always-on use. EXT:solr v14 provides no indexing console
+command — populate the index via **Web › Search › Index Queue** plus the
+**Index Queue Worker** scheduler task.
 
 ## Quick start
 
