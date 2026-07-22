@@ -1,0 +1,10 @@
+# Bootstrap Package's RTE set sets `RTE.default.preset = bootstrap` for all RTE
+# fields. This demo set depends on bootstrap-package/full, so this page.tsconfig
+# loads AFTER it and wins: point RTE fields at the demo 'default' preset, which
+# imports Bootstrap Package + adds the Cowriter and rte_ckeditor_image plugins,
+# so the Cowriter toolbar button appears when editing content.
+RTE {
+    default {
+        preset = default
+    }
+}
