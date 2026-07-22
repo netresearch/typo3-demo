@@ -222,41 +222,6 @@ if [ -f "$GFONT_SVC" ] && [ "$(grep -c '\$content = \$response->getBody()->getCo
     "
 fi
 
-# EXT:solr connection probe + indexing (disposable spike).
-# EXT:solr v14 ships NO console commands of its own — indexing is normally driven
-# by the backend "Index Queue" module plus the Index Queue Worker scheduler task.
-# The site package provides an in-process equivalent (demo:solr:index) so the demo
-# indexes end-to-end on boot. This block first verifies the Solr server is
-# reachable (a misconfigured connection is then visible in the logs) and, when it
-# is, runs the indexing command. It is deliberately tolerant: an unreachable Solr
-# or a failed index run must never break web boot (mirrors `|| echo WARNING`).
-SOLR_HOST="${SOLR_HOST:-solr}"
-SOLR_PORT="${SOLR_PORT:-8983}"
-echo "Probing Apache Solr at ${SOLR_HOST}:${SOLR_PORT}..."
-solr_ok=0
-n=0
-while [ "$n" -lt 15 ]; do
-    # NOSONAR (shell:S5332): Solr is an internal-only container on the compose
-    # network with no TLS; http:// is the only scheme it serves.
-    if wget -q -O /dev/null "http://${SOLR_HOST}:${SOLR_PORT}/solr/admin/cores?action=STATUS" 2>/dev/null; then # NOSONAR
-        solr_ok=1
-        break
-    fi
-    n=$((n + 1))
-    sleep 2
-done
-if [ "$solr_ok" = "1" ]; then
-    echo "Solr reachable; indexing demo content into Solr..."
-    # The in-process front-end indexing sub-request needs a site base with a real
-    # host: otherwise EXT:solr throws SolrIndexRuntimeException 1741200001 and the
-    # stored result URLs are hostless. TYPO3_DOMAIN is the deployed domain on live
-    # and localhost locally, so result links point at the right host either way.
-    TYPO3_SITE_BASE="https://${TYPO3_DOMAIN}/" vendor/bin/typo3 demo:solr:index 2>&1 \
-        || echo "WARNING: demo:solr:index failed" >&2
-else
-    echo "WARNING: Solr not reachable at ${SOLR_HOST}:${SOLR_PORT} — search unavailable, continuing boot." >&2
-fi
-
 chown -R www-data:www-data var config/system public/typo3temp
 echo "Entrypoint complete, starting services..."
 exec "$@"
