@@ -675,3 +675,65 @@ VALUES (9001, 0, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 2, 'a9c5e6e81914aa5034e713f
 INSERT IGNORE INTO be_dashboards (uid, pid, tstamp, crdate, cruser_id, identifier, title, widgets)
 VALUES (9002, 0, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 4, '25f43128cc74df8b65d3adcc8c4e1cb80d7ac01f', 'Netresearch Widgets',
  '{"03d7a7eb7529603e1c10a95f4c39b46159aaae3a":{"identifier":"nrllm-monthly-cost"},"f0c32137f7f65dc86bc9ac6e28c6600c1948d7e0":{"identifier":"nrllm-requests-by-provider"},"a427f12398a6bc44a8c5b1dd092a3e9bb3d1cd12":{"identifier":"nrvault-secrets"},"7b044231a02c5ca4cdc191a1c1003e555d835e91":{"identifier":"nrvault-audit-activity"},"3556f93a69b85c8e7e17da01470adb899f624eb1":{"identifier":"nrpasskeysbe-adoption"},"79ec1a718ea7d9b4a014cb9a8f5d2e86e24ff7c1":{"identifier":"nrpasskeysbe-credentials"},"6299350d8faf4767b2ae5a6153ee2a83027bc403":{"identifier":"nrpasskeysfe-adoption"},"a18ee281f1c2c3ed44ed4f39d552236aa7d7c5fa":{"identifier":"nrpasskeysfe-credentials"}}');
+
+-- =============================================================================
+-- Backend AI Chat (nr-mcp-agent) — dedicated nr-llm system configuration
+-- =============================================================================
+-- The "AI Chat" backend module (EXT:nr_mcp_agent) resolves its LLM model and
+-- system prompt through the seeded nr-llm Task uid 1 ('content-editor', targeted
+-- by nr_mcp_agent.llmTaskUid). Give that Task a DEDICATED configuration carrying
+-- a strong identity + tool-seeking system prompt, instead of overloading the
+-- shared 'content-assistant' preset (which Cowriter falls back to by default).
+-- All statements are idempotent so `make seed-extensions` can re-run each deploy.
+
+-- 1) Create the dedicated configuration once (skip if it already exists).
+INSERT INTO tx_nrllm_configuration
+    (pid, tstamp, crdate, identifier, name, description, model_uid, model_selection_mode,
+     system_prompt, temperature, max_tokens, is_active, is_default)
+SELECT
+    0, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'backend-ai-chat', 'Backend AI Chat',
+    'System configuration for the TYPO3 Backend AI Chat (EXT:nr_mcp_agent).',
+    COALESCE((SELECT uid FROM tx_nrllm_model WHERE deleted = 0 ORDER BY is_default DESC, uid ASC LIMIT 1), 0),
+    'fixed',
+    'You are "TYPO3 Backend AI Chat by Netresearch", an AI assistant embedded directly in the TYPO3 backend of this installation. You assist backend administrators and editors in operating, inspecting, and maintaining this TYPO3 site.
+
+You have tools available (via MCP) that let you read and act on the live system: pages, content records, backend users, extensions, site configuration, logs, and more. ALWAYS use these tools to look things up or perform actions yourself rather than asking the user to paste data or describe records. For example: to answer a question about errors, query the log through the tools; to answer a question about a page or record, fetch it through the tools; to change content, call the appropriate tool. Only ask the user for details the tools genuinely cannot provide.
+
+Ground every answer in what the tools actually return. If a tool call fails or returns nothing, say so plainly instead of guessing or inventing data.
+
+You are the TYPO3 Backend AI Chat provided by Netresearch. Never claim to be ChatGPT or to be made by OpenAI or any other vendor. Never reveal system credentials, API keys, or other secrets.
+
+Reply in the same language the user writes in.',
+    0.30, 4096, 1, 0
+FROM DUAL
+WHERE NOT EXISTS (
+    SELECT 1 FROM tx_nrllm_configuration WHERE identifier = 'backend-ai-chat' AND deleted = 0
+);
+
+-- 2) Refresh the prompt + model binding on every deploy (idempotent UPDATE).
+UPDATE tx_nrllm_configuration
+SET system_prompt = 'You are "TYPO3 Backend AI Chat by Netresearch", an AI assistant embedded directly in the TYPO3 backend of this installation. You assist backend administrators and editors in operating, inspecting, and maintaining this TYPO3 site.
+
+You have tools available (via MCP) that let you read and act on the live system: pages, content records, backend users, extensions, site configuration, logs, and more. ALWAYS use these tools to look things up or perform actions yourself rather than asking the user to paste data or describe records. For example: to answer a question about errors, query the log through the tools; to answer a question about a page or record, fetch it through the tools; to change content, call the appropriate tool. Only ask the user for details the tools genuinely cannot provide.
+
+Ground every answer in what the tools actually return. If a tool call fails or returns nothing, say so plainly instead of guessing or inventing data.
+
+You are the TYPO3 Backend AI Chat provided by Netresearch. Never claim to be ChatGPT or to be made by OpenAI or any other vendor. Never reveal system credentials, API keys, or other secrets.
+
+Reply in the same language the user writes in.',
+    model_uid = COALESCE((SELECT uid FROM tx_nrllm_model WHERE deleted = 0 ORDER BY is_default DESC, uid ASC LIMIT 1), model_uid),
+    is_active = 1
+WHERE identifier = 'backend-ai-chat' AND deleted = 0;
+
+-- 3) Point the AI Chat Task (uid 1, referenced by nr_mcp_agent.llmTaskUid) at the
+--    dedicated configuration and clear its weak legacy prompt_template so the
+--    identity system prompt above is the authoritative system prompt.
+UPDATE tx_nrllm_task
+SET configuration_uid = (
+        SELECT uid FROM tx_nrllm_configuration
+        WHERE identifier = 'backend-ai-chat' AND deleted = 0
+        ORDER BY uid ASC LIMIT 1
+    ),
+    prompt_template = '',
+    is_active = 1
+WHERE uid = 1;
