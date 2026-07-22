@@ -254,19 +254,16 @@ vendor/bin/typo3 cache:warmup 2>&1 || echo "WARNING: cache:warmup failed" >&2
 # nr_ai_search turns each into an embedding job on its own 'nr_ai_search'
 # Messenger queue, drained by the bounded consume below.
 #
-# The one-shot sentinel keeps this off the hot restart path: it runs once per
-# fresh data volume (a `make reset` purges the volume and re-triggers it).
-#
-# IMPORTANT — this produces embeddings only once a real OpenAI API key is stored
-# in the Vault module (marked frontend-accessible) and bound to the seeded
-# OpenAI provider, exactly like every other AI feature in this demo. Without a
-# key the jobs still queue but fail on the embedding call, the vektor store at
-# var/nr_ai_search/ stays empty, and the widgets report that they cannot answer.
-# After adding a key, re-run `vendor/bin/typo3 index:queue` then
-# `vendor/bin/typo3 messenger:consume nr_ai_search`, or `make reset`.
-SENTINEL="var/nr_ai_search/.bootstrap-indexed"
-if [ -f config/system/settings.php ] && [ ! -f "$SENTINEL" ]; then
-    echo "Seeding lochmueller/index configuration for nr_ai_search..."
+# Gate on the vektor STORE being empty — NOT a one-shot sentinel. The earlier
+# sentinel was written even when index:queue crashed (the lochmueller/index
+# DateTimeImmutable bug), so a failed first run permanently blocked indexing on a
+# persistent `var` volume. Filling the queue while the store is empty self-heals.
+# The WORKER container drains the 'nr_ai_search' Messenger queue and writes the
+# embeddings (needs a real OpenAI key in Vault bound to the seeded provider —
+# without it the jobs queue but fail on the embedding call and the store stays
+# empty). `make reset` also re-triggers a clean run.
+if [ -f config/system/settings.php ] && [ -z "$(find var/nr_ai_search/vektor-store -type f 2>/dev/null)" ]; then
+    echo "nr_ai_search: vektor store empty — seeding index config and filling the index queue..."
     MYSQL_PWD="${MARIADB_PASSWORD:-typo3}" mariadb -h"${MARIADB_HOST:-db}" -u"${MARIADB_USER:-typo3}" "${MARIADB_DATABASE:-typo3}" 2>/dev/null <<'SQL' || echo "WARNING: index configuration seed failed" >&2
 INSERT INTO tx_index_domain_model_configuration
     (pid, tstamp, crdate, deleted, hidden, title, technology, content_indexing,
@@ -285,13 +282,7 @@ SQL
         vendor/bin/typo3 index:queue 2>&1 \
         || echo "WARNING: index:queue failed — content not vectorized until re-run" >&2
 
-    echo "Draining nr_ai_search embedding queue (bounded; needs an OpenAI key to succeed)..."
-    vendor/bin/typo3 messenger:consume nr_ai_search \
-        --limit=100 --time-limit=60 --memory-limit=512M 2>&1 \
-        || echo "WARNING: messenger:consume nr_ai_search ended non-zero (expected until an OpenAI key is set in Vault)" >&2
-
     mkdir -p var/nr_ai_search
-    touch "$SENTINEL"
     chown -R www-data:www-data var/nr_ai_search 2>/dev/null || true
 fi
 
