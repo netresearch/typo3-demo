@@ -62,8 +62,11 @@ services:
     user: www-data
     entrypoint: ["sh", "-c"]
     command:
+      # Consume both the default 'doctrine' transport (nr-repurpose jobs) and the
+      # 'nr_ai_search' transport (RAG embedding jobs) so vectorized content lands
+      # in the shared var/ vektor store without a separate service.
       - >
-        exec vendor/bin/typo3 messenger:consume doctrine
+        exec vendor/bin/typo3 messenger:consume doctrine nr_ai_search
         --time-limit=3600 --memory-limit=512M --sleep=2
     environment:
       # Writable HOME for chromium (www-data has no home dir in the image);

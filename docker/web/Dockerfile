@@ -20,7 +20,7 @@ RUN apk add --no-cache --virtual .build-deps \
         nginx mariadb-client openssl freetype libjpeg-turbo libpng libzip icu-libs imagemagick \
         ffmpeg poppler-utils chromium font-liberation nodejs \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install -j$(nproc) gd intl mysqli pdo_mysql zip \
+    && docker-php-ext-install -j$(nproc) gd intl mysqli pdo_mysql zip exif \
     && pecl install redis \
     && docker-php-ext-enable redis \
     && apk del .build-deps
