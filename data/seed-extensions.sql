@@ -1001,13 +1001,11 @@ VALUES (990, 0, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0, 0,
 --    are CType-based (registerPlugin + configurePlugin PLUGIN_TYPE_CONTENT_ELEMENT);
 --    neither has a FlexForm (ADR-009), so pi_flexform stays empty (NULL) and all
 --    configuration is instance-wide via the extension configuration.
--- HIDDEN for now: nr-ai-search is fully wired but its RAG query still errors at
--- runtime (embedding/vector-store step, undiagnosed) — the page is hidden so the
--- demo does not show a broken search. Unhide (set hidden=0) once the RAG works.
 INSERT IGNORE INTO pages (uid, pid, tstamp, crdate, title, slug, doktype, sorting, hidden, deleted)
-VALUES (158, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'AI Search', '/extensions/ai-search', 1, 800, 1, 0);
--- Hide the already-seeded page too (INSERT IGNORE won't update an existing row).
-UPDATE pages SET hidden = 1 WHERE uid = 158 AND deleted = 0;
+VALUES (158, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'AI Search', '/extensions/ai-search', 1, 800, 0, 0);
+-- Unhidden now that vectorization self-heals (store-empty gate + worker drains
+-- the nr_ai_search queue). INSERT IGNORE won't update the existing row, so:
+UPDATE pages SET hidden = 0 WHERE uid = 158 AND deleted = 0;
 
 INSERT IGNORE INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
 VALUES (602, 158, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', '',
