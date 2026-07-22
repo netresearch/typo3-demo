@@ -902,3 +902,17 @@ WHERE uid = 1;
 -- matching once set, so re-running make seed-extensions is a no-op.
 UPDATE tx_nrllm_model SET cost_input = 125, cost_output = 1000
 WHERE deleted = 0 AND cost_input = 0 AND cost_output = 0;
+
+-- =============================================================================
+-- Apache Solr search (EXT:solr) — frontend search page
+-- =============================================================================
+-- Top-level "Search" page (slug /search) carrying the solr_pi_results plugin.
+-- The apache-solr-for-typo3/solr site-set dependency provides the plugin TS and
+-- the pages index-queue configuration; the demo:solr:index command (run from the
+-- web entrypoint when Solr is reachable) fills the index.
+-- Free uids above the base-dump maxima (pages 157, tt_content 522).
+INSERT IGNORE INTO pages (uid, pid, tstamp, crdate, title, slug, doktype, is_siteroot, sorting, hidden, deleted, nav_hide)
+VALUES (200, 1, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'Search', '/search', 1, 0, 550, 0, 0, 0);
+
+INSERT IGNORE INTO tt_content (uid, pid, tstamp, crdate, sorting, CType, header, header_layout, colPos, hidden, deleted)
+VALUES (600, 200, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 256, 'solr_pi_results', 'Search', 100, 0, 0, 0);

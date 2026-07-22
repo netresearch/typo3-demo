@@ -5,3 +5,4 @@ dependencies:
   - georgringer/news
   - georgringer/news-twb5
   - netresearch/rte-ckeditor-image
+  - apache-solr-for-typo3/solr

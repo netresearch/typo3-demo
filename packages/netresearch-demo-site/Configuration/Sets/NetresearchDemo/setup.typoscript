@@ -359,3 +359,14 @@ config {
   </rss>
     )
 [END]
+
+#
+# EXT:solr — show results on the search page even before a query is entered.
+# The apache-solr-for-typo3/solr set dependency (Configuration/Sets) already
+# provides plugin.tx_solr, the pages index-queue config, and the solr_pi_*
+# plugin TypoScript. This only makes the results page populated on first visit.
+#
+plugin.tx_solr.search {
+    initializeWithEmptyQuery = 1
+    showResultsOfInitialEmptyQuery = 1
+}

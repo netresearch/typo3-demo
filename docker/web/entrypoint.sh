@@ -222,13 +222,14 @@ if [ -f "$GFONT_SVC" ] && [ "$(grep -c '\$content = \$response->getBody()->getCo
     "
 fi
 
-# EXT:solr connection probe (disposable spike).
-# EXT:solr v14 ships NO console commands — indexing is driven by the backend
-# "Index Queue" module plus the Index Queue Worker scheduler task, neither of
-# which can be triggered from here. So this block does not fill the index; it
-# only verifies the Solr server is reachable so a misconfigured connection is
-# visible in the logs. It is deliberately tolerant: an unreachable Solr must
-# never break web boot (mirrors the `|| echo WARNING` pattern above).
+# EXT:solr connection probe + indexing (disposable spike).
+# EXT:solr v14 ships NO console commands of its own — indexing is normally driven
+# by the backend "Index Queue" module plus the Index Queue Worker scheduler task.
+# The site package provides an in-process equivalent (demo:solr:index) so the demo
+# indexes end-to-end on boot. This block first verifies the Solr server is
+# reachable (a misconfigured connection is then visible in the logs) and, when it
+# is, runs the indexing command. It is deliberately tolerant: an unreachable Solr
+# or a failed index run must never break web boot (mirrors `|| echo WARNING`).
 SOLR_HOST="${SOLR_HOST:-solr}"
 SOLR_PORT="${SOLR_PORT:-8983}"
 echo "Probing Apache Solr at ${SOLR_HOST}:${SOLR_PORT}..."
@@ -245,8 +246,13 @@ while [ "$n" -lt 15 ]; do
     sleep 2
 done
 if [ "$solr_ok" = "1" ]; then
-    echo "Solr reachable; EXT:solr resolves connections from site config (solr_host_read=${SOLR_HOST})."
-    echo "To index: BE > Web > Search (Index Queue) + run the Index Queue Worker scheduler task."
+    echo "Solr reachable; indexing demo content into Solr..."
+    # The in-process front-end indexing sub-request needs a site base with a real
+    # host: otherwise EXT:solr throws SolrIndexRuntimeException 1741200001 and the
+    # stored result URLs are hostless. TYPO3_DOMAIN is the deployed domain on live
+    # and localhost locally, so result links point at the right host either way.
+    TYPO3_SITE_BASE="https://${TYPO3_DOMAIN}/" vendor/bin/typo3 demo:solr:index 2>&1 \
+        || echo "WARNING: demo:solr:index failed" >&2
 else
     echo "WARNING: Solr not reachable at ${SOLR_HOST}:${SOLR_PORT} — search unavailable, continuing boot." >&2
 fi
