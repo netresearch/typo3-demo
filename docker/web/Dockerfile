@@ -6,6 +6,13 @@ COPY composer.json composer.lock* ./
 COPY packages/ packages/
 RUN composer install --no-dev --prefer-dist --no-interaction --ignore-platform-reqs --optimize-autoloader
 
+# Patch lochmueller/index: it casts a DateTimeImmutable date field to string
+# directly ((string) $item->get('date')), which throws and aborts index:queue —
+# that blocks nr-ai-search content vectorization on bootstrap-package timeline
+# content. Idempotent str_replace; upstream fix pending. Remove once released.
+COPY docker/web/patch-lochmueller-index.php /tmp/patch-lochmueller-index.php
+RUN php /tmp/patch-lochmueller-index.php && rm -f /tmp/patch-lochmueller-index.php
+
 FROM php:8.5-fpm-alpine AS runtime
 RUN apk add --no-cache --virtual .build-deps \
         freetype-dev libjpeg-turbo-dev libpng-dev libzip-dev icu-dev linux-headers $PHPIZE_DEPS \
