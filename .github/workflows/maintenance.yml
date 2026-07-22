@@ -1,0 +1,56 @@
+name: Host Maintenance
+
+# Dispatch-only. Reclaims disk on the demo host by pruning UNUSED docker
+# images and build cache — never volumes (the DB/seed/fileadmin/config named
+# volumes are preserved), so no data is lost. Reports df before/after, then
+# completes the pending code update (make update).
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_update:
+        description: "Run 'make update' after pruning"
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+jobs:
+  maintain:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Prune docker images/build-cache and update on Hetzner
+        uses: appleboy/ssh-action@0ff4204d59e8e51228ff73bce53f80d53301dee2 # v1.2.5
+        with:
+          host: ${{ secrets.HETZNER_SSH_HOST }}
+          username: ${{ secrets.HETZNER_SSH_USER }}
+          key: ${{ secrets.HETZNER_SSH_KEY }}
+          envs: RUN_UPDATE
+          script: |
+            set -e
+            echo "===== df BEFORE"
+            df -h /
+            echo "===== docker disk usage BEFORE"
+            docker system df || true
+            echo "===== pruning unused images + build cache (NOT volumes)"
+            docker image prune -af
+            docker builder prune -af
+            echo "===== df AFTER prune"
+            df -h /
+            if [ "$RUN_UPDATE" = "true" ]; then
+              echo "===== make update"
+              cd /opt/typo3-demo
+              git pull --ff-only
+              git lfs pull
+              make update
+              echo "===== df AFTER update"
+              df -h /
+            fi
+        env:
+          RUN_UPDATE: ${{ github.event.inputs.run_update }}
