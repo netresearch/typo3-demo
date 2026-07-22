@@ -156,6 +156,37 @@ if [ -f config/system/settings.php ]; then
     '
 fi
 
+# Enable the MCP-backed AI Chat (nr_mcp_agent) and point it at the seeded nr-llm
+# Task (uid 1). config/system is a Docker volume that overlays any repo-provided
+# file, so this is (re)written on every boot. It is idempotent and merge-safe:
+# only a marked block is managed, any other additional.php content is preserved.
+# TYPO3 loads config/system/additional.php automatically after settings.php.
+if [ -f config/system/settings.php ]; then
+    php -r '
+        $f = "config/system/additional.php";
+        $begin = "// >>> nr_mcp_agent (managed by entrypoint, do not edit this block)";
+        $end   = "// <<< nr_mcp_agent";
+        $block = $begin . "\n"
+            . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"nr_mcp_agent\"][\"enableMcp\"] = \"1\";\n"
+            . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"nr_mcp_agent\"][\"llmTaskUid\"] = \"1\";\n"
+            . $end;
+        $existing = is_file($f) ? (string) file_get_contents($f) : "";
+        if (strpos($existing, "<?php") === false) {
+            $existing = "<?php\n" . ($existing === "" ? "" : $existing . "\n");
+        }
+        $b = strpos($existing, $begin);
+        if ($b !== false) {
+            $e = strpos($existing, $end, $b);
+            $existing = $e !== false
+                ? substr($existing, 0, $b) . substr($existing, $e + strlen($end))
+                : substr($existing, 0, $b);
+        }
+        $existing = rtrim($existing, "\n") . "\n\n" . $block . "\n";
+        file_put_contents($f, $existing);
+        echo "additional.php: MCP enabled, nr_mcp_agent.llmTaskUid=1." . PHP_EOL;
+    ' || echo "WARNING: failed to write additional.php" >&2
+fi
+
 echo "Running TYPO3 setup..."
 vendor/bin/typo3 extension:setup 2>&1 || echo "WARNING: extension:setup failed" >&2
 
