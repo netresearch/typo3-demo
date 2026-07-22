@@ -1,4 +1,4 @@
-.PHONY: up down reset update logs shell db-shell seed seed-extensions export-seed build clean dev dev-down help
+.PHONY: up down reset update logs shell db-shell seed seed-extensions export-seed build clean dev dev-down prune help
 
 COMPOSE     := docker compose
 COMPOSE_DEV := docker compose -f compose.yml -f compose.dev.yml
@@ -14,6 +14,7 @@ up: ## Start all services (pulls pre-built images from GHCR)
 	@test -f .env || { test -f .env.example && cp .env.example .env || { echo "ERROR: .env.example not found"; exit 1; }; }
 	$(COMPOSE) pull
 	$(COMPOSE) up -d --wait
+	$(MAKE) prune
 	@echo "TYPO3 Demo running at $${TYPO3_DOMAIN:-localhost}"
 
 up-build: ## Start all services (builds images locally)
@@ -45,6 +46,10 @@ update: ## Update code without purging data
 	$(TYPO3) extension:setup || true
 	$(TYPO3) cache:flush
 	$(TYPO3) cache:warmup
+	$(MAKE) prune
+
+prune: ## Remove dangling images left behind by image pulls (keeps volumes + in-use images)
+	docker image prune -f
 
 seed: ## Seed fileadmin from data/ into volume
 	$(COMPOSE) cp data/fileadmin/. web:/var/www/public/fileadmin/
