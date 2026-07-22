@@ -38,6 +38,8 @@
     "netresearch/t3-cowriter": "^3.2",
     "friendsoftypo3/content-blocks": "^2.0",
     "hn/typo3-mcp-server": "^0.4",
+    "lochmueller/index": "^2.2",
+    "netresearch/nr-ai-search": "dev-main",
     "netresearch/typo3-demo-site": "@dev",
     "netresearch/nr-repurpose": "^0.2",
     "thieleundklose/autotranslate": "^3.2",
@@ -47,6 +49,10 @@
     {
       "type": "path",
       "url": "packages/*"
+    },
+    {
+      "type": "vcs",
+      "url": "https://git.netresearch.de/support/nr-ai-search.git"
     },
     {
       "type": "vcs",
