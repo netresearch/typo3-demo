@@ -222,6 +222,35 @@ if [ -f "$GFONT_SVC" ] && [ "$(grep -c '\$content = \$response->getBody()->getCo
     "
 fi
 
+# EXT:solr connection probe (disposable spike).
+# EXT:solr v14 ships NO console commands — indexing is driven by the backend
+# "Index Queue" module plus the Index Queue Worker scheduler task, neither of
+# which can be triggered from here. So this block does not fill the index; it
+# only verifies the Solr server is reachable so a misconfigured connection is
+# visible in the logs. It is deliberately tolerant: an unreachable Solr must
+# never break web boot (mirrors the `|| echo WARNING` pattern above).
+SOLR_HOST="${SOLR_HOST:-solr}"
+SOLR_PORT="${SOLR_PORT:-8983}"
+echo "Probing Apache Solr at ${SOLR_HOST}:${SOLR_PORT}..."
+solr_ok=0
+n=0
+while [ "$n" -lt 15 ]; do
+    # NOSONAR (shell:S5332): Solr is an internal-only container on the compose
+    # network with no TLS; http:// is the only scheme it serves.
+    if wget -q -O /dev/null "http://${SOLR_HOST}:${SOLR_PORT}/solr/admin/cores?action=STATUS" 2>/dev/null; then # NOSONAR
+        solr_ok=1
+        break
+    fi
+    n=$((n + 1))
+    sleep 2
+done
+if [ "$solr_ok" = "1" ]; then
+    echo "Solr reachable; EXT:solr resolves connections from site config (solr_host_read=${SOLR_HOST})."
+    echo "To index: BE > Web > Search (Index Queue) + run the Index Queue Worker scheduler task."
+else
+    echo "WARNING: Solr not reachable at ${SOLR_HOST}:${SOLR_PORT} — search unavailable, continuing boot." >&2
+fi
+
 chown -R www-data:www-data var config/system public/typo3temp
 echo "Entrypoint complete, starting services..."
 exec "$@"

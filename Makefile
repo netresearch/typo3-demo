@@ -13,7 +13,7 @@ help: ## Show this help
 up: ## Start all services (pulls pre-built images from GHCR)
 	@test -f .env || { test -f .env.example && cp .env.example .env || { echo "ERROR: .env.example not found"; exit 1; }; }
 	$(COMPOSE) pull
-	$(COMPOSE) up -d --wait
+	$(COMPOSE) up -d --wait --wait-timeout 180 || $(COMPOSE) up -d
 	$(MAKE) prune
 	@echo "TYPO3 Demo running at $${TYPO3_DOMAIN:-localhost}"
 
@@ -40,7 +40,7 @@ reset: ## Full reset: purge app data and re-seed (preserves Caddy TLS certs)
 
 update: ## Update code without purging data
 	$(COMPOSE) pull
-	$(COMPOSE) up -d --wait
+	$(COMPOSE) up -d --wait --wait-timeout 180 || $(COMPOSE) up -d
 	$(TYPO3) database:updateschema || true
 	$(MAKE) seed-extensions
 	$(TYPO3) extension:setup || true

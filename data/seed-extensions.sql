@@ -505,6 +505,130 @@ VALUES (406, 108, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'Automatic Cache I
 0, 100, 0, 0);
 
 -- =============================================================================
+-- AI Chat Agent
+-- =============================================================================
+INSERT IGNORE INTO pages (uid, pid, tstamp, crdate, title, slug, doktype, sorting, hidden, deleted)
+VALUES (110, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'AI Chat Agent', '/extensions/ai-agent', 1, 800, 0, 0);
+
+INSERT IGNORE INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
+VALUES (408, 110, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'Conversational AI in the TYPO3 Backend',
+'<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(47,153,164,0.06), rgba(47,153,164,0.02));">
+  <div class="d-flex align-items-center gap-2 mb-2">
+    <span class="badge rounded-pill text-white" style="background: #2F99A4; font-size: 0.7rem;">AI</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">MCP</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">TYPO3 v14</span>
+  </div>
+  <h2 class="fw-bold mb-2" style="font-size: 1.6rem;">Chat With Your TYPO3 Install</h2>
+  <p class="text-muted mb-3" style="font-size: 1rem; max-width: 650px;">An AI assistant embedded in the TYPO3 backend. Ask about pages, content, users, logs, and site configuration — the agent reads and acts on the live system through MCP tools.</p>
+  <div class="d-flex gap-2 flex-wrap">
+    <a href="https://github.com/netresearch/t3x-nr-mcp-agent" target="_blank" rel="noopener" class="btn btn-sm text-white" style="background: #2F99A4;">GitHub</a>
+    <a href="https://packagist.org/packages/netresearch/nr-mcp-agent" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">Packagist</a>
+  </div>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-md-6">
+    <div class="card h-100 border-0" style="background: #f8f9fa;">
+      <div class="card-body">
+        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Tool-Grounded Answers</h6>
+        <p class="text-muted mb-0" style="font-size: 0.82rem;">Every response is grounded in what the MCP tools actually return — pages, records, backend users, extensions, and logs — instead of guessing.</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card h-100 border-0" style="background: #f8f9fa;">
+      <div class="card-body">
+        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Reads &amp; Acts</h6>
+        <p class="text-muted mb-0" style="font-size: 0.82rem;">Look up a record, inspect a failing log entry, or change content directly from the conversation — the agent calls the right tool for you.</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card h-100 border-0" style="background: #f8f9fa;">
+      <div class="card-body">
+        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Built on NR LLM</h6>
+        <p class="text-muted mb-0" style="font-size: 0.82rem;">Uses the provider, model, and task templates configured in <a href="/extensions/nr-llm/" style="color: #2F99A4;">NR LLM</a>. No separate AI setup required.</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card h-100 border-0" style="background: #f8f9fa;">
+      <div class="card-body">
+        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Speaks Your Language</h6>
+        <p class="text-muted mb-0" style="font-size: 0.82rem;">Replies in the language you write in and never impersonates another vendor — it is the Netresearch Backend AI Chat.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="alert alert-light border" role="alert" style="font-size: 0.82rem;">
+  <strong style="color: #2F99A4;">Try it:</strong> Open the AI Chat from the TYPO3 backend module (Admin Tools / Web) and ask it about this installation.
+</div>',
+0, 100, 0, 0);
+
+-- =============================================================================
+-- Content Repurpose
+-- =============================================================================
+INSERT IGNORE INTO pages (uid, pid, tstamp, crdate, title, slug, doktype, sorting, hidden, deleted)
+VALUES (111, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'Content Repurpose', '/extensions/repurpose', 1, 900, 0, 0);
+
+INSERT IGNORE INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
+VALUES (409, 111, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'Repurpose Existing Content With AI',
+'<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(47,153,164,0.06), rgba(47,153,164,0.02));">
+  <div class="d-flex align-items-center gap-2 mb-2">
+    <span class="badge rounded-pill text-white" style="background: #2F99A4; font-size: 0.7rem;">AI</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">Content</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">TYPO3 v14</span>
+  </div>
+  <h2 class="fw-bold mb-2" style="font-size: 1.6rem;">One Page, Many Channels</h2>
+  <p class="text-muted mb-3" style="font-size: 1rem; max-width: 650px;">Turn pages you already have into social posts, summaries, and channel-ready variants. Repurpose existing TYPO3 content with AI instead of writing every format from scratch.</p>
+  <div class="d-flex gap-2 flex-wrap">
+    <a href="https://github.com/netresearch/t3x-nr-repurpose" target="_blank" rel="noopener" class="btn btn-sm text-white" style="background: #2F99A4;">GitHub</a>
+    <a href="https://packagist.org/packages/netresearch/nr-repurpose" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">Packagist</a>
+  </div>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-md-6">
+    <div class="card h-100 border-0" style="background: #f8f9fa;">
+      <div class="card-body">
+        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Reuse What You Have</h6>
+        <p class="text-muted mb-0" style="font-size: 0.82rem;">Start from an existing page and generate derived formats — no need to re-enter the source content by hand.</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card h-100 border-0" style="background: #f8f9fa;">
+      <div class="card-body">
+        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Channel-Ready Variants</h6>
+        <p class="text-muted mb-0" style="font-size: 0.82rem;">Produce short social copy, concise summaries, and alternative phrasings tuned for different audiences and channels.</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card h-100 border-0" style="background: #f8f9fa;">
+      <div class="card-body">
+        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Built on NR LLM</h6>
+        <p class="text-muted mb-0" style="font-size: 0.82rem;">Uses the provider and models configured in <a href="/extensions/nr-llm/" style="color: #2F99A4;">NR LLM</a>, so repurposing follows your central AI setup.</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card h-100 border-0" style="background: #f8f9fa;">
+      <div class="card-body">
+        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Editor Workflow</h6>
+        <p class="text-muted mb-0" style="font-size: 0.82rem;">Review and refine the AI output before it goes anywhere. You stay in control of what gets published.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="alert alert-light border" role="alert" style="font-size: 0.82rem;">
+  <strong style="color: #2F99A4;">Where to find it:</strong> Open the Repurpose module in the TYPO3 backend under Web &gt; Repurpose.
+</div>',
+0, 100, 0, 0);
+
+-- =============================================================================
 -- Overview Hub (/extensions)
 -- =============================================================================
 INSERT IGNORE INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
@@ -545,6 +669,16 @@ VALUES (410, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'Netresearch TYPO3
       <a href="/extensions/landing-page/" class="fw-semibold text-decoration-none" style="font-size: 0.82rem; color: #FF4D00;">Explore &rarr;</a>
     </div></div>
   </div>
+  <div class="col-md-4">
+    <div class="card h-100 border-0 shadow-sm"><div class="card-body">
+      <div class="d-flex align-items-center gap-2 mb-2">
+        <span class="badge rounded-pill text-white" style="background: #2F99A4; font-size: 0.65rem;">Content</span>
+        <h6 class="card-title fw-bold mb-0" style="font-size: 0.92rem;">Content Repurpose</h6>
+      </div>
+      <p class="card-text text-muted" style="font-size: 0.82rem;">Turn existing pages into social posts, summaries, and channel-ready variants with AI.</p>
+      <a href="/extensions/repurpose/" class="fw-semibold text-decoration-none" style="font-size: 0.82rem; color: #FF4D00;">Explore &rarr;</a>
+    </div></div>
+  </div>
 </div>
 
 <h5 class="fw-bold text-uppercase mb-3" style="font-size: 0.75rem; letter-spacing: 0.12em; color: #2F99A4;"><span style="display: inline-block; width: 20px; height: 2px; background: #2F99A4; vertical-align: middle; margin-right: 0.5rem;"></span>AI Foundation</h5>
@@ -557,6 +691,16 @@ VALUES (410, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'Netresearch TYPO3
       </div>
       <p class="card-text text-muted" style="font-size: 0.82rem;">One LLM setup for every extension. Providers, models, task templates, and a visual backend module.</p>
       <a href="/extensions/nr-llm/" class="fw-semibold text-decoration-none" style="font-size: 0.82rem; color: #FF4D00;">Explore &rarr;</a>
+    </div></div>
+  </div>
+  <div class="col-md-6">
+    <div class="card h-100 border-0 shadow-sm"><div class="card-body">
+      <div class="d-flex align-items-center gap-2 mb-2">
+        <span class="badge rounded-pill text-white" style="background: #2F99A4; font-size: 0.65rem;">AI</span>
+        <h6 class="card-title fw-bold mb-0" style="font-size: 0.92rem;">AI Chat Agent</h6>
+      </div>
+      <p class="card-text text-muted" style="font-size: 0.82rem;">Conversational AI assistant in the TYPO3 backend that reads and acts on your site via MCP tools.</p>
+      <a href="/extensions/ai-agent/" class="fw-semibold text-decoration-none" style="font-size: 0.82rem; color: #FF4D00;">Explore &rarr;</a>
     </div></div>
   </div>
 </div>
@@ -737,3 +881,9 @@ SET configuration_uid = (
     prompt_template = '',
     is_active = 1
 WHERE uid = 1;
+
+-- Give unpriced demo models cost metrics so the LLM cost module + Monthly-Cost
+-- widget show non-zero figures (cents per 1M tokens). Idempotent: the WHERE stops
+-- matching once set, so re-running make seed-extensions is a no-op.
+UPDATE tx_nrllm_model SET cost_input = 125, cost_output = 1000
+WHERE deleted = 0 AND cost_input = 0 AND cost_output = 0;

@@ -7,7 +7,17 @@ languages:
     locale: en_US.UTF-8
     navigationTitle: English
     flag: us
+    # EXT:solr core for this language (baked into the typo3solr image).
+    solr_core_read: core_en
 rootPageId: 1
 websiteTitle: Netresearch TYPO3 Demo
+# EXT:solr connection (disposable spike). Points at the internal compose
+# `solr` service; write connection falls back to these read settings.
+solr_enabled_read: true
+solr_scheme_read: http
+solr_host_read: solr
+solr_port_read: 8983
+solr_path_read: /
 dependencies:
   - netresearch/demo-site
+  - apache-solr-for-typo3/solr
