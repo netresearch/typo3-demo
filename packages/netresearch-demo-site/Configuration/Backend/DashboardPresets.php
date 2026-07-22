@@ -33,4 +33,24 @@ return [
         ],
         'showInWizard' => true,
     ],
+    // Second dashboard: the extensions' OWN dashboard widgets (live data),
+    // as opposed to the explainer cards on the 'default' dashboard. Presets
+    // only auto-create the first dashboard, so this one is also seeded into
+    // be_dashboards for the existing demo users in data/seed-extensions.sql.
+    'netresearch-widgets' => [
+        'title' => 'Netresearch Widgets',
+        'description' => 'Live dashboard widgets provided by the Netresearch extensions (nr-llm, nr-vault, passkeys).',
+        'iconIdentifier' => 'content-widget-chart-bar',
+        'defaultWidgets' => [
+            'nrllm-monthly-cost',
+            'nrllm-requests-by-provider',
+            'nrvault-secrets',
+            'nrvault-audit-activity',
+            'nrpasskeysbe-adoption',
+            'nrpasskeysbe-credentials',
+            'nrpasskeysfe-adoption',
+            'nrpasskeysfe-credentials',
+        ],
+        'showInWizard' => true,
+    ],
 ];

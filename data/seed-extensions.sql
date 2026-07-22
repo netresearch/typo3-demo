@@ -663,3 +663,15 @@ VALUES (904, 0, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'SaaS Feature Page', 'saas-f
  'seo_title,description,og_title,og_description',
  'You are writing a SaaS feature page for a technical yet business-minded audience. Structure: hero naming the feature and the job it does for the user; a problem section describing the pain in the user''s own words; a solution section explaining how the feature removes that pain; a "how it works" walkthrough in three to five steps; an FAQ answering the most likely objections (pricing, integration, security, migration); and a closing call to action offering a trial or demo. Be specific and factual, quantify benefits where the briefing provides numbers, and never invent metrics. Write in the language of the briefing.',
  'header,text,textmedia,card_group,accordion,icon_group,table', '#2F99A4', '#FF4D00');
+
+-- Second dashboard: showcase of the Netresearch extensions' own dashboard widgets.
+-- Fixed uids (9001/9002) keep this idempotent on the primary key; presets only
+-- auto-create the FIRST dashboard, so existing users get this one via seed rows.
+-- Widgets column format per EXT:dashboard DashboardRepository::create():
+--   {"<per-instance-hash>": {"identifier": "<widget-identifier>"}}
+INSERT IGNORE INTO be_dashboards (uid, pid, tstamp, crdate, cruser_id, identifier, title, widgets)
+VALUES (9001, 0, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 2, 'a9c5e6e81914aa5034e713fdf55aea660f6a37e8', 'Netresearch Widgets',
+ '{"f01bd9028dca43bd285458585b86f206cf5dc318":{"identifier":"nrllm-monthly-cost"},"bf9546efc822390c6a9a70645cafe8738b037f53":{"identifier":"nrllm-requests-by-provider"},"34b57a4011ffc4fa6a9fe3763f4c06bae5025fad":{"identifier":"nrvault-secrets"},"5457f5bd1fd42bb870294e7cad3d994f83abf3c1":{"identifier":"nrvault-audit-activity"},"4a499cc4080037f2d18bfff61f3001b721c20768":{"identifier":"nrpasskeysbe-adoption"},"d9cce5537b8208e2d99f55e329045df23e941f3a":{"identifier":"nrpasskeysbe-credentials"},"8c9f348681d77423d6583330c7d477aa18d90fc6":{"identifier":"nrpasskeysfe-adoption"},"9fd6eeefcab224466566cf1dc402dc2e4e3aaaf7":{"identifier":"nrpasskeysfe-credentials"}}');
+INSERT IGNORE INTO be_dashboards (uid, pid, tstamp, crdate, cruser_id, identifier, title, widgets)
+VALUES (9002, 0, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 4, '25f43128cc74df8b65d3adcc8c4e1cb80d7ac01f', 'Netresearch Widgets',
+ '{"03d7a7eb7529603e1c10a95f4c39b46159aaae3a":{"identifier":"nrllm-monthly-cost"},"f0c32137f7f65dc86bc9ac6e28c6600c1948d7e0":{"identifier":"nrllm-requests-by-provider"},"a427f12398a6bc44a8c5b1dd092a3e9bb3d1cd12":{"identifier":"nrvault-secrets"},"7b044231a02c5ca4cdc191a1c1003e555d835e91":{"identifier":"nrvault-audit-activity"},"3556f93a69b85c8e7e17da01470adb899f624eb1":{"identifier":"nrpasskeysbe-adoption"},"79ec1a718ea7d9b4a014cb9a8f5d2e86e24ff7c1":{"identifier":"nrpasskeysbe-credentials"},"6299350d8faf4767b2ae5a6153ee2a83027bc403":{"identifier":"nrpasskeysfe-adoption"},"a18ee281f1c2c3ed44ed4f39d552236aa7d7c5fa":{"identifier":"nrpasskeysfe-credentials"}}');
