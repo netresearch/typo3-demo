@@ -18,6 +18,10 @@ services:
         condition: service_healthy
       valkey:
         condition: service_healthy
+      # service_started (not _healthy) so a slow or broken Solr spike never
+      # blocks web boot — the entrypoint probes Solr tolerantly.
+      solr:
+        condition: service_started
     environment:
       MARIADB_HOST: db
       MARIADB_DATABASE: ${MARIADB_DATABASE:-typo3}
@@ -97,7 +101,39 @@ services:
     deploy:
       resources:
         limits:
-          memory: 1G
+          # Trimmed from 1G to make room for the always-on Solr spike within the
+          # 4GB host budget (web 1G + worker 768M + db 512M + valkey 128M +
+          # caddy 256M + solr 512M).
+          memory: 768M
+
+  # Apache Solr search server for EXT:solr (disposable spike). Internal only:
+  # the web/worker containers reach it over the compose network at solr:8983.
+  # Bounded on purpose for the 4GB host — 256M JVM heap under a 512M cgroup cap.
+  solr:
+    image: typo3solr/ext-solr:14.0.0-RC1
+    logging: *default-logging
+    environment:
+      # Official Solr image heap var; sets both -Xms and -Xmx to 256m.
+      SOLR_HEAP: "256m"
+    volumes:
+      # Named volume is seeded from the image's baked-in TYPO3 cores on first
+      # creation, then persists the index across restarts. SOLR_HOME is
+      # /var/solr/data; mounting the parent keeps cores + index together.
+      - solr-data:/var/solr
+    healthcheck:
+      # Bundled script: verifies Solr responds and every baked-in core pings OK.
+      test: ["CMD", "/usr/local/bin/healthcheck.sh"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 120s
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          memory: 512M
 
   db:
     image: mariadb:11
@@ -178,3 +214,4 @@ volumes:
   typo3-config:
   caddy-data:
   caddy-config:
+  solr-data:
