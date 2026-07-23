@@ -254,16 +254,17 @@ vendor/bin/typo3 cache:warmup 2>&1 || echo "WARNING: cache:warmup failed" >&2
 # nr_ai_search turns each into an embedding job on its own 'nr_ai_search'
 # Messenger queue, drained by the bounded consume below.
 #
-# Gate on the vektor STORE being empty — NOT a one-shot sentinel. The earlier
-# sentinel was written even when index:queue crashed (the lochmueller/index
-# DateTimeImmutable bug), so a failed first run permanently blocked indexing on a
-# persistent `var` volume. Filling the queue while the store is empty self-heals.
-# The WORKER container drains the 'nr_ai_search' Messenger queue and writes the
-# embeddings (needs a real OpenAI key in Vault bound to the seeded provider —
-# without it the jobs queue but fail on the embedding call and the store stays
-# empty). `make reset` also re-triggers a clean run.
-if [ -f config/system/settings.php ] && [ -z "$(find var/nr_ai_search/vektor-store -type f 2>/dev/null)" ]; then
-    echo "nr_ai_search: vektor store empty — seeding index config and filling the index queue..."
+# Gate on whether any content is actually EMBEDDED (tx_nraisearch_chunk), NOT on
+# vektor-store files: centamiv/vektor writes empty index files even when zero
+# vectors were added, so a file-existence gate latches "done" after a failed first
+# run and never retries (observed on the live instance: 0 tracked chunks, an empty
+# store dir with index files, and index:queue never re-run). Gating on the
+# tracked-chunk count self-heals — once the embedding path works end to end (real
+# OpenAI key in Vault, resolvable by the worker's technical BE user 990), the next
+# boot fills the queue and the worker populates the store. `make reset` also works.
+CHUNK_COUNT="$(MYSQL_PWD="${MARIADB_PASSWORD:-typo3}" mariadb -h"${MARIADB_HOST:-db}" -u"${MARIADB_USER:-typo3}" "${MARIADB_DATABASE:-typo3}" -N -e "SELECT COUNT(*) FROM tx_nraisearch_chunk" 2>/dev/null || echo 0)"
+if [ -f config/system/settings.php ] && [ "${CHUNK_COUNT:-0}" = "0" ]; then
+    echo "nr_ai_search: no embedded chunks yet (tx_nraisearch_chunk empty) — seeding index config and (re)filling the index queue..."
     MYSQL_PWD="${MARIADB_PASSWORD:-typo3}" mariadb -h"${MARIADB_HOST:-db}" -u"${MARIADB_USER:-typo3}" "${MARIADB_DATABASE:-typo3}" 2>/dev/null <<'SQL' || echo "WARNING: index configuration seed failed" >&2
 INSERT INTO tx_index_domain_model_configuration
     (pid, tstamp, crdate, deleted, hidden, title, technology, content_indexing,
@@ -276,6 +277,10 @@ WHERE NOT EXISTS (
     SELECT 1 FROM tx_index_domain_model_configuration WHERE pid = 1 AND deleted = 0
 );
 SQL
+
+    # Drop any empty/partial vektor store so a stale (zero-vector) index structure
+    # from a prior failed run does not linger alongside the fresh embeddings.
+    rm -rf var/nr_ai_search/vektor-store 2>/dev/null || true
 
     echo "Filling index queue (synchronous) — emits page-index events for nr_ai_search..."
     TYPO3_SITE_BASE="https://${TYPO3_DOMAIN:-localhost}/" \
