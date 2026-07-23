@@ -46,12 +46,6 @@ update: ## Update code without purging data
 	$(TYPO3) extension:setup || true
 	$(TYPO3) cache:flush
 	$(TYPO3) cache:warmup
-	-@echo "===[embed-diag] force re-queue + uncontended consume to surface the embed error:"
-	-$(COMPOSE) stop worker
-	-$(COMPOSE) exec -T -u www-data web sh -c 'TYPO3_SITE_BASE="https://$${TYPO3_DOMAIN:-localhost}/" vendor/bin/typo3 index:queue 2>&1 | tail -3'
-	-$(COMPOSE) exec -T -u www-data web sh -c 'TYPO3_SITE_BASE="https://$${TYPO3_DOMAIN:-localhost}/" vendor/bin/typo3 messenger:consume nr_ai_search --limit=3 --time-limit=90 -vv 2>&1 | tail -40'
-	-$(COMPOSE) exec -T db sh -c 'MYSQL_PWD="$$MARIADB_PASSWORD" mariadb -u"$$MARIADB_USER" "$$MARIADB_DATABASE" -N -e "SELECT CONCAT(\"[embed-diag] chunks after: \", COUNT(*)) FROM tx_nraisearch_chunk;"'
-	-$(COMPOSE) start worker
 	$(MAKE) prune
 
 prune: ## Remove dangling images left behind by image pulls (keeps volumes + in-use images)
