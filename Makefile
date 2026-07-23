@@ -52,8 +52,8 @@ update: ## Update code without purging data
 	-$(COMPOSE) exec -T db sh -c 'MYSQL_PWD="$$MARIADB_PASSWORD" mariadb -u"$$MARIADB_USER" "$$MARIADB_DATABASE" -N -e "SELECT CONCAT(\"chunks=\",COUNT(*)) FROM tx_nraisearch_chunk; SELECT CONCAT(queue_name,\": total=\",COUNT(*),\" delivered=\",SUM(delivered_at IS NOT NULL)) FROM sys_messenger_messages GROUP BY queue_name;" 2>&1'
 	-$(COMPOSE) exec -T web sh -c 'echo "--provider api_key identifier + additional.php--"; grep -oE "allowCliAccess[^;]*" config/system/additional.php 2>&1 | head -1'
 	-$(COMPOSE) exec -T db sh -c 'MYSQL_PWD="$$MARIADB_PASSWORD" mariadb -u"$$MARIADB_USER" "$$MARIADB_DATABASE" -N -e "SELECT CONCAT(\"provider.api_key(identifier)=[\",COALESCE(api_key,\"NULL\"),\"]\") FROM tx_nrllm_provider WHERE uid=1;" 2>&1'
-	-@echo "--WORKER docker logs (the real embedding failure) --"
-	-$(COMPOSE) logs worker --tail 200 2>&1 | grep -iE "error|exception|fail|embedding|vault|denied|401|403|429|circuit|handling message|retry|key" | grep -viE "Circuit breaker open|CircuitOpenException" | tail -25
+	-@echo "--isolate: CLI vault retrieve + direct OpenAI embeddings (no key printed)--"
+	-$(COMPOSE) exec -T web sh -c 'ID=019d212c-154a-719b-bfeb-4665b3289f84; K=$$(vendor/bin/typo3 vault:retrieve "$$ID" 2>/tmp/ve); echo "retrieve_exit=$$? keylen=$${#K}"; echo "stderr:"; head -c 240 /tmp/ve; echo; echo eyJtb2RlbCI6InRleHQtZW1iZWRkaW5nLTMtc21hbGwiLCJpbnB1dCI6InBpbmcifQ== | base64 -d > /tmp/p.json; if [ -n "$$K" ]; then curl -s -o /tmp/eb -w "embed_http=%{http_code} time=%{time_total}s\n" -m 30 -H "Authorization: Bearer $$K" -H "Content-Type: application/json" --data @/tmp/p.json https://api.openai.com/v1/embeddings; echo "resp_head:"; head -c 260 /tmp/eb; echo; else echo "NO KEY RESOLVED"; fi'
 	-@echo "===DIAG-END==="
 	$(MAKE) prune
 
