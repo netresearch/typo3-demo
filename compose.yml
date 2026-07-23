@@ -62,11 +62,15 @@ services:
     user: www-data
     entrypoint: ["sh", "-c"]
     command:
-      # Consume both the default 'doctrine' transport (nr-repurpose jobs) and the
-      # 'nr_ai_search' transport (RAG embedding jobs) so vectorized content lands
-      # in the shared var/ vektor store without a separate service.
+      # Consume three transports so content is both INDEXED and VECTORIZED:
+      #   doctrine     - nr-repurpose async generation jobs
+      #   index        - lochmueller/index page-index jobs; processing these emits
+      #                  the IndexPageEvent that nr_ai_search turns into embed jobs
+      #                  (without this the 'index' queue piles up and NOTHING is
+      #                  ever vectorized — the RAG store stays empty)
+      #   nr_ai_search - RAG embedding jobs, written to the shared var/ vektor store
       - >
-        exec vendor/bin/typo3 messenger:consume doctrine nr_ai_search
+        exec vendor/bin/typo3 messenger:consume doctrine index nr_ai_search
         --time-limit=3600 --memory-limit=512M --sleep=2
     environment:
       # Writable HOME for chromium (www-data has no home dir in the image);
