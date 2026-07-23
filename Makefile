@@ -14,9 +14,6 @@ up: ## Start all services (pulls pre-built images from GHCR)
 	@test -f .env || { test -f .env.example && cp .env.example .env || { echo "ERROR: .env.example not found"; exit 1; }; }
 	$(COMPOSE) pull
 	$(COMPOSE) up -d --wait --wait-timeout 180 || $(COMPOSE) up -d
-	-@echo "===[embed-diag] provider endpoint + chunk/queue + reachability:"
-	-$(COMPOSE) exec -T db sh -c 'MYSQL_PWD="$$MARIADB_PASSWORD" mariadb -u"$$MARIADB_USER" "$$MARIADB_DATABASE" -N -e "SELECT CONCAT_WS(\" | \", uid, name, adapter_type, CONCAT(\"endpoint=[\",COALESCE(endpoint_url,\"\"),\"]\"), CONCAT(\"timeout=\",api_timeout), IF(api_key=\"\" OR api_key IS NULL,\"key:EMPTY\",CONCAT(\"key:\",LEFT(api_key,10)))) FROM tx_nrllm_provider WHERE uid=1; SELECT CONCAT(\"chunks=\",COUNT(*)) FROM tx_nraisearch_chunk; SELECT CONCAT(\"q:\",queue_name,\"=\",COUNT(*)) FROM sys_messenger_messages GROUP BY queue_name;" 2>&1'
-	-$(COMPOSE) exec -T web sh -c 'for ep in embeddings chat/completions; do curl -sS -m 25 -X POST -H "Content-Type: application/json" -d "{}" -o /dev/null -w "  api.openai.com/v1/$$ep -> http=%{http_code} time=%{time_total}s\n" "https://api.openai.com/v1/$$ep" 2>&1 || echo "  $$ep: curl failed/hung"; done'
 	$(MAKE) prune
 	@echo "TYPO3 Demo running at $${TYPO3_DOMAIN:-localhost}"
 

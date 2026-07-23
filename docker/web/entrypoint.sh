@@ -198,6 +198,15 @@ fi
 #   context, so the single `index:queue` further below emits IndexPageEvent
 #   inline instead of persisting to a separate 'index' transport that would
 #   otherwise need its own long-running consumer.
+# - nr_vault allowCliAccess=1: content indexing runs in the bounded
+#   'nr_ai_search' messenger consumer, an UNAUTHENTICATED
+#   CommandLineUserAuthentication process. nr_llm resolves the OpenAI key via
+#   nr_vault retrieve(), which for a CLI actor is gated by allowCliAccess
+#   (default 0). nr_llm never opens a TechnicalActorContext runAs() scope and
+#   withBeUserUid(990) is budget attribution only, so without this grant the
+#   worker cannot read the key: every embedding 401s, the provider circuit
+#   breaker opens, and tx_nraisearch_chunk stays empty. Chat (admin BE user)
+#   and FE query-embedding (frontend_accessible read branch) are unaffected.
 if [ -f config/system/settings.php ]; then
     php -r '
         $f = "config/system/additional.php";
@@ -210,6 +219,7 @@ if [ -f config/system/settings.php ]; then
             . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"nr_ai_search\"][\"technicalBeUserUid\"] = \"990\";\n"
             . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"nr_ai_search\"][\"rateLimitPerMinute\"] = \"10\";\n"
             . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"nr_ai_search\"][\"hybridSearchEnabled\"] = \"0\";\n"
+            . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"nr_vault\"][\"allowCliAccess\"] = \"1\";\n"
             . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"index\"][\"defaultTransportInDevelopmentContext\"] = \"1\";\n"
             . $end;
         $existing = is_file($f) ? (string) file_get_contents($f) : "";
@@ -225,7 +235,7 @@ if [ -f config/system/settings.php ]; then
         }
         $existing = rtrim($existing, "\n") . "\n\n" . $block . "\n";
         file_put_contents($f, $existing);
-        echo "additional.php: nr_ai_search configured (technicalBeUserUid=990, dims=1536), index dev-sync on." . PHP_EOL;
+        echo "additional.php: nr_ai_search configured (technicalBeUserUid=990, dims=1536), nr_vault CLI read enabled, index dev-sync on." . PHP_EOL;
     ' || echo "WARNING: failed to write nr_ai_search additional.php block" >&2
 fi
 
