@@ -1,23 +1,32 @@
 # Netresearch Demo Site RTE Configuration
-# Extends Bootstrap Package with rte_ckeditor_image and cowriter plugins.
-# IMPORTANT: YAML arrays override (don't merge), so importModules must
-# list ALL modules from all imported presets plus our additions.
+# Extends Bootstrap Package's RTE preset with the rte_ckeditor_image and Cowriter
+# plugins. TYPO3 RTE YAML `imports` APPEND list values (they do not overwrite),
+# so the imported presets' importModules are already merged in — we only add the
+# Cowriter module here, and define our own CKEditor 5 toolbar below.
 imports:
     - { resource: "EXT:bootstrap_package/Configuration/RTE/Default.yaml" }
     - { resource: "EXT:rte_ckeditor_image/Configuration/RTE/Plugin.yaml" }
 
 editor:
     config:
+        # Bootstrap Package ships a CKEditor 4 `toolbarGroups` definition. TYPO3's
+        # CKEditor5Migrator PREFERS `toolbarGroups` over `toolbar` (see
+        # CKEditor5Migrator::migrateToolbar()), so the imported groups would
+        # discard our CKEditor 5 `toolbar.items` below (dropping the Cowriter
+        # button) and rebuild a toolbar that references fontFamily/fontSize/
+        # pageBreak — plugins Bootstrap Package does not load, producing
+        # `toolbarview-item-unavailable` console warnings. Override both legacy
+        # keys with a non-array scalar so the migrator falls through to our
+        # explicit `toolbar.items`. (Because imports append list values, a list
+        # override cannot clear them — a scalar wins the merge and defeats the
+        # migrator's `is_array()` checks. Empty strings, not `false`, keep the
+        # migrator's `removeButtons` handling on its warning-free string path.)
+        toolbarGroups: ''
+        removeButtons: ''
+
         importModules:
-            # Bootstrap Package plugins (from EXT:bootstrap_package/Configuration/RTE/Default.yaml)
-            - { module: '@bk2k/bootstrap-package/rte_ckeditor/address-plugin.js', exports: ['BootstrapPackageAddress'] }
-            - { module: '@bk2k/bootstrap-package/rte_ckeditor/box-plugin.js', exports: ['BootstrapPackageBox'] }
-            - { module: '@bk2k/bootstrap-package/rte_ckeditor/table-plugin.js', exports: ['BootstrapPackageTablePlugin'] }
-            - { module: '@bk2k/bootstrap-package/rte_ckeditor/text-column-plugin.js', exports: ['BootstrapPackageTextColumn'] }
-            - { module: '@bk2k/bootstrap-package/rte_ckeditor/text-indent-plugin.js', exports: ['BootstrapPackageTextIndent'] }
-            # RTE CKEditor Image plugin (from EXT:rte_ckeditor_image/Configuration/RTE/Plugin.yaml)
-            - '@netresearch/rte-ckeditor-image/Plugins/typo3image.js'
-            # Cowriter plugin
+            # Cowriter plugin (Bootstrap Package + rte_ckeditor_image modules are
+            # contributed by the imports above).
             - { module: '@netresearch/t3_cowriter/cowriter', exports: ['Cowriter'] }
 
         toolbar:
