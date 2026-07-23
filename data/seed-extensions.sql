@@ -1003,9 +1003,11 @@ VALUES (990, 0, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0, 0,
 --    configuration is instance-wide via the extension configuration.
 INSERT IGNORE INTO pages (uid, pid, tstamp, crdate, title, slug, doktype, sorting, hidden, deleted)
 VALUES (158, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'AI Search', '/extensions/ai-search', 1, 800, 1, 0);
--- Unhidden now that vectorization self-heals (store-empty gate + worker drains
--- the nr_ai_search queue). INSERT IGNORE won't update the existing row, so:
-UPDATE pages SET hidden = 1 WHERE uid = 158 AND deleted = 0;
+-- Unhidden now that the indexing worker can read the OpenAI key from nr_vault
+-- (allowCliAccess, set in docker/web/entrypoint.sh) and the store-empty gate +
+-- worker drain the nr_ai_search queue. INSERT IGNORE won't update an existing
+-- row, so force the visible state on every re-seed:
+UPDATE pages SET hidden = 0 WHERE uid = 158 AND deleted = 0;
 
 INSERT IGNORE INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
 VALUES (602, 158, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', '',
