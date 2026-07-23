@@ -50,8 +50,10 @@ update: ## Update code without purging data
 	-@echo "[waiting 90s for worker to drain the nr_ai_search queue]"; sleep 90
 	-$(COMPOSE) ps --format 'table {{.Service}}\t{{.Status}}' 2>&1
 	-$(COMPOSE) exec -T db sh -c 'MYSQL_PWD="$$MARIADB_PASSWORD" mariadb -u"$$MARIADB_USER" "$$MARIADB_DATABASE" -N -e "SELECT CONCAT(\"chunks=\",COUNT(*)) FROM tx_nraisearch_chunk; SELECT CONCAT(queue_name,\": total=\",COUNT(*),\" delivered=\",SUM(delivered_at IS NOT NULL)) FROM sys_messenger_messages GROUP BY queue_name;" 2>&1'
-	-$(COMPOSE) exec -T worker sh -c 'pgrep -af "[m]essenger:consume" 2>&1 | head -2'
-	-$(COMPOSE) exec -T web sh -c 'echo "--embed/vault errors (lochmueller flood excluded)--"; grep -hiE "NrAiSearch|Embedding|CircuitOpen|AccessDenied|Vault|VectorRetrieval|Vektor|handling message|for retry|nr_ai_search" var/log/typo3_*.log 2>/dev/null | grep -viE "Lochmueller|bodytext" | tail -20'
+	-$(COMPOSE) exec -T web sh -c 'echo "--provider api_key identifier + additional.php--"; grep -oE "allowCliAccess[^;]*" config/system/additional.php 2>&1 | head -1'
+	-$(COMPOSE) exec -T db sh -c 'MYSQL_PWD="$$MARIADB_PASSWORD" mariadb -u"$$MARIADB_USER" "$$MARIADB_DATABASE" -N -e "SELECT CONCAT(\"provider.api_key(identifier)=[\",COALESCE(api_key,\"NULL\"),\"]\") FROM tx_nrllm_provider WHERE uid=1;" 2>&1'
+	-@echo "--WORKER docker logs (the real embedding failure) --"
+	-$(COMPOSE) logs worker --tail 200 2>&1 | grep -iE "error|exception|fail|embedding|vault|denied|401|403|429|circuit|handling message|retry|key" | grep -viE "Circuit breaker open|CircuitOpenException" | tail -25
 	-@echo "===DIAG-END==="
 	$(MAKE) prune
 
