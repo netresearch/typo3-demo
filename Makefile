@@ -47,9 +47,11 @@ update: ## Update code without purging data
 	$(TYPO3) cache:flush
 	$(TYPO3) cache:warmup
 	-@echo "===DIAG-BEGIN==="
-	-$(COMPOSE) exec -T db sh -c 'MYSQL_PWD="$$MARIADB_PASSWORD" mariadb -u"$$MARIADB_USER" "$$MARIADB_DATABASE" -N -e "SELECT CONCAT(\"chunks=\",COUNT(*)) FROM tx_nraisearch_chunk;" 2>&1'
-	-$(COMPOSE) exec -T db sh -c 'MYSQL_PWD="$$MARIADB_PASSWORD" mariadb -u"$$MARIADB_USER" "$$MARIADB_DATABASE" -N -e "SELECT CONCAT(\"q:\",queue_name,\"=\",COUNT(*)) FROM sys_messenger_messages GROUP BY queue_name;" 2>&1'
-	-$(COMPOSE) exec -T web sh -c 'echo "--store--"; ls -la var/nr_ai_search/vektor-store 2>&1 | head -4; echo "--log--"; grep -hiE "NrAiSearch|nr_ai_search|Embedding|CircuitOpen|AccessDenied|Vault|VectorRetrieval|Vektor|Exception" var/log/typo3_*.log 2>/dev/null | tail -18'
+	-@echo "[waiting 90s for worker to drain the nr_ai_search queue]"; sleep 90
+	-$(COMPOSE) ps --format 'table {{.Service}}\t{{.Status}}' 2>&1
+	-$(COMPOSE) exec -T db sh -c 'MYSQL_PWD="$$MARIADB_PASSWORD" mariadb -u"$$MARIADB_USER" "$$MARIADB_DATABASE" -N -e "SELECT CONCAT(\"chunks=\",COUNT(*)) FROM tx_nraisearch_chunk; SELECT CONCAT(queue_name,\": total=\",COUNT(*),\" delivered=\",SUM(delivered_at IS NOT NULL)) FROM sys_messenger_messages GROUP BY queue_name;" 2>&1'
+	-$(COMPOSE) exec -T worker sh -c 'pgrep -af "[m]essenger:consume" 2>&1 | head -2'
+	-$(COMPOSE) exec -T web sh -c 'echo "--embed/vault errors (lochmueller flood excluded)--"; grep -hiE "NrAiSearch|Embedding|CircuitOpen|AccessDenied|Vault|VectorRetrieval|Vektor|handling message|for retry|nr_ai_search" var/log/typo3_*.log 2>/dev/null | grep -viE "Lochmueller|bodytext" | tail -20'
 	-@echo "===DIAG-END==="
 	$(MAKE) prune
 
