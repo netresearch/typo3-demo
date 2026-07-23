@@ -46,6 +46,11 @@ update: ## Update code without purging data
 	$(TYPO3) extension:setup || true
 	$(TYPO3) cache:flush
 	$(TYPO3) cache:warmup
+	-@echo "===[embed-diag] service state + queue depths + chunk count:"
+	-$(COMPOSE) ps
+	-$(COMPOSE) exec -T db sh -c 'MYSQL_PWD="$$MARIADB_PASSWORD" mariadb -u"$$MARIADB_USER" "$$MARIADB_DATABASE" -N -e "SELECT CONCAT(\"[embed-diag] chunks=\",COUNT(*)) FROM tx_nraisearch_chunk; SELECT CONCAT(\"[embed-diag] queue by name: \",queue_name,\"=\",COUNT(*)) FROM sys_messenger_messages GROUP BY queue_name;"'
+	-@echo "===[embed-diag] web+worker container logs (entrypoint re-queue + processing):"
+	-$(COMPOSE) logs --tail=150 web worker 2>&1 | grep -iE "nr_ai_search|index queue|indexing failed|Consuming|DatabaseIndex|IngestContent|No embedded chunks|Filling index|Fatal|Uncaught|exited|Error thrown" | tail -45
 	$(MAKE) prune
 
 prune: ## Remove dangling images left behind by image pulls (keeps volumes + in-use images)
