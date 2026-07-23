@@ -46,6 +46,8 @@ update: ## Update code without purging data
 	$(TYPO3) extension:setup || true
 	$(TYPO3) cache:flush
 	$(TYPO3) cache:warmup
+	-@echo "===[embed-diag] draining a few nr_ai_search embed jobs to surface any embedding error (live key + technical user 990):"
+	-$(COMPOSE) exec -T -u www-data web sh -c 'TYPO3_SITE_BASE="https://$${TYPO3_DOMAIN:-localhost}/" vendor/bin/typo3 messenger:consume nr_ai_search --limit=3 --time-limit=60 -vv 2>&1 | tail -35'
 	$(MAKE) prune
 
 prune: ## Remove dangling images left behind by image pulls (keeps volumes + in-use images)
