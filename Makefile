@@ -46,8 +46,12 @@ update: ## Update code without purging data
 	$(TYPO3) extension:setup || true
 	$(TYPO3) cache:flush
 	$(TYPO3) cache:warmup
-	-@echo "===[embed-diag] draining a few nr_ai_search embed jobs to surface any embedding error (live key + technical user 990):"
-	-$(COMPOSE) exec -T -u www-data web sh -c 'TYPO3_SITE_BASE="https://$${TYPO3_DOMAIN:-localhost}/" vendor/bin/typo3 messenger:consume nr_ai_search --limit=3 --time-limit=60 -vv 2>&1 | tail -35'
+	-@echo "===[embed-diag] uncontended embed test (stop worker, drain 2 jobs verbosely, live key + user 990):"
+	-$(COMPOSE) stop worker
+	-$(COMPOSE) exec -T -u www-data web sh -c 'echo "[embed-diag] store files BEFORE: $$(find var/nr_ai_search/vektor-store -type f 2>/dev/null | wc -l)"'
+	-$(COMPOSE) exec -T -u www-data web sh -c 'TYPO3_SITE_BASE="https://$${TYPO3_DOMAIN:-localhost}/" vendor/bin/typo3 messenger:consume nr_ai_search --limit=2 --time-limit=90 -vv 2>&1 | tail -35'
+	-$(COMPOSE) exec -T -u www-data web sh -c 'echo "[embed-diag] store files AFTER: $$(find var/nr_ai_search/vektor-store -type f 2>/dev/null | wc -l)"'
+	-$(COMPOSE) start worker
 	$(MAKE) prune
 
 prune: ## Remove dangling images left behind by image pulls (keeps volumes + in-use images)
