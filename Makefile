@@ -52,8 +52,13 @@ update: ## Update code without purging data
 	-$(COMPOSE) exec -T db sh -c 'MYSQL_PWD="$$MARIADB_PASSWORD" mariadb -u"$$MARIADB_USER" "$$MARIADB_DATABASE" -N -e "SELECT CONCAT(\"chunks=\",COUNT(*)) FROM tx_nraisearch_chunk; SELECT CONCAT(queue_name,\": total=\",COUNT(*),\" delivered=\",SUM(delivered_at IS NOT NULL)) FROM sys_messenger_messages GROUP BY queue_name;" 2>&1'
 	-$(COMPOSE) exec -T web sh -c 'echo "--provider api_key identifier + additional.php--"; grep -oE "allowCliAccess[^;]*" config/system/additional.php 2>&1 | head -1'
 	-$(COMPOSE) exec -T db sh -c 'MYSQL_PWD="$$MARIADB_PASSWORD" mariadb -u"$$MARIADB_USER" "$$MARIADB_DATABASE" -N -e "SELECT CONCAT(\"provider.api_key(identifier)=[\",COALESCE(api_key,\"NULL\"),\"]\") FROM tx_nrllm_provider WHERE uid=1;" 2>&1'
-	-@echo "--isolate: CLI vault retrieve + direct OpenAI embeddings (no key printed)--"
-	-$(COMPOSE) exec -T web sh -c 'ID=019d212c-154a-719b-bfeb-4665b3289f84; K=$$(vendor/bin/typo3 vault:retrieve "$$ID" 2>/tmp/ve); echo "retrieve_exit=$$? keylen=$${#K}"; echo "stderr:"; head -c 240 /tmp/ve; echo; echo eyJtb2RlbCI6InRleHQtZW1iZWRkaW5nLTMtc21hbGwiLCJpbnB1dCI6InBpbmcifQ== | base64 -d > /tmp/p.json; if [ -n "$$K" ]; then curl -s -o /tmp/eb -w "embed_http=%{http_code} time=%{time_total}s\n" -m 30 -H "Authorization: Bearer $$K" -H "Content-Type: application/json" --data @/tmp/p.json https://api.openai.com/v1/embeddings; echo "resp_head:"; head -c 260 /tmp/eb; echo; else echo "NO KEY RESOLVED"; fi'
+	-@echo "--causeClass tally across WHOLE log (any non-CircuitOpen root?)--"
+	-$(COMPOSE) exec -T web sh -c 'grep -ohE "\"causeClass\":\"[^\"]+\"" var/log/typo3_*.log 2>/dev/null | sort | uniq -c; echo "--first NON-CircuitOpen indexing failures--"; grep -hE "vector indexing failed" var/log/typo3_*.log 2>/dev/null | grep -vE "CircuitOpen|Circuit breaker open" | head -4 | cut -c1-320'
+	-@echo "--self-heal: flush caches, let worker retry 70s with fresh breaker--"
+	-$(COMPOSE) exec -T web sh -c 'vendor/bin/typo3 cache:flush >/dev/null 2>&1 && echo flushed'
+	-@echo "[waiting 70s for worker retry]"; sleep 70
+	-$(COMPOSE) exec -T db sh -c 'MYSQL_PWD="$$MARIADB_PASSWORD" mariadb -u"$$MARIADB_USER" "$$MARIADB_DATABASE" -N -e "SELECT CONCAT(\"chunks_after_heal=\",COUNT(*)) FROM tx_nraisearch_chunk;" 2>&1'
+	-$(COMPOSE) exec -T web sh -c 'echo "--newest failures after fresh breaker (real cause)--"; grep -hE "vector indexing failed|Budget|Provider.*Exception|AccessDenied|Embedding" var/log/typo3_*.log 2>/dev/null | grep -vE "Circuit breaker open|CircuitOpen" | tail -5 | cut -c1-320'
 	-@echo "===DIAG-END==="
 	$(MAKE) prune
 
