@@ -218,3 +218,44 @@ services:
         iconIdentifier: 'content-image'
         height: 'medium'
         width: 'small'
+
+  dashboard.widget.nrdemo.aisearch:
+    class: 'Netresearch\DemoSite\Widgets\DemoExtensionCardWidget'
+    arguments:
+      $options:
+        description: 'RAG-based site search and chat: it vectorizes this site''s own pages and answers visitor questions strictly from that content, with a safety gate so an ungrounded answer is never returned as if it were grounded. Built on the nr-llm foundation.'
+        howTo:
+          - 'Open the "AI Search" demo page in the frontend at /extensions/ai-search.'
+          - 'Type a question into the search box, or use the chat widget, and ask about this site.'
+          - 'Note that answers stay grounded in the site''s own pages — ungrounded questions are declined, not hallucinated.'
+          - 'In the backend, open System > Reports and check the "AI Search" status for indexing and RAG health.'
+    tags:
+      - name: 'dashboard.widget'
+        identifier: 'nrdemo.aisearch'
+        groupNames: 'netresearch'
+        title: 'NR AI Search'
+        description: 'RAG site search & chat grounded in your own content'
+        iconIdentifier: 'actions-search'
+        height: 'medium'
+        width: 'medium'
+
+  dashboard.widget.nrdemo.imageoptimize:
+    class: 'Netresearch\DemoSite\Widgets\DemoExtensionCardWidget'
+    arguments:
+      $options:
+        description: 'On-demand image optimization for TYPO3: lossless compression on upload, plus lazily generated WebP and AVIF variants and responsive srcset served through the /processed/ URL. A backend module manages and clears the processed-image cache.'
+        howTo:
+          - 'Open Admin Tools > Image Optimize in the module menu.'
+          - 'Review the processed-image statistics, then open "System requirements" to verify the optimizer binaries.'
+          - 'Use "Clear processed images" to purge the /processed/ cache, then reload a page to watch variants regenerate on demand.'
+        moduleRoute: 'nr_image_optimize'
+        buttonLabel: 'Open Image Optimize'
+    tags:
+      - name: 'dashboard.widget'
+        identifier: 'nrdemo.imageoptimize'
+        groupNames: 'netresearch'
+        title: 'NR Image Optimize'
+        description: 'On-demand WebP/AVIF variants and responsive srcset'
+        iconIdentifier: 'module-image-optimize'
+        height: 'medium'
+        width: 'small'
