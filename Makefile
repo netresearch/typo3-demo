@@ -46,6 +46,12 @@ update: ## Update code without purging data
 	$(TYPO3) extension:setup || true
 	$(TYPO3) cache:flush
 	$(TYPO3) cache:warmup
+	-@echo "===DIAG2-BEGIN==="
+	-$(COMPOSE) exec -T db sh -c 'MYSQL_PWD="$$MARIADB_PASSWORD" mariadb -u"$$MARIADB_USER" "$$MARIADB_DATABASE" -N -e "SELECT CONCAT(\"secret owner_uid=\",owner_uid,\" fe_accessible=\",frontend_accessible) FROM tx_nrvault_secret WHERE deleted=0 AND identifier=(SELECT api_key FROM tx_nrllm_provider WHERE uid=1); SELECT CONCAT(\"chunks=\",COUNT(*)) FROM tx_nraisearch_chunk;" 2>&1'
+	-@echo "[waiting 100s for worker to embed with the new grant]"; sleep 100
+	-$(COMPOSE) exec -T db sh -c 'MYSQL_PWD="$$MARIADB_PASSWORD" mariadb -u"$$MARIADB_USER" "$$MARIADB_DATABASE" -N -e "SELECT CONCAT(\"chunks_after=\",COUNT(*)) FROM tx_nraisearch_chunk;" 2>&1'
+	-$(COMPOSE) exec -T web sh -c 'echo "--newest indexing + FE search errors--"; grep -hE "vector indexing failed|SearchController|RagQueryFlow|Access denied|Budget|Provider.*Exception" var/log/typo3_*.log 2>/dev/null | grep -vE "Circuit breaker open|CircuitOpen" | tail -6 | cut -c1-300'
+	-@echo "===DIAG2-END==="
 	$(MAKE) prune
 
 prune: ## Remove dangling images left behind by image pulls (keeps volumes + in-use images)
