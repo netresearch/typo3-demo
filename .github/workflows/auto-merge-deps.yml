@@ -1,0 +1,18 @@
+name: Auto-merge dependency PRs
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened]
+
+# Thin caller of the shared reusable: approval + the merge gate are maintained
+# centrally in netresearch/.github. This repo has no required status checks, so
+# the reusable takes its self-gating path (waits for the other checks itself,
+# then merges) rather than GitHub-native auto-merge.
+permissions: {}
+
+jobs:
+  auto-merge:
+    uses: netresearch/.github/.github/workflows/auto-merge-deps.yml@main
+    permissions:
+      contents: write
+      pull-requests: write
