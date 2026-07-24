@@ -995,6 +995,27 @@ VALUES (990, 0, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0, 0,
      'AI Search technical user',
      'Synthetic non-admin identity; all anonymous frontend nr_ai_search calls are attributed here for nr_llm budget accounting. Not for interactive login.');
 
+-- 3b) Grant the technical user (uid 990) read access to the OpenAI provider key
+--     in nr_vault. Content indexing runs in the bounded 'nr_ai_search' messenger
+--     consumer, where nr_ai_search's IngestContentMessageHandler wraps the work
+--     in TechnicalUserContextInterface::runAs(..., establishGlobalBackendUser: true)
+--     — so $GLOBALS['BE_USER'] becomes an AUTHENTICATED uid-990 backend user.
+--     nr_vault therefore evaluates the secret through hasBackendUserAccess(990),
+--     NOT the CLI-access branch: a non-admin, non-owner, group-less 990 is denied,
+--     every embedding fails ("Access denied to secret"), the provider circuit
+--     breaker opens, and tx_nraisearch_chunk never fills. Making 990 the secret's
+--     owner grants it full read access (AccessControlService::hasBackendUserAccess
+--     owner branch). The secret is created live in the Vault module, so match it by
+--     the identifier the OpenAI provider (uid 1) references. owner_uid is plain
+--     access metadata (not part of the envelope-encrypted value), so this UPDATE is
+--     integrity-safe. Admins keep full access regardless of owner. Idempotent; a
+--     no-op until the OpenAI key is configured.
+UPDATE tx_nrvault_secret
+SET owner_uid = 990
+WHERE deleted = 0
+  AND identifier = (SELECT api_key FROM tx_nrllm_provider WHERE uid = 1 LIMIT 1)
+  AND (SELECT api_key FROM tx_nrllm_provider WHERE uid = 1 LIMIT 1) <> '';
+
 -- 4) Frontend showcase page under "Extensions" (uid 101) carrying the two
 --    nr_ai_search plugin content elements. Page uid 158 and tt_content uids
 --    602-604 are above the seed maxima (pages 157, tt_content 601). Both plugins
