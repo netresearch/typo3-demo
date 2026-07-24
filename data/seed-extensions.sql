@@ -1010,8 +1010,15 @@ VALUES (990, 0, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0, 0,
 --     access metadata (not part of the envelope-encrypted value), so this UPDATE is
 --     integrity-safe. Admins keep full access regardless of owner. Idempotent; a
 --     no-op until the OpenAI key is configured.
+--
+--     frontend_accessible = 1 additionally covers the QUERY-time path: the FE
+--     search/chat widgets embed the visitor's query in a plain frontend request
+--     (no runAs scope — withBeUserUid(990) is budget attribution only), so
+--     nr_vault resolves the key through its read-only frontend branch, which
+--     requires this flag. Owner (indexing worker) and frontend_accessible (FE
+--     query) are the two distinct grants nr_ai_search needs.
 UPDATE tx_nrvault_secret
-SET owner_uid = 990
+SET owner_uid = 990, frontend_accessible = 1
 WHERE deleted = 0
   AND identifier = (SELECT api_key FROM tx_nrllm_provider WHERE uid = 1 LIMIT 1)
   AND (SELECT api_key FROM tx_nrllm_provider WHERE uid = 1 LIMIT 1) <> '';
