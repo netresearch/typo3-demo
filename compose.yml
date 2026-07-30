@@ -132,7 +132,7 @@ services:
           memory: 512M
 
   valkey:
-    image: valkey/valkey:8-alpine
+    image: valkey/valkey:9-alpine
     logging: *default-logging
     healthcheck:
       test: ["CMD", "valkey-cli", "ping"]
