@@ -67,6 +67,12 @@ jobs:
               # taken in the LIVE database (db.sql.gz lags behind), which is how the
               # Contexts page ended up missing while its neighbours rendered.
               q "seeded demo pages" "SELECT uid, pid, sys_language_uid lang, deleted, hidden, slug, title FROM pages WHERE uid BETWEEN 155 AND 185 ORDER BY uid;"
+              # Seeded demo content elements. The re-assert added in #96 restores the
+              # structural fields but deliberately leaves bodytext alone, so a record
+              # created by an earlier seed run keeps whatever bodytext that run gave
+              # it. bodytext_len distinguishes a stale/empty body (element renders as
+              # an empty frame) from a rendering problem (frame absent entirely).
+              q "seeded demo content" "SELECT uid, pid, CType, sys_language_uid lang, l18n_parent, colPos, sorting, hidden, deleted, LENGTH(bodytext) bodytext_len, header FROM tt_content WHERE uid BETWEEN 600 AND 630 ORDER BY uid;"
             }
             enc() {
               if command -v openssl >/dev/null 2>&1; then
