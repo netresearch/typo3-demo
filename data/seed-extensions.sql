@@ -1140,7 +1140,7 @@ VALUES (602, 158, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', '',
   <div class="card-body py-4">
     <h1 class="h3 fw-bold mb-3">AI Search &amp; Chat</h1>
     <p class="mb-2" style="max-width: 720px;">Ask this website a question in natural language. nr_ai_search embeds the site content into a vector store and grounds every answer strictly in what it retrieves &mdash; the search box returns a synthesised answer with sources, and the chat widget holds a short grounded conversation.</p>
-    <p class="text-muted mb-0" style="font-size: 0.9rem; max-width: 720px;">Runtime note: answers require an OpenAI API key configured in the Vault module (frontend-accessible) and content that has been indexed and embedded. Without both, the widgets render but report that they cannot answer.</p>
+    <p class="text-muted mb-0" style="font-size: 0.9rem; max-width: 720px;">Runtime note: answers require an API key for the LLM provider, stored in the Vault module (frontend-accessible), and content that has been indexed and embedded. Any provider supported by nr_llm can be used; OpenAI is the tested default. Without both, the widgets render but report that they cannot answer.</p>
   </div>
 </div>', 0, 100, 0, 0)
 ON DUPLICATE KEY UPDATE
