@@ -7,6 +7,19 @@ languages:
     locale: en_US.UTF-8
     navigationTitle: English
     flag: us
+  # German is a secondary language with a fallback to English (languageId 0):
+  # pages and content elements without a German translation render their English
+  # source under /de/ instead of returning a 404, so the language switcher works
+  # across the whole demo, not only on the translated pages.
+  - title: Deutsch
+    enabled: true
+    languageId: 1
+    base: /de/
+    locale: de_DE.UTF-8
+    navigationTitle: Deutsch
+    flag: de
+    fallbackType: fallback
+    fallbacks: '0'
 rootPageId: 1
 websiteTitle: Netresearch TYPO3 Demo
 dependencies:

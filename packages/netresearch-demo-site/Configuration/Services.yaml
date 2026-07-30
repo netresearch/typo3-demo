@@ -259,3 +259,87 @@ services:
         iconIdentifier: 'module-image-optimize'
         height: 'medium'
         width: 'small'
+
+  dashboard.widget.nrdemo.contexts:
+    class: 'Netresearch\DemoSite\Widgets\DemoExtensionCardWidget'
+    arguments:
+      $options:
+        description: 'Multi-channel content visibility: define contexts from domain, GET parameter, IP range, HTTP header, session value, or a logical combination, then switch pages, menu entries, and single content elements on or off per context — without duplicating the page tree. Visibility is enforced as a Doctrine query restriction, and the active context combination is part of the page cache identifier.'
+        howTo:
+          - 'Open the Extensions > Contexts page in the frontend at /extensions/contexts — you see the default-channel element.'
+          - 'Append ?nrdemo=mobile to that URL and reload: the mobile-channel element replaces it.'
+          - 'In the backend, edit either element on that page and open its Contexts panel to see the per-context visibility switches.'
+          - 'Open Web > List on the home page to inspect the "Demo channel (mobile)" context record itself (admin only).'
+    tags:
+      - name: 'dashboard.widget'
+        identifier: 'nrdemo.contexts'
+        groupNames: 'netresearch'
+        title: 'NR Contexts'
+        description: 'Multi-channel content visibility without duplicated page trees'
+        iconIdentifier: 'actions-eye'
+        height: 'medium'
+        width: 'small'
+
+  dashboard.widget.nrdemo.textdb:
+    class: 'Netresearch\DemoSite\Widgets\DemoExtensionCardWidget'
+    arguments:
+      $options:
+        description: 'Moves frontend system strings — form labels, buttons, confirmation messages — out of XLIFF files and into the database, so editors change the wording in the backend without a deployment. Keys are filed by environment, component, and type, and a key rendered for the first time creates its own record.'
+        howTo:
+          - 'Open Netresearch > TextDb in the module menu.'
+          - 'Filter by component "demo" to see the four seeded labels, then switch to the translated view to compare them with their German translations.'
+          - 'Use Import to upload an XLIFF file, or Export to download the current filtered set as a ZIP.'
+          - 'The records are stored in the "TextDB Translations" folder in the page tree.'
+        moduleRoute: 'netresearch_textdb'
+        buttonLabel: 'Open TextDb module'
+    tags:
+      - name: 'dashboard.widget'
+        identifier: 'nrdemo.textdb'
+        groupNames: 'netresearch'
+        title: 'NR TextDB'
+        description: 'Database-backed frontend translations, edited in the backend'
+        iconIdentifier: 'extension-netresearch-textdb'
+        height: 'medium'
+        width: 'small'
+
+  dashboard.widget.nrdemo.imagesitemap:
+    class: 'Netresearch\DemoSite\Widgets\DemoExtensionCardWidget'
+    arguments:
+      $options:
+        description: 'Adds an image sitemap to TYPO3''s SEO sitemap: a second sitemap type listing every image referenced from pages and content elements, with title and caption, in the Google image-sitemap schema. Implemented as an additional XmlSitemapDataProvider for EXT:seo — no scheduler and no extra database tables.'
+        howTo:
+          - 'Open the Extensions > Image Sitemap page in the frontend for the overview.'
+          - 'Open /?type=1642072014 to see the generated image sitemap XML.'
+          - 'Compare it with core''s /sitemap.xml, which lists pages but no images.'
+          - 'Add an image to any content element, flush the frontend cache, and reload the sitemap to see the new entry.'
+    tags:
+      - name: 'dashboard.widget'
+        identifier: 'nrdemo.imagesitemap'
+        groupNames: 'netresearch'
+        title: 'NR Image Sitemap'
+        description: 'Image sitemap data provider for EXT:seo'
+        iconIdentifier: 'nr_image_sitemap_extension_icon'
+        height: 'medium'
+        width: 'small'
+
+  dashboard.widget.nrdemo.scheduler:
+    class: 'Netresearch\DemoSite\Widgets\DemoExtensionCardWidget'
+    arguments:
+      $options:
+        description: 'Base classes that extend TYPO3''s Scheduler: any task built on them gains e-mail failure reporting and per-application-context execution gating, and declares its configuration form through a typed field builder instead of hand-written HTML. A developer toolkit — it ships no module and no task of its own.'
+        howTo:
+          - 'Open Admin Tools > Scheduler in the module menu — nr-scheduler extends this core module rather than adding one.'
+          - 'Create a task and note the standard fields; the toolkit adds Enable reporting, Reporting emails, Reporting subject, and Environment to tasks that derive from its base classes.'
+          - 'Read the Extensions > Scheduler Toolkit page in the frontend for what the base classes provide.'
+          - 'Note that this demo has no scheduler runner service, so tasks are configured here but not executed on a cron.'
+        moduleRoute: 'scheduler'
+        buttonLabel: 'Open Scheduler module'
+    tags:
+      - name: 'dashboard.widget'
+        identifier: 'nrdemo.scheduler'
+        groupNames: 'netresearch'
+        title: 'NR Scheduler'
+        description: 'Failure reporting and context gating for scheduler tasks'
+        iconIdentifier: 'module-scheduler'
+        height: 'medium'
+        width: 'small'
