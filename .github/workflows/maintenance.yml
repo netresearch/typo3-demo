@@ -12,6 +12,10 @@ on:
         description: "Run 'make update' after pruning"
         type: boolean
         default: true
+      recreate_containers:
+        description: "Also recreate containers (frees their writable layers; named volumes are kept)"
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -31,18 +35,39 @@ jobs:
           host: ${{ secrets.HETZNER_SSH_HOST }}
           username: ${{ secrets.HETZNER_SSH_USER }}
           key: ${{ secrets.HETZNER_SSH_KEY }}
-          envs: RUN_UPDATE
+          envs: RUN_UPDATE,RECREATE_CONTAINERS
           script: |
             set -e
             echo "===== df BEFORE"
             df -h /
             echo "===== docker disk usage BEFORE"
             docker system df || true
+            echo "===== container writable layers (SIZE = writable layer)"
+            # `docker system df` only reports the SUM over all containers. When
+            # that sum is large while images and volumes are small, the space is
+            # sitting in one container's writable layer (anything written inside
+            # the container instead of onto a named volume, e.g. typo3temp).
+            docker ps -a --size --format 'table {{.Names}}\t{{.Size}}\t{{.Status}}' || true
             echo "===== pruning unused images + build cache (NOT volumes)"
             docker image prune -af
             docker builder prune -af
+            echo "===== stopped containers"
+            docker container prune -f || true
             echo "===== df AFTER prune"
             df -h /
+            if [ "$RECREATE_CONTAINERS" = "true" ]; then
+              # Recreating drops every container writable layer. Named volumes
+              # (typo3-db, typo3-fileadmin, typo3-var, typo3-config, caddy-*)
+              # are NOT touched, so database, fileadmin, var and the system
+              # config survive; regenerable content such as typo3temp is rebuilt
+              # on the next request.
+              echo "===== recreating containers (named volumes are preserved)"
+              cd /opt/typo3-demo
+              docker compose down --remove-orphans
+              docker compose up -d --wait --wait-timeout 180 || docker compose up -d
+              echo "===== df AFTER recreate"
+              df -h /
+            fi
             if [ "$RUN_UPDATE" = "true" ]; then
               echo "===== make update"
               cd /opt/typo3-demo
@@ -54,3 +79,4 @@ jobs:
             fi
         env:
           RUN_UPDATE: ${{ github.event.inputs.run_update }}
+          RECREATE_CONTAINERS: ${{ github.event.inputs.recreate_containers }}
