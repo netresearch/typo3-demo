@@ -1061,10 +1061,13 @@ VALUES (604, 158, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'nraisearch_chat', 'AI Cha
 -- Base dump data/db.sql.gz .......... pages max 156, tt_content max 521
 -- data/seed-schema.sql .............. pages 110,     tt_content 444
 -- data/seed-extensions.sql (above) .. pages max 158, tt_content max 604
--- => first free: pages 159, tt_content 605.
+-- => first free: pages 159, tt_content 605 -- BUT uid 159 turned out to be
+--    occupied in the LIVE database (a row the exported db.sql.gz does not
+--    contain, and not one INSERT IGNORE could overwrite), so the Contexts page
+--    uses 164. Verified live: ?id=159 answered 404 while 160-163 rendered.
 --
 -- Allocation used here:
---   pages   159-163  new demo pages (default language) + TextDB sysfolder
+--   pages   160-164  new demo pages (default language) + TextDB sysfolder
 --   pages   170-182  German translations (sys_language_uid = 1)
 --   content 605-610  new demo content (default language)
 --   content 620-626  German translations (sys_language_uid = 1)
@@ -1090,18 +1093,18 @@ VALUES (604, 158, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'nraisearch_chat', 'AI Cha
 -- INSERT IGNORE therefore silently created nothing and ?id=159 answered 404
 -- while 160-162 rendered. Drop such a leftover first; a page that is not in the
 -- recycler is never touched.
-DELETE FROM pages WHERE uid = 159 AND deleted = 1;
+DELETE FROM pages WHERE uid = 164 AND deleted = 1;
 
 INSERT IGNORE INTO pages (uid, pid, tstamp, crdate, title, slug, doktype, sorting, hidden, deleted)
-VALUES (159, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'Contexts', '/extensions/contexts', 1, 1000, 0, 0);
+VALUES (164, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'Contexts', '/extensions/contexts', 1, 1000, 0, 0);
 
 -- INSERT IGNORE never updates an existing row, so re-assert the page on every
 -- re-seed. Scoped to our own slug so a foreign record at that uid stays intact.
 UPDATE pages SET pid = 101, doktype = 1, hidden = 0, deleted = 0
-WHERE uid = 159 AND slug = '/extensions/contexts';
+WHERE uid = 164 AND slug = '/extensions/contexts';
 
 INSERT IGNORE INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
-VALUES (605, 159, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'Contexts',
+VALUES (605, 164, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'Contexts',
 '<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(47,153,164,0.06), rgba(47,153,164,0.02));">
   <div class="d-flex align-items-center gap-2 mb-2">
     <span class="badge rounded-pill text-white" style="background: #2F99A4; font-size: 0.7rem;">Visibility</span>
@@ -1168,13 +1171,13 @@ VALUES (605, 159, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'Contexts',
 -- tt_content.tx_contexts_* columns are created by extension:setup, which runs
 -- after this file is imported.
 INSERT IGNORE INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
-VALUES (606, 159, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'text', 'Mobile channel',
+VALUES (606, 164, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'text', 'Mobile channel',
 '<p style="font-size: 0.88rem;">You are seeing the <strong>mobile channel</strong> variant. This element has the &quot;Demo channel&quot; context set to <em>enable</em>, so it is only part of the rendered page while <code>nrdemo=mobile</code> is present.</p>',
 0, 200, 0, 0);
 
 -- Visible ONLY while the "Demo channel" context does NOT match.
 INSERT IGNORE INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
-VALUES (607, 159, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'text', 'Default channel',
+VALUES (607, 164, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'text', 'Default channel',
 '<p style="font-size: 0.88rem;">You are seeing the <strong>default channel</strong> variant. This element has the &quot;Demo channel&quot; context set to <em>disable</em>, so it disappears as soon as <code>nrdemo=mobile</code> is present.</p>',
 0, 300, 0, 0);
 
@@ -1405,7 +1408,7 @@ VALUES
 -- --- The four new demo pages -------------------------------------------------
 INSERT IGNORE INTO pages (uid, pid, tstamp, crdate, sys_language_uid, l10n_parent, l10n_source, title, nav_title, slug, doktype, sorting, hidden, deleted)
 VALUES
-  (179, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 159, 159, 'Kontexte',          'Kontexte',          '/erweiterungen/kontexte',          1, 1000, 0, 0),
+  (179, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 164, 164, 'Kontexte',          'Kontexte',          '/erweiterungen/kontexte',          1, 1000, 0, 0),
   (180, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 160, 160, 'TextDB',            'TextDB',            '/erweiterungen/textdb',            1, 1100, 0, 0),
   (181, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 161, 161, 'Bilder-Sitemap',    'Bilder-Sitemap',    '/erweiterungen/bilder-sitemap',    1, 1200, 0, 0),
   (182, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 162, 162, 'Scheduler-Toolkit', 'Scheduler-Toolkit', '/erweiterungen/scheduler-toolkit', 1, 1300, 0, 0);
