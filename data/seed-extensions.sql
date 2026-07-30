@@ -1103,6 +1103,14 @@ VALUES (164, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'Contexts', '/extensions/c
 UPDATE pages SET pid = 101, doktype = 1, hidden = 0, deleted = 0
 WHERE uid = 164 AND slug = '/extensions/contexts';
 
+-- The content elements and the German translation were already created by an
+-- earlier seed run, pointing at the abandoned uid 159. INSERT IGNORE never
+-- updates an existing row, so re-point them explicitly; without this the page
+-- renders empty and /de/erweiterungen/kontexte stays a 404. Restricted to the
+-- uids this file owns.
+UPDATE tt_content SET pid = 164 WHERE uid IN (605, 606, 607);
+UPDATE pages SET l10n_parent = 164, l10n_source = 164 WHERE uid = 179;
+
 INSERT IGNORE INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
 VALUES (605, 164, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'Contexts',
 '<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(47,153,164,0.06), rgba(47,153,164,0.02));">
