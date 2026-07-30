@@ -76,7 +76,7 @@ seed-extensions: ## Apply data/seed-extensions.sql to the DB (idempotent; fails 
 	cat "$$out"; \
 	if grep -q '^SEED-PROBLEM:' "$$out"; then \
 		echo "ERROR: seeded records are missing or their uids are held by foreign rows (SEED-PROBLEM lines above)." >&2; \
-		echo "       Move the affected records to free uids in data/seed-extensions.sql; INSERT IGNORE will not overwrite a foreign row." >&2; \
+		echo "       Move the affected records to free uids in data/seed-extensions.sql; the seed never overwrites a foreign row." >&2; \
 		exit 1; \
 	fi; \
 	echo "Seed applied and verified."
