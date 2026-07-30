@@ -58,8 +58,28 @@ seed: ## Seed fileadmin from data/ into volume
 	$(COMPOSE) cp data/fileadmin/. web:/var/www/public/fileadmin/
 	$(COMPOSE) exec -T web chown -R www-data:www-data /var/www/public/fileadmin
 
-seed-extensions: ## Apply data/seed-extensions.sql to the DB (idempotent — INSERT IGNORE only)
-	$(COMPOSE) exec -T db sh -c 'MYSQL_PWD="$$MARIADB_PASSWORD" mariadb -u "$$MARIADB_USER" "$$MARIADB_DATABASE"' < data/seed-extensions.sql
+seed-extensions: ## Apply data/seed-extensions.sql to the DB (idempotent; fails on SEED-PROBLEM)
+	@# The client output is captured rather than piped so that BOTH failure modes
+	@# stay visible: a real SQL error (the client exits non-zero and aborts the
+	@# import) and a silently skipped record (the import succeeds, but the
+	@# verification at the end of the .sql file prints SEED-PROBLEM lines). Piping
+	@# straight into grep would hide the client's exit code behind grep's.
+	@set -e; \
+	out=$$(mktemp); \
+	trap 'rm -f "$$out"' EXIT; \
+	echo "Applying data/seed-extensions.sql ..."; \
+	if ! $(COMPOSE) exec -T db sh -c 'MYSQL_PWD="$$MARIADB_PASSWORD" mariadb -u "$$MARIADB_USER" "$$MARIADB_DATABASE"' < data/seed-extensions.sql > "$$out" 2>&1; then \
+		cat "$$out" >&2; \
+		echo "ERROR: seed import failed — the database client reported an error (above)." >&2; \
+		exit 1; \
+	fi; \
+	cat "$$out"; \
+	if grep -q '^SEED-PROBLEM:' "$$out"; then \
+		echo "ERROR: seeded records are missing or their uids are held by foreign rows (SEED-PROBLEM lines above)." >&2; \
+		echo "       Move the affected records to free uids in data/seed-extensions.sql; INSERT IGNORE will not overwrite a foreign row." >&2; \
+		exit 1; \
+	fi; \
+	echo "Seed applied and verified."
 
 export-seed: ## Export current DB as new seed
 	$(COMPOSE) exec -T db sh -c 'MYSQL_PWD="$$MARIADB_ROOT_PASSWORD" mariadb-dump -u root "$$MARIADB_DATABASE" --single-transaction --quick --skip-lock-tables' | gzip > data/db.sql.gz
