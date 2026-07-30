@@ -107,7 +107,7 @@ services:
           memory: 1G
 
   db:
-    image: mariadb:11
+    image: mariadb:12
     logging: *default-logging
     environment:
       MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD:-root}
