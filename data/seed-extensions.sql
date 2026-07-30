@@ -1,6 +1,36 @@
 -- Netresearch Extensions Demo Pages
 -- Imported on first boot to showcase Netresearch TYPO3 extensions
 
+-- =============================================================================
+-- uid bands for pages and tt_content — READ BEFORE ADDING A RECORD
+-- =============================================================================
+--   below 9000   Historical and frozen. Everything this file already owns lives
+--                here (pages 101-182, tt_content 400-626). These records are
+--                deliberately NOT renumbered: their uids are referenced from
+--                t3://page?uid=NNN links inside bodytext, from sys_file_reference
+--                rows, from backend bookmarks and possibly from the site
+--                configuration. Renumbering would break those references, and it
+--                buys nothing — the defect is closed as soon as no FUTURE seed
+--                record can collide, which is what the band below achieves.
+--   9000-9998    Reserved for records seeded by this file. Every record added
+--                from here on takes its uid from this range.
+--   9999         High-water sentinel, one row per table. Not for demo records.
+--                See the sentinel block further down.
+--   10000 and up Belongs to the editors. Everything created in the backend lands
+--                here, because the sentinel holds AUTO_INCREMENT at 10000.
+--
+-- The sentinel is the load-bearing part; a reserved band on its own does NOT
+-- work. AUTO_INCREMENT only ever tracks the highest uid present, so a seed
+-- record at 9000 moves the counter to 9001 and the next page an editor creates
+-- lands at 9001 — inside the band, on top of the next seed slot. Only a row at
+-- the TOP of the band pushes the counter clear of the whole band.
+--
+-- The defect this closes: with the seed ending at pages 182 / tt_content 626,
+-- AUTO_INCREMENT stood at 183 / 627 — exactly where the next seed record wanted
+-- to go. The next page created in the backend therefore took uid 183, and the
+-- INSERT IGNORE for the new demo page skipped in silence, leaving the page
+-- simply absent. That cost three deploy cycles (PRs #91, #94, #95).
+
 -- Parent page: "Extensions" in main navigation
 INSERT IGNORE INTO pages (uid, pid, tstamp, crdate, title, slug, doktype, is_siteroot, backend_layout, sorting, hidden, deleted)
 VALUES (101, 1, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'Extensions', '/extensions', 1, 0, '', 525, 0, 0);
@@ -1067,6 +1097,12 @@ VALUES (604, 158, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'nraisearch_chat', 'AI Cha
 --    contain, and not one INSERT IGNORE could overwrite), so the Contexts page
 --    uses 164. Verified live: ?id=159 answered 404 while 160-163 rendered.
 --
+-- This budget is a historical record of how the range below 9000 filled up. It
+-- is NOT the place to pick a uid for a new record any more: hunting for "the
+-- next free uid" just below the editors' next uid is what produced the silent
+-- skips in the first place. New seed records take their uid from the reserved
+-- 9000-9998 band described at the head of this file.
+--
 -- Allocation used here:
 --   pages   160-164  new demo pages (default language) + TextDB sysfolder
 --   pages   170-182  German translations (sys_language_uid = 1)
@@ -1790,6 +1826,60 @@ VALUES (626, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 410, 410, 'html', 'Netr
 0, 100, 0, 0);
 
 -- =============================================================================
+-- uid band high-water sentinel — KEEP THIS BLOCK BEFORE THE RE-ASSERT BLOCK
+-- =============================================================================
+-- One placeholder row per table at the very top of the reserved band (uid 9999).
+-- Its only job is to exist: with it present, AUTO_INCREMENT sits at 10000, so
+-- every record created in the backend from now on lands ABOVE the band instead
+-- of on top of the next seed slot. See the band description at the head of this
+-- file for why a band without this row does not work.
+--
+-- deleted = 1 rather than hidden = 1: TYPO3 applies a DeletedRestriction to
+-- effectively every query, so a soft-deleted row appears in neither the page
+-- tree, nor the frontend, nor menus, nor search — while still physically
+-- occupying its uid, which is all the sentinel needs to do. A hidden row would
+-- instead sit greyed out in the page tree of an instance whose entire purpose is
+-- to be looked at. hidden = 1 and doktype 254 (sysfolder) are set on top, so a
+-- sentinel that someone restores from the recycler is still not a visible,
+-- renderable page.
+--
+-- Re-asserted rather than only inserted, for the same reason as every other
+-- record in this file: INSERT IGNORE cannot repair a sentinel that an earlier
+-- run created and that has since been un-deleted or edited.
+-- The sentinel's identity, stated once. Every statement that creates, repairs or
+-- verifies it matches on these two, so there is a single place to change if the
+-- row is ever renamed. Session variables live for the whole import, and this
+-- file is fed to the client as one session.
+SET @sentinel_slug  = '/seed-uid-band-sentinel';
+SET @sentinel_title = 'Seed uid band sentinel — do not delete';
+
+INSERT IGNORE INTO pages (uid, pid, tstamp, crdate, title, slug, doktype, sorting, hidden, deleted)
+VALUES (9999, 1, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), @sentinel_title, @sentinel_slug, 254, 32767, 1, 1);
+
+INSERT IGNORE INTO tt_content (uid, pid, tstamp, crdate, CType, header, colPos, sorting, hidden, deleted)
+VALUES (9999, 1, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'text', @sentinel_title, 0, 32767, 1, 1);
+
+-- Scoped by our own slug/header, so a foreign row that ever occupies uid 9999 is
+-- never written to — the same discipline the re-assert block below follows.
+UPDATE pages
+   SET doktype = 254, hidden = 1, deleted = 1
+ WHERE uid = 9999 AND slug = @sentinel_slug;
+
+UPDATE tt_content
+   SET hidden = 1, deleted = 1
+ WHERE uid = 9999 AND header = @sentinel_title;
+
+-- Belt to the sentinel's braces, and the guarantee stated outright rather than
+-- left to emerge from the row above. InnoDB clamps this value up to at least
+-- MAX(uid) + 1 and never applies it downwards, so it can only ever raise the
+-- counter: on an instance whose editors have already worked past 10000 it is a
+-- no-op, and it can never hand out a uid that is already taken. It also restores
+-- the floor should the sentinel row itself ever be purged for good (emptying the
+-- recycler hard-deletes soft-deleted rows).
+ALTER TABLE pages      AUTO_INCREMENT = 10000;
+ALTER TABLE tt_content AUTO_INCREMENT = 10000;
+
+-- =============================================================================
 -- Re-assert every seeded record, then verify — KEEP THIS BLOCK LAST
 -- =============================================================================
 -- Two failure modes of INSERT IGNORE cost three deploy cycles (PRs #91/#94/#95):
@@ -2019,6 +2109,33 @@ SELECT CONCAT('SEED-PROBLEM: be_dashboards ', d.uid, ' Netresearch Widgets missi
   FROM (SELECT 9001 AS uid UNION ALL SELECT 9002) d
  WHERE NOT EXISTS (
        SELECT 1 FROM be_dashboards b WHERE b.uid = d.uid AND b.title = 'Netresearch Widgets')
+UNION ALL
+-- The sentinels are checked WITHOUT `deleted = 0`: unlike every record above,
+-- they are supposed to be soft-deleted. What matters is only that the row is
+-- physically present, because that is what holds the uid.
+SELECT 'SEED-PROBLEM: pages 9999 uid band sentinel missing or foreign'
+  FROM (SELECT 9999 AS uid) s
+  LEFT JOIN pages p ON p.uid = s.uid AND p.slug = @sentinel_slug
+ WHERE p.uid IS NULL
+UNION ALL
+SELECT 'SEED-PROBLEM: tt_content 9999 uid band sentinel missing or foreign'
+  FROM (SELECT 9999 AS uid) s
+  LEFT JOIN tt_content c ON c.uid = s.uid AND c.header = @sentinel_title
+ WHERE c.uid IS NULL
+UNION ALL
+-- The property this whole band exists for, asserted directly rather than
+-- inferred from the sentinel rows: the next uid the database hands out must lie
+-- above the reserved band, or the next deploy is one silent skip away again.
+-- table_name is utf8mb3 in information_schema, so it is converted before it
+-- meets the utf8mb4_unicode_ci literals of the other UNION branches.
+SELECT CONCAT('SEED-PROBLEM: ',
+              CONVERT(t.table_name USING utf8mb4) COLLATE utf8mb4_unicode_ci,
+              ' AUTO_INCREMENT is ', t.auto_increment,
+              ', inside the reserved uid band (expected 10000 or higher)')
+  FROM information_schema.tables t
+ WHERE t.table_schema = DATABASE()
+   AND t.table_name IN ('pages', 'tt_content')
+   AND t.auto_increment < 10000
  ORDER BY 1;
 
 DROP TEMPORARY TABLE IF EXISTS seed_expected_pages;
