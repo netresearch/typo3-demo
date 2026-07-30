@@ -28,6 +28,28 @@ jobs:
           key: ${{ secrets.HETZNER_SSH_KEY }}
           script: |
             cd /opt/typo3-demo
+
+            # A full disk makes `git pull` fail with "write error. Out of
+            # diskspace" while it writes the index, which reads like a git
+            # problem and cost an incident to trace. Check first and say so.
+            AVAIL_MB=$(df -Pm / | awk 'NR==2 {print $4}')
+            echo "free space on /: ${AVAIL_MB} MB"
+            if [ "${AVAIL_MB}" -lt 2048 ]; then
+              echo "Less than 2048 MB free - reclaiming before the update."
+              docker image prune -af || true
+              docker builder prune -af || true
+              docker container prune -f || true
+              AVAIL_MB=$(df -Pm / | awk 'NR==2 {print $4}')
+              echo "free space after prune: ${AVAIL_MB} MB"
+            fi
+            if [ "${AVAIL_MB}" -lt 512 ]; then
+              echo "::error::Only ${AVAIL_MB} MB free on / - aborting before git touches the index."
+              echo "Run the Maintenance workflow with recreate_containers=true: a container"
+              echo "writable layer (not images) is the usual cause; see docker ps -a --size."
+              df -h /
+              exit 1
+            fi
+
             git pull --ff-only
             git lfs pull
             make update

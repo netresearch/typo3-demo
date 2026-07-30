@@ -1085,8 +1085,20 @@ VALUES (604, 158, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'nraisearch_chat', 'AI Cha
 -- =============================================================================
 -- Contexts (netresearch/contexts)
 -- =============================================================================
+-- uid 159 was already occupied in the LIVE database by a deleted leftover (the
+-- exported db.sql.gz only reaches uid 156, so the collision is invisible here).
+-- INSERT IGNORE therefore silently created nothing and ?id=159 answered 404
+-- while 160-162 rendered. Drop such a leftover first; a page that is not in the
+-- recycler is never touched.
+DELETE FROM pages WHERE uid = 159 AND deleted = 1;
+
 INSERT IGNORE INTO pages (uid, pid, tstamp, crdate, title, slug, doktype, sorting, hidden, deleted)
 VALUES (159, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'Contexts', '/extensions/contexts', 1, 1000, 0, 0);
+
+-- INSERT IGNORE never updates an existing row, so re-assert the page on every
+-- re-seed. Scoped to our own slug so a foreign record at that uid stays intact.
+UPDATE pages SET pid = 101, doktype = 1, hidden = 0, deleted = 0
+WHERE uid = 159 AND slug = '/extensions/contexts';
 
 INSERT IGNORE INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
 VALUES (605, 159, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'Contexts',
