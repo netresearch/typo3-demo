@@ -1937,6 +1937,709 @@ ON DUPLICATE KEY UPDATE
   bodytext = IF(pid = VALUES(pid) AND CType = VALUES(CType) AND header = VALUES(header),
                 VALUES(bodytext), bodytext);
 
+-- --- German translations of the remaining extension pages -------------------
+-- Eleven more extension pages (102-109, 111, 157, 158) and the fourteen content
+-- elements on them get a German counterpart, so /de/ no longer falls back to
+-- English on the extension detail pages.
+--
+-- uids come from the reserved 9000-9998 band described at the head of this file
+-- (pages 9101-9111, tt_content 9201-9214), not from just below the editors'
+-- next uid — that is what produced the silent INSERT IGNORE skips of PRs
+-- #91/#94/#95.
+--
+-- A translated content element sits on the pid of its DEFAULT-LANGUAGE source,
+-- i.e. on the English page uid, not on the German page created for it. That is
+-- the same rule 620-625 follow (they live on 164/160/161/162).
+--
+-- pages 9111 keeps hidden = 1 from its source (uid 158, AI Search): a public
+-- search/chat widget lets any anonymous visitor trigger paid OpenAI calls. The
+-- value is re-asserted from seed_expected_pages at the end of this file.
+
+-- --- Gruppe A: deutsche Seiten (Übersetzung von 102, 103, 104) ---------------
+INSERT IGNORE INTO pages (uid, pid, tstamp, crdate, sys_language_uid, l10n_parent, l10n_source, title, nav_title, slug, doktype, sorting, hidden, deleted)
+VALUES (9101, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 102, 102, 'RTE CKEditor Image', 'RTE CKEditor Image', '/erweiterungen/rte-ckeditor-image', 1, 100, 0, 0);
+
+INSERT IGNORE INTO pages (uid, pid, tstamp, crdate, sys_language_uid, l10n_parent, l10n_source, title, nav_title, slug, doktype, sorting, hidden, deleted)
+VALUES (9102, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 103, 103, 'KI-Cowriter', 'KI-Cowriter', '/erweiterungen/cowriter', 1, 200, 0, 0);
+
+INSERT IGNORE INTO pages (uid, pid, tstamp, crdate, sys_language_uid, l10n_parent, l10n_source, title, nav_title, slug, doktype, sorting, hidden, deleted)
+VALUES (9103, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 104, 104, 'LLM-Grundlage', 'LLM-Grundlage', '/erweiterungen/nr-llm', 1, 300, 0, 0);
+
+-- --- Gruppe A: deutscher Inhalt ----------------------------------------------
+-- Ein übersetztes Inhaltselement liegt auf derselben pid wie sein Original, also
+-- auf der englischen Seiten-uid (102/103/104) und nicht auf der deutschen
+-- Übersetzung (9101/9102/9103) — genau wie 620-622 auf pid 164 liegen, obwohl
+-- die deutsche Contexts-Seite uid 179 hat.
+
+-- Übersetzung von tt_content 400 (Seite 102, deutsche Seite 9101)
+INSERT INTO tt_content (uid, pid, tstamp, crdate, sys_language_uid, l18n_parent, l10n_source, CType, header, bodytext, colPos, sorting, hidden, deleted)
+VALUES (9201, 102, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 400, 400, 'html', 'RTE CKEditor Image',
+'<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(47,153,164,0.06), rgba(47,153,164,0.02));">
+  <div class="d-flex align-items-center gap-2 mb-2">
+    <span class="badge rounded-pill text-white" style="background: #2F99A4; font-size: 0.7rem;">CKEditor</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">TYPO3 v14</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">Open Source</span>
+  </div>
+  <h2 class="fw-bold mb-2" style="font-size: 1.6rem;">Bilder im CKEditor 5, ohne Umwege</h2>
+  <p class="text-muted mb-3" style="font-size: 1rem; max-width: 650px;">Block-Bilder, Inline-Bilder, Klick zum Vergrößern und verlinkte Bilder — alles direkt im Rich Text Editor von TYPO3, ohne eigenes Inhaltselement.</p>
+  <div class="d-flex gap-2 flex-wrap">
+    <a href="https://github.com/netresearch/t3x-rte_ckeditor_image" target="_blank" rel="noopener" class="btn btn-sm text-white" style="background: #2F99A4;">GitHub</a>
+    <a href="https://extensions.typo3.org/extension/rte_ckeditor_image" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">TER</a>
+    <a href="https://packagist.org/packages/netresearch/rte-ckeditor-image" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">Packagist</a>
+  </div>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-md-4">
+    <div class="card h-100 border-0" style="background: #f8f9fa;">
+      <div class="card-body text-center py-4">
+        <h6 class="fw-bold" style="font-size: 0.88rem;">Block-Bilder</h6>
+        <p class="text-muted mb-0" style="font-size: 0.78rem;">Eigenständige Bilder mit Bildunterschrift und Ausrichtung. Sie laufen durch die TYPO3-Bildverarbeitung und bekommen ein responsives srcset.</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card h-100 border-0" style="background: #f8f9fa;">
+      <div class="card-body text-center py-4">
+        <h6 class="fw-bold" style="font-size: 0.88rem;">Inline-Bilder</h6>
+        <p class="text-muted mb-0" style="font-size: 0.78rem;">Bilder, die im Textfluss mitlaufen — Icons, Logos und kleine Illustrationen mitten im Absatz.</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card h-100 border-0" style="background: #f8f9fa;">
+      <div class="card-body text-center py-4">
+        <h6 class="fw-bold" style="font-size: 0.88rem;">Klick zum Vergrößern</h6>
+        <p class="text-muted mb-0" style="font-size: 0.78rem;">Lightbox-Popup über <code>data-htmlarea-zoom</code>. Ein Klick auf das Bild öffnet die volle Auflösung.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h2 class="fw-bold mb-3" style="font-size: 1.2rem;">Live-Demos</h2>
+
+<h3 class="fw-bold mb-2" style="font-size: 1rem;">Block-Bild</h3>
+<p class="text-muted mb-2" style="font-size: 0.88rem;">Ein eigenständiges Bild, im CKEditor eingefügt und mit responsivem srcset ausgegeben:</p>
+<p><img src="/fileadmin/user_upload/images/Home/CH5_7354.jpg" alt="Teamfoto (Demo)" width="800" data-htmlarea-file-uid="190" data-htmlarea-file-table="sys_file"></p>
+
+<h3 class="fw-bold mb-2 mt-4" style="font-size: 1rem;">Inline-Bild im Text</h3>
+<p style="font-size: 0.88rem;">Text kann Inline-Bilder enthalten, etwa dieses <img class="image image-inline" src="/fileadmin/user_upload/images/netresearch-typo3-demo.png" alt="Inline-Logo" width="60" data-htmlarea-file-uid="1" data-htmlarea-file-table="sys_file"> Logo, das ganz normal im Absatz mitläuft.</p>
+
+<div class="alert alert-light border mt-4" role="alert" style="font-size: 0.82rem;">
+  <strong style="color: #2F99A4;">Für Integratoren:</strong> Diese Seite im TYPO3-Backend öffnen — dann zeigt sich die Bild-Schaltfläche in der CKEditor-Toolbar. Alle Bilder oben stecken im Rich Text, nicht in einem Bild-Inhaltselement.
+</div>',
+0, 100, 0, 0)
+ON DUPLICATE KEY UPDATE
+  bodytext = IF(pid = VALUES(pid) AND CType = VALUES(CType) AND header = VALUES(header),
+                VALUES(bodytext), bodytext);
+
+-- Übersetzung von tt_content 601 (Seite 102, deutsche Seite 9101)
+INSERT INTO tt_content (uid, pid, tstamp, crdate, sys_language_uid, l18n_parent, l10n_source, CType, header, bodytext, colPos, sorting, hidden, deleted)
+VALUES (9202, 102, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 601, 601, 'text', 'Klick zum Vergrößern (Lightbox) — Live-Demo',
+'<p class="text-muted mb-2" style="font-size: 0.88rem;">Ein Klick auf das Bild unten öffnet das Zoom-Popup. Weil dies ein normales Text-Element ist, läuft sein Rich Text durch <code>lib.parseFunc_RTE</code> — und erst dadurch macht rte_ckeditor_image aus dem <code>data-htmlarea-zoom</code>-Bild einen Link zum Vergrößern:</p>
+<p><img src="/fileadmin/user_upload/images/Home/CH5_7203.jpg" alt="Zum Vergrößern klicken" width="400" data-htmlarea-file-uid="188" data-htmlarea-file-table="sys_file" data-htmlarea-zoom="true"></p>',
+0, 150, 0, 0)
+ON DUPLICATE KEY UPDATE
+  bodytext = IF(pid = VALUES(pid) AND CType = VALUES(CType) AND header = VALUES(header),
+                VALUES(bodytext), bodytext);
+
+-- Übersetzung von tt_content 401 (Seite 103, deutsche Seite 9102)
+INSERT INTO tt_content (uid, pid, tstamp, crdate, sys_language_uid, l18n_parent, l10n_source, CType, header, bodytext, colPos, sorting, hidden, deleted)
+VALUES (9203, 103, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 401, 401, 'html', 'KI-Cowriter',
+'<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(47,153,164,0.06), rgba(47,153,164,0.02));">
+  <div class="d-flex align-items-center gap-2 mb-2">
+    <span class="badge rounded-pill text-white" style="background: #2F99A4; font-size: 0.7rem;">KI</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">CKEditor-Plugin</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">TYPO3 v14</span>
+  </div>
+  <h2 class="fw-bold mb-2" style="font-size: 1.6rem;">Der Schreibassistent sitzt im Editor</h2>
+  <p class="text-muted mb-3" style="font-size: 1rem; max-width: 650px;">Text im CKEditor markieren und umschreiben, zusammenfassen, übersetzen oder die Grammatik korrigieren lassen. Die Aufgaben sind konfigurierbar, eigene Prompts inklusive.</p>
+  <div class="d-flex gap-2 flex-wrap">
+    <a href="https://github.com/netresearch/t3x-cowriter" target="_blank" rel="noopener" class="btn btn-sm text-white" style="background: #2F99A4;">GitHub</a>
+    <a href="https://packagist.org/packages/netresearch/t3-cowriter" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">Packagist</a>
+  </div>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-md-4">
+    <div class="card h-100 border-0" style="background: #f8f9fa;">
+      <div class="card-body">
+        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Umschreiben &amp; umformulieren</h6>
+        <p class="text-muted mb-0" style="font-size: 0.82rem;">Den Ton von förmlich auf locker drehen, verschachtelte Sätze vereinfachen oder eine Passage klarer fassen — ohne den Editor zu verlassen.</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card h-100 border-0" style="background: #f8f9fa;">
+      <div class="card-body">
+        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Zusammenfassen &amp; ausbauen</h6>
+        <p class="text-muted mb-0" style="font-size: 0.82rem;">Lange Artikel auf die Kernaussagen eindampfen oder aus Stichpunkten ausformulierte Absätze machen.</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card h-100 border-0" style="background: #f8f9fa;">
+      <div class="card-body">
+        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Übersetzen &amp; korrigieren</h6>
+        <p class="text-muted mb-0" style="font-size: 0.82rem;">Zwischen Sprachen übersetzen oder Grammatik- und Rechtschreibfehler beheben. Eigene Aufgaben mit frei formulierten Prompts.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="rounded-3 p-3 mb-4" style="background: #f8f9fa;">
+  <h5 class="fw-bold mb-3" style="font-size: 0.95rem;">So läuft es ab</h5>
+  <div class="d-flex flex-column gap-2">
+    <div class="d-flex align-items-start gap-2">
+      <span class="badge rounded-circle text-white flex-shrink-0 d-flex align-items-center justify-content-center" style="width: 24px; height: 24px; font-size: 0.7rem; background: #2F99A4;">1</span>
+      <span style="font-size: 0.84rem;">Im Backend-Modul <a href="/de/erweiterungen/nr-llm" style="color: #2F99A4;">NR LLM</a> einen beliebigen Anbieter hinterlegen — OpenAI ist die getestete Voreinstellung</span>
+    </div>
+    <div class="d-flex align-items-start gap-2">
+      <span class="badge rounded-circle text-white flex-shrink-0 d-flex align-items-center justify-content-center" style="width: 24px; height: 24px; font-size: 0.7rem; background: #2F99A4;">2</span>
+      <span style="font-size: 0.84rem;">Im CKEditor Text markieren und die Cowriter-Schaltfläche in der Toolbar anklicken</span>
+    </div>
+    <div class="d-flex align-items-start gap-2">
+      <span class="badge rounded-circle text-white flex-shrink-0 d-flex align-items-center justify-content-center" style="width: 24px; height: 24px; font-size: 0.7rem; background: #2F99A4;">3</span>
+      <span style="font-size: 0.84rem;">Eine Aufgabe wählen (Umschreiben, Zusammenfassen, Übersetzen …) oder einen eigenen Prompt eintippen</span>
+    </div>
+    <div class="d-flex align-items-start gap-2">
+      <span class="badge rounded-circle text-white flex-shrink-0 d-flex align-items-center justify-content-center" style="width: 24px; height: 24px; font-size: 0.7rem; background: #FF4D00;">4</span>
+      <span style="font-size: 0.84rem;">Den Vorschlag prüfen und per Klick übernehmen</span>
+    </div>
+  </div>
+</div>
+
+<div class="alert alert-light border" role="alert" style="font-size: 0.82rem;">
+  <strong style="color: #2F99A4;">Ausprobieren:</strong> Diese Seite im TYPO3-Backend öffnen — die Cowriter-Schaltfläche sitzt in der CKEditor-Toolbar.
+</div>',
+0, 100, 0, 0)
+ON DUPLICATE KEY UPDATE
+  bodytext = IF(pid = VALUES(pid) AND CType = VALUES(CType) AND header = VALUES(header),
+                VALUES(bodytext), bodytext);
+
+-- Übersetzung von tt_content 402 (Seite 104, deutsche Seite 9103)
+INSERT INTO tt_content (uid, pid, tstamp, crdate, sys_language_uid, l18n_parent, l10n_source, CType, header, bodytext, colPos, sorting, hidden, deleted)
+VALUES (9204, 104, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 402, 402, 'html', 'NR LLM — KI-Grundlage für TYPO3',
+'<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(88,89,97,0.06), rgba(88,89,97,0.02));">
+  <div class="d-flex align-items-center gap-2 mb-2">
+    <span class="badge rounded-pill text-white" style="background: #585961; font-size: 0.7rem;">Core</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">Grundlage</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">TYPO3 v14</span>
+  </div>
+  <h2 class="fw-bold mb-2" style="font-size: 1.6rem;">Ein LLM-Setup für alle Erweiterungen</h2>
+  <p class="text-muted mb-3" style="font-size: 1rem; max-width: 650px;">Die gemeinsame KI-Grundlage für TYPO3. Anbieter, Modelle und Aufgabenvorlagen einmal einrichten — jede KI-Erweiterung der Installation greift darauf zu.</p>
+  <div class="d-flex gap-2 flex-wrap">
+    <a href="https://github.com/netresearch/t3x-nr-llm" target="_blank" rel="noopener" class="btn btn-sm text-white" style="background: #585961;">GitHub</a>
+    <a href="https://packagist.org/packages/netresearch/nr-llm" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">Packagist</a>
+  </div>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-md-6">
+    <div class="card h-100 border-0" style="background: #f8f9fa;">
+      <div class="card-body">
+        <h6 class="fw-bold" style="font-size: 0.9rem; color: #585961;">Anbieterverwaltung</h6>
+        <p class="text-muted mb-0" style="font-size: 0.82rem;">Ollama, OpenAI, Anthropic, Google oder ein eigener API-Endpoint. Der Wechsel des Anbieters kommt ohne Änderung am Erweiterungscode aus.</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card h-100 border-0" style="background: #f8f9fa;">
+      <div class="card-body">
+        <h6 class="fw-bold" style="font-size: 0.9rem; color: #585961;">Modell-Registry</h6>
+        <p class="text-muted mb-0" style="font-size: 0.82rem;">Verfügbare Modelle mit Temperature, Token-Limit und Kontextfenster pflegen und einzelnen Aufgaben zuordnen.</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card h-100 border-0" style="background: #f8f9fa;">
+      <div class="card-body">
+        <h6 class="fw-bold" style="font-size: 0.9rem; color: #585961;">Aufgabenvorlagen</h6>
+        <p class="text-muted mb-0" style="font-size: 0.82rem;">Wiederverwendbare Prompt-Vorlagen, die sich alle Erweiterungen teilen. System-Prompt, Ausgabeformat und Vorgaben werden einmal festgelegt.</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card h-100 border-0" style="background: #f8f9fa;">
+      <div class="card-body">
+        <h6 class="fw-bold" style="font-size: 0.9rem; color: #585961;">Backend-Modul</h6>
+        <p class="text-muted mb-0" style="font-size: 0.82rem;">Alle LLM-Ressourcen unter Admin-Werkzeuge &gt; LLM verwalten: Prompts testen, Verbrauch beobachten, Profile einrichten.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="alert alert-light border" role="alert" style="font-size: 0.82rem;">
+  <strong style="color: #585961;">Treibt an:</strong> <a href="/de/erweiterungen/cowriter" style="color: #2F99A4;">KI-Cowriter</a> und <a href="/de/erweiterungen/landingpage-generator" style="color: #2F99A4;">Landing Page Generator</a> beziehen ihre KI-Funktionen über NR LLM.
+</div>',
+0, 100, 0, 0)
+ON DUPLICATE KEY UPDATE
+  bodytext = IF(pid = VALUES(pid) AND CType = VALUES(CType) AND header = VALUES(header),
+                VALUES(bodytext), bodytext);
+
+-- German translation of pages 105 (Landing Page Generator)
+INSERT IGNORE INTO pages (uid, pid, tstamp, crdate, sys_language_uid, l10n_parent, l10n_source, title, nav_title, slug, doktype, sorting, hidden, deleted)
+VALUES (9104, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 105, 105, 'Landingpage-Generator', 'Landingpage-Generator', '/erweiterungen/landingpage-generator', 1, 400, 0, 0);
+
+-- German translation of pages 106 (Passkeys (Backend))
+INSERT IGNORE INTO pages (uid, pid, tstamp, crdate, sys_language_uid, l10n_parent, l10n_source, title, nav_title, slug, doktype, sorting, hidden, deleted)
+VALUES (9105, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 106, 106, 'Passkeys (Backend)', 'Passkeys (Backend)', '/erweiterungen/passkeys-backend', 1, 500, 0, 0);
+
+-- German translation of pages 107 (Secrets Vault)
+INSERT IGNORE INTO pages (uid, pid, tstamp, crdate, sys_language_uid, l10n_parent, l10n_source, title, nav_title, slug, doktype, sorting, hidden, deleted)
+VALUES (9106, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 107, 107, 'Secrets Vault', 'Secrets Vault', '/erweiterungen/vault', 1, 600, 0, 0);
+
+-- German translation of pages 108 (Temporal Cache)
+INSERT IGNORE INTO pages (uid, pid, tstamp, crdate, sys_language_uid, l10n_parent, l10n_source, title, nav_title, slug, doktype, sorting, hidden, deleted)
+VALUES (9107, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 108, 108, 'Temporal Cache', 'Temporal Cache', '/erweiterungen/temporal-cache', 1, 700, 0, 0);
+
+-- German translation of tt_content 403 (AI Landing Page Generator, pages 105)
+INSERT INTO tt_content (uid, pid, tstamp, crdate, sys_language_uid, l18n_parent, l10n_source, CType, header, bodytext, colPos, sorting, hidden, deleted)
+VALUES (9205, 105, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 403, 403, 'html', 'Landingpage-Generator mit KI',
+'<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(47,153,164,0.06), rgba(47,153,164,0.02));">
+  <div class="d-flex align-items-center gap-2 mb-2">
+    <span class="badge rounded-pill text-white" style="background: #2F99A4; font-size: 0.7rem;">KI</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">Backend-Assistent</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">TYPO3 v14</span>
+  </div>
+  <h2 class="fw-bold mb-2" style="font-size: 1.6rem;">Landingpages per KI erzeugen</h2>
+  <p class="text-muted mb-3" style="font-size: 1rem; max-width: 650px;">Sie beschreiben das Ziel, die KI baut daraus eine vollständige, strukturierte TYPO3-Seite: Hero, Feature-Bereich, Textabschnitte und Call-to-Action.</p>
+  <div class="d-flex gap-2 flex-wrap">
+    <a href="https://github.com/netresearch/nr-landingpage" target="_blank" rel="noopener" class="btn btn-sm text-white" style="background: #2F99A4;">GitHub</a>
+    <a href="https://packagist.org/packages/netresearch/nr-landingpage" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">Packagist</a>
+  </div>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-md-6">
+    <div class="card h-100 border-0" style="background: #f8f9fa;">
+      <div class="card-body">
+        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Strukturierte Ausgabe</h6>
+        <p class="text-muted mb-0" style="font-size: 0.82rem;">Die KI erzeugt echte TYPO3-Inhaltselemente: Hero-Bereiche, Feature-Grids, Textblöcke und Kontaktformulare, keinen bloßen Fließtext.</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card h-100 border-0" style="background: #f8f9fa;">
+      <div class="card-body">
+        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Assistent im Backend</h6>
+        <p class="text-muted mb-0" style="font-size: 0.82rem;">Grafischer Assistent unter Web &gt; Landingpages. Briefing eintragen, Vorlage wählen, Ergebnis prüfen, veröffentlichen.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="alert alert-light border" role="alert" style="font-size: 0.82rem;">
+  <strong style="color: #2F99A4;">Voraussetzung:</strong> <a href="/de/erweiterungen/nr-llm" style="color: #2F99A4;">NR LLM</a> mit einem konfigurierten Anbieter. Der Assistent liegt im TYPO3-Backend unter Web &gt; Landingpages.
+</div>',
+0, 100, 0, 0)
+ON DUPLICATE KEY UPDATE
+  bodytext = IF(pid = VALUES(pid) AND CType = VALUES(CType) AND header = VALUES(header),
+                VALUES(bodytext), bodytext);
+
+-- German translation of tt_content 404 (Passwordless Backend Login with Passkeys, pages 106)
+INSERT INTO tt_content (uid, pid, tstamp, crdate, sys_language_uid, l18n_parent, l10n_source, CType, header, bodytext, colPos, sorting, hidden, deleted)
+VALUES (9206, 106, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 404, 404, 'html', 'Passwortlose Backend-Anmeldung mit Passkeys',
+'<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(255,77,0,0.04), rgba(255,77,0,0.01));">
+  <div class="d-flex align-items-center gap-2 mb-2">
+    <span class="badge rounded-pill text-white" style="background: #FF4D00; font-size: 0.7rem;">Sicherheit</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">WebAuthn</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">TYPO3 v14</span>
+  </div>
+  <h2 class="fw-bold mb-2" style="font-size: 1.6rem;">Passwortlose Anmeldung im Backend</h2>
+  <p class="text-muted mb-3" style="font-size: 1rem; max-width: 650px;">Passkey-Anmeldung nach WebAuthn/FIDO2 für TYPO3-Backend-Benutzer. Statt eines Passworts genügen Fingerabdruck, Gesichtserkennung oder ein Security Key.</p>
+  <div class="d-flex gap-2 flex-wrap">
+    <a href="https://github.com/netresearch/t3x-nr-passkeys-be" target="_blank" rel="noopener" class="btn btn-sm text-white" style="background: #FF4D00;">GitHub</a>
+    <a href="https://packagist.org/packages/netresearch/nr-passkeys-be" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">Packagist</a>
+  </div>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-md-6">
+    <div class="card h-100 border-0" style="background: #f8f9fa;">
+      <div class="card-body">
+        <h6 class="fw-bold" style="font-size: 0.9rem;">Pflicht je Gruppe</h6>
+        <p class="text-muted mb-0" style="font-size: 0.82rem;">Vier Stufen: <strong>Aus</strong>, <strong>Empfohlen</strong> (Hinweis bei der Anmeldung), <strong>Erforderlich</strong> (mit Übergangsfrist), <strong>Erzwungen</strong> (sofort). Einstellbar je Backend-Benutzergruppe.</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card h-100 border-0" style="background: #f8f9fa;">
+      <div class="card-body">
+        <h6 class="fw-bold" style="font-size: 0.9rem;">Dashboard zur Verbreitung</h6>
+        <p class="text-muted mb-0" style="font-size: 0.82rem;">Zeigt den Passkey-Rollout über alle Backend-Benutzer hinweg: wer bereits registriert hat, wo noch ein Hinweis nötig ist und wie hoch die Quote insgesamt liegt.</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card h-100 border-0" style="background: #f8f9fa;">
+      <div class="card-body">
+        <h6 class="fw-bold" style="font-size: 0.9rem;">Mehrere Geräte</h6>
+        <p class="text-muted mb-0" style="font-size: 0.82rem;">Passkeys lassen sich auf Laptop, Smartphone und Security Keys registrieren. Verwaltet werden sie unter Benutzereinstellungen &gt; Passkeys.</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card h-100 border-0" style="background: #f8f9fa;">
+      <div class="card-body">
+        <h6 class="fw-bold" style="font-size: 0.9rem;">Hinweise nach der Anmeldung</h6>
+        <p class="text-muted mb-0" style="font-size: 0.82rem;">Konfigurierbare Aufforderungen zur Einrichtung nach der Passwortanmeldung. Die Umstellung lässt sich schrittweise anstoßen oder sofort erzwingen.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<p class="text-muted" style="font-size: 0.82rem;">Siehe auch: <a href="/de/erweiterungen/passkeys-frontend" style="color: #2F99A4; font-weight: 600;">Passkeys (Frontend)</a> für die Anmeldung von Frontend-Benutzern.</p>',
+0, 100, 0, 0)
+ON DUPLICATE KEY UPDATE
+  bodytext = IF(pid = VALUES(pid) AND CType = VALUES(CType) AND header = VALUES(header),
+                VALUES(bodytext), bodytext);
+
+-- German translation of tt_content 405 (NR Vault — Secure Secrets Management, pages 107)
+INSERT INTO tt_content (uid, pid, tstamp, crdate, sys_language_uid, l18n_parent, l10n_source, CType, header, bodytext, colPos, sorting, hidden, deleted)
+VALUES (9207, 107, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 405, 405, 'html', 'NR Vault: Secrets sicher verwalten',
+'<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(255,77,0,0.04), rgba(255,77,0,0.01));">
+  <div class="d-flex align-items-center gap-2 mb-2">
+    <span class="badge rounded-pill text-white" style="background: #FF4D00; font-size: 0.7rem;">Sicherheit</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">Enterprise</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">TYPO3 v14</span>
+  </div>
+  <h2 class="fw-bold mb-2" style="font-size: 1.6rem;">Secrets-Verwaltung für den Enterprise-Einsatz</h2>
+  <p class="text-muted mb-3" style="font-size: 1rem; max-width: 650px;">Envelope-Verschlüsselung, Zugriffssteuerung, Audit-Log und Schlüsselrotation für TYPO3. API-Keys liegen nicht länger im Klartext.</p>
+  <div class="d-flex gap-2 flex-wrap">
+    <a href="https://github.com/netresearch/t3x-nr-vault" target="_blank" rel="noopener" class="btn btn-sm text-white" style="background: #FF4D00;">GitHub</a>
+    <a href="https://packagist.org/packages/netresearch/nr-vault" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">Packagist</a>
+  </div>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-md-6">
+    <div class="card h-100 border-0" style="background: #f8f9fa;">
+      <div class="card-body">
+        <h6 class="fw-bold" style="font-size: 0.9rem;">Envelope-Verschlüsselung</h6>
+        <p class="text-muted mb-0" style="font-size: 0.82rem;">Jedes Secret wird mit einem eigenen Data Key verschlüsselt, den wiederum ein Master Key umschließt. Envelope-Verschlüsselung nach gängigem Standard.</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card h-100 border-0" style="background: #f8f9fa;">
+      <div class="card-body">
+        <h6 class="fw-bold" style="font-size: 0.9rem;">Zugriffssteuerung</h6>
+        <p class="text-muted mb-0" style="font-size: 0.82rem;">Secrets lassen sich auf Erweiterungen, Backend-Benutzergruppen oder Umgebungen einschränken. Feingranular geregelt, wer was lesen darf.</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card h-100 border-0" style="background: #f8f9fa;">
+      <div class="card-body">
+        <h6 class="fw-bold" style="font-size: 0.9rem;">CLI &amp; Backend-Modul</h6>
+        <p class="text-muted mb-0" style="font-size: 0.82rem;"><code>vault:init</code>, <code>vault:store</code>, <code>vault:retrieve</code>, <code>vault:rotate</code>: Secrets über die CLI oder das grafische Backend-Modul verwalten.</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card h-100 border-0" style="background: #f8f9fa;">
+      <div class="card-body">
+        <h6 class="fw-bold" style="font-size: 0.9rem;">Audit &amp; Rotation</h6>
+        <p class="text-muted mb-0" style="font-size: 0.82rem;">Das Audit-Log hält fest, wer wann auf welches Secret zugegriffen hat. Master Keys lassen sich rotieren, ohne alle Secrets neu zu verschlüsseln.</p>
+      </div>
+    </div>
+  </div>
+</div>',
+0, 100, 0, 0)
+ON DUPLICATE KEY UPDATE
+  bodytext = IF(pid = VALUES(pid) AND CType = VALUES(CType) AND header = VALUES(header),
+                VALUES(bodytext), bodytext);
+
+-- German translation of tt_content 406 (Automatic Cache Invalidation for Timed Content, pages 108)
+INSERT INTO tt_content (uid, pid, tstamp, crdate, sys_language_uid, l18n_parent, l10n_source, CType, header, bodytext, colPos, sorting, hidden, deleted)
+VALUES (9208, 108, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 406, 406, 'html', 'Automatische Cache-Invalidierung für zeitgesteuerte Inhalte',
+'<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(88,89,97,0.06), rgba(88,89,97,0.02));">
+  <div class="d-flex align-items-center gap-2 mb-2">
+    <span class="badge rounded-pill text-white" style="background: #585961; font-size: 0.7rem;">Cache</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">Performance</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">TYPO3 v14</span>
+  </div>
+  <h2 class="fw-bold mb-2" style="font-size: 1.6rem;">Zeitgesteuerte Inhalte, automatischer Cache</h2>
+  <p class="text-muted mb-3" style="font-size: 1rem; max-width: 650px;">Behebt <a href="https://forge.typo3.org/issues/14277" target="_blank" rel="noopener" style="color: #2F99A4;">TYPO3 Forge #14277</a>: Inhalte mit starttime und endtime bleiben im Cache, obwohl ihr Sichtbarkeitszeitraum längst vorbei ist. Diese Erweiterung räumt automatisch auf.</p>
+  <div class="d-flex gap-2 flex-wrap">
+    <a href="https://github.com/netresearch/t3x-nr-temporal-cache" target="_blank" rel="noopener" class="btn btn-sm text-white" style="background: #585961;">GitHub</a>
+    <a href="https://packagist.org/packages/netresearch/nr-temporal-cache" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">Packagist</a>
+  </div>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-md-6">
+    <div class="card h-100 border-0" style="background: #f8f9fa;">
+      <div class="card-body">
+        <h6 class="fw-bold" style="font-size: 0.9rem;">Automatische Invalidierung</h6>
+        <p class="text-muted mb-0" style="font-size: 0.82rem;">Der Cache wird genau dann geleert, wenn ein Inhalt sichtbar wird oder ausläuft. Keine veralteten Seiten mehr, die längst ausgeblendete Inhalte zeigen.</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card h-100 border-0" style="background: #f8f9fa;">
+      <div class="card-body">
+        <h6 class="fw-bold" style="font-size: 0.9rem;">Flexibler Geltungsbereich</h6>
+        <p class="text-muted mb-0" style="font-size: 0.82rem;">Invalidieren lassen sich einzelne Seiten, ganze Seitenbäume oder alle Seiten. Wahlweise über den Scheduler oder bei Bedarf.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="alert alert-light border" role="alert" style="font-size: 0.82rem;">
+  <strong style="color: #585961;">Ohne Konfiguration:</strong> Greift für alle Inhaltstypen, die die TYPO3-Felder starttime und endtime nutzen. Installieren und vergessen.
+</div>',
+0, 100, 0, 0)
+ON DUPLICATE KEY UPDATE
+  bodytext = IF(pid = VALUES(pid) AND CType = VALUES(CType) AND header = VALUES(header),
+                VALUES(bodytext), bodytext);
+
+-- Übersetzt pages 109 (Passkeys (Frontend))
+INSERT IGNORE INTO pages (uid, pid, tstamp, crdate, sys_language_uid, l10n_parent, l10n_source, title, nav_title, slug, doktype, sorting, hidden, deleted)
+VALUES (9108, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 109, 109, 'Passkeys (Frontend)', 'Passkeys (Frontend)', '/erweiterungen/passkeys-frontend', 1, 510, 0, 0);
+
+-- Übersetzt pages 111 (Content Repurpose)
+INSERT IGNORE INTO pages (uid, pid, tstamp, crdate, sys_language_uid, l10n_parent, l10n_source, title, nav_title, slug, doktype, sorting, hidden, deleted)
+VALUES (9109, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 111, 111, 'Content Repurpose', 'Content Repurpose', '/erweiterungen/repurpose', 1, 900, 0, 0);
+
+-- Übersetzt pages 157 (AI Chat Agent)
+INSERT IGNORE INTO pages (uid, pid, tstamp, crdate, sys_language_uid, l10n_parent, l10n_source, title, nav_title, slug, doktype, sorting, hidden, deleted)
+VALUES (9110, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 157, 157, 'KI-Chat-Agent', 'KI-Chat-Agent', '/erweiterungen/ki-chat-agent', 1, 800, 0, 0);
+
+-- Übersetzt pages 158 (AI Search) -- hidden = 1 wie im Original beibehalten
+INSERT IGNORE INTO pages (uid, pid, tstamp, crdate, sys_language_uid, l10n_parent, l10n_source, title, nav_title, slug, doktype, sorting, hidden, deleted)
+VALUES (9111, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 158, 158, 'KI-Suche', 'KI-Suche', '/erweiterungen/ki-suche', 1, 800, 1, 0);
+
+-- Übersetzt tt_content 407 (Passkeys (Frontend))
+INSERT INTO tt_content (uid, pid, tstamp, crdate, sys_language_uid, l18n_parent, l10n_source, CType, header, bodytext, colPos, sorting, hidden, deleted)
+VALUES (9209, 109, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 407, 407, 'html', 'Passwortlose Anmeldung im Frontend',
+'<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(255,77,0,0.04), rgba(255,77,0,0.01));">
+  <div class="d-flex align-items-center gap-2 mb-2">
+    <span class="badge rounded-pill text-white" style="background: #FF4D00; font-size: 0.7rem;">Sicherheit</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">WebAuthn</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">TYPO3 v14</span>
+  </div>
+  <h2 class="fw-bold mb-2" style="font-size: 1.6rem;">Passwortlose Anmeldung im Frontend</h2>
+  <p class="text-muted mb-3" style="font-size: 1rem; max-width: 650px;">Anmeldung per Passkey nach WebAuthn/FIDO2 für Frontend-Benutzer in TYPO3. Statt eines Passworts genügen Fingerabdruck, Gesichtserkennung oder ein Security-Key.</p>
+  <div class="d-flex gap-2 flex-wrap">
+    <a href="/login" class="btn btn-sm text-white" style="background: #FF4D00;">Live-Demo öffnen</a>
+    <a href="https://github.com/netresearch/t3x-nr-passkeys-fe" target="_blank" rel="noopener" class="btn btn-sm text-white" style="background: #2F99A4;">GitHub</a>
+    <a href="https://packagist.org/packages/netresearch/nr-passkeys-fe" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">Packagist</a>
+  </div>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-md-6">
+    <div class="card h-100 border-0" style="background: #f8f9fa;">
+      <div class="card-body">
+        <h6 class="fw-bold" style="font-size: 0.9rem;">Passkey steht vorn</h6>
+        <p class="text-muted mb-0" style="font-size: 0.82rem;">Felogin wird durch eine Variante mit Reitern ersetzt: Der Passkey-Reiter ist vorausgewählt, das Passwort bleibt als Rückfallebene. Discoverable Credentials füllt der Browser selbst aus.</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card h-100 border-0" style="background: #f8f9fa;">
+      <div class="card-body">
+        <h6 class="fw-bold" style="font-size: 0.9rem;">Plugin zur Verwaltung</h6>
+        <p class="text-muted mb-0" style="font-size: 0.82rem;">Ein Frontend-Plugin, mit dem Benutzer ihre Passkeys anlegen, umbenennen und wieder entfernen. Wiederherstellungscodes sichern den Zugang ab, falls alle Schlüssel verloren gehen.</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card h-100 border-0" style="background: #f8f9fa;">
+      <div class="card-body">
+        <h6 class="fw-bold" style="font-size: 0.9rem;">Kein Template-Aufwand</h6>
+        <p class="text-muted mb-0" style="font-size: 0.82rem;">Das Felogin-Override greift sofort. Passkey-Reiter, Verwaltungsoberfläche und die Aufforderung zum Einrichten laufen ohne Zutun. Ein eigenes Fluid-Template braucht es nicht.</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card h-100 border-0" style="background: #f8f9fa;">
+      <div class="card-body">
+        <h6 class="fw-bold" style="font-size: 0.9rem;">Wiederherstellungscodes</h6>
+        <p class="text-muted mb-0" style="font-size: 0.82rem;">Einmalcodes für den Fall, dass alle Passkeys abhandenkommen. Erzeugen, herunterladen und verwalten lässt sich alles im Frontend.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="rounded-3 p-3 mb-4" style="background: #f8f9fa;">
+  <h5 class="fw-bold mb-3" style="font-size: 0.95rem;">So funktioniert es</h5>
+  <div class="d-flex flex-column gap-2">
+    <div class="d-flex align-items-start gap-2">
+      <span class="badge rounded-circle text-white flex-shrink-0 d-flex align-items-center justify-content-center" style="width: 24px; height: 24px; font-size: 0.7rem; background: #2F99A4;">1</span>
+      <span style="font-size: 0.84rem;"><code>composer require netresearch/nr-passkeys-fe</code></span>
+    </div>
+    <div class="d-flex align-items-start gap-2">
+      <span class="badge rounded-circle text-white flex-shrink-0 d-flex align-items-center justify-content-center" style="width: 24px; height: 24px; font-size: 0.7rem; background: #2F99A4;">2</span>
+      <span style="font-size: 0.84rem;">Das Plugin zur Passkey-Verwaltung auf einer geschützten Seite einbinden</span>
+    </div>
+    <div class="d-flex align-items-start gap-2">
+      <span class="badge rounded-circle text-white flex-shrink-0 d-flex align-items-center justify-content-center" style="width: 24px; height: 24px; font-size: 0.7rem; background: #2F99A4;">3</span>
+      <span style="font-size: 0.84rem;">Felogin bekommt automatisch einen Passkey-Reiter — die biometrische Anmeldung steht damit vorn</span>
+    </div>
+    <div class="d-flex align-items-start gap-2">
+      <span class="badge rounded-circle text-white flex-shrink-0 d-flex align-items-center justify-content-center" style="width: 24px; height: 24px; font-size: 0.7rem; background: #FF4D00;">4</span>
+      <span style="font-size: 0.84rem;">Benutzer richten ihre Passkeys ein und melden sich mit Fingerabdruck, Gesicht oder Security-Key an</span>
+    </div>
+  </div>
+</div>
+
+<p class="text-muted" style="font-size: 0.82rem;">Siehe auch: <a href="/de/erweiterungen/passkeys-backend" style="color: #2F99A4; font-weight: 600;">Passkeys (Backend)</a> für die Anmeldung von Backend-Benutzern.</p>',
+0, 100, 0, 0)
+ON DUPLICATE KEY UPDATE
+  bodytext = IF(pid = VALUES(pid) AND CType = VALUES(CType) AND header = VALUES(header),
+                VALUES(bodytext), bodytext);
+
+-- Übersetzt tt_content 409 (Content Repurpose)
+INSERT INTO tt_content (uid, pid, tstamp, crdate, sys_language_uid, l18n_parent, l10n_source, CType, header, bodytext, colPos, sorting, hidden, deleted)
+VALUES (9210, 111, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 409, 409, 'html', 'Vorhandene Inhalte mit KI neu aufbereiten',
+'<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(47,153,164,0.06), rgba(47,153,164,0.02));">
+  <div class="d-flex align-items-center gap-2 mb-2">
+    <span class="badge rounded-pill text-white" style="background: #2F99A4; font-size: 0.7rem;">KI</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">Inhalte</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">TYPO3 v14</span>
+  </div>
+  <h2 class="fw-bold mb-2" style="font-size: 1.6rem;">Eine Seite, viele Kanäle</h2>
+  <p class="text-muted mb-3" style="font-size: 1rem; max-width: 650px;">Aus Seiten, die ohnehin schon da sind, entstehen Social-Posts, Zusammenfassungen und Varianten für einzelne Kanäle. Die KI arbeitet mit dem Inhalt, der bereits im TYPO3 steht, statt jedes Format von Hand neu zu schreiben.</p>
+  <div class="d-flex gap-2 flex-wrap">
+    <a href="https://github.com/netresearch/t3x-nr-repurpose" target="_blank" rel="noopener" class="btn btn-sm text-white" style="background: #2F99A4;">GitHub</a>
+    <a href="https://packagist.org/packages/netresearch/nr-repurpose" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">Packagist</a>
+  </div>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-md-6">
+    <div class="card h-100 border-0" style="background: #f8f9fa;">
+      <div class="card-body">
+        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Vorhandenes weiterverwenden</h6>
+        <p class="text-muted mb-0" style="font-size: 0.82rem;">Ausgangspunkt ist eine bestehende Seite, daraus entstehen die abgeleiteten Formate. Der Quelltext muss nicht noch einmal von Hand erfasst werden.</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card h-100 border-0" style="background: #f8f9fa;">
+      <div class="card-body">
+        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Varianten je Kanal</h6>
+        <p class="text-muted mb-0" style="font-size: 0.82rem;">Kurze Social-Texte, knappe Zusammenfassungen und alternative Formulierungen, zugeschnitten auf die jeweilige Zielgruppe und den jeweiligen Kanal.</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card h-100 border-0" style="background: #f8f9fa;">
+      <div class="card-body">
+        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Setzt auf NR LLM auf</h6>
+        <p class="text-muted mb-0" style="font-size: 0.82rem;">Anbieter und Modelle kommen aus der Konfiguration von <a href="/de/erweiterungen/nr-llm" style="color: #2F99A4;">NR LLM</a> — über nr-llm lässt sich ein beliebiger Anbieter einbinden. Die Aufbereitung folgt damit dem zentral eingerichteten Zugang.</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card h-100 border-0" style="background: #f8f9fa;">
+      <div class="card-body">
+        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Die Redaktion entscheidet</h6>
+        <p class="text-muted mb-0" style="font-size: 0.82rem;">Der Vorschlag der KI wird geprüft und überarbeitet, bevor er irgendwo landet. Was am Ende veröffentlicht wird, bestimmen weiterhin Sie.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="alert alert-light border" role="alert" style="font-size: 0.82rem;">
+  <strong style="color: #2F99A4;">Wo es zu finden ist:</strong> Das Modul Repurpose liegt im TYPO3-Backend unter Web &gt; Repurpose.
+</div>',
+0, 100, 0, 0)
+ON DUPLICATE KEY UPDATE
+  bodytext = IF(pid = VALUES(pid) AND CType = VALUES(CType) AND header = VALUES(header),
+                VALUES(bodytext), bodytext);
+
+-- Übersetzt tt_content 522 (AI Chat Agent)
+INSERT INTO tt_content (uid, pid, tstamp, crdate, sys_language_uid, l18n_parent, l10n_source, CType, header, bodytext, colPos, sorting, hidden, deleted)
+VALUES (9211, 157, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 522, 522, 'html', 'KI im Dialog im TYPO3-Backend',
+'<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(47,153,164,0.06), rgba(47,153,164,0.02));">
+  <div class="d-flex align-items-center gap-2 mb-2">
+    <span class="badge rounded-pill text-white" style="background: #2F99A4; font-size: 0.7rem;">KI</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">MCP</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">TYPO3 v14</span>
+  </div>
+  <h2 class="fw-bold mb-2" style="font-size: 1.6rem;">Im Dialog mit der eigenen TYPO3-Installation</h2>
+  <p class="text-muted mb-3" style="font-size: 1rem; max-width: 650px;">Ein KI-Assistent direkt im TYPO3-Backend. Fragen zu Seiten, Inhalten, Benutzern, Logs und Site-Konfiguration beantwortet der Agent, indem er über MCP-Tools auf das laufende System zugreift — lesend wie schreibend.</p>
+  <div class="d-flex gap-2 flex-wrap">
+    <a href="https://github.com/netresearch/t3x-nr-mcp-agent" target="_blank" rel="noopener" class="btn btn-sm text-white" style="background: #2F99A4;">GitHub</a>
+    <a href="https://packagist.org/packages/netresearch/nr-mcp-agent" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">Packagist</a>
+  </div>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-md-6">
+    <div class="card h-100 border-0" style="background: #f8f9fa;">
+      <div class="card-body">
+        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Antworten aus echten Daten</h6>
+        <p class="text-muted mb-0" style="font-size: 0.82rem;">Jede Antwort stützt sich auf das, was die MCP-Tools tatsächlich zurückgeben: Seiten, Datensätze, Backend-Benutzer, Erweiterungen und Logs. Geraten wird nicht.</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card h-100 border-0" style="background: #f8f9fa;">
+      <div class="card-body">
+        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Liest &amp; handelt</h6>
+        <p class="text-muted mb-0" style="font-size: 0.82rem;">Einen Datensatz nachschlagen, einen auffälligen Log-Eintrag ansehen oder Inhalte ändern — alles aus dem Gespräch heraus. Den passenden Tool-Aufruf übernimmt der Agent.</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card h-100 border-0" style="background: #f8f9fa;">
+      <div class="card-body">
+        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Setzt auf NR LLM auf</h6>
+        <p class="text-muted mb-0" style="font-size: 0.82rem;">Anbieter, Modell und Aufgaben-Templates stammen aus <a href="/de/erweiterungen/nr-llm" style="color: #2F99A4;">NR LLM</a>; über nr-llm lässt sich ein beliebiger Anbieter einbinden. Eine eigene KI-Einrichtung braucht es nicht.</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card h-100 border-0" style="background: #f8f9fa;">
+      <div class="card-body">
+        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Spricht Ihre Sprache</h6>
+        <p class="text-muted mb-0" style="font-size: 0.82rem;">Der Agent antwortet in der Sprache, in der Sie schreiben, und gibt sich nie als ein fremdes Produkt aus — es ist der Netresearch Backend AI Chat.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="alert alert-light border" role="alert" style="font-size: 0.82rem;">
+  <strong style="color: #2F99A4;">Ausprobieren:</strong> Den AI Chat im TYPO3-Backend öffnen (Admin Tools / Web) und ihn nach dieser Installation fragen.
+</div>',
+0, 100, 0, 0)
+ON DUPLICATE KEY UPDATE
+  bodytext = IF(pid = VALUES(pid) AND CType = VALUES(CType) AND header = VALUES(header),
+                VALUES(bodytext), bodytext);
+
+-- Übersetzt tt_content 602 (AI Search -- Intro, header im Original leer)
+INSERT INTO tt_content (uid, pid, tstamp, crdate, sys_language_uid, l18n_parent, l10n_source, CType, header, bodytext, colPos, sorting, hidden, deleted)
+VALUES (9212, 158, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 602, 602, 'html', '',
+'<div class="card border-0 mb-4" style="background: #f8f9fa;">
+  <div class="card-body py-4">
+    <h1 class="h3 fw-bold mb-3">KI-Suche &amp; Chat</h1>
+    <p class="mb-2" style="max-width: 720px;">Stellen Sie dieser Website eine Frage in natürlicher Sprache. nr_ai_search legt die Seiteninhalte als Embeddings in einem Vector Store ab und stützt jede Antwort ausschließlich auf das, was dabei gefunden wird &mdash; das Suchfeld liefert eine zusammengefasste Antwort samt Quellen, das Chat-Widget führt ein kurzes, an den Seiteninhalt gebundenes Gespräch.</p>
+    <p class="text-muted mb-0" style="font-size: 0.9rem; max-width: 720px;">Hinweis zum Betrieb: Antworten setzen zweierlei voraus &mdash; einen API-Schlüssel des LLM-Anbieters, hinterlegt im Vault-Modul und für das Frontend freigegeben, sowie Inhalte, die indexiert und als Embeddings abgelegt sind. Über nr-llm lässt sich ein beliebiger Anbieter einbinden, getestet ist die Voreinstellung OpenAI. Fehlt eines von beidem, werden die Widgets zwar ausgegeben, melden aber, dass sie nicht antworten können.</p>
+  </div>
+</div>', 0, 100, 0, 0)
+ON DUPLICATE KEY UPDATE
+  bodytext = IF(pid = VALUES(pid) AND CType = VALUES(CType) AND header = VALUES(header),
+                VALUES(bodytext), bodytext);
+
+-- Übersetzt tt_content 603 (AI Search -- Plugin nraisearch_search, ohne bodytext)
+INSERT INTO tt_content (uid, pid, tstamp, crdate, sys_language_uid, l18n_parent, l10n_source, CType, header, bodytext, colPos, sorting, hidden, deleted)
+VALUES (9213, 158, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 603, 603, 'nraisearch_search', 'KI-Suche', '', 0, 200, 0, 0)
+ON DUPLICATE KEY UPDATE
+  bodytext = IF(pid = VALUES(pid) AND CType = VALUES(CType) AND header = VALUES(header),
+                VALUES(bodytext), bodytext);
+
+-- Übersetzt tt_content 604 (AI Search -- Plugin nraisearch_chat, ohne bodytext)
+INSERT INTO tt_content (uid, pid, tstamp, crdate, sys_language_uid, l18n_parent, l10n_source, CType, header, bodytext, colPos, sorting, hidden, deleted)
+VALUES (9214, 158, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 604, 604, 'nraisearch_chat', 'KI-Chat', '', 0, 300, 0, 0)
+ON DUPLICATE KEY UPDATE
+  bodytext = IF(pid = VALUES(pid) AND CType = VALUES(CType) AND header = VALUES(header),
+                VALUES(bodytext), bodytext);
+
 -- =============================================================================
 -- uid band high-water sentinel — KEEP THIS BLOCK BEFORE THE RE-ASSERT BLOCK
 -- =============================================================================
@@ -2122,7 +2825,23 @@ INSERT INTO seed_expected_pages VALUES
   (179, 101, 1, 164,   1, 0, 1000, 0, '', 0, '/erweiterungen/kontexte',           'Kontexte',              'Kontexte'),
   (180, 101, 1, 160,   1, 0, 1100, 0, '', 0, '/erweiterungen/textdb',             'TextDB',                'TextDB'),
   (181, 101, 1, 161,   1, 0, 1200, 0, '', 0, '/erweiterungen/bilder-sitemap',     'Bilder-Sitemap',        'Bilder-Sitemap'),
-  (182, 101, 1, 162,   1, 0, 1300, 0, '', 0, '/erweiterungen/scheduler-toolkit',  'Scheduler-Toolkit',     'Scheduler-Toolkit');
+  (182, 101, 1, 162,   1, 0, 1300, 0, '', 0, '/erweiterungen/scheduler-toolkit',  'Scheduler-Toolkit',     'Scheduler-Toolkit'),
+  -- German translations of the remaining extension pages, uids from the
+  -- reserved band. sorting repeats the sorting of the English source, so the
+  -- German menu keeps the order of the English one. 9111 is hidden, exactly as
+  -- its source uid 158 is, and for the same reason (paid OpenAI calls behind a
+  -- public widget).
+  (9101, 101, 1, 102,   1, 0,  100, 0, '', 0, '/erweiterungen/rte-ckeditor-image',   'RTE CKEditor Image',    'RTE CKEditor Image'),
+  (9102, 101, 1, 103,   1, 0,  200, 0, '', 0, '/erweiterungen/cowriter',             'KI-Cowriter',           'KI-Cowriter'),
+  (9103, 101, 1, 104,   1, 0,  300, 0, '', 0, '/erweiterungen/nr-llm',               'LLM-Grundlage',         'LLM-Grundlage'),
+  (9104, 101, 1, 105,   1, 0,  400, 0, '', 0, '/erweiterungen/landingpage-generator','Landingpage-Generator', 'Landingpage-Generator'),
+  (9105, 101, 1, 106,   1, 0,  500, 0, '', 0, '/erweiterungen/passkeys-backend',     'Passkeys (Backend)',    'Passkeys (Backend)'),
+  (9106, 101, 1, 107,   1, 0,  600, 0, '', 0, '/erweiterungen/vault',                'Secrets Vault',         'Secrets Vault'),
+  (9107, 101, 1, 108,   1, 0,  700, 0, '', 0, '/erweiterungen/temporal-cache',       'Temporal Cache',        'Temporal Cache'),
+  (9108, 101, 1, 109,   1, 0,  510, 0, '', 0, '/erweiterungen/passkeys-frontend',    'Passkeys (Frontend)',   'Passkeys (Frontend)'),
+  (9109, 101, 1, 111,   1, 0,  900, 0, '', 0, '/erweiterungen/repurpose',            'Content Repurpose',     'Content Repurpose'),
+  (9110, 101, 1, 157,   1, 0,  800, 0, '', 0, '/erweiterungen/ki-chat-agent',        'KI-Chat-Agent',         'KI-Chat-Agent'),
+  (9111, 101, 1, 158,   1, 1,  800, 0, '', 0, '/erweiterungen/ki-suche',             'KI-Suche',              'KI-Suche');
 
 DROP TEMPORARY TABLE IF EXISTS seed_expected_content;
 CREATE TEMPORARY TABLE seed_expected_content (
@@ -2175,7 +2894,28 @@ INSERT INTO seed_expected_content VALUES
   (623, 160, NULL, 1, 608, 0, 0, 100, 'html',              'TextDB'),
   (624, 161, NULL, 1, 609, 0, 0, 100, 'html',              'Bilder-Sitemap'),
   (625, 162, NULL, 1, 610, 0, 0, 100, 'html',              'Scheduler-Toolkit'),
-  (626, 101, NULL, 1, 410, 0, 0, 100, 'html',              'Netresearch-Erweiterungen für TYPO3');
+  (626, 101, NULL, 1, 410, 0, 0, 100, 'html',              'Netresearch-Erweiterungen für TYPO3'),
+  -- German content for the remaining extension pages. pid is the pid of the
+  -- DEFAULT-LANGUAGE source (the English page), not the German page created for
+  -- it — the same rule 620-625 follow. None of them ever lived on another pid,
+  -- so legacy_pid is NULL throughout.
+  (9201, 102, NULL, 1, 400, 0, 0, 100, 'html',              'RTE CKEditor Image'),
+  (9202, 102, NULL, 1, 601, 0, 0, 150, 'text',              'Klick zum Vergrößern (Lightbox) — Live-Demo'),
+  (9203, 103, NULL, 1, 401, 0, 0, 100, 'html',              'KI-Cowriter'),
+  (9204, 104, NULL, 1, 402, 0, 0, 100, 'html',              'NR LLM — KI-Grundlage für TYPO3'),
+  (9205, 105, NULL, 1, 403, 0, 0, 100, 'html',              'Landingpage-Generator mit KI'),
+  (9206, 106, NULL, 1, 404, 0, 0, 100, 'html',              'Passwortlose Backend-Anmeldung mit Passkeys'),
+  (9207, 107, NULL, 1, 405, 0, 0, 100, 'html',              'NR Vault: Secrets sicher verwalten'),
+  (9208, 108, NULL, 1, 406, 0, 0, 100, 'html',              'Automatische Cache-Invalidierung für zeitgesteuerte Inhalte'),
+  (9209, 109, NULL, 1, 407, 0, 0, 100, 'html',              'Passwortlose Anmeldung im Frontend'),
+  (9210, 111, NULL, 1, 409, 0, 0, 100, 'html',              'Vorhandene Inhalte mit KI neu aufbereiten'),
+  (9211, 157, NULL, 1, 522, 0, 0, 100, 'html',              'KI im Dialog im TYPO3-Backend'),
+  -- 9212-9214 sit on the hidden AI Search page (158). They are not hidden
+  -- themselves, exactly as their sources 602-604 are not: the page carries the
+  -- hidden flag, which is what keeps the paid widgets off the public site.
+  (9212, 158, NULL, 1, 602, 0, 0, 100, 'html',              ''),
+  (9213, 158, NULL, 1, 603, 0, 0, 200, 'nraisearch_search', 'KI-Suche'),
+  (9214, 158, NULL, 1, 604, 0, 0, 300, 'nraisearch_chat',   'KI-Chat');
 
 -- --- Historical repair: content left behind on an abandoned pid ---------------
 -- Runs before the generic re-assert, which can only match a row that is already
