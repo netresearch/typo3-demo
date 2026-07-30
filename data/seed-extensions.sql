@@ -2056,46 +2056,73 @@ CREATE TEMPORARY TABLE seed_expected_pages (
     -- reason as the rest: an ordering corrected here has to reach the live row,
     -- not only a fresh database.
     sorting          int          NOT NULL,
+    -- The remaining columns the pages INSERTs above set, or leave at the table
+    -- default. Both cases belong here: a column absent from this manifest is a
+    -- column whose correction reaches a fresh database only, which is the exact
+    -- defect this block exists to close.
+    --
+    -- is_siteroot and backend_layout are 0 / '' on every row below, and that is
+    -- a measurement, not an assumption: only the uid 101 INSERT names them at
+    -- all (0, ''), and for every other row a fresh import of data/db.sql.gz plus
+    -- this file leaves the pages table defaults (`is_siteroot` DEFAULT 0,
+    -- `backend_layout` DEFAULT ''). Re-asserting them therefore writes back what
+    -- the import already produced instead of quietly changing it. They are worth
+    -- stating per row all the same: is_siteroot decides site resolution and
+    -- backend_layout the page layout, so the day a seeded page needs a value
+    -- other than the default, it is set here and reaches the live row.
+    --
+    -- On the sys_language_uid = 1 rows both are inert either way: the v14.3 TCA
+    -- marks is_siteroot and backend_layout `l10n_mode => 'exclude'`, so a
+    -- translation never uses its own copy — the default-language record decides.
+    -- nav_title and nav_hide carry no such flag and ARE per-language, which is
+    -- why the German rows below hold German navigation titles.
+    is_siteroot      smallint     NOT NULL,
+    backend_layout   varchar(64)  NOT NULL,
+    nav_hide         tinyint      NOT NULL,
     slug             varchar(255) NOT NULL,
-    title            varchar(255) NOT NULL
+    title            varchar(255) NOT NULL,
+    nav_title        varchar(255) NOT NULL
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---                     uid  pid  lang  l10n_parent  doktype  hidden  sorting  slug  title
+--                     uid  pid  lang  l10n_parent  doktype  hidden  sorting  is_siteroot  backend_layout  nav_hide  slug  title  nav_title
 INSERT INTO seed_expected_pages VALUES
-  (101,   1, 0,   0,   1, 0,  525, '/extensions',                      'Extensions'),
-  (102, 101, 0,   0,   1, 0,  100, '/extensions/rte-ckeditor-image',    'RTE CKEditor Image'),
-  (103, 101, 0,   0,   1, 0,  200, '/extensions/cowriter',              'AI Cowriter'),
-  (104, 101, 0,   0,   1, 0,  300, '/extensions/nr-llm',                'LLM Foundation'),
-  (105, 101, 0,   0,   1, 0,  400, '/extensions/landing-page',          'Landing Page Generator'),
-  (106, 101, 0,   0,   1, 0,  500, '/extensions/passkeys-be',           'Passkeys (Backend)'),
-  (107, 101, 0,   0,   1, 0,  600, '/extensions/vault',                 'Secrets Vault'),
-  (108, 101, 0,   0,   1, 0,  700, '/extensions/temporal-cache',        'Temporal Cache'),
-  (109, 101, 0,   0,   1, 0,  510, '/extensions/passkeys-fe',           'Passkeys (Frontend)'),
-  (111, 101, 0,   0,   1, 0,  900, '/extensions/repurpose',             'Content Repurpose'),
-  (157, 101, 0,   0,   1, 0,  800, '/extensions/ai-agent',              'AI Chat Agent'),
+  (101,   1, 0,   0,   1, 0,  525, 0, '', 0, '/extensions',                      'Extensions',            ''),
+  (102, 101, 0,   0,   1, 0,  100, 0, '', 0, '/extensions/rte-ckeditor-image',    'RTE CKEditor Image',    ''),
+  (103, 101, 0,   0,   1, 0,  200, 0, '', 0, '/extensions/cowriter',              'AI Cowriter',           ''),
+  (104, 101, 0,   0,   1, 0,  300, 0, '', 0, '/extensions/nr-llm',                'LLM Foundation',        ''),
+  (105, 101, 0,   0,   1, 0,  400, 0, '', 0, '/extensions/landing-page',          'Landing Page Generator',''),
+  (106, 101, 0,   0,   1, 0,  500, 0, '', 0, '/extensions/passkeys-be',           'Passkeys (Backend)',    ''),
+  (107, 101, 0,   0,   1, 0,  600, 0, '', 0, '/extensions/vault',                 'Secrets Vault',         ''),
+  (108, 101, 0,   0,   1, 0,  700, 0, '', 0, '/extensions/temporal-cache',        'Temporal Cache',        ''),
+  (109, 101, 0,   0,   1, 0,  510, 0, '', 0, '/extensions/passkeys-fe',           'Passkeys (Frontend)',   ''),
+  (111, 101, 0,   0,   1, 0,  900, 0, '', 0, '/extensions/repurpose',             'Content Repurpose',     ''),
+  (157, 101, 0,   0,   1, 0,  800, 0, '', 0, '/extensions/ai-agent',              'AI Chat Agent',         ''),
   -- 158 is hidden on purpose (paid OpenAI calls behind a public widget).
-  (158, 101, 0,   0,   1, 1,  800, '/extensions/ai-search',             'AI Search'),
-  (160, 101, 0,   0,   1, 0, 1100, '/extensions/textdb',                'TextDB'),
-  (161, 101, 0,   0,   1, 0, 1200, '/extensions/image-sitemap',         'Image Sitemap'),
-  (162, 101, 0,   0,   1, 0, 1300, '/extensions/nr-scheduler',          'Scheduler Toolkit'),
+  (158, 101, 0,   0,   1, 1,  800, 0, '', 0, '/extensions/ai-search',             'AI Search',             ''),
+  (160, 101, 0,   0,   1, 0, 1100, 0, '', 0, '/extensions/textdb',                'TextDB',                ''),
+  (161, 101, 0,   0,   1, 0, 1200, 0, '', 0, '/extensions/image-sitemap',         'Image Sitemap',         ''),
+  (162, 101, 0,   0,   1, 0, 1300, 0, '', 0, '/extensions/nr-scheduler',          'Scheduler Toolkit',     ''),
   -- 163 is the nr_textdb sysfolder (doktype 254), referenced by textDbPid.
-  (163,   1, 0,   0, 254, 0, 5100, '/textdb-translations',              'TextDB Translations'),
-  (164, 101, 0,   0,   1, 0, 1000, '/extensions/contexts',              'Contexts'),
+  (163,   1, 0,   0, 254, 0, 5100, 0, '', 0, '/textdb-translations',              'TextDB Translations',   ''),
+  (164, 101, 0,   0,   1, 0, 1000, 0, '', 0, '/extensions/contexts',              'Contexts',              ''),
   -- German translations, sys_language_uid = 1. l10n_source is set to l10n_parent.
-  (170,   0, 1,   1,   1, 0,  256, '/',                                 'Demo-Projekt'),
-  (171,   1, 1, 101,   1, 0,  525, '/erweiterungen',                    'Erweiterungen'),
-  (172,   1, 1,   6,   1, 0,  522, '/inhaltsbeispiele',                 'Inhaltsbeispiele'),
-  (173,   1, 1,  66,   1, 0,  520, '/seitenlayouts',                    'Seitenlayouts'),
-  (174,   1, 1,  84,   1, 0,  530, '/seitenbeispiele',                  'Seitenbeispiele'),
-  (175,   1, 1,  92,   1, 0,  536, '/kontakt',                          'Kontakt'),
-  (176,   1, 1,  93,   1, 0,  540, '/anmelden',                         'Anmelden'),
-  (177,   1, 1,  96,   1, 0,  568, '/datenschutz',                      'Datenschutzerklärung'),
+  -- nav_title and nav_hide are the two per-language columns here; they repeat
+  -- what each INSERT above gives the row, including the nav_hide = 1 that uid
+  -- 177 carries over from its English source (uid 96, "Privacy Policy").
+  (170,   0, 1,   1,   1, 0,  256, 0, '', 0, '/',                                 'Demo-Projekt',          'Startseite'),
+  (171,   1, 1, 101,   1, 0,  525, 0, '', 0, '/erweiterungen',                    'Erweiterungen',         'Erweiterungen'),
+  (172,   1, 1,   6,   1, 0,  522, 0, '', 0, '/inhaltsbeispiele',                 'Inhaltsbeispiele',      'Inhaltsbeispiele'),
+  (173,   1, 1,  66,   1, 0,  520, 0, '', 0, '/seitenlayouts',                    'Seitenlayouts',         'Seitenlayouts'),
+  (174,   1, 1,  84,   1, 0,  530, 0, '', 0, '/seitenbeispiele',                  'Seitenbeispiele',       'Seitenbeispiele'),
+  (175,   1, 1,  92,   1, 0,  536, 0, '', 0, '/kontakt',                          'Kontakt',               'Kontakt'),
+  (176,   1, 1,  93,   1, 0,  540, 0, '', 0, '/anmelden',                         'Anmelden',              'Anmelden'),
+  (177,   1, 1,  96,   1, 0,  568, 0, '', 1, '/datenschutz',                      'Datenschutzerklärung',  'Datenschutz'),
   -- 178 translates a doktype 4 shortcut; shortcut_mode is left to the INSERT.
-  (178,   1, 1, 132,   4, 0,  512, '/startseite',                       'Startseite'),
-  (179, 101, 1, 164,   1, 0, 1000, '/erweiterungen/kontexte',           'Kontexte'),
-  (180, 101, 1, 160,   1, 0, 1100, '/erweiterungen/textdb',             'TextDB'),
-  (181, 101, 1, 161,   1, 0, 1200, '/erweiterungen/bilder-sitemap',     'Bilder-Sitemap'),
-  (182, 101, 1, 162,   1, 0, 1300, '/erweiterungen/scheduler-toolkit',  'Scheduler-Toolkit');
+  (178,   1, 1, 132,   4, 0,  512, 0, '', 0, '/startseite',                       'Startseite',            'Startseite'),
+  (179, 101, 1, 164,   1, 0, 1000, 0, '', 0, '/erweiterungen/kontexte',           'Kontexte',              'Kontexte'),
+  (180, 101, 1, 160,   1, 0, 1100, 0, '', 0, '/erweiterungen/textdb',             'TextDB',                'TextDB'),
+  (181, 101, 1, 161,   1, 0, 1200, 0, '', 0, '/erweiterungen/bilder-sitemap',     'Bilder-Sitemap',        'Bilder-Sitemap'),
+  (182, 101, 1, 162,   1, 0, 1300, 0, '', 0, '/erweiterungen/scheduler-toolkit',  'Scheduler-Toolkit',     'Scheduler-Toolkit');
 
 DROP TEMPORARY TABLE IF EXISTS seed_expected_content;
 CREATE TEMPORARY TABLE seed_expected_content (
@@ -2175,7 +2202,11 @@ UPDATE pages p
    AND p.slug = e.slug
    SET p.pid              = e.pid,
        p.title            = e.title,
+       p.nav_title        = e.nav_title,
+       p.nav_hide         = e.nav_hide,
        p.doktype          = e.doktype,
+       p.backend_layout   = e.backend_layout,
+       p.is_siteroot      = e.is_siteroot,
        p.sys_language_uid = e.sys_language_uid,
        p.l10n_parent      = e.l10n_parent,
        p.l10n_source      = e.l10n_parent,
