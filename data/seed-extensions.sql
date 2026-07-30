@@ -1054,3 +1054,713 @@ VALUES (603, 158, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'nraisearch_search', 'AI S
 
 INSERT IGNORE INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
 VALUES (604, 158, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'nraisearch_chat', 'AI Chat', '', 0, 300, 0, 0);
+
+-- =============================================================================
+-- uid budget for everything below (re-derived, not inherited from any document)
+-- =============================================================================
+-- Base dump data/db.sql.gz .......... pages max 156, tt_content max 521
+-- data/seed-schema.sql .............. pages 110,     tt_content 444
+-- data/seed-extensions.sql (above) .. pages max 158, tt_content max 604
+-- => first free: pages 159, tt_content 605.
+--
+-- Allocation used here:
+--   pages   159-163  new demo pages (default language) + TextDB sysfolder
+--   pages   170-182  German translations (sys_language_uid = 1)
+--   content 605-610  new demo content (default language)
+--   content 620-626  German translations (sys_language_uid = 1)
+--
+-- Translation field names differ per table and are NOT interchangeable:
+--   pages      -> l10n_parent  (TCA transOrigPointerField)
+--   tt_content -> l18n_parent  (TCA transOrigPointerField, legacy spelling)
+-- Both carry l10n_source, pointing at the record the translation was made from
+-- (the default-language record here).
+--
+-- Records whose TABLES do not exist yet at import time (tx_contexts_*,
+-- tx_nrtextdb_*) are NOT seeded here: this file is imported BEFORE
+-- `typo3 extension:setup` creates them, and the mariadb client aborts the whole
+-- import on the first unknown-table error. They live in docker/web/entrypoint.sh
+-- instead, next to the lochmueller/index configuration row, which had to move
+-- there for the same reason.
+
+-- =============================================================================
+-- Contexts (netresearch/contexts)
+-- =============================================================================
+INSERT IGNORE INTO pages (uid, pid, tstamp, crdate, title, slug, doktype, sorting, hidden, deleted)
+VALUES (159, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'Contexts', '/extensions/contexts', 1, 1000, 0, 0);
+
+INSERT IGNORE INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
+VALUES (605, 159, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'Contexts',
+'<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(47,153,164,0.06), rgba(47,153,164,0.02));">
+  <div class="d-flex align-items-center gap-2 mb-2">
+    <span class="badge rounded-pill text-white" style="background: #2F99A4; font-size: 0.7rem;">Visibility</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">TYPO3 v14</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">Open Source</span>
+  </div>
+  <h2 class="fw-bold mb-2" style="font-size: 1.6rem;">Multi-Channel Content Visibility</h2>
+  <p class="text-muted mb-3" style="font-size: 1rem; max-width: 650px;">Define contexts &mdash; domain, GET parameter, IP range, HTTP header, session value, or a logical combination &mdash; and switch pages, menu entries, and single content elements on or off per context. One page tree, many channels.</p>
+  <div class="d-flex gap-2 flex-wrap">
+    <a href="https://github.com/netresearch/t3x-contexts" target="_blank" rel="noopener" class="btn btn-sm text-white" style="background: #2F99A4;">GitHub</a>
+    <a href="https://extensions.typo3.org/extension/contexts" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">TER</a>
+    <a href="https://packagist.org/packages/netresearch/contexts" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">Packagist</a>
+  </div>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-md-6">
+    <div class="card h-100 border-0" style="background: #f8f9fa;">
+      <div class="card-body">
+        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">No Duplicated Page Trees</h6>
+        <p class="text-muted mb-0" style="font-size: 0.82rem;">Editors maintain one page and mark per context where it appears, instead of keeping a parallel tree per channel in sync by hand.</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card h-100 border-0" style="background: #f8f9fa;">
+      <div class="card-body">
+        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Six Context Types</h6>
+        <p class="text-muted mb-0" style="font-size: 0.82rem;">Domain, GET parameter, IP range, HTTP header, and session value, plus a combination type that joins them with AND, OR, and NOT.</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card h-100 border-0" style="background: #f8f9fa;">
+      <div class="card-body">
+        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Enforced In The Query Layer</h6>
+        <p class="text-muted mb-0" style="font-size: 0.82rem;">Visibility is applied as a Doctrine query restriction, so restricted records never reach the rendering stage &mdash; not in menus, not in listings, not in search.</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card h-100 border-0" style="background: #f8f9fa;">
+      <div class="card-body">
+        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Cache-Aware</h6>
+        <p class="text-muted mb-0" style="font-size: 0.82rem;">The active context combination is part of the page cache identifier, so each channel gets its own cache entry instead of the first-rendered variant being served to everyone.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h2 class="fw-bold mb-3" style="font-size: 1.2rem;">Live demo</h2>
+<p class="text-muted mb-3" style="font-size: 0.88rem;">A context of type <strong>GET parameter</strong> named &quot;Demo channel&quot; matches when <code>nrdemo=mobile</code> is present. The two blocks below sit on this very page:</p>
+<ul style="font-size: 0.88rem;">
+  <li>Open <a href="/extensions/contexts">/extensions/contexts</a> &mdash; the <em>default channel</em> block is rendered.</li>
+  <li>Open <a href="/extensions/contexts?nrdemo=mobile">/extensions/contexts?nrdemo=mobile</a> &mdash; the <em>mobile channel</em> block replaces it.</li>
+</ul>
+<div class="alert alert-light border mt-4" role="alert" style="font-size: 0.82rem;">
+  <strong style="color: #2F99A4;">For integrators:</strong> Edit either element in the backend and open its <em>Contexts</em> panel to see the per-context visibility switches. Pages carrying a context restriction also get an overlay badge in the page tree. The context records themselves live in Web &gt; List on the home page and are admin-only.
+</div>',
+0, 100, 0, 0);
+
+-- Visible ONLY while the "Demo channel" context matches (?nrdemo=mobile).
+-- The context ASSIGNMENT is applied in docker/web/entrypoint.sh: the
+-- tt_content.tx_contexts_* columns are created by extension:setup, which runs
+-- after this file is imported.
+INSERT IGNORE INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
+VALUES (606, 159, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'text', 'Mobile channel',
+'<p style="font-size: 0.88rem;">You are seeing the <strong>mobile channel</strong> variant. This element has the &quot;Demo channel&quot; context set to <em>enable</em>, so it is only part of the rendered page while <code>nrdemo=mobile</code> is present.</p>',
+0, 200, 0, 0);
+
+-- Visible ONLY while the "Demo channel" context does NOT match.
+INSERT IGNORE INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
+VALUES (607, 159, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'text', 'Default channel',
+'<p style="font-size: 0.88rem;">You are seeing the <strong>default channel</strong> variant. This element has the &quot;Demo channel&quot; context set to <em>disable</em>, so it disappears as soon as <code>nrdemo=mobile</code> is present.</p>',
+0, 300, 0, 0);
+
+-- =============================================================================
+-- TextDB (netresearch/nr-textdb)
+-- =============================================================================
+-- Storage sysfolder for the TextDB records. The textDbPid extension setting
+-- written by docker/web/entrypoint.sh MUST match uid 163 -- with textDbPid = 0
+-- every repository queries pid 0, the backend module lists nothing and silently
+-- writes orphaned records (Classes/Domain/Repository/AbstractRepository.php).
+INSERT IGNORE INTO pages (uid, pid, tstamp, crdate, title, slug, doktype, sorting, hidden, deleted)
+VALUES (163, 1, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'TextDB Translations', '/textdb-translations', 254, 5100, 0, 0);
+
+INSERT IGNORE INTO pages (uid, pid, tstamp, crdate, title, slug, doktype, sorting, hidden, deleted)
+VALUES (160, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'TextDB', '/extensions/textdb', 1, 1100, 0, 0);
+
+INSERT IGNORE INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
+VALUES (608, 160, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'TextDB',
+'<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(47,153,164,0.06), rgba(47,153,164,0.02));">
+  <div class="d-flex align-items-center gap-2 mb-2">
+    <span class="badge rounded-pill text-white" style="background: #2F99A4; font-size: 0.7rem;">Translation</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">XLIFF</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">TYPO3 v14</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">Open Source</span>
+  </div>
+  <h2 class="fw-bold mb-2" style="font-size: 1.6rem;">Translations Editors Can Actually Edit</h2>
+  <p class="text-muted mb-3" style="font-size: 1rem; max-width: 650px;">Moves frontend system strings &mdash; form labels, buttons, confirmation messages &mdash; out of XLIFF files in the repository and into the database, where editors change the wording themselves. No deployment for a typo.</p>
+  <div class="d-flex gap-2 flex-wrap">
+    <a href="https://github.com/netresearch/t3x-nr-textdb" target="_blank" rel="noopener" class="btn btn-sm text-white" style="background: #2F99A4;">GitHub</a>
+    <a href="https://extensions.typo3.org/extension/nr_textdb" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">TER</a>
+    <a href="https://packagist.org/packages/netresearch/nr-textdb" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">Packagist</a>
+  </div>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-md-6">
+    <div class="card h-100 border-0" style="background: #f8f9fa;">
+      <div class="card-body">
+        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Editors, Not Developers</h6>
+        <p class="text-muted mb-0" style="font-size: 0.82rem;">Wording changes happen in the backend module and take effect immediately, instead of going through a pull request and a release.</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card h-100 border-0" style="background: #f8f9fa;">
+      <div class="card-body">
+        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Self-Filling Catalogue</h6>
+        <p class="text-muted mb-0" style="font-size: 0.82rem;">A key rendered for the first time creates its own record. The catalogue documents exactly the strings the site really uses, with no manual inventory.</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card h-100 border-0" style="background: #f8f9fa;">
+      <div class="card-body">
+        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">XLIFF Import And Export</h6>
+        <p class="text-muted mb-0" style="font-size: 0.82rem;">Upload an XLIFF file to bulk-load translations, or export the current filtered set as a ZIP to hand to a translation agency.</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card h-100 border-0" style="background: #f8f9fa;">
+      <div class="card-body">
+        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Environment, Component, Type</h6>
+        <p class="text-muted mb-0" style="font-size: 0.82rem;">Every string is filed under an environment, a component, and a type, so a large catalogue stays navigable and a component can be exported on its own.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="alert alert-light border" role="alert" style="font-size: 0.82rem;">
+  <strong style="color: #2F99A4;">Try it:</strong> Open <em>Netresearch &gt; TextDb</em> in the module menu and filter by component <code>demo</code>. This demo ships four seeded labels, each with a German translation &mdash; switch the module to the translated view to compare them side by side. The records are stored in the <em>TextDB Translations</em> folder in the page tree.
+</div>',
+0, 100, 0, 0);
+
+-- =============================================================================
+-- Image Sitemap (netresearch/nr-image-sitemap)
+-- =============================================================================
+INSERT IGNORE INTO pages (uid, pid, tstamp, crdate, title, slug, doktype, sorting, hidden, deleted)
+VALUES (161, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'Image Sitemap', '/extensions/image-sitemap', 1, 1200, 0, 0);
+
+INSERT IGNORE INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
+VALUES (609, 161, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'Image Sitemap',
+'<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(47,153,164,0.06), rgba(47,153,164,0.02));">
+  <div class="d-flex align-items-center gap-2 mb-2">
+    <span class="badge rounded-pill text-white" style="background: #2F99A4; font-size: 0.7rem;">SEO</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">Sitemap</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">TYPO3 v14</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">Open Source</span>
+  </div>
+  <h2 class="fw-bold mb-2" style="font-size: 1.6rem;">An Image Sitemap For EXT:seo</h2>
+  <p class="text-muted mb-3" style="font-size: 1rem; max-width: 650px;">A second sitemap type that lists every image referenced from pages and content elements, with its title and caption, in the Google image-sitemap schema. It plugs into EXT:seo as an additional XmlSitemapDataProvider &mdash; no scheduler, no extra database tables.</p>
+  <div class="d-flex gap-2 flex-wrap">
+    <a href="https://github.com/netresearch/t3x-nr-image-sitemap" target="_blank" rel="noopener" class="btn btn-sm text-white" style="background: #2F99A4;">GitHub</a>
+    <a href="https://packagist.org/packages/netresearch/nr-image-sitemap" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">Packagist</a>
+  </div>
+</div>
+
+<h2 class="fw-bold mb-3" style="font-size: 1.2rem;">See it</h2>
+<p class="text-muted mb-3" style="font-size: 0.88rem;">This extension has no backend module. Its output <em>is</em> the sitemap, so the demo is the XML itself:</p>
+<div class="d-flex gap-2 flex-wrap mb-4">
+  <a href="/?type=1642072014" target="_blank" rel="noopener" class="btn btn-sm text-white" style="background: #2F99A4;">Open the image sitemap</a>
+  <a href="/sitemap.xml" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">Compare: core sitemap</a>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-md-6">
+    <div class="card h-100 border-0" style="background: #f8f9fa;">
+      <div class="card-body">
+        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Straight From FAL</h6>
+        <p class="text-muted mb-0" style="font-size: 0.82rem;">The data comes from <code>sys_file_reference</code>, so title and caption are exactly what editors entered on the image &mdash; no separate maintenance.</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card h-100 border-0" style="background: #f8f9fa;">
+      <div class="card-body">
+        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">No Moving Parts</h6>
+        <p class="text-muted mb-0" style="font-size: 0.82rem;">Rendered on request and cached like any other page type. Nothing to schedule, nothing that can silently stop running.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="alert alert-light border" role="alert" style="font-size: 0.82rem;">
+  <strong style="color: #2F99A4;">Demo note:</strong> This showcase instance sends <code>NOINDEX,NOFOLLOW</code> for every page, so the sitemap here is a demonstration artefact rather than a live SEO signal. Add an image to any content element, flush the frontend cache, and reload the sitemap to watch the new entry appear.
+</div>',
+0, 100, 0, 0);
+
+-- =============================================================================
+-- Scheduler Toolkit (netresearch/nr-scheduler)
+-- =============================================================================
+INSERT IGNORE INTO pages (uid, pid, tstamp, crdate, title, slug, doktype, sorting, hidden, deleted)
+VALUES (162, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'Scheduler Toolkit', '/extensions/nr-scheduler', 1, 1300, 0, 0);
+
+INSERT IGNORE INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
+VALUES (610, 162, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'Scheduler Toolkit',
+'<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(47,153,164,0.06), rgba(47,153,164,0.02));">
+  <div class="d-flex align-items-center gap-2 mb-2">
+    <span class="badge rounded-pill text-white" style="background: #2F99A4; font-size: 0.7rem;">Scheduler</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">Developer Toolkit</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">TYPO3 v14</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">Open Source</span>
+  </div>
+  <h2 class="fw-bold mb-2" style="font-size: 1.6rem;">Failure Reporting And Context Gating For Scheduler Tasks</h2>
+  <p class="text-muted mb-3" style="font-size: 1rem; max-width: 650px;">Base classes for the TYPO3 Scheduler: any task built on them gains e-mail failure reports and per-application-context execution gating, and declares its configuration form through a typed field builder instead of hand-written HTML.</p>
+  <div class="d-flex gap-2 flex-wrap">
+    <a href="https://github.com/netresearch/t3x-scheduler" target="_blank" rel="noopener" class="btn btn-sm text-white" style="background: #2F99A4;">GitHub</a>
+    <a href="https://packagist.org/packages/netresearch/nr-scheduler" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">Packagist</a>
+  </div>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-md-6">
+    <div class="card h-100 border-0" style="background: #f8f9fa;">
+      <div class="card-body">
+        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Failure Reports By E-Mail</h6>
+        <p class="text-muted mb-0" style="font-size: 0.82rem;">A failing task notifies a configurable list of recipients with its own subject and message, instead of only turning red in a module nobody has open.</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card h-100 border-0" style="background: #f8f9fa;">
+      <div class="card-body">
+        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Context Gating</h6>
+        <p class="text-muted mb-0" style="font-size: 0.82rem;">A task can be bound to application contexts, so the same configuration is deployed everywhere but only executes where it is meant to &mdash; Production, not Development.</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card h-100 border-0" style="background: #f8f9fa;">
+      <div class="card-body">
+        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Typed Field Builder</h6>
+        <p class="text-muted mb-0" style="font-size: 0.82rem;">Text, text area, password, checkbox, select, and multi-select fields are declared as objects. The additional-field provider renders and validates them for you.</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card h-100 border-0" style="background: #f8f9fa;">
+      <div class="card-body">
+        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">A Library, Not A Module</h6>
+        <p class="text-muted mb-0" style="font-size: 0.82rem;">The extension ships no module and no task of its own. It extends the core Scheduler, and the extra fields appear on tasks that a consuming extension builds on it.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="alert alert-light border" role="alert" style="font-size: 0.82rem;">
+  <strong style="color: #2F99A4;">Where to find it:</strong> Open <em>Admin Tools &gt; Scheduler</em> in the TYPO3 backend. This demo installs the toolkit and the core Scheduler module; the extra fields become visible on tasks of an extension that derives from these base classes, such as <a href="https://github.com/netresearch/t3x-nr-sync" target="_blank" rel="noopener" style="color: #2F99A4;">nr-sync</a>. The module is admin-only.
+</div>',
+0, 100, 0, 0);
+
+-- =============================================================================
+-- German translations (sys_language_uid = 1)
+-- =============================================================================
+-- The site now serves a second language (config/sites/default/config.yaml:
+-- languageId 1, base /de/, fallbackType "fallback" onto languageId 0). Without
+-- translated records that language switcher would be decorative, so the four
+-- new demo pages are translated in full and a set of prominent existing pages
+-- gets German titles and navigation titles.
+--
+-- Column reminder (verified against the v14.3 TCA, they are NOT the same name):
+--   pages      -> l10n_parent
+--   tt_content -> l18n_parent
+-- l10n_source points at the record the translation was derived from, which for
+-- a straight "translate" action is the default-language record itself.
+--
+-- Untranslated pages keep rendering their English source under /de/ because of
+-- the configured fallback, so this partial translation set is complete enough
+-- for the site to be navigable in German.
+
+-- --- Prominent existing pages: title + navigation title ---------------------
+-- doktype and nav_hide are carried over from the default-language record so the
+-- translation behaves identically; uid 178 additionally repeats shortcut_mode 3
+-- ("parent page") because its source (uid 132) is a doktype 4 shortcut and a
+-- translation defaulting to shortcut_mode 0 with shortcut 0 would not resolve.
+INSERT IGNORE INTO pages (uid, pid, tstamp, crdate, sys_language_uid, l10n_parent, l10n_source, title, nav_title, slug, doktype, shortcut_mode, nav_hide, sorting, hidden, deleted)
+VALUES
+  (170, 0,   UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 1,   1,   'Demo-Projekt',         'Startseite',       '/',                 1, 0, 0, 256, 0, 0),
+  (171, 1,   UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 101, 101, 'Erweiterungen',        'Erweiterungen',    '/erweiterungen',    1, 0, 0, 525, 0, 0),
+  (172, 1,   UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 6,   6,   'Inhaltsbeispiele',     'Inhaltsbeispiele', '/inhaltsbeispiele', 1, 1, 0, 522, 0, 0),
+  (173, 1,   UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 66,  66,  'Seitenlayouts',        'Seitenlayouts',    '/seitenlayouts',    1, 0, 0, 520, 0, 0),
+  (174, 1,   UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 84,  84,  'Seitenbeispiele',      'Seitenbeispiele',  '/seitenbeispiele',  1, 1, 0, 530, 0, 0),
+  (175, 1,   UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 92,  92,  'Kontakt',              'Kontakt',          '/kontakt',          1, 0, 0, 536, 0, 0),
+  (176, 1,   UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 93,  93,  'Anmelden',             'Anmelden',         '/anmelden',         1, 0, 0, 540, 0, 0),
+  (177, 1,   UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 96,  96,  'Datenschutzerklärung', 'Datenschutz',      '/datenschutz',      1, 0, 1, 568, 0, 0),
+  (178, 1,   UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 132, 132, 'Startseite',           'Startseite',       '/startseite',       4, 3, 0, 512, 0, 0);
+
+-- --- The four new demo pages -------------------------------------------------
+INSERT IGNORE INTO pages (uid, pid, tstamp, crdate, sys_language_uid, l10n_parent, l10n_source, title, nav_title, slug, doktype, sorting, hidden, deleted)
+VALUES
+  (179, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 159, 159, 'Kontexte',          'Kontexte',          '/erweiterungen/kontexte',          1, 1000, 0, 0),
+  (180, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 160, 160, 'TextDB',            'TextDB',            '/erweiterungen/textdb',            1, 1100, 0, 0),
+  (181, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 161, 161, 'Bilder-Sitemap',    'Bilder-Sitemap',    '/erweiterungen/bilder-sitemap',    1, 1200, 0, 0),
+  (182, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 162, 162, 'Scheduler-Toolkit', 'Scheduler-Toolkit', '/erweiterungen/scheduler-toolkit', 1, 1300, 0, 0);
+
+-- --- German content for the four new demo pages ------------------------------
+INSERT IGNORE INTO tt_content (uid, pid, tstamp, crdate, sys_language_uid, l18n_parent, l10n_source, CType, header, bodytext, colPos, sorting, hidden, deleted)
+VALUES (620, 159, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 605, 605, 'html', 'Kontexte',
+'<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(47,153,164,0.06), rgba(47,153,164,0.02));">
+  <div class="d-flex align-items-center gap-2 mb-2">
+    <span class="badge rounded-pill text-white" style="background: #2F99A4; font-size: 0.7rem;">Sichtbarkeit</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">TYPO3 v14</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">Open Source</span>
+  </div>
+  <h2 class="fw-bold mb-2" style="font-size: 1.6rem;">Inhalte kanalabhängig ausspielen</h2>
+  <p class="text-muted mb-3" style="font-size: 1rem; max-width: 650px;">Kontexte lassen sich aus Domain, GET-Parameter, IP-Bereich, HTTP-Header, Session-Wert oder einer logischen Verknüpfung davon bilden. Seiten, Menüeinträge und einzelne Inhaltselemente werden je Kontext ein- oder ausgeblendet &mdash; ein Seitenbaum für alle Kanäle.</p>
+  <div class="d-flex gap-2 flex-wrap">
+    <a href="https://github.com/netresearch/t3x-contexts" target="_blank" rel="noopener" class="btn btn-sm text-white" style="background: #2F99A4;">GitHub</a>
+    <a href="https://extensions.typo3.org/extension/contexts" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">TER</a>
+    <a href="https://packagist.org/packages/netresearch/contexts" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">Packagist</a>
+  </div>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-md-6">
+    <div class="card h-100 border-0" style="background: #f8f9fa;">
+      <div class="card-body">
+        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Kein doppelter Seitenbaum</h6>
+        <p class="text-muted mb-0" style="font-size: 0.82rem;">Die Redaktion pflegt eine Seite und markiert je Kontext, wo sie erscheint. Ein paralleler Baum je Kanal, der von Hand synchron gehalten werden muss, entfällt.</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card h-100 border-0" style="background: #f8f9fa;">
+      <div class="card-body">
+        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Sechs Kontexttypen</h6>
+        <p class="text-muted mb-0" style="font-size: 0.82rem;">Domain, GET-Parameter, IP-Bereich, HTTP-Header und Session-Wert, dazu ein Kombinationstyp, der diese mit UND, ODER und NICHT verknüpft.</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card h-100 border-0" style="background: #f8f9fa;">
+      <div class="card-body">
+        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Wirkt auf Datenbankebene</h6>
+        <p class="text-muted mb-0" style="font-size: 0.82rem;">Die Sichtbarkeit greift als Doctrine-Query-Restriction. Gesperrte Datensätze erreichen die Ausgabe gar nicht erst &mdash; weder im Menü noch in Listen oder in der Suche.</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card h-100 border-0" style="background: #f8f9fa;">
+      <div class="card-body">
+        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Cache je Kanal</h6>
+        <p class="text-muted mb-0" style="font-size: 0.82rem;">Die aktive Kontextkombination geht in den Seiten-Cache-Schlüssel ein. Jeder Kanal bekommt seinen eigenen Cache-Eintrag, statt dass alle die zuerst gerenderte Variante sehen.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h2 class="fw-bold mb-3" style="font-size: 1.2rem;">Live ausprobieren</h2>
+<p class="text-muted mb-3" style="font-size: 0.88rem;">Ein Kontext vom Typ <strong>GET-Parameter</strong> mit dem Namen &bdquo;Demo channel&ldquo; greift, sobald <code>nrdemo=mobile</code> gesetzt ist. Die beiden Blöcke darunter liegen auf genau dieser Seite:</p>
+<ul style="font-size: 0.88rem;">
+  <li><a href="/de/erweiterungen/kontexte">/de/erweiterungen/kontexte</a> aufrufen &mdash; der Block <em>Standardkanal</em> wird ausgegeben.</li>
+  <li><a href="/de/erweiterungen/kontexte?nrdemo=mobile">/de/erweiterungen/kontexte?nrdemo=mobile</a> aufrufen &mdash; der Block <em>Mobiler Kanal</em> tritt an seine Stelle.</li>
+</ul>
+<div class="alert alert-light border mt-4" role="alert" style="font-size: 0.82rem;">
+  <strong style="color: #2F99A4;">Für Integratoren:</strong> Eines der beiden Inhaltselemente im Backend öffnen und den Reiter <em>Contexts</em> aufklappen &mdash; dort stehen die Schalter je Kontext. Seiten mit einer Kontextbeschränkung erhalten zusätzlich ein Overlay-Symbol im Seitenbaum. Die Kontextdatensätze selbst liegen unter Web &gt; Liste auf der Startseite und sind nur für Administratoren sichtbar.
+</div>',
+0, 100, 0, 0);
+
+INSERT IGNORE INTO tt_content (uid, pid, tstamp, crdate, sys_language_uid, l18n_parent, l10n_source, CType, header, bodytext, colPos, sorting, hidden, deleted)
+VALUES (621, 159, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 606, 606, 'text', 'Mobiler Kanal',
+'<p style="font-size: 0.88rem;">Sie sehen die Variante <strong>Mobiler Kanal</strong>. Für dieses Element ist der Kontext &bdquo;Demo channel&ldquo; auf <em>aktivieren</em> gesetzt; es ist deshalb nur Teil der ausgegebenen Seite, solange <code>nrdemo=mobile</code> gesetzt ist.</p>',
+0, 200, 0, 0);
+
+INSERT IGNORE INTO tt_content (uid, pid, tstamp, crdate, sys_language_uid, l18n_parent, l10n_source, CType, header, bodytext, colPos, sorting, hidden, deleted)
+VALUES (622, 159, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 607, 607, 'text', 'Standardkanal',
+'<p style="font-size: 0.88rem;">Sie sehen die Variante <strong>Standardkanal</strong>. Für dieses Element ist der Kontext &bdquo;Demo channel&ldquo; auf <em>deaktivieren</em> gesetzt; es verschwindet daher, sobald <code>nrdemo=mobile</code> gesetzt ist.</p>',
+0, 300, 0, 0);
+
+INSERT IGNORE INTO tt_content (uid, pid, tstamp, crdate, sys_language_uid, l18n_parent, l10n_source, CType, header, bodytext, colPos, sorting, hidden, deleted)
+VALUES (623, 160, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 608, 608, 'html', 'TextDB',
+'<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(47,153,164,0.06), rgba(47,153,164,0.02));">
+  <div class="d-flex align-items-center gap-2 mb-2">
+    <span class="badge rounded-pill text-white" style="background: #2F99A4; font-size: 0.7rem;">Übersetzung</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">XLIFF</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">TYPO3 v14</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">Open Source</span>
+  </div>
+  <h2 class="fw-bold mb-2" style="font-size: 1.6rem;">Übersetzungen, die die Redaktion selbst pflegt</h2>
+  <p class="text-muted mb-3" style="font-size: 1rem; max-width: 650px;">Systemtexte des Frontends &mdash; Formularbeschriftungen, Schaltflächen, Bestätigungsmeldungen &mdash; wandern aus den XLIFF-Dateien im Repository in die Datenbank. Die Redaktion ändert den Wortlaut selbst; für einen Tippfehler braucht es kein Deployment mehr.</p>
+  <div class="d-flex gap-2 flex-wrap">
+    <a href="https://github.com/netresearch/t3x-nr-textdb" target="_blank" rel="noopener" class="btn btn-sm text-white" style="background: #2F99A4;">GitHub</a>
+    <a href="https://extensions.typo3.org/extension/nr_textdb" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">TER</a>
+    <a href="https://packagist.org/packages/netresearch/nr-textdb" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">Packagist</a>
+  </div>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-md-6">
+    <div class="card h-100 border-0" style="background: #f8f9fa;">
+      <div class="card-body">
+        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Redaktion statt Entwicklung</h6>
+        <p class="text-muted mb-0" style="font-size: 0.82rem;">Änderungen am Wortlaut passieren im Backend-Modul und wirken sofort, statt über einen Pull Request und ein Release zu laufen.</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card h-100 border-0" style="background: #f8f9fa;">
+      <div class="card-body">
+        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Katalog füllt sich selbst</h6>
+        <p class="text-muted mb-0" style="font-size: 0.82rem;">Ein Schlüssel, der zum ersten Mal ausgegeben wird, legt seinen Datensatz selbst an. Der Katalog bildet damit genau die Texte ab, die die Website wirklich verwendet.</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card h-100 border-0" style="background: #f8f9fa;">
+      <div class="card-body">
+        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">XLIFF-Import und -Export</h6>
+        <p class="text-muted mb-0" style="font-size: 0.82rem;">Eine XLIFF-Datei hochladen, um Übersetzungen gebündelt einzuspielen, oder die gefilterte Auswahl als ZIP exportieren und an ein Übersetzungsbüro geben.</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card h-100 border-0" style="background: #f8f9fa;">
+      <div class="card-body">
+        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Umgebung, Komponente, Typ</h6>
+        <p class="text-muted mb-0" style="font-size: 0.82rem;">Jeder Text ist einer Umgebung, einer Komponente und einem Typ zugeordnet. Auch ein großer Katalog bleibt so navigierbar, und eine Komponente lässt sich einzeln exportieren.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="alert alert-light border" role="alert" style="font-size: 0.82rem;">
+  <strong style="color: #2F99A4;">Ausprobieren:</strong> <em>Netresearch &gt; TextDb</em> im Modulmenü öffnen und nach der Komponente <code>demo</code> filtern. Diese Demo bringt vier Texte mit, jeweils mit deutscher Übersetzung &mdash; in der Ansicht der übersetzten Einträge stehen sie nebeneinander. Abgelegt sind die Datensätze im Ordner <em>TextDB Translations</em> im Seitenbaum.
+</div>',
+0, 100, 0, 0);
+
+INSERT IGNORE INTO tt_content (uid, pid, tstamp, crdate, sys_language_uid, l18n_parent, l10n_source, CType, header, bodytext, colPos, sorting, hidden, deleted)
+VALUES (624, 161, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 609, 609, 'html', 'Bilder-Sitemap',
+'<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(47,153,164,0.06), rgba(47,153,164,0.02));">
+  <div class="d-flex align-items-center gap-2 mb-2">
+    <span class="badge rounded-pill text-white" style="background: #2F99A4; font-size: 0.7rem;">SEO</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">Sitemap</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">TYPO3 v14</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">Open Source</span>
+  </div>
+  <h2 class="fw-bold mb-2" style="font-size: 1.6rem;">Eine Bilder-Sitemap für EXT:seo</h2>
+  <p class="text-muted mb-3" style="font-size: 1rem; max-width: 650px;">Ein zweiter Sitemap-Typ, der jedes von Seiten und Inhaltselementen referenzierte Bild mit Titel und Bildunterschrift auflistet &mdash; im Google-Schema für Bilder-Sitemaps. Die Erweiterung klinkt sich als zusätzlicher XmlSitemapDataProvider in EXT:seo ein: kein Scheduler, keine zusätzlichen Tabellen.</p>
+  <div class="d-flex gap-2 flex-wrap">
+    <a href="https://github.com/netresearch/t3x-nr-image-sitemap" target="_blank" rel="noopener" class="btn btn-sm text-white" style="background: #2F99A4;">GitHub</a>
+    <a href="https://packagist.org/packages/netresearch/nr-image-sitemap" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">Packagist</a>
+  </div>
+</div>
+
+<h2 class="fw-bold mb-3" style="font-size: 1.2rem;">Ansehen</h2>
+<p class="text-muted mb-3" style="font-size: 0.88rem;">Diese Erweiterung hat kein Backend-Modul. Ihre Ausgabe <em>ist</em> die Sitemap &mdash; das XML selbst ist also die Demo:</p>
+<div class="d-flex gap-2 flex-wrap mb-4">
+  <a href="/de/?type=1642072014" target="_blank" rel="noopener" class="btn btn-sm text-white" style="background: #2F99A4;">Bilder-Sitemap öffnen</a>
+  <a href="/de/sitemap.xml" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">Zum Vergleich: Standard-Sitemap</a>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-md-6">
+    <div class="card h-100 border-0" style="background: #f8f9fa;">
+      <div class="card-body">
+        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Direkt aus FAL</h6>
+        <p class="text-muted mb-0" style="font-size: 0.82rem;">Die Daten stammen aus <code>sys_file_reference</code>. Titel und Bildunterschrift sind damit genau das, was die Redaktion am Bild hinterlegt hat &mdash; ohne separate Pflege.</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card h-100 border-0" style="background: #f8f9fa;">
+      <div class="card-body">
+        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Nichts, was laufen muss</h6>
+        <p class="text-muted mb-0" style="font-size: 0.82rem;">Die Sitemap wird bei Aufruf erzeugt und wie jeder andere Seitentyp zwischengespeichert. Es gibt keinen Job, der unbemerkt stehen bleiben könnte.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="alert alert-light border" role="alert" style="font-size: 0.82rem;">
+  <strong style="color: #2F99A4;">Hinweis zur Demo:</strong> Diese Schaufenster-Instanz sendet für jede Seite <code>NOINDEX,NOFOLLOW</code>. Die Sitemap ist hier also ein Anschauungsobjekt und kein produktives SEO-Signal. Ein Bild in ein beliebiges Inhaltselement einfügen, den Frontend-Cache leeren und die Sitemap neu laden &mdash; der neue Eintrag erscheint.
+</div>',
+0, 100, 0, 0);
+
+INSERT IGNORE INTO tt_content (uid, pid, tstamp, crdate, sys_language_uid, l18n_parent, l10n_source, CType, header, bodytext, colPos, sorting, hidden, deleted)
+VALUES (625, 162, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 610, 610, 'html', 'Scheduler-Toolkit',
+'<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(47,153,164,0.06), rgba(47,153,164,0.02));">
+  <div class="d-flex align-items-center gap-2 mb-2">
+    <span class="badge rounded-pill text-white" style="background: #2F99A4; font-size: 0.7rem;">Scheduler</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">Entwickler-Toolkit</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">TYPO3 v14</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">Open Source</span>
+  </div>
+  <h2 class="fw-bold mb-2" style="font-size: 1.6rem;">Fehlermeldungen und Kontextsteuerung für Scheduler-Aufgaben</h2>
+  <p class="text-muted mb-3" style="font-size: 1rem; max-width: 650px;">Basisklassen für den TYPO3-Scheduler: Aufgaben, die darauf aufbauen, verschicken bei einem Fehlschlag eine E-Mail und lassen sich an den Application Context binden. Ihr Konfigurationsformular beschreiben sie über typisierte Feldobjekte statt über handgeschriebenes HTML.</p>
+  <div class="d-flex gap-2 flex-wrap">
+    <a href="https://github.com/netresearch/t3x-scheduler" target="_blank" rel="noopener" class="btn btn-sm text-white" style="background: #2F99A4;">GitHub</a>
+    <a href="https://packagist.org/packages/netresearch/nr-scheduler" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">Packagist</a>
+  </div>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-md-6">
+    <div class="card h-100 border-0" style="background: #f8f9fa;">
+      <div class="card-body">
+        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Fehlermeldung per E-Mail</h6>
+        <p class="text-muted mb-0" style="font-size: 0.82rem;">Eine fehlgeschlagene Aufgabe benachrichtigt eine konfigurierbare Empfängerliste mit eigenem Betreff und Text, statt nur in einem Modul rot zu werden, das gerade niemand offen hat.</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card h-100 border-0" style="background: #f8f9fa;">
+      <div class="card-body">
+        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Steuerung über den Kontext</h6>
+        <p class="text-muted mb-0" style="font-size: 0.82rem;">Eine Aufgabe lässt sich an Application Contexts binden. Dieselbe Konfiguration wird überall ausgerollt, ausgeführt wird sie nur dort, wo sie hingehört &mdash; in Production, nicht in Development.</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card h-100 border-0" style="background: #f8f9fa;">
+      <div class="card-body">
+        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Typisierte Formularfelder</h6>
+        <p class="text-muted mb-0" style="font-size: 0.82rem;">Text-, Textarea-, Passwort-, Checkbox-, Auswahl- und Mehrfachauswahlfelder werden als Objekte deklariert. Der Additional-Field-Provider rendert und prüft sie.</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card h-100 border-0" style="background: #f8f9fa;">
+      <div class="card-body">
+        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Bibliothek, kein Modul</h6>
+        <p class="text-muted mb-0" style="font-size: 0.82rem;">Die Erweiterung liefert weder ein eigenes Modul noch eine eigene Aufgabe. Sie erweitert den Kern-Scheduler; die zusätzlichen Felder erscheinen an Aufgaben, die eine andere Erweiterung darauf aufbaut.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="alert alert-light border" role="alert" style="font-size: 0.82rem;">
+  <strong style="color: #2F99A4;">Wo es zu finden ist:</strong> <em>Admin-Werkzeuge &gt; Scheduler</em> im TYPO3-Backend öffnen. Diese Demo installiert das Toolkit und das Scheduler-Modul des Kerns; die zusätzlichen Felder werden an Aufgaben einer Erweiterung sichtbar, die von diesen Basisklassen erbt &mdash; etwa <a href="https://github.com/netresearch/t3x-nr-sync" target="_blank" rel="noopener" style="color: #2F99A4;">nr-sync</a>. Das Modul ist Administratoren vorbehalten.
+</div>',
+0, 100, 0, 0);
+
+-- --- German version of the "Extensions" overview hub (tt_content 410) --------
+INSERT IGNORE INTO tt_content (uid, pid, tstamp, crdate, sys_language_uid, l18n_parent, l10n_source, CType, header, bodytext, colPos, sorting, hidden, deleted)
+VALUES (626, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 410, 410, 'html', 'Netresearch-Erweiterungen für TYPO3',
+'<div class="text-center mb-4">
+  <p class="lead text-muted mx-auto" style="max-width: 600px;">Quelloffene Erweiterungen für TYPO3 v14. Für Redaktion, Integration und Entwicklung.</p>
+</div>
+
+
+<h5 class="fw-bold text-uppercase mb-3" style="font-size: 0.75rem; letter-spacing: 0.12em; color: #2F99A4;"><span style="display: inline-block; width: 20px; height: 2px; background: #2F99A4; vertical-align: middle; margin-right: 0.5rem;"></span>Inhalte &amp; Redaktion</h5>
+<div class="row g-3 mb-4">
+  <div class="col-md-4">
+    <div class="card h-100 border-0 shadow-sm"><div class="card-body">
+      <div class="d-flex align-items-center gap-2 mb-2">
+        <span class="badge rounded-pill text-white" style="background: #2F99A4; font-size: 0.65rem;">CKEditor</span>
+        <h6 class="card-title fw-bold mb-0" style="font-size: 0.92rem;">RTE CKEditor Image</h6>
+      </div>
+      <p class="card-text text-muted" style="font-size: 0.82rem;">Blockbilder, Inlinebilder, Lightbox und verlinkte Bilder im Rich-Text-Editor.</p>
+      <a href="/de/extensions/rte-ckeditor-image/" class="fw-semibold text-decoration-none" style="font-size: 0.82rem; color: #FF4D00;">Ansehen &rarr;</a>
+    </div></div>
+  </div>
+  <div class="col-md-4">
+    <div class="card h-100 border-0 shadow-sm"><div class="card-body">
+      <div class="d-flex align-items-center gap-2 mb-2">
+        <span class="badge rounded-pill text-white" style="background: #2F99A4; font-size: 0.65rem;">KI</span>
+        <h6 class="card-title fw-bold mb-0" style="font-size: 0.92rem;">AI Cowriter</h6>
+      </div>
+      <p class="card-text text-muted" style="font-size: 0.82rem;">Umformulieren, zusammenfassen, übersetzen und Grammatik korrigieren &mdash; der KI-Assistent im CKEditor.</p>
+      <a href="/de/extensions/cowriter/" class="fw-semibold text-decoration-none" style="font-size: 0.82rem; color: #FF4D00;">Ansehen &rarr;</a>
+    </div></div>
+  </div>
+  <div class="col-md-4">
+    <div class="card h-100 border-0 shadow-sm"><div class="card-body">
+      <div class="d-flex align-items-center gap-2 mb-2">
+        <span class="badge rounded-pill text-white" style="background: #2F99A4; font-size: 0.65rem;">KI</span>
+        <h6 class="card-title fw-bold mb-0" style="font-size: 0.92rem;">Landingpage-Generator</h6>
+      </div>
+      <p class="card-text text-muted" style="font-size: 0.82rem;">Vollständige Landingpages mit Hero, Funktionsübersicht und Handlungsaufrufen per KI erzeugen.</p>
+      <a href="/de/extensions/landing-page/" class="fw-semibold text-decoration-none" style="font-size: 0.82rem; color: #FF4D00;">Ansehen &rarr;</a>
+    </div></div>
+  </div>
+  <div class="col-md-4">
+    <div class="card h-100 border-0 shadow-sm"><div class="card-body">
+      <div class="d-flex align-items-center gap-2 mb-2">
+        <span class="badge rounded-pill text-white" style="background: #2F99A4; font-size: 0.65rem;">Inhalte</span>
+        <h6 class="card-title fw-bold mb-0" style="font-size: 0.92rem;">Content Repurpose</h6>
+      </div>
+      <p class="card-text text-muted" style="font-size: 0.82rem;">Bestehende Seiten per KI zu Social-Media-Beiträgen, Zusammenfassungen und kanalfertigen Varianten weiterverwerten.</p>
+      <a href="/de/extensions/repurpose/" class="fw-semibold text-decoration-none" style="font-size: 0.82rem; color: #FF4D00;">Ansehen &rarr;</a>
+    </div></div>
+  </div>
+</div>
+
+<h5 class="fw-bold text-uppercase mb-3" style="font-size: 0.75rem; letter-spacing: 0.12em; color: #2F99A4;"><span style="display: inline-block; width: 20px; height: 2px; background: #2F99A4; vertical-align: middle; margin-right: 0.5rem;"></span>KI-Grundlage</h5>
+<div class="row g-3 mb-4">
+  <div class="col-md-4">
+    <div class="card h-100 border-0 shadow-sm"><div class="card-body">
+      <div class="d-flex align-items-center gap-2 mb-2">
+        <span class="badge rounded-pill text-white" style="background: #2F99A4; font-size: 0.65rem;">Basis</span>
+        <h6 class="card-title fw-bold mb-0" style="font-size: 0.92rem;">NR LLM</h6>
+      </div>
+      <p class="card-text text-muted" style="font-size: 0.82rem;">Eine KI-Konfiguration für alle Erweiterungen: Anbieter, Modelle, Aufgabenvorlagen und ein Backend-Modul dafür.</p>
+      <a href="/de/extensions/nr-llm/" class="fw-semibold text-decoration-none" style="font-size: 0.82rem; color: #FF4D00;">Ansehen &rarr;</a>
+    </div></div>
+  </div>
+  <div class="col-md-4">
+    <div class="card h-100 border-0 shadow-sm"><div class="card-body">
+      <div class="d-flex align-items-center gap-2 mb-2">
+        <span class="badge rounded-pill text-white" style="background: #2F99A4; font-size: 0.65rem;">KI</span>
+        <h6 class="card-title fw-bold mb-0" style="font-size: 0.92rem;">KI-Chat im Backend</h6>
+      </div>
+      <p class="card-text text-muted" style="font-size: 0.82rem;">Ein Chat-Assistent im TYPO3-Backend, der die Website über MCP-Werkzeuge ausliest und bearbeitet.</p>
+      <a href="/de/extensions/ai-agent/" class="fw-semibold text-decoration-none" style="font-size: 0.82rem; color: #FF4D00;">Ansehen &rarr;</a>
+    </div></div>
+  </div>
+</div>
+
+<h5 class="fw-bold text-uppercase mb-3" style="font-size: 0.75rem; letter-spacing: 0.12em; color: #2F99A4;"><span style="display: inline-block; width: 20px; height: 2px; background: #2F99A4; vertical-align: middle; margin-right: 0.5rem;"></span>Sicherheit &amp; Authentifizierung</h5>
+<div class="row g-3 mb-4">
+  <div class="col-md-4">
+    <div class="card h-100 border-0 shadow-sm"><div class="card-body">
+      <div class="d-flex align-items-center gap-2 mb-2">
+        <span class="badge rounded-pill text-white" style="background: #2F99A4; font-size: 0.65rem;">Sicherheit</span>
+        <h6 class="card-title fw-bold mb-0" style="font-size: 0.92rem;">Passkeys (Backend)</h6>
+      </div>
+      <p class="card-text text-muted" style="font-size: 0.82rem;">Anmeldung ohne Passwort per WebAuthn für Backend-Benutzer, mit Richtlinien je Benutzergruppe.</p>
+      <a href="/de/extensions/passkeys-be/" class="fw-semibold text-decoration-none" style="font-size: 0.82rem; color: #FF4D00;">Ansehen &rarr;</a>
+    </div></div>
+  </div>
+  <div class="col-md-4">
+    <div class="card h-100 border-0 shadow-sm"><div class="card-body">
+      <div class="d-flex align-items-center gap-2 mb-2">
+        <span class="badge rounded-pill text-white" style="background: #2F99A4; font-size: 0.65rem;">Sicherheit</span>
+        <h6 class="card-title fw-bold mb-0" style="font-size: 0.92rem;">Passkeys (Frontend)</h6>
+      </div>
+      <p class="card-text text-muted" style="font-size: 0.82rem;">Passkey-Anmeldung für Website-Benutzer. <a href="/de/anmelden" style="color: #2F99A4;">Demo ausprobieren</a>.</p>
+      <a href="/de/extensions/passkeys-fe/" class="fw-semibold text-decoration-none" style="font-size: 0.82rem; color: #FF4D00;">Ansehen &rarr;</a>
+    </div></div>
+  </div>
+  <div class="col-md-4">
+    <div class="card h-100 border-0 shadow-sm"><div class="card-body">
+      <div class="d-flex align-items-center gap-2 mb-2">
+        <span class="badge rounded-pill text-white" style="background: #2F99A4; font-size: 0.65rem;">Sicherheit</span>
+        <h6 class="card-title fw-bold mb-0" style="font-size: 0.92rem;">Secrets Vault</h6>
+      </div>
+      <p class="card-text text-muted" style="font-size: 0.82rem;">Envelope-Verschlüsselung, Zugriffssteuerung, Schlüsselwechsel und Protokollierung jedes Zugriffs.</p>
+      <a href="/de/extensions/vault/" class="fw-semibold text-decoration-none" style="font-size: 0.82rem; color: #FF4D00;">Ansehen &rarr;</a>
+    </div></div>
+  </div>
+</div>
+
+<h5 class="fw-bold text-uppercase mb-3" style="font-size: 0.75rem; letter-spacing: 0.12em; color: #2F99A4;"><span style="display: inline-block; width: 20px; height: 2px; background: #2F99A4; vertical-align: middle; margin-right: 0.5rem;"></span>Performance</h5>
+<div class="row g-3 mb-4">
+  <div class="col-md-4">
+    <div class="card h-100 border-0 shadow-sm"><div class="card-body">
+      <div class="d-flex align-items-center gap-2 mb-2">
+        <span class="badge rounded-pill text-white" style="background: #2F99A4; font-size: 0.65rem;">Cache</span>
+        <h6 class="card-title fw-bold mb-0" style="font-size: 0.92rem;">Temporal Cache</h6>
+      </div>
+      <p class="card-text text-muted" style="font-size: 0.82rem;">Der Cache wird automatisch ungültig, sobald zeitgesteuerte Inhalte erscheinen oder ablaufen.</p>
+      <a href="/de/extensions/temporal-cache/" class="fw-semibold text-decoration-none" style="font-size: 0.82rem; color: #FF4D00;">Ansehen &rarr;</a>
+    </div></div>
+  </div>
+</div>
+
+<div class="text-center mt-4 pt-3" style="border-top: 1px solid rgba(0,0,0,0.06);">
+  <p class="text-muted mb-2" style="font-size: 0.82rem;">Alle Erweiterungen sind quelloffen und mit TYPO3 v14 kompatibel.</p>
+  <a href="https://github.com/netresearch" target="_blank" rel="noopener" class="btn btn-sm text-white" style="background: #2F99A4;">Alle Projekte auf GitHub</a>
+</div>',
+0, 100, 0, 0);

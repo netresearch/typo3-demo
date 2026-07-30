@@ -229,6 +229,76 @@ if [ -f config/system/settings.php ]; then
     ' || echo "WARNING: failed to write nr_ai_search additional.php block" >&2
 fi
 
+# Configure nr_textdb (database-backed frontend translations).
+# textDbPid MUST match the sysfolder seeded in data/seed-extensions.sql (uid
+# 163). With textDbPid = 0 every repository queries pid 0
+# (Classes/Domain/Repository/AbstractRepository.php), the backend module lists
+# nothing and silently writes orphaned records.
+# createIfMissing = 1 is the extension's own shipped default: a key rendered
+# through the ViewHelpers for the first time creates its own record.
+if [ -f config/system/settings.php ]; then
+    php -r '
+        $f = "config/system/additional.php";
+        $begin = "// >>> nr_textdb (managed by entrypoint, do not edit this block)";
+        $end   = "// <<< nr_textdb";
+        $block = $begin . "\n"
+            . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"nr_textdb\"][\"textDbPid\"] = \"163\";\n"
+            . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"nr_textdb\"][\"createIfMissing\"] = \"1\";\n"
+            . $end;
+        $existing = is_file($f) ? (string) file_get_contents($f) : "";
+        if (strpos($existing, "<?php") === false) {
+            $existing = "<?php\n" . ($existing === "" ? "" : $existing . "\n");
+        }
+        $b = strpos($existing, $begin);
+        if ($b !== false) {
+            $e = strpos($existing, $end, $b);
+            $existing = $e !== false
+                ? substr($existing, 0, $b) . substr($existing, $e + strlen($end))
+                : substr($existing, 0, $b);
+        }
+        $existing = rtrim($existing, "\n") . "\n\n" . $block . "\n";
+        file_put_contents($f, $existing);
+        echo "additional.php: nr_textdb configured (textDbPid=163, createIfMissing=1)." . PHP_EOL;
+    ' || echo "WARNING: failed to write nr_textdb additional.php block" >&2
+fi
+
+# Configure contexts (netresearch/contexts) for the GET-parameter demo.
+# settings.php sets FE.cacheHash.enforceValidation = true, so a request carrying
+# an unknown cache-relevant query parameter without a valid cHash is rejected.
+# The demo context matches on ?nrdemo=mobile, so that parameter must be excluded
+# from the cHash or /extensions/contexts?nrdemo=mobile returns 404 instead of
+# switching channels. The extension does not register the exclusion itself: it
+# expects the integrator to do it (see its PageCacheIdentifierEventListener,
+# which puts the parameter VALUES into the page cache identifier precisely
+# because they are excluded from the cHash). Channel-specific caching therefore
+# still works -- each channel gets its own page cache entry.
+# additional.php is included after the DefaultConfiguration/settings.php merge,
+# so appending here extends the core default list rather than replacing it.
+if [ -f config/system/settings.php ]; then
+    php -r '
+        $f = "config/system/additional.php";
+        $begin = "// >>> contexts (managed by entrypoint, do not edit this block)";
+        $end   = "// <<< contexts";
+        $block = $begin . "\n"
+            . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"FE\"][\"cacheHash\"][\"excludedParameters\"][] = \"nrdemo\";\n"
+            . $end;
+        $existing = is_file($f) ? (string) file_get_contents($f) : "";
+        if (strpos($existing, "<?php") === false) {
+            $existing = "<?php\n" . ($existing === "" ? "" : $existing . "\n");
+        }
+        $b = strpos($existing, $begin);
+        if ($b !== false) {
+            $e = strpos($existing, $end, $b);
+            $existing = $e !== false
+                ? substr($existing, 0, $b) . substr($existing, $e + strlen($end))
+                : substr($existing, 0, $b);
+        }
+        $existing = rtrim($existing, "\n") . "\n\n" . $block . "\n";
+        file_put_contents($f, $existing);
+        echo "additional.php: contexts cacheHash exclusion for \"nrdemo\" registered." . PHP_EOL;
+    ' || echo "WARNING: failed to write contexts additional.php block" >&2
+fi
+
 echo "Running TYPO3 setup..."
 vendor/bin/typo3 extension:setup 2>&1 || echo "WARNING: extension:setup failed" >&2
 
@@ -240,6 +310,86 @@ if [ -f /var/www/data/seed-schema.sql ]; then
     MYSQL_PWD="${MARIADB_PASSWORD:-typo3}" mariadb -h"${MARIADB_HOST:-db}" -u"${MARIADB_USER:-typo3}" "${MARIADB_DATABASE:-typo3}" \
         < /var/www/data/seed-schema.sql 2>/dev/null || echo "WARNING: seed-schema.sql import failed" >&2
 fi
+# ---------------------------------------------------------------------------
+# Demo records for contexts and nr_textdb.
+# ---------------------------------------------------------------------------
+# These MUST run after extension:setup, not from data/seed-extensions.sql:
+# neither tx_contexts_contexts / tx_nrtextdb_domain_model_* nor the
+# pages/tt_content tx_contexts_* columns exist when that file is imported, and
+# the mariadb client aborts the whole import on the first unknown-table error.
+# Same reason the lochmueller/index configuration row lives down here.
+# Idempotent: guarded INSERTs plus UPDATEs that re-apply the assignment on
+# every boot (INSERT IGNORE never updates an existing row).
+if [ -f config/system/settings.php ]; then
+    echo "Seeding contexts and nr_textdb demo records..."
+    MYSQL_PWD="${MARIADB_PASSWORD:-typo3}" mariadb -h"${MARIADB_HOST:-db}" -u"${MARIADB_USER:-typo3}" "${MARIADB_DATABASE:-typo3}" --default-character-set=utf8mb4 2>/dev/null <<'SQL' || echo "WARNING: contexts/nr_textdb seed failed" >&2
+-- The "Demo channel" context: matches while ?nrdemo=mobile is present.
+-- pid 1 keeps the record reachable via Web > List on the demo home page;
+-- ctrl.rootLevel = -1 plus security.ignorePageTypeRestriction permit it there.
+-- alias is eval'd as alphanum_x,nospace,unique,lower -- "mobile" is valid.
+INSERT INTO tx_contexts_contexts
+    (uid, pid, tstamp, crdate, deleted, disabled, hide_in_backend, type, title, alias, invert, use_session, type_conf)
+SELECT 1, 1, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0, 0, 'getparam', 'Demo channel (mobile)', 'mobile', 0, 0,
+'<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<T3FlexForms>
+    <data>
+        <sheet index="sDEF">
+            <language index="lDEF">
+                <field index="field_name"><value index="vDEF">nrdemo</value></field>
+                <field index="field_values"><value index="vDEF">mobile</value></field>
+            </language>
+        </sheet>
+    </data>
+</T3FlexForms>'
+FROM DUAL
+WHERE NOT EXISTS (SELECT 1 FROM tx_contexts_contexts WHERE uid = 1);
+
+-- Context assignment for the two demo elements and their German translations.
+-- The columns hold a comma-separated list of context uids, matched with
+-- FIND_IN_SET by the extension's ContextRestriction. Re-applied every boot.
+-- Deliberately NOT set on pages: a page-level restriction would hide the whole
+-- demo page (and its menu entry) from the default channel.
+UPDATE tt_content SET tx_contexts_enable  = '1' WHERE uid IN (606, 621);
+UPDATE tt_content SET tx_contexts_disable = '1' WHERE uid IN (607, 622);
+
+-- nr_textdb baseline records in the seeded sysfolder (pages uid 163), so the
+-- backend module is not empty on first open. Unique keys are (name, pid,
+-- deleted) and (sys_language_uid, pid, environment, component, type,
+-- placeholder, deleted), which makes INSERT IGNORE idempotent.
+INSERT IGNORE INTO tx_nrtextdb_domain_model_environment (uid, pid, tstamp, crdate, deleted, hidden, name)
+VALUES (1, 163, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0, 'default');
+
+INSERT IGNORE INTO tx_nrtextdb_domain_model_component (uid, pid, tstamp, crdate, deleted, hidden, name)
+VALUES (1, 163, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0, 'demo');
+
+INSERT IGNORE INTO tx_nrtextdb_domain_model_type (uid, pid, tstamp, crdate, deleted, hidden, name)
+VALUES (1, 163, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0, 'label');
+
+-- English source strings (sys_language_uid 0) ...
+INSERT IGNORE INTO tx_nrtextdb_domain_model_translation
+    (uid, pid, tstamp, crdate, sys_language_uid, l10n_parent, l10n_source, deleted, hidden, sorting,
+     environment, component, type, placeholder, value)
+VALUES
+  (1, 163, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0, 0, 0, 0, 16, 1, 1, 1, 'demo.cta.headline',  'Talk to us'),
+  (2, 163, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0, 0, 0, 0, 32, 1, 1, 1, 'demo.cta.button',    'Request a demo'),
+  (3, 163, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0, 0, 0, 0, 48, 1, 1, 1, 'demo.form.submit',   'Send message'),
+  (4, 163, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0, 0, 0, 0, 64, 1, 1, 1, 'demo.form.thankyou', 'Thanks, we will get back to you.');
+
+-- ... and their German translations (sys_language_uid 1), so the module's
+-- "translated" view has a second column to show and the extension demonstrates
+-- what it exists for. This table uses l10n_parent (not tt_content's
+-- l18n_parent) as its TCA transOrigPointerField.
+INSERT IGNORE INTO tx_nrtextdb_domain_model_translation
+    (uid, pid, tstamp, crdate, sys_language_uid, l10n_parent, l10n_source, deleted, hidden, sorting,
+     environment, component, type, placeholder, value)
+VALUES
+  (5, 163, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 1, 1, 0, 0, 16, 1, 1, 1, 'demo.cta.headline',  'Sprechen Sie uns an'),
+  (6, 163, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 2, 2, 0, 0, 32, 1, 1, 1, 'demo.cta.button',    'Demo anfragen'),
+  (7, 163, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 3, 3, 0, 0, 48, 1, 1, 1, 'demo.form.submit',   'Nachricht senden'),
+  (8, 163, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 4, 4, 0, 0, 64, 1, 1, 1, 'demo.form.thankyou', 'Danke, wir melden uns.');
+SQL
+fi
+
 vendor/bin/typo3 cache:flush 2>&1 || echo "WARNING: cache:flush failed" >&2
 vendor/bin/typo3 cache:warmup 2>&1 || echo "WARNING: cache:warmup failed" >&2
 

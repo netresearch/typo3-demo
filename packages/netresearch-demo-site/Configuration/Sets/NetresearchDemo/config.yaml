@@ -5,3 +5,10 @@ dependencies:
   - georgringer/news
   - georgringer/news-twb5
   - netresearch/rte-ckeditor-image
+  # netresearch/contexts: TypoScript/TSconfig contextMatch() condition and the
+  # contexts.* settings. The demo deleted sys_template in favour of site sets,
+  # so a set dependency is the only way an extension's TypoScript is loaded.
+  - netresearch/contexts
+  # netresearch/image-sitemap: registers the seo_sitemap_images PAGE object
+  # (typeNum 1642072014). Depends on typo3/seo-sitemap itself.
+  - netresearch/image-sitemap
