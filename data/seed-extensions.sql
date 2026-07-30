@@ -2423,7 +2423,7 @@ VALUES (9209, 109, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 407, 407, 'html', 'Pas
   <h2 class="fw-bold mb-2" style="font-size: 1.6rem;">Passwortlose Anmeldung im Frontend</h2>
   <p class="text-muted mb-3" style="font-size: 1rem; max-width: 650px;">Anmeldung per Passkey nach WebAuthn/FIDO2 für Frontend-Benutzer in TYPO3. Statt eines Passworts genügen Fingerabdruck, Gesichtserkennung oder ein Security-Key.</p>
   <div class="d-flex gap-2 flex-wrap">
-    <a href="/login" class="btn btn-sm text-white" style="background: #FF4D00;">Live-Demo öffnen</a>
+    <a href="/de/anmelden" class="btn btn-sm text-white" style="background: #FF4D00;">Live-Demo öffnen</a>
     <a href="https://github.com/netresearch/t3x-nr-passkeys-fe" target="_blank" rel="noopener" class="btn btn-sm text-white" style="background: #2F99A4;">GitHub</a>
     <a href="https://packagist.org/packages/netresearch/nr-passkeys-fe" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">Packagist</a>
   </div>
