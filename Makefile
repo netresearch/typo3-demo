@@ -40,7 +40,10 @@ reset: ## Full reset: purge app data and re-seed (preserves Caddy TLS certs)
 
 update: ## Update code without purging data
 	$(COMPOSE) pull
-	$(COMPOSE) up -d --wait --wait-timeout 180 || $(COMPOSE) up -d
+	# --remove-orphans: a service deleted from compose.yml otherwise keeps running
+	# forever. The reverted EXT:solr spike kept its container alive for 8 days and
+	# grew a 29.6GB writable layer, which filled the disk and broke the deploy.
+	$(COMPOSE) up -d --remove-orphans --wait --wait-timeout 180 || $(COMPOSE) up -d --remove-orphans
 	$(TYPO3) database:updateschema || true
 	$(MAKE) seed-extensions
 	$(TYPO3) extension:setup || true

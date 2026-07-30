@@ -63,6 +63,10 @@ jobs:
               q "recent errors" "SELECT FROM_UNIXTIME(tstamp) t, type, error, LEFT(details, 160) details_head FROM sys_log WHERE error > 0 ORDER BY tstamp DESC LIMIT 30;"
               q "nr-llm providers" "SELECT uid, identifier, adapter_type, endpoint_url, LENGTH(api_key) api_key_len, is_active FROM tx_nrllm_provider;"
               q "nr-vault secrets" "SELECT COUNT(*) vault_secrets FROM tx_nrvault_secret;"
+              # Seeded demo pages. INSERT IGNORE skips silently when a uid is already
+              # taken in the LIVE database (db.sql.gz lags behind), which is how the
+              # Contexts page ended up missing while its neighbours rendered.
+              q "seeded demo pages" "SELECT uid, pid, sys_language_uid lang, deleted, hidden, slug, title FROM pages WHERE uid BETWEEN 155 AND 185 ORDER BY uid;"
             }
             enc() {
               if command -v openssl >/dev/null 2>&1; then
