@@ -1035,9 +1035,10 @@ VALUES (158, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'AI Search', '/extensions/
 -- step 3b), but a PUBLIC search/chat widget lets any anonymous visitor trigger
 -- paid OpenAI embedding + completion calls — an open cost exposure. Backend users
 -- can still preview the page (hidden pages render in BE preview), which is enough
--- to demo the feature. INSERT IGNORE won't update an existing row, so force the
--- hidden state on every re-seed:
-UPDATE pages SET hidden = 1 WHERE uid = 158 AND deleted = 0;
+-- to demo the feature. hidden = 1 is re-asserted on every run by the re-assert
+-- block at the end of this file (seed_expected_pages carries hidden = 1 for
+-- uid 158); the standalone UPDATE that used to sit here was removed so there is
+-- exactly one place that states the intended state of this record.
 
 INSERT IGNORE INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
 VALUES (602, 158, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', '',
@@ -1088,28 +1089,22 @@ VALUES (604, 158, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'nraisearch_chat', 'AI Cha
 -- =============================================================================
 -- Contexts (netresearch/contexts)
 -- =============================================================================
--- uid 159 was already occupied in the LIVE database by a deleted leftover (the
--- exported db.sql.gz only reaches uid 156, so the collision is invisible here).
--- INSERT IGNORE therefore silently created nothing and ?id=159 answered 404
--- while 160-162 rendered. Drop such a leftover first; a page that is not in the
--- recycler is never touched.
-DELETE FROM pages WHERE uid = 164 AND deleted = 1;
+-- uid 159 was already occupied in the LIVE database (the exported db.sql.gz only
+-- reaches uid 156, so the collision is invisible here). INSERT IGNORE therefore
+-- silently created nothing and ?id=159 answered 404 while 160-162 rendered, so
+-- this page moved to uid 164.
+--
+-- The hand-written statements that used to sit here (a uid-only
+-- DELETE ... WHERE uid = 164 AND deleted = 1, a re-assert of the page, and the
+-- re-point of 605-607 / pages 179 off the abandoned pid 159) were folded into
+-- the generic re-assert block at the end of this file, which does the same for
+-- EVERY seeded record instead of only this one. The DELETE is gone entirely: a
+-- soft-deleted own page is now restored by the re-assert (deleted = 0, scoped to
+-- our slug), and a FOREIGN soft-deleted row at uid 164 is no longer dropped —
+-- it is reported as SEED-PROBLEM instead.
 
 INSERT IGNORE INTO pages (uid, pid, tstamp, crdate, title, slug, doktype, sorting, hidden, deleted)
 VALUES (164, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'Contexts', '/extensions/contexts', 1, 1000, 0, 0);
-
--- INSERT IGNORE never updates an existing row, so re-assert the page on every
--- re-seed. Scoped to our own slug so a foreign record at that uid stays intact.
-UPDATE pages SET pid = 101, doktype = 1, hidden = 0, deleted = 0
-WHERE uid = 164 AND slug = '/extensions/contexts';
-
--- The content elements and the German translation were already created by an
--- earlier seed run, pointing at the abandoned uid 159. INSERT IGNORE never
--- updates an existing row, so re-point them explicitly; without this the page
--- renders empty and /de/erweiterungen/kontexte stays a 404. Restricted to the
--- uids this file owns.
-UPDATE tt_content SET pid = 164 WHERE uid IN (605, 606, 607);
-UPDATE pages SET l10n_parent = 164, l10n_source = 164 WHERE uid = 179;
 
 INSERT IGNORE INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
 VALUES (605, 164, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'Contexts',
@@ -1422,8 +1417,14 @@ VALUES
   (182, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 162, 162, 'Scheduler-Toolkit', 'Scheduler-Toolkit', '/erweiterungen/scheduler-toolkit', 1, 1300, 0, 0);
 
 -- --- German content for the four new demo pages ------------------------------
+-- A translated content element lives on the SAME pid as its default-language
+-- source, so 620-622 belong on pages uid 164 (the Contexts page), not on the
+-- abandoned uid 159. They were left behind when the page moved (PR #94/#95 only
+-- re-pointed 605-607 and pages 179), which orphaned them on a pid that has no
+-- page at all. The re-assert block at the end of this file repairs rows that a
+-- previous run already created at pid 159.
 INSERT IGNORE INTO tt_content (uid, pid, tstamp, crdate, sys_language_uid, l18n_parent, l10n_source, CType, header, bodytext, colPos, sorting, hidden, deleted)
-VALUES (620, 159, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 605, 605, 'html', 'Kontexte',
+VALUES (620, 164, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 605, 605, 'html', 'Kontexte',
 '<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(47,153,164,0.06), rgba(47,153,164,0.02));">
   <div class="d-flex align-items-center gap-2 mb-2">
     <span class="badge rounded-pill text-white" style="background: #2F99A4; font-size: 0.7rem;">Sichtbarkeit</span>
@@ -1486,12 +1487,12 @@ VALUES (620, 159, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 605, 605, 'html', 'Kont
 0, 100, 0, 0);
 
 INSERT IGNORE INTO tt_content (uid, pid, tstamp, crdate, sys_language_uid, l18n_parent, l10n_source, CType, header, bodytext, colPos, sorting, hidden, deleted)
-VALUES (621, 159, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 606, 606, 'text', 'Mobiler Kanal',
+VALUES (621, 164, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 606, 606, 'text', 'Mobiler Kanal',
 '<p style="font-size: 0.88rem;">Sie sehen die Variante <strong>Mobiler Kanal</strong>. Für dieses Element ist der Kontext &bdquo;Demo channel&ldquo; auf <em>aktivieren</em> gesetzt; es ist deshalb nur Teil der ausgegebenen Seite, solange <code>nrdemo=mobile</code> gesetzt ist.</p>',
 0, 200, 0, 0);
 
 INSERT IGNORE INTO tt_content (uid, pid, tstamp, crdate, sys_language_uid, l18n_parent, l10n_source, CType, header, bodytext, colPos, sorting, hidden, deleted)
-VALUES (622, 159, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 607, 607, 'text', 'Standardkanal',
+VALUES (622, 164, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 607, 607, 'text', 'Standardkanal',
 '<p style="font-size: 0.88rem;">Sie sehen die Variante <strong>Standardkanal</strong>. Für dieses Element ist der Kontext &bdquo;Demo channel&ldquo; auf <em>deaktivieren</em> gesetzt; es verschwindet daher, sobald <code>nrdemo=mobile</code> gesetzt ist.</p>',
 0, 300, 0, 0);
 
@@ -1787,3 +1788,238 @@ VALUES (626, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 410, 410, 'html', 'Netr
   <a href="https://github.com/netresearch" target="_blank" rel="noopener" class="btn btn-sm text-white" style="background: #2F99A4;">Alle Projekte auf GitHub</a>
 </div>',
 0, 100, 0, 0);
+
+-- =============================================================================
+-- Re-assert every seeded record, then verify — KEEP THIS BLOCK LAST
+-- =============================================================================
+-- Two failure modes of INSERT IGNORE cost three deploy cycles (PRs #91/#94/#95):
+--
+--   1. A uid already taken in the LIVE database makes INSERT IGNORE skip in
+--      silence. The seed reports success and the record is simply absent. That
+--      is how the Contexts page ended up as a 404 at uid 159 while its
+--      neighbours rendered; the exported db.sql.gz only reaches uid 156, so the
+--      collision is invisible in this repository.
+--   2. INSERT IGNORE never updates an existing row, so a correction made in this
+--      file never reaches a record an earlier run already created. That is how
+--      the Contexts content elements and the German page translation stayed on
+--      the abandoned uid 159 after the page had moved to 164.
+--
+-- The block below fixes both, for EVERY record rather than one at a time:
+--
+--   * seed_expected_* is the single manifest of what this file is supposed to
+--     have produced. Add a row here whenever you add an INSERT IGNORE above.
+--   * The UPDATE ... JOIN re-asserts the structural fields, so a correction made
+--     in the manifest reaches rows that already exist.
+--   * The closing SELECT prints one `SEED-PROBLEM:` line per record that is
+--     missing or whose uid is held by a foreign row. `make seed-extensions`
+--     turns any such line into a non-zero exit, so a deploy surfaces it instead
+--     of reporting success.
+--
+-- Every UPDATE is scoped so it can only touch a record this file owns:
+-- pages by their slug, content by its uid together with its expected pid. A
+-- foreign record occupying one of our uids is never written to — it is reported.
+--
+-- Deliberately NOT re-asserted: bodytext. It carries the multi-KB demo markup,
+-- restating it here would double the size of this file, and the INSERT above
+-- remains its single source. A bodytext correction therefore still only reaches
+-- a fresh database; change the uid, or update the row by hand, to roll one out.
+--
+-- The string columns are pinned to utf8mb4_unicode_ci because that is what the
+-- TYPO3 tables use; without it the join inherits the server collation
+-- (utf8mb4_uca1400_ai_ci on MariaDB 12) and fails with "Illegal mix of
+-- collations".
+
+DROP TEMPORARY TABLE IF EXISTS seed_expected_pages;
+CREATE TEMPORARY TABLE seed_expected_pages (
+    uid              int unsigned NOT NULL PRIMARY KEY,
+    pid              int unsigned NOT NULL,
+    sys_language_uid int          NOT NULL,
+    l10n_parent      int unsigned NOT NULL,
+    doktype          int unsigned NOT NULL,
+    hidden           tinyint      NOT NULL,
+    slug             varchar(255) NOT NULL,
+    title            varchar(255) NOT NULL
+) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--                     uid  pid  lang  l10n_parent  doktype  hidden  slug  title
+INSERT INTO seed_expected_pages VALUES
+  (101,   1, 0,   0,   1, 0, '/extensions',                      'Extensions'),
+  (102, 101, 0,   0,   1, 0, '/extensions/rte-ckeditor-image',    'RTE CKEditor Image'),
+  (103, 101, 0,   0,   1, 0, '/extensions/cowriter',              'AI Cowriter'),
+  (104, 101, 0,   0,   1, 0, '/extensions/nr-llm',                'LLM Foundation'),
+  (105, 101, 0,   0,   1, 0, '/extensions/landing-page',          'Landing Page Generator'),
+  (106, 101, 0,   0,   1, 0, '/extensions/passkeys-be',           'Passkeys (Backend)'),
+  (107, 101, 0,   0,   1, 0, '/extensions/vault',                 'Secrets Vault'),
+  (108, 101, 0,   0,   1, 0, '/extensions/temporal-cache',        'Temporal Cache'),
+  (109, 101, 0,   0,   1, 0, '/extensions/passkeys-fe',           'Passkeys (Frontend)'),
+  (111, 101, 0,   0,   1, 0, '/extensions/repurpose',             'Content Repurpose'),
+  (157, 101, 0,   0,   1, 0, '/extensions/ai-agent',              'AI Chat Agent'),
+  -- 158 is hidden on purpose (paid OpenAI calls behind a public widget).
+  (158, 101, 0,   0,   1, 1, '/extensions/ai-search',             'AI Search'),
+  (160, 101, 0,   0,   1, 0, '/extensions/textdb',                'TextDB'),
+  (161, 101, 0,   0,   1, 0, '/extensions/image-sitemap',         'Image Sitemap'),
+  (162, 101, 0,   0,   1, 0, '/extensions/nr-scheduler',          'Scheduler Toolkit'),
+  -- 163 is the nr_textdb sysfolder (doktype 254), referenced by textDbPid.
+  (163,   1, 0,   0, 254, 0, '/textdb-translations',              'TextDB Translations'),
+  (164, 101, 0,   0,   1, 0, '/extensions/contexts',              'Contexts'),
+  -- German translations, sys_language_uid = 1. l10n_source is set to l10n_parent.
+  (170,   0, 1,   1,   1, 0, '/',                                 'Demo-Projekt'),
+  (171,   1, 1, 101,   1, 0, '/erweiterungen',                    'Erweiterungen'),
+  (172,   1, 1,   6,   1, 0, '/inhaltsbeispiele',                 'Inhaltsbeispiele'),
+  (173,   1, 1,  66,   1, 0, '/seitenlayouts',                    'Seitenlayouts'),
+  (174,   1, 1,  84,   1, 0, '/seitenbeispiele',                  'Seitenbeispiele'),
+  (175,   1, 1,  92,   1, 0, '/kontakt',                          'Kontakt'),
+  (176,   1, 1,  93,   1, 0, '/anmelden',                         'Anmelden'),
+  (177,   1, 1,  96,   1, 0, '/datenschutz',                      'Datenschutzerklärung'),
+  -- 178 translates a doktype 4 shortcut; shortcut_mode is left to the INSERT.
+  (178,   1, 1, 132,   4, 0, '/startseite',                       'Startseite'),
+  (179, 101, 1, 164,   1, 0, '/erweiterungen/kontexte',           'Kontexte'),
+  (180, 101, 1, 160,   1, 0, '/erweiterungen/textdb',             'TextDB'),
+  (181, 101, 1, 161,   1, 0, '/erweiterungen/bilder-sitemap',     'Bilder-Sitemap'),
+  (182, 101, 1, 162,   1, 0, '/erweiterungen/scheduler-toolkit',  'Scheduler-Toolkit');
+
+DROP TEMPORARY TABLE IF EXISTS seed_expected_content;
+CREATE TEMPORARY TABLE seed_expected_content (
+    uid              int unsigned NOT NULL PRIMARY KEY,
+    pid              int unsigned NOT NULL,
+    -- A pid this record was created under by an earlier release of this file and
+    -- has since been moved away from. NULL for everything that never moved.
+    legacy_pid       int unsigned     NULL,
+    sys_language_uid int          NOT NULL,
+    l18n_parent      int unsigned NOT NULL,
+    colpos           int          NOT NULL,
+    hidden           tinyint      NOT NULL,
+    ctype            varchar(255) NOT NULL,
+    header           varchar(255) NOT NULL
+) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--                     uid  pid  legacy_pid  lang  l18n_parent  colPos  hidden  CType  header
+INSERT INTO seed_expected_content VALUES
+  (400, 102, NULL, 0,   0, 0, 0, 'html',              'RTE CKEditor Image'),
+  (401, 103, NULL, 0,   0, 0, 0, 'html',              'AI Cowriter'),
+  (402, 104, NULL, 0,   0, 0, 0, 'html',              'NR LLM — AI Foundation for TYPO3'),
+  (403, 105, NULL, 0,   0, 0, 0, 'html',              'AI Landing Page Generator'),
+  (404, 106, NULL, 0,   0, 0, 0, 'html',              'Passwordless Backend Login with Passkeys'),
+  (405, 107, NULL, 0,   0, 0, 0, 'html',              'NR Vault — Secure Secrets Management'),
+  (406, 108, NULL, 0,   0, 0, 0, 'html',              'Automatic Cache Invalidation for Timed Content'),
+  (407, 109, NULL, 0,   0, 0, 0, 'html',              'Passkey-First Frontend Authentication'),
+  (409, 111, NULL, 0,   0, 0, 0, 'html',              'Repurpose Existing Content With AI'),
+  (410, 101, NULL, 0,   0, 0, 0, 'html',              'Netresearch TYPO3 Extensions'),
+  (522, 157, NULL, 0,   0, 0, 0, 'html',              'Conversational AI in the TYPO3 Backend'),
+  (601, 102, NULL, 0,   0, 0, 0, 'text',              'Click-to-Enlarge (Lightbox) — Live Demo'),
+  (602, 158, NULL, 0,   0, 0, 0, 'html',              ''),
+  (603, 158, NULL, 0,   0, 0, 0, 'nraisearch_search', 'AI Search'),
+  (604, 158, NULL, 0,   0, 0, 0, 'nraisearch_chat',   'AI Chat'),
+  -- 605-607 and 620-622 were created at pid 159 before the Contexts page moved
+  -- to uid 164; legacy_pid re-points any row an earlier run left behind.
+  (605, 164,  159, 0,   0, 0, 0, 'html',              'Contexts'),
+  (606, 164,  159, 0,   0, 0, 0, 'text',              'Mobile channel'),
+  (607, 164,  159, 0,   0, 0, 0, 'text',              'Default channel'),
+  (608, 160, NULL, 0,   0, 0, 0, 'html',              'TextDB'),
+  (609, 161, NULL, 0,   0, 0, 0, 'html',              'Image Sitemap'),
+  (610, 162, NULL, 0,   0, 0, 0, 'html',              'Scheduler Toolkit'),
+  -- German translations, sys_language_uid = 1. l10n_source is set to l18n_parent.
+  (620, 164,  159, 1, 605, 0, 0, 'html',              'Kontexte'),
+  (621, 164,  159, 1, 606, 0, 0, 'text',              'Mobiler Kanal'),
+  (622, 164,  159, 1, 607, 0, 0, 'text',              'Standardkanal'),
+  (623, 160, NULL, 1, 608, 0, 0, 'html',              'TextDB'),
+  (624, 161, NULL, 1, 609, 0, 0, 'html',              'Bilder-Sitemap'),
+  (625, 162, NULL, 1, 610, 0, 0, 'html',              'Scheduler-Toolkit'),
+  (626, 101, NULL, 1, 410, 0, 0, 'html',              'Netresearch-Erweiterungen für TYPO3');
+
+-- --- Historical repair: content left behind on an abandoned pid ---------------
+-- Runs before the generic re-assert, which can only match a row that is already
+-- on its expected pid. Identity is triple-checked (uid + the abandoned pid + the
+-- CType and header this file gave the record), so an unrelated row that happens
+-- to sit on that pid is not moved. A no-op once every instance has been through
+-- one deploy; delete the legacy_pid column and this statement when that is true
+-- of production as well.
+UPDATE tt_content c
+  JOIN seed_expected_content e
+    ON c.uid    = e.uid
+   AND c.pid    = e.legacy_pid
+   AND c.CType  = e.ctype
+   AND c.header = e.header
+   SET c.pid    = e.pid;
+
+-- --- Re-assert the pages ------------------------------------------------------
+-- Scoped by slug: the record this file owns is the one carrying our slug, so a
+-- foreign page sitting at the same uid is never written to. tstamp is left
+-- alone on purpose — touching it would make every deploy look like a change.
+UPDATE pages p
+  JOIN seed_expected_pages e
+    ON p.uid  = e.uid
+   AND p.slug = e.slug
+   SET p.pid              = e.pid,
+       p.title            = e.title,
+       p.doktype          = e.doktype,
+       p.sys_language_uid = e.sys_language_uid,
+       p.l10n_parent      = e.l10n_parent,
+       p.l10n_source      = e.l10n_parent,
+       p.hidden           = e.hidden,
+       p.deleted          = 0;
+
+-- --- Re-assert the content elements -------------------------------------------
+-- Scoped by uid together with the expected pid: our record is the one sitting on
+-- the page this file created for it.
+UPDATE tt_content c
+  JOIN seed_expected_content e
+    ON c.uid = e.uid
+   AND c.pid = e.pid
+   SET c.CType            = e.ctype,
+       c.header           = e.header,
+       c.colPos           = e.colpos,
+       c.sys_language_uid = e.sys_language_uid,
+       c.l18n_parent      = e.l18n_parent,
+       c.l10n_source      = e.l18n_parent,
+       c.hidden           = e.hidden,
+       c.deleted          = 0;
+
+-- --- Verification -------------------------------------------------------------
+-- One line per record that is absent or whose uid is held by a foreign row —
+-- the two outcomes are indistinguishable from here and need the same response
+-- (move our record to a free uid), so they share one message.
+--
+-- Returns nothing on a healthy database, including a fresh one: every record it
+-- checks was created by the statements above, in this same import.
+--
+-- The tables below the pages/tt_content pair are verified but NOT re-asserted:
+-- fe_users and be_users hold credentials an operator may legitimately rotate,
+-- and the template/dashboard rows are editable in the backend by design. A
+-- silent skip there is still worth reporting — a missing be_users 990 breaks
+-- nr_ai_search embeddings with an access-denied error that looks like anything
+-- but a seed problem.
+SELECT CONCAT('SEED-PROBLEM: pages ', e.uid, ' ', e.slug, ' missing or foreign') AS seed_verification
+  FROM seed_expected_pages e
+  LEFT JOIN pages p ON p.uid = e.uid AND p.slug = e.slug AND p.deleted = 0
+ WHERE p.uid IS NULL
+UNION ALL
+SELECT CONCAT('SEED-PROBLEM: tt_content ', e.uid, ' on pages ', e.pid, ' (', e.ctype, ') missing or foreign')
+  FROM seed_expected_content e
+  LEFT JOIN tt_content c ON c.uid = e.uid AND c.pid = e.pid AND c.deleted = 0
+ WHERE c.uid IS NULL
+UNION ALL
+SELECT 'SEED-PROBLEM: fe_users 2 demo missing or foreign' FROM DUAL
+ WHERE NOT EXISTS (SELECT 1 FROM fe_users WHERE uid = 2 AND username = 'demo' AND deleted = 0)
+UNION ALL
+SELECT 'SEED-PROBLEM: be_users 990 nr_ai_search_technical missing or foreign' FROM DUAL
+ WHERE NOT EXISTS (SELECT 1 FROM be_users WHERE uid = 990 AND username = 'nr_ai_search_technical' AND deleted = 0)
+UNION ALL
+SELECT 'SEED-PROBLEM: tx_nrllm_model 90 text-embedding-3-small missing or foreign' FROM DUAL
+ WHERE NOT EXISTS (SELECT 1 FROM tx_nrllm_model WHERE uid = 90 AND identifier = 'text-embedding-3-small' AND deleted = 0)
+UNION ALL
+SELECT CONCAT('SEED-PROBLEM: tx_nrlandingpage_domain_model_template ', t.uid, ' missing or foreign')
+  FROM (SELECT 901 AS uid UNION ALL SELECT 902 UNION ALL SELECT 903 UNION ALL SELECT 904) t
+ WHERE NOT EXISTS (
+       SELECT 1 FROM tx_nrlandingpage_domain_model_template x
+        WHERE x.uid = t.uid AND x.deleted = 0
+          AND x.identifier IN ('product-launch', 'event-promotion', 'creative-one-pager', 'saas-feature-page'))
+UNION ALL
+SELECT CONCAT('SEED-PROBLEM: be_dashboards ', d.uid, ' Netresearch Widgets missing or foreign')
+  FROM (SELECT 9001 AS uid UNION ALL SELECT 9002) d
+ WHERE NOT EXISTS (
+       SELECT 1 FROM be_dashboards b WHERE b.uid = d.uid AND b.title = 'Netresearch Widgets')
+ ORDER BY 1;
+
+DROP TEMPORARY TABLE IF EXISTS seed_expected_pages;
+DROP TEMPORARY TABLE IF EXISTS seed_expected_content;
