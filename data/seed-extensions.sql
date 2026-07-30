@@ -1862,7 +1862,7 @@ INSERT INTO seed_expected_pages VALUES
   -- 163 is the nr_textdb sysfolder (doktype 254), referenced by textDbPid.
   (163,   1, 0,   0, 254, 0, '/textdb-translations',              'TextDB Translations'),
   (164, 101, 0,   0,   1, 0, '/extensions/contexts',              'Contexts'),
-  -- German translations (sys_language_uid = 1); l10n_source is set to l10n_parent.
+  -- German translations, sys_language_uid = 1. l10n_source is set to l10n_parent.
   (170,   0, 1,   1,   1, 0, '/',                                 'Demo-Projekt'),
   (171,   1, 1, 101,   1, 0, '/erweiterungen',                    'Erweiterungen'),
   (172,   1, 1,   6,   1, 0, '/inhaltsbeispiele',                 'Inhaltsbeispiele'),
@@ -1918,7 +1918,7 @@ INSERT INTO seed_expected_content VALUES
   (608, 160, NULL, 0,   0, 0, 0, 'html',              'TextDB'),
   (609, 161, NULL, 0,   0, 0, 0, 'html',              'Image Sitemap'),
   (610, 162, NULL, 0,   0, 0, 0, 'html',              'Scheduler Toolkit'),
-  -- German translations (sys_language_uid = 1); l10n_source is set to l18n_parent.
+  -- German translations, sys_language_uid = 1. l10n_source is set to l18n_parent.
   (620, 164,  159, 1, 605, 0, 0, 'html',              'Kontexte'),
   (621, 164,  159, 1, 606, 0, 0, 'text',              'Mobiler Kanal'),
   (622, 164,  159, 1, 607, 0, 0, 'text',              'Standardkanal'),
