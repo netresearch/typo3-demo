@@ -1846,21 +1846,28 @@ VALUES (626, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 410, 410, 'html', 'Netr
 -- Re-asserted rather than only inserted, for the same reason as every other
 -- record in this file: INSERT IGNORE cannot repair a sentinel that an earlier
 -- run created and that has since been un-deleted or edited.
+-- The sentinel's identity, stated once. Every statement that creates, repairs or
+-- verifies it matches on these two, so there is a single place to change if the
+-- row is ever renamed. Session variables live for the whole import, and this
+-- file is fed to the client as one session.
+SET @sentinel_slug  = '/seed-uid-band-sentinel';
+SET @sentinel_title = 'Seed uid band sentinel — do not delete';
+
 INSERT IGNORE INTO pages (uid, pid, tstamp, crdate, title, slug, doktype, sorting, hidden, deleted)
-VALUES (9999, 1, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'Seed uid band sentinel — do not delete', '/seed-uid-band-sentinel', 254, 32767, 1, 1);
+VALUES (9999, 1, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), @sentinel_title, @sentinel_slug, 254, 32767, 1, 1);
 
 INSERT IGNORE INTO tt_content (uid, pid, tstamp, crdate, CType, header, colPos, sorting, hidden, deleted)
-VALUES (9999, 1, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'text', 'Seed uid band sentinel — do not delete', 0, 32767, 1, 1);
+VALUES (9999, 1, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'text', @sentinel_title, 0, 32767, 1, 1);
 
 -- Scoped by our own slug/header, so a foreign row that ever occupies uid 9999 is
 -- never written to — the same discipline the re-assert block below follows.
 UPDATE pages
    SET doktype = 254, hidden = 1, deleted = 1
- WHERE uid = 9999 AND slug = '/seed-uid-band-sentinel';
+ WHERE uid = 9999 AND slug = @sentinel_slug;
 
 UPDATE tt_content
    SET hidden = 1, deleted = 1
- WHERE uid = 9999 AND header = 'Seed uid band sentinel — do not delete';
+ WHERE uid = 9999 AND header = @sentinel_title;
 
 -- Belt to the sentinel's braces, and the guarantee stated outright rather than
 -- left to emerge from the row above. InnoDB clamps this value up to at least
@@ -2106,13 +2113,15 @@ UNION ALL
 -- The sentinels are checked WITHOUT `deleted = 0`: unlike every record above,
 -- they are supposed to be soft-deleted. What matters is only that the row is
 -- physically present, because that is what holds the uid.
-SELECT 'SEED-PROBLEM: pages 9999 uid band sentinel missing or foreign' FROM DUAL
- WHERE NOT EXISTS (SELECT 1 FROM pages WHERE uid = 9999 AND slug = '/seed-uid-band-sentinel')
+SELECT 'SEED-PROBLEM: pages 9999 uid band sentinel missing or foreign'
+  FROM (SELECT 9999 AS uid) s
+  LEFT JOIN pages p ON p.uid = s.uid AND p.slug = @sentinel_slug
+ WHERE p.uid IS NULL
 UNION ALL
-SELECT 'SEED-PROBLEM: tt_content 9999 uid band sentinel missing or foreign' FROM DUAL
- WHERE NOT EXISTS (
-       SELECT 1 FROM tt_content
-        WHERE uid = 9999 AND header = 'Seed uid band sentinel — do not delete')
+SELECT 'SEED-PROBLEM: tt_content 9999 uid band sentinel missing or foreign'
+  FROM (SELECT 9999 AS uid) s
+  LEFT JOIN tt_content c ON c.uid = s.uid AND c.header = @sentinel_title
+ WHERE c.uid IS NULL
 UNION ALL
 -- The property this whole band exists for, asserted directly rather than
 -- inferred from the sentinel rows: the next uid the database hands out must lie
