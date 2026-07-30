@@ -31,6 +31,34 @@
 -- INSERT IGNORE for the new demo page skipped in silence, leaving the page
 -- simply absent. That cost three deploy cycles (PRs #91, #94, #95).
 
+-- =============================================================================
+-- Why every bodytext INSERT below ends in ON DUPLICATE KEY UPDATE
+-- =============================================================================
+-- INSERT IGNORE never writes to a row that already exists, so a correction made
+-- here reached a fresh database only. Live tt_content 605 stood at a 554-byte
+-- bodytext while this file said 4386, and every re-import left it that way.
+--
+-- Structural fields are re-asserted from the manifest at the end of this file.
+-- bodytext is not, and must not be: it is multi-KB markup, and a second copy in
+-- that manifest would double this file and give the same text two places to
+-- drift apart. So the INSERT itself does the re-assert, which keeps the markup
+-- stated exactly once:
+--
+--   ON DUPLICATE KEY UPDATE
+--     bodytext = IF(pid = VALUES(pid) AND CType = VALUES(CType) AND header = VALUES(header),
+--                   VALUES(bodytext), bodytext)
+--
+-- Unqualified column names on the right-hand side are the EXISTING row, and
+-- VALUES(col) is what this file wanted to insert — so the assignment only fires
+-- when the row already on that uid agrees on pid, CType and header, i.e. when it
+-- is ours. A foreign row keeps its own bodytext and is reported as SEED-PROBLEM
+-- by the verification at the end instead.
+--
+-- VALUES() and not the MySQL 8.0.19 row-alias form (`... AS new ON DUPLICATE KEY
+-- UPDATE col = new.col`): MariaDB has not adopted that syntax. Checked against
+-- the server this actually runs on, MariaDB 12.3.2 — the alias form is a parse
+-- error there (ERROR 1064), VALUES() works.
+
 -- Parent page: "Extensions" in main navigation
 INSERT IGNORE INTO pages (uid, pid, tstamp, crdate, title, slug, doktype, is_siteroot, backend_layout, sorting, hidden, deleted)
 VALUES (101, 1, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'Extensions', '/extensions', 1, 0, '', 525, 0, 0);
@@ -41,7 +69,7 @@ VALUES (101, 1, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'Extensions', '/extensions',
 INSERT IGNORE INTO pages (uid, pid, tstamp, crdate, title, slug, doktype, sorting, hidden, deleted)
 VALUES (102, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'RTE CKEditor Image', '/extensions/rte-ckeditor-image', 1, 100, 0, 0);
 
-INSERT IGNORE INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
+INSERT INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
 VALUES (400, 102, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'RTE CKEditor Image',
 '<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(47,153,164,0.06), rgba(47,153,164,0.02));">
   <div class="d-flex align-items-center gap-2 mb-2">
@@ -97,7 +125,10 @@ VALUES (400, 102, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'RTE CKEditor Imag
 <div class="alert alert-light border mt-4" role="alert" style="font-size: 0.82rem;">
   <strong style="color: #2F99A4;">For integrators:</strong> Edit this page in the TYPO3 backend to see the CKEditor image toolbar button in action. All images above are inserted via CKEditor, not the standard image content element.
 </div>',
-0, 100, 0, 0);
+0, 100, 0, 0)
+ON DUPLICATE KEY UPDATE
+  bodytext = IF(pid = VALUES(pid) AND CType = VALUES(CType) AND header = VALUES(header),
+                VALUES(bodytext), bodytext);
 
 -- Click-to-Enlarge (Lightbox) live demo — relocated out of the CType=html block
 -- above into a regular CType=text element so its rich text runs through
@@ -105,11 +136,14 @@ VALUES (400, 102, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'RTE CKEditor Imag
 -- data-htmlarea-zoom image into a click-to-enlarge (zoom popup) link; inside a
 -- raw html element parseFunc_RTE never runs and the img stays bare.
 -- Free uid above the base-dump tt_content max (522).
-INSERT IGNORE INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
+INSERT INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
 VALUES (601, 102, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'text', 'Click-to-Enlarge (Lightbox) — Live Demo',
 '<p class="text-muted mb-2" style="font-size: 0.88rem;">Click the image below to see the zoom popup. Because this is a regular Text element, its rich text is processed by <code>lib.parseFunc_RTE</code>, so rte_ckeditor_image turns the <code>data-htmlarea-zoom</code> image into a click-to-enlarge link:</p>
 <p><img src="/fileadmin/user_upload/images/Home/CH5_7203.jpg" alt="Click to enlarge" width="400" data-htmlarea-file-uid="188" data-htmlarea-file-table="sys_file" data-htmlarea-zoom="true"></p>',
-0, 150, 0, 0);
+0, 150, 0, 0)
+ON DUPLICATE KEY UPDATE
+  bodytext = IF(pid = VALUES(pid) AND CType = VALUES(CType) AND header = VALUES(header),
+                VALUES(bodytext), bodytext);
 
 -- =============================================================================
 -- AI Cowriter
@@ -117,7 +151,7 @@ VALUES (601, 102, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'text', 'Click-to-Enlarge 
 INSERT IGNORE INTO pages (uid, pid, tstamp, crdate, title, slug, doktype, sorting, hidden, deleted)
 VALUES (103, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'AI Cowriter', '/extensions/cowriter', 1, 200, 0, 0);
 
-INSERT IGNORE INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
+INSERT INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
 VALUES (401, 103, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'AI Cowriter',
 '<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(47,153,164,0.06), rgba(47,153,164,0.02));">
   <div class="d-flex align-items-center gap-2 mb-2">
@@ -185,7 +219,10 @@ VALUES (401, 103, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'AI Cowriter',
 <div class="alert alert-light border" role="alert" style="font-size: 0.82rem;">
   <strong style="color: #2F99A4;">Try it:</strong> Edit this page in the TYPO3 backend to see the Cowriter button in the CKEditor toolbar.
 </div>',
-0, 100, 0, 0);
+0, 100, 0, 0)
+ON DUPLICATE KEY UPDATE
+  bodytext = IF(pid = VALUES(pid) AND CType = VALUES(CType) AND header = VALUES(header),
+                VALUES(bodytext), bodytext);
 
 -- =============================================================================
 -- NR LLM
@@ -193,7 +230,7 @@ VALUES (401, 103, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'AI Cowriter',
 INSERT IGNORE INTO pages (uid, pid, tstamp, crdate, title, slug, doktype, sorting, hidden, deleted)
 VALUES (104, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'LLM Foundation', '/extensions/nr-llm', 1, 300, 0, 0);
 
-INSERT IGNORE INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
+INSERT INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
 VALUES (402, 104, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'NR LLM — AI Foundation for TYPO3',
 '<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(88,89,97,0.06), rgba(88,89,97,0.02));">
   <div class="d-flex align-items-center gap-2 mb-2">
@@ -247,7 +284,10 @@ VALUES (402, 104, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'NR LLM — AI Fou
 <div class="alert alert-light border" role="alert" style="font-size: 0.82rem;">
   <strong style="color: #585961;">Powers:</strong> <a href="/extensions/cowriter/" style="color: #2F99A4;">AI Cowriter</a> and <a href="/extensions/landing-page/" style="color: #2F99A4;">Landing Page Generator</a> both use NR LLM for their AI capabilities.
 </div>',
-0, 100, 0, 0);
+0, 100, 0, 0)
+ON DUPLICATE KEY UPDATE
+  bodytext = IF(pid = VALUES(pid) AND CType = VALUES(CType) AND header = VALUES(header),
+                VALUES(bodytext), bodytext);
 
 -- =============================================================================
 -- Landing Page Generator
@@ -255,7 +295,7 @@ VALUES (402, 104, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'NR LLM — AI Fou
 INSERT IGNORE INTO pages (uid, pid, tstamp, crdate, title, slug, doktype, sorting, hidden, deleted)
 VALUES (105, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'Landing Page Generator', '/extensions/landing-page', 1, 400, 0, 0);
 
-INSERT IGNORE INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
+INSERT INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
 VALUES (403, 105, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'AI Landing Page Generator',
 '<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(47,153,164,0.06), rgba(47,153,164,0.02));">
   <div class="d-flex align-items-center gap-2 mb-2">
@@ -293,7 +333,10 @@ VALUES (403, 105, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'AI Landing Page G
 <div class="alert alert-light border" role="alert" style="font-size: 0.82rem;">
   <strong style="color: #2F99A4;">Requires:</strong> <a href="/extensions/nr-llm/" style="color: #2F99A4;">NR LLM</a> with a configured provider. Access the wizard in the TYPO3 backend under Web &gt; Landing Pages.
 </div>',
-0, 100, 0, 0);
+0, 100, 0, 0)
+ON DUPLICATE KEY UPDATE
+  bodytext = IF(pid = VALUES(pid) AND CType = VALUES(CType) AND header = VALUES(header),
+                VALUES(bodytext), bodytext);
 
 -- =============================================================================
 -- Passkeys Backend
@@ -301,7 +344,7 @@ VALUES (403, 105, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'AI Landing Page G
 INSERT IGNORE INTO pages (uid, pid, tstamp, crdate, title, slug, doktype, sorting, hidden, deleted)
 VALUES (106, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'Passkeys (Backend)', '/extensions/passkeys-be', 1, 500, 0, 0);
 
-INSERT IGNORE INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
+INSERT INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
 VALUES (404, 106, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'Passwordless Backend Login with Passkeys',
 '<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(255,77,0,0.04), rgba(255,77,0,0.01));">
   <div class="d-flex align-items-center gap-2 mb-2">
@@ -353,7 +396,10 @@ VALUES (404, 106, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'Passwordless Back
 </div>
 
 <p class="text-muted" style="font-size: 0.82rem;">See also: <a href="/extensions/passkeys-fe/" style="color: #2F99A4; font-weight: 600;">Passkeys (Frontend)</a> for frontend user authentication.</p>',
-0, 100, 0, 0);
+0, 100, 0, 0)
+ON DUPLICATE KEY UPDATE
+  bodytext = IF(pid = VALUES(pid) AND CType = VALUES(CType) AND header = VALUES(header),
+                VALUES(bodytext), bodytext);
 
 -- =============================================================================
 -- Passkeys Frontend
@@ -361,7 +407,7 @@ VALUES (404, 106, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'Passwordless Back
 INSERT IGNORE INTO pages (uid, pid, tstamp, crdate, title, slug, doktype, sorting, hidden, deleted)
 VALUES (109, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'Passkeys (Frontend)', '/extensions/passkeys-fe', 1, 510, 0, 0);
 
-INSERT IGNORE INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
+INSERT INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
 VALUES (407, 109, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'Passkey-First Frontend Authentication',
 '<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(255,77,0,0.04), rgba(255,77,0,0.01));">
   <div class="d-flex align-items-center gap-2 mb-2">
@@ -436,7 +482,10 @@ VALUES (407, 109, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'Passkey-First Fro
 </div>
 
 <p class="text-muted" style="font-size: 0.82rem;">See also: <a href="/extensions/passkeys-be/" style="color: #2F99A4; font-weight: 600;">Passkeys (Backend)</a> for backend user authentication.</p>',
-0, 100, 0, 0);
+0, 100, 0, 0)
+ON DUPLICATE KEY UPDATE
+  bodytext = IF(pid = VALUES(pid) AND CType = VALUES(CType) AND header = VALUES(header),
+                VALUES(bodytext), bodytext);
 
 -- =============================================================================
 -- Secrets Vault
@@ -444,7 +493,7 @@ VALUES (407, 109, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'Passkey-First Fro
 INSERT IGNORE INTO pages (uid, pid, tstamp, crdate, title, slug, doktype, sorting, hidden, deleted)
 VALUES (107, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'Secrets Vault', '/extensions/vault', 1, 600, 0, 0);
 
-INSERT IGNORE INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
+INSERT INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
 VALUES (405, 107, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'NR Vault — Secure Secrets Management',
 '<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(255,77,0,0.04), rgba(255,77,0,0.01));">
   <div class="d-flex align-items-center gap-2 mb-2">
@@ -494,7 +543,10 @@ VALUES (405, 107, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'NR Vault — Secu
     </div>
   </div>
 </div>',
-0, 100, 0, 0);
+0, 100, 0, 0)
+ON DUPLICATE KEY UPDATE
+  bodytext = IF(pid = VALUES(pid) AND CType = VALUES(CType) AND header = VALUES(header),
+                VALUES(bodytext), bodytext);
 
 -- =============================================================================
 -- Temporal Cache
@@ -502,7 +554,7 @@ VALUES (405, 107, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'NR Vault — Secu
 INSERT IGNORE INTO pages (uid, pid, tstamp, crdate, title, slug, doktype, sorting, hidden, deleted)
 VALUES (108, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'Temporal Cache', '/extensions/temporal-cache', 1, 700, 0, 0);
 
-INSERT IGNORE INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
+INSERT INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
 VALUES (406, 108, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'Automatic Cache Invalidation for Timed Content',
 '<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(88,89,97,0.06), rgba(88,89,97,0.02));">
   <div class="d-flex align-items-center gap-2 mb-2">
@@ -540,7 +592,10 @@ VALUES (406, 108, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'Automatic Cache I
 <div class="alert alert-light border" role="alert" style="font-size: 0.82rem;">
   <strong style="color: #585961;">Zero config:</strong> Works transparently with all content types that use TYPO3 starttime/endtime fields. Install and forget.
 </div>',
-0, 100, 0, 0);
+0, 100, 0, 0)
+ON DUPLICATE KEY UPDATE
+  bodytext = IF(pid = VALUES(pid) AND CType = VALUES(CType) AND header = VALUES(header),
+                VALUES(bodytext), bodytext);
 
 -- =============================================================================
 -- AI Chat Agent
@@ -555,7 +610,7 @@ DELETE FROM tt_content WHERE uid = 408 AND pid = 110 AND CType = 'html';
 INSERT IGNORE INTO pages (uid, pid, tstamp, crdate, title, slug, doktype, sorting, hidden, deleted)
 VALUES (157, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'AI Chat Agent', '/extensions/ai-agent', 1, 800, 0, 0);
 
-INSERT IGNORE INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
+INSERT INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
 VALUES (522, 157, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'Conversational AI in the TYPO3 Backend',
 '<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(47,153,164,0.06), rgba(47,153,164,0.02));">
   <div class="d-flex align-items-center gap-2 mb-2">
@@ -609,7 +664,10 @@ VALUES (522, 157, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'Conversational AI
 <div class="alert alert-light border" role="alert" style="font-size: 0.82rem;">
   <strong style="color: #2F99A4;">Try it:</strong> Open the AI Chat from the TYPO3 backend module (Admin Tools / Web) and ask it about this installation.
 </div>',
-0, 100, 0, 0);
+0, 100, 0, 0)
+ON DUPLICATE KEY UPDATE
+  bodytext = IF(pid = VALUES(pid) AND CType = VALUES(CType) AND header = VALUES(header),
+                VALUES(bodytext), bodytext);
 
 -- =============================================================================
 -- Content Repurpose
@@ -617,7 +675,7 @@ VALUES (522, 157, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'Conversational AI
 INSERT IGNORE INTO pages (uid, pid, tstamp, crdate, title, slug, doktype, sorting, hidden, deleted)
 VALUES (111, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'Content Repurpose', '/extensions/repurpose', 1, 900, 0, 0);
 
-INSERT IGNORE INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
+INSERT INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
 VALUES (409, 111, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'Repurpose Existing Content With AI',
 '<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(47,153,164,0.06), rgba(47,153,164,0.02));">
   <div class="d-flex align-items-center gap-2 mb-2">
@@ -671,12 +729,15 @@ VALUES (409, 111, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'Repurpose Existin
 <div class="alert alert-light border" role="alert" style="font-size: 0.82rem;">
   <strong style="color: #2F99A4;">Where to find it:</strong> Open the Repurpose module in the TYPO3 backend under Web &gt; Repurpose.
 </div>',
-0, 100, 0, 0);
+0, 100, 0, 0)
+ON DUPLICATE KEY UPDATE
+  bodytext = IF(pid = VALUES(pid) AND CType = VALUES(CType) AND header = VALUES(header),
+                VALUES(bodytext), bodytext);
 
 -- =============================================================================
 -- Overview Hub (/extensions)
 -- =============================================================================
-INSERT IGNORE INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
+INSERT INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
 VALUES (410, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'Netresearch TYPO3 Extensions',
 '<div class="text-center mb-4">
   <p class="lead text-muted mx-auto" style="max-width: 600px;">Open-source extensions for TYPO3 v14. Built for editors, integrators, and developers.</p>
@@ -802,7 +863,10 @@ VALUES (410, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'Netresearch TYPO3
   <p class="text-muted mb-2" style="font-size: 0.82rem;">All extensions are open source and TYPO3 v14 compatible.</p>
   <a href="https://github.com/netresearch" target="_blank" rel="noopener" class="btn btn-sm text-white" style="background: #2F99A4;">View all on GitHub</a>
 </div>',
-0, 100, 0, 0);
+0, 100, 0, 0)
+ON DUPLICATE KEY UPDATE
+  bodytext = IF(pid = VALUES(pid) AND CType = VALUES(CType) AND header = VALUES(header),
+                VALUES(bodytext), bodytext);
 
 -- Demo frontend user for passkey testing (username: demo, password: demo)
 INSERT IGNORE INTO fe_users (uid, pid, tstamp, crdate, username, password, usergroup, name, email, disable, deleted)
@@ -1070,7 +1134,7 @@ VALUES (158, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'AI Search', '/extensions/
 -- uid 158); the standalone UPDATE that used to sit here was removed so there is
 -- exactly one place that states the intended state of this record.
 
-INSERT IGNORE INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
+INSERT INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
 VALUES (602, 158, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', '',
 '<div class="card border-0 mb-4" style="background: #f8f9fa;">
   <div class="card-body py-4">
@@ -1078,13 +1142,22 @@ VALUES (602, 158, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', '',
     <p class="mb-2" style="max-width: 720px;">Ask this website a question in natural language. nr_ai_search embeds the site content into a vector store and grounds every answer strictly in what it retrieves &mdash; the search box returns a synthesised answer with sources, and the chat widget holds a short grounded conversation.</p>
     <p class="text-muted mb-0" style="font-size: 0.9rem; max-width: 720px;">Runtime note: answers require an OpenAI API key configured in the Vault module (frontend-accessible) and content that has been indexed and embedded. Without both, the widgets render but report that they cannot answer.</p>
   </div>
-</div>', 0, 100, 0, 0);
+</div>', 0, 100, 0, 0)
+ON DUPLICATE KEY UPDATE
+  bodytext = IF(pid = VALUES(pid) AND CType = VALUES(CType) AND header = VALUES(header),
+                VALUES(bodytext), bodytext);
 
-INSERT IGNORE INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
-VALUES (603, 158, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'nraisearch_search', 'AI Search', '', 0, 200, 0, 0);
+INSERT INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
+VALUES (603, 158, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'nraisearch_search', 'AI Search', '', 0, 200, 0, 0)
+ON DUPLICATE KEY UPDATE
+  bodytext = IF(pid = VALUES(pid) AND CType = VALUES(CType) AND header = VALUES(header),
+                VALUES(bodytext), bodytext);
 
-INSERT IGNORE INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
-VALUES (604, 158, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'nraisearch_chat', 'AI Chat', '', 0, 300, 0, 0);
+INSERT INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
+VALUES (604, 158, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'nraisearch_chat', 'AI Chat', '', 0, 300, 0, 0)
+ON DUPLICATE KEY UPDATE
+  bodytext = IF(pid = VALUES(pid) AND CType = VALUES(CType) AND header = VALUES(header),
+                VALUES(bodytext), bodytext);
 
 -- =============================================================================
 -- uid budget for everything below (re-derived, not inherited from any document)
@@ -1142,7 +1215,7 @@ VALUES (604, 158, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'nraisearch_chat', 'AI Cha
 INSERT IGNORE INTO pages (uid, pid, tstamp, crdate, title, slug, doktype, sorting, hidden, deleted)
 VALUES (164, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'Contexts', '/extensions/contexts', 1, 1000, 0, 0);
 
-INSERT IGNORE INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
+INSERT INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
 VALUES (605, 164, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'Contexts',
 '<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(47,153,164,0.06), rgba(47,153,164,0.02));">
   <div class="d-flex align-items-center gap-2 mb-2">
@@ -1203,22 +1276,31 @@ VALUES (605, 164, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'Contexts',
 <div class="alert alert-light border mt-4" role="alert" style="font-size: 0.82rem;">
   <strong style="color: #2F99A4;">For integrators:</strong> Edit either element in the backend and open its <em>Contexts</em> panel to see the per-context visibility switches. Pages carrying a context restriction also get an overlay badge in the page tree. The context records themselves live in Web &gt; List on the home page and are admin-only.
 </div>',
-0, 100, 0, 0);
+0, 100, 0, 0)
+ON DUPLICATE KEY UPDATE
+  bodytext = IF(pid = VALUES(pid) AND CType = VALUES(CType) AND header = VALUES(header),
+                VALUES(bodytext), bodytext);
 
 -- Visible ONLY while the "Demo channel" context matches (?nrdemo=mobile).
 -- The context ASSIGNMENT is applied in docker/web/entrypoint.sh: the
 -- tt_content.tx_contexts_* columns are created by extension:setup, which runs
 -- after this file is imported.
-INSERT IGNORE INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
+INSERT INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
 VALUES (606, 164, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'text', 'Mobile channel',
 '<p style="font-size: 0.88rem;">You are seeing the <strong>mobile channel</strong> variant. This element has the &quot;Demo channel&quot; context set to <em>enable</em>, so it is only part of the rendered page while <code>nrdemo=mobile</code> is present.</p>',
-0, 200, 0, 0);
+0, 200, 0, 0)
+ON DUPLICATE KEY UPDATE
+  bodytext = IF(pid = VALUES(pid) AND CType = VALUES(CType) AND header = VALUES(header),
+                VALUES(bodytext), bodytext);
 
 -- Visible ONLY while the "Demo channel" context does NOT match.
-INSERT IGNORE INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
+INSERT INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
 VALUES (607, 164, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'text', 'Default channel',
 '<p style="font-size: 0.88rem;">You are seeing the <strong>default channel</strong> variant. This element has the &quot;Demo channel&quot; context set to <em>disable</em>, so it disappears as soon as <code>nrdemo=mobile</code> is present.</p>',
-0, 300, 0, 0);
+0, 300, 0, 0)
+ON DUPLICATE KEY UPDATE
+  bodytext = IF(pid = VALUES(pid) AND CType = VALUES(CType) AND header = VALUES(header),
+                VALUES(bodytext), bodytext);
 
 -- =============================================================================
 -- TextDB (netresearch/nr-textdb)
@@ -1233,7 +1315,7 @@ VALUES (163, 1, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'TextDB Translations', '/tex
 INSERT IGNORE INTO pages (uid, pid, tstamp, crdate, title, slug, doktype, sorting, hidden, deleted)
 VALUES (160, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'TextDB', '/extensions/textdb', 1, 1100, 0, 0);
 
-INSERT IGNORE INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
+INSERT INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
 VALUES (608, 160, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'TextDB',
 '<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(47,153,164,0.06), rgba(47,153,164,0.02));">
   <div class="d-flex align-items-center gap-2 mb-2">
@@ -1289,7 +1371,10 @@ VALUES (608, 160, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'TextDB',
 <div class="alert alert-light border" role="alert" style="font-size: 0.82rem;">
   <strong style="color: #2F99A4;">Try it:</strong> Open <em>Netresearch &gt; TextDb</em> in the module menu and filter by component <code>demo</code>. This demo ships four seeded labels, each with a German translation &mdash; switch the module to the translated view to compare them side by side. The records are stored in the <em>TextDB Translations</em> folder in the page tree.
 </div>',
-0, 100, 0, 0);
+0, 100, 0, 0)
+ON DUPLICATE KEY UPDATE
+  bodytext = IF(pid = VALUES(pid) AND CType = VALUES(CType) AND header = VALUES(header),
+                VALUES(bodytext), bodytext);
 
 -- =============================================================================
 -- Image Sitemap (netresearch/nr-image-sitemap)
@@ -1297,7 +1382,7 @@ VALUES (608, 160, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'TextDB',
 INSERT IGNORE INTO pages (uid, pid, tstamp, crdate, title, slug, doktype, sorting, hidden, deleted)
 VALUES (161, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'Image Sitemap', '/extensions/image-sitemap', 1, 1200, 0, 0);
 
-INSERT IGNORE INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
+INSERT INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
 VALUES (609, 161, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'Image Sitemap',
 '<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(47,153,164,0.06), rgba(47,153,164,0.02));">
   <div class="d-flex align-items-center gap-2 mb-2">
@@ -1343,7 +1428,10 @@ VALUES (609, 161, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'Image Sitemap',
 <div class="alert alert-light border" role="alert" style="font-size: 0.82rem;">
   <strong style="color: #2F99A4;">Demo note:</strong> This showcase instance sends <code>NOINDEX,NOFOLLOW</code> for every page, so the sitemap here is a demonstration artefact rather than a live SEO signal. Add an image to any content element, flush the frontend cache, and reload the sitemap to watch the new entry appear.
 </div>',
-0, 100, 0, 0);
+0, 100, 0, 0)
+ON DUPLICATE KEY UPDATE
+  bodytext = IF(pid = VALUES(pid) AND CType = VALUES(CType) AND header = VALUES(header),
+                VALUES(bodytext), bodytext);
 
 -- =============================================================================
 -- Scheduler Toolkit (netresearch/nr-scheduler)
@@ -1351,7 +1439,7 @@ VALUES (609, 161, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'Image Sitemap',
 INSERT IGNORE INTO pages (uid, pid, tstamp, crdate, title, slug, doktype, sorting, hidden, deleted)
 VALUES (162, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'Scheduler Toolkit', '/extensions/nr-scheduler', 1, 1300, 0, 0);
 
-INSERT IGNORE INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
+INSERT INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
 VALUES (610, 162, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'Scheduler Toolkit',
 '<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(47,153,164,0.06), rgba(47,153,164,0.02));">
   <div class="d-flex align-items-center gap-2 mb-2">
@@ -1406,7 +1494,10 @@ VALUES (610, 162, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'Scheduler Toolkit
 <div class="alert alert-light border" role="alert" style="font-size: 0.82rem;">
   <strong style="color: #2F99A4;">Where to find it:</strong> Open <em>Admin Tools &gt; Scheduler</em> in the TYPO3 backend. This demo installs the toolkit and the core Scheduler module; the extra fields become visible on tasks of an extension that derives from these base classes, such as <a href="https://github.com/netresearch/t3x-nr-sync" target="_blank" rel="noopener" style="color: #2F99A4;">nr-sync</a>. The module is admin-only.
 </div>',
-0, 100, 0, 0);
+0, 100, 0, 0)
+ON DUPLICATE KEY UPDATE
+  bodytext = IF(pid = VALUES(pid) AND CType = VALUES(CType) AND header = VALUES(header),
+                VALUES(bodytext), bodytext);
 
 -- =============================================================================
 -- German translations (sys_language_uid = 1)
@@ -1459,7 +1550,7 @@ VALUES
 -- re-pointed 605-607 and pages 179), which orphaned them on a pid that has no
 -- page at all. The re-assert block at the end of this file repairs rows that a
 -- previous run already created at pid 159.
-INSERT IGNORE INTO tt_content (uid, pid, tstamp, crdate, sys_language_uid, l18n_parent, l10n_source, CType, header, bodytext, colPos, sorting, hidden, deleted)
+INSERT INTO tt_content (uid, pid, tstamp, crdate, sys_language_uid, l18n_parent, l10n_source, CType, header, bodytext, colPos, sorting, hidden, deleted)
 VALUES (620, 164, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 605, 605, 'html', 'Kontexte',
 '<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(47,153,164,0.06), rgba(47,153,164,0.02));">
   <div class="d-flex align-items-center gap-2 mb-2">
@@ -1520,19 +1611,28 @@ VALUES (620, 164, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 605, 605, 'html', 'Kont
 <div class="alert alert-light border mt-4" role="alert" style="font-size: 0.82rem;">
   <strong style="color: #2F99A4;">Für Integratoren:</strong> Eines der beiden Inhaltselemente im Backend öffnen und den Reiter <em>Contexts</em> aufklappen &mdash; dort stehen die Schalter je Kontext. Seiten mit einer Kontextbeschränkung erhalten zusätzlich ein Overlay-Symbol im Seitenbaum. Die Kontextdatensätze selbst liegen unter Web &gt; Liste auf der Startseite und sind nur für Administratoren sichtbar.
 </div>',
-0, 100, 0, 0);
+0, 100, 0, 0)
+ON DUPLICATE KEY UPDATE
+  bodytext = IF(pid = VALUES(pid) AND CType = VALUES(CType) AND header = VALUES(header),
+                VALUES(bodytext), bodytext);
 
-INSERT IGNORE INTO tt_content (uid, pid, tstamp, crdate, sys_language_uid, l18n_parent, l10n_source, CType, header, bodytext, colPos, sorting, hidden, deleted)
+INSERT INTO tt_content (uid, pid, tstamp, crdate, sys_language_uid, l18n_parent, l10n_source, CType, header, bodytext, colPos, sorting, hidden, deleted)
 VALUES (621, 164, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 606, 606, 'text', 'Mobiler Kanal',
 '<p style="font-size: 0.88rem;">Sie sehen die Variante <strong>Mobiler Kanal</strong>. Für dieses Element ist der Kontext &bdquo;Demo channel&ldquo; auf <em>aktivieren</em> gesetzt; es ist deshalb nur Teil der ausgegebenen Seite, solange <code>nrdemo=mobile</code> gesetzt ist.</p>',
-0, 200, 0, 0);
+0, 200, 0, 0)
+ON DUPLICATE KEY UPDATE
+  bodytext = IF(pid = VALUES(pid) AND CType = VALUES(CType) AND header = VALUES(header),
+                VALUES(bodytext), bodytext);
 
-INSERT IGNORE INTO tt_content (uid, pid, tstamp, crdate, sys_language_uid, l18n_parent, l10n_source, CType, header, bodytext, colPos, sorting, hidden, deleted)
+INSERT INTO tt_content (uid, pid, tstamp, crdate, sys_language_uid, l18n_parent, l10n_source, CType, header, bodytext, colPos, sorting, hidden, deleted)
 VALUES (622, 164, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 607, 607, 'text', 'Standardkanal',
 '<p style="font-size: 0.88rem;">Sie sehen die Variante <strong>Standardkanal</strong>. Für dieses Element ist der Kontext &bdquo;Demo channel&ldquo; auf <em>deaktivieren</em> gesetzt; es verschwindet daher, sobald <code>nrdemo=mobile</code> gesetzt ist.</p>',
-0, 300, 0, 0);
+0, 300, 0, 0)
+ON DUPLICATE KEY UPDATE
+  bodytext = IF(pid = VALUES(pid) AND CType = VALUES(CType) AND header = VALUES(header),
+                VALUES(bodytext), bodytext);
 
-INSERT IGNORE INTO tt_content (uid, pid, tstamp, crdate, sys_language_uid, l18n_parent, l10n_source, CType, header, bodytext, colPos, sorting, hidden, deleted)
+INSERT INTO tt_content (uid, pid, tstamp, crdate, sys_language_uid, l18n_parent, l10n_source, CType, header, bodytext, colPos, sorting, hidden, deleted)
 VALUES (623, 160, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 608, 608, 'html', 'TextDB',
 '<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(47,153,164,0.06), rgba(47,153,164,0.02));">
   <div class="d-flex align-items-center gap-2 mb-2">
@@ -1588,9 +1688,12 @@ VALUES (623, 160, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 608, 608, 'html', 'Text
 <div class="alert alert-light border" role="alert" style="font-size: 0.82rem;">
   <strong style="color: #2F99A4;">Ausprobieren:</strong> <em>Netresearch &gt; TextDb</em> im Modulmenü öffnen und nach der Komponente <code>demo</code> filtern. Diese Demo bringt vier Texte mit, jeweils mit deutscher Übersetzung &mdash; in der Ansicht der übersetzten Einträge stehen sie nebeneinander. Abgelegt sind die Datensätze im Ordner <em>TextDB Translations</em> im Seitenbaum.
 </div>',
-0, 100, 0, 0);
+0, 100, 0, 0)
+ON DUPLICATE KEY UPDATE
+  bodytext = IF(pid = VALUES(pid) AND CType = VALUES(CType) AND header = VALUES(header),
+                VALUES(bodytext), bodytext);
 
-INSERT IGNORE INTO tt_content (uid, pid, tstamp, crdate, sys_language_uid, l18n_parent, l10n_source, CType, header, bodytext, colPos, sorting, hidden, deleted)
+INSERT INTO tt_content (uid, pid, tstamp, crdate, sys_language_uid, l18n_parent, l10n_source, CType, header, bodytext, colPos, sorting, hidden, deleted)
 VALUES (624, 161, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 609, 609, 'html', 'Bilder-Sitemap',
 '<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(47,153,164,0.06), rgba(47,153,164,0.02));">
   <div class="d-flex align-items-center gap-2 mb-2">
@@ -1636,9 +1739,12 @@ VALUES (624, 161, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 609, 609, 'html', 'Bild
 <div class="alert alert-light border" role="alert" style="font-size: 0.82rem;">
   <strong style="color: #2F99A4;">Hinweis zur Demo:</strong> Diese Schaufenster-Instanz sendet für jede Seite <code>NOINDEX,NOFOLLOW</code>. Die Sitemap ist hier also ein Anschauungsobjekt und kein produktives SEO-Signal. Ein Bild in ein beliebiges Inhaltselement einfügen, den Frontend-Cache leeren und die Sitemap neu laden &mdash; der neue Eintrag erscheint.
 </div>',
-0, 100, 0, 0);
+0, 100, 0, 0)
+ON DUPLICATE KEY UPDATE
+  bodytext = IF(pid = VALUES(pid) AND CType = VALUES(CType) AND header = VALUES(header),
+                VALUES(bodytext), bodytext);
 
-INSERT IGNORE INTO tt_content (uid, pid, tstamp, crdate, sys_language_uid, l18n_parent, l10n_source, CType, header, bodytext, colPos, sorting, hidden, deleted)
+INSERT INTO tt_content (uid, pid, tstamp, crdate, sys_language_uid, l18n_parent, l10n_source, CType, header, bodytext, colPos, sorting, hidden, deleted)
 VALUES (625, 162, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 610, 610, 'html', 'Scheduler-Toolkit',
 '<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(47,153,164,0.06), rgba(47,153,164,0.02));">
   <div class="d-flex align-items-center gap-2 mb-2">
@@ -1693,10 +1799,13 @@ VALUES (625, 162, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 610, 610, 'html', 'Sche
 <div class="alert alert-light border" role="alert" style="font-size: 0.82rem;">
   <strong style="color: #2F99A4;">Wo es zu finden ist:</strong> <em>Admin-Werkzeuge &gt; Scheduler</em> im TYPO3-Backend öffnen. Diese Demo installiert das Toolkit und das Scheduler-Modul des Kerns; die zusätzlichen Felder werden an Aufgaben einer Erweiterung sichtbar, die von diesen Basisklassen erbt &mdash; etwa <a href="https://github.com/netresearch/t3x-nr-sync" target="_blank" rel="noopener" style="color: #2F99A4;">nr-sync</a>. Das Modul ist Administratoren vorbehalten.
 </div>',
-0, 100, 0, 0);
+0, 100, 0, 0)
+ON DUPLICATE KEY UPDATE
+  bodytext = IF(pid = VALUES(pid) AND CType = VALUES(CType) AND header = VALUES(header),
+                VALUES(bodytext), bodytext);
 
 -- --- German version of the "Extensions" overview hub (tt_content 410) --------
-INSERT IGNORE INTO tt_content (uid, pid, tstamp, crdate, sys_language_uid, l18n_parent, l10n_source, CType, header, bodytext, colPos, sorting, hidden, deleted)
+INSERT INTO tt_content (uid, pid, tstamp, crdate, sys_language_uid, l18n_parent, l10n_source, CType, header, bodytext, colPos, sorting, hidden, deleted)
 VALUES (626, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 410, 410, 'html', 'Netresearch-Erweiterungen für TYPO3',
 '<div class="text-center mb-4">
   <p class="lead text-muted mx-auto" style="max-width: 600px;">Quelloffene Erweiterungen für TYPO3 v14. Für Redaktion, Integration und Entwicklung.</p>
@@ -1823,7 +1932,10 @@ VALUES (626, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 410, 410, 'html', 'Netr
   <p class="text-muted mb-2" style="font-size: 0.82rem;">Alle Erweiterungen sind quelloffen und mit TYPO3 v14 kompatibel.</p>
   <a href="https://github.com/netresearch" target="_blank" rel="noopener" class="btn btn-sm text-white" style="background: #2F99A4;">Alle Projekte auf GitHub</a>
 </div>',
-0, 100, 0, 0);
+0, 100, 0, 0)
+ON DUPLICATE KEY UPDATE
+  bodytext = IF(pid = VALUES(pid) AND CType = VALUES(CType) AND header = VALUES(header),
+                VALUES(bodytext), bodytext);
 
 -- =============================================================================
 -- uid band high-water sentinel — KEEP THIS BLOCK BEFORE THE RE-ASSERT BLOCK
@@ -1897,7 +2009,7 @@ ALTER TABLE tt_content AUTO_INCREMENT = 10000;
 -- The block below fixes both, for EVERY record rather than one at a time:
 --
 --   * seed_expected_* is the single manifest of what this file is supposed to
---     have produced. Add a row here whenever you add an INSERT IGNORE above.
+--     have produced. Add a row here whenever you add an INSERT above.
 --   * The UPDATE ... JOIN re-asserts the structural fields, so a correction made
 --     in the manifest reaches rows that already exist.
 --   * The closing SELECT prints one `SEED-PROBLEM:` line per record that is
@@ -1909,10 +2021,23 @@ ALTER TABLE tt_content AUTO_INCREMENT = 10000;
 -- pages by their slug, content by its uid together with its expected pid. A
 -- foreign record occupying one of our uids is never written to — it is reported.
 --
--- Deliberately NOT re-asserted: bodytext. It carries the multi-KB demo markup,
--- restating it here would double the size of this file, and the INSERT above
--- remains its single source. A bodytext correction therefore still only reaches
--- a fresh database; change the uid, or update the row by hand, to roll one out.
+-- bodytext is NOT re-asserted from this manifest, and deliberately so: it
+-- carries the multi-KB demo markup, and a second copy here would both double the
+-- size of this file and give the same text two places to drift apart. It is
+-- re-asserted at its INSERT instead, by the ON DUPLICATE KEY UPDATE clause each
+-- bodytext-carrying INSERT now ends with, which keeps the markup stated exactly
+-- once. That clause guards the assignment more tightly than this block guards
+-- its own: the existing row must already agree on pid, CType AND header, where
+-- the content re-assert below matches on uid and pid alone. So a foreign row
+-- occupying one of our uids keeps its own bodytext and is reported below
+-- instead. One consequence is worth stating outright: a bodytext edited in the
+-- backend is now overwritten on the next deploy, exactly as an edited title or
+-- slug already was.
+--
+-- The one gap that leaves: a row still sitting on its legacy_pid (see below) is
+-- not yet on the pid the INSERT names, so its bodytext is only re-asserted on
+-- the deploy AFTER the repair below has moved it. That is one deploy of lag on
+-- rows that have not been through a deploy since PR #96, and it self-heals.
 --
 -- The string columns are pinned to utf8mb4_unicode_ci because that is what the
 -- TYPO3 tables use; without it the join inherits the server collation
@@ -1927,46 +2052,50 @@ CREATE TEMPORARY TABLE seed_expected_pages (
     l10n_parent      int unsigned NOT NULL,
     doktype          int unsigned NOT NULL,
     hidden           tinyint      NOT NULL,
+    -- The value the INSERT above gives this record. Re-asserted for the same
+    -- reason as the rest: an ordering corrected here has to reach the live row,
+    -- not only a fresh database.
+    sorting          int          NOT NULL,
     slug             varchar(255) NOT NULL,
     title            varchar(255) NOT NULL
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---                     uid  pid  lang  l10n_parent  doktype  hidden  slug  title
+--                     uid  pid  lang  l10n_parent  doktype  hidden  sorting  slug  title
 INSERT INTO seed_expected_pages VALUES
-  (101,   1, 0,   0,   1, 0, '/extensions',                      'Extensions'),
-  (102, 101, 0,   0,   1, 0, '/extensions/rte-ckeditor-image',    'RTE CKEditor Image'),
-  (103, 101, 0,   0,   1, 0, '/extensions/cowriter',              'AI Cowriter'),
-  (104, 101, 0,   0,   1, 0, '/extensions/nr-llm',                'LLM Foundation'),
-  (105, 101, 0,   0,   1, 0, '/extensions/landing-page',          'Landing Page Generator'),
-  (106, 101, 0,   0,   1, 0, '/extensions/passkeys-be',           'Passkeys (Backend)'),
-  (107, 101, 0,   0,   1, 0, '/extensions/vault',                 'Secrets Vault'),
-  (108, 101, 0,   0,   1, 0, '/extensions/temporal-cache',        'Temporal Cache'),
-  (109, 101, 0,   0,   1, 0, '/extensions/passkeys-fe',           'Passkeys (Frontend)'),
-  (111, 101, 0,   0,   1, 0, '/extensions/repurpose',             'Content Repurpose'),
-  (157, 101, 0,   0,   1, 0, '/extensions/ai-agent',              'AI Chat Agent'),
+  (101,   1, 0,   0,   1, 0,  525, '/extensions',                      'Extensions'),
+  (102, 101, 0,   0,   1, 0,  100, '/extensions/rte-ckeditor-image',    'RTE CKEditor Image'),
+  (103, 101, 0,   0,   1, 0,  200, '/extensions/cowriter',              'AI Cowriter'),
+  (104, 101, 0,   0,   1, 0,  300, '/extensions/nr-llm',                'LLM Foundation'),
+  (105, 101, 0,   0,   1, 0,  400, '/extensions/landing-page',          'Landing Page Generator'),
+  (106, 101, 0,   0,   1, 0,  500, '/extensions/passkeys-be',           'Passkeys (Backend)'),
+  (107, 101, 0,   0,   1, 0,  600, '/extensions/vault',                 'Secrets Vault'),
+  (108, 101, 0,   0,   1, 0,  700, '/extensions/temporal-cache',        'Temporal Cache'),
+  (109, 101, 0,   0,   1, 0,  510, '/extensions/passkeys-fe',           'Passkeys (Frontend)'),
+  (111, 101, 0,   0,   1, 0,  900, '/extensions/repurpose',             'Content Repurpose'),
+  (157, 101, 0,   0,   1, 0,  800, '/extensions/ai-agent',              'AI Chat Agent'),
   -- 158 is hidden on purpose (paid OpenAI calls behind a public widget).
-  (158, 101, 0,   0,   1, 1, '/extensions/ai-search',             'AI Search'),
-  (160, 101, 0,   0,   1, 0, '/extensions/textdb',                'TextDB'),
-  (161, 101, 0,   0,   1, 0, '/extensions/image-sitemap',         'Image Sitemap'),
-  (162, 101, 0,   0,   1, 0, '/extensions/nr-scheduler',          'Scheduler Toolkit'),
+  (158, 101, 0,   0,   1, 1,  800, '/extensions/ai-search',             'AI Search'),
+  (160, 101, 0,   0,   1, 0, 1100, '/extensions/textdb',                'TextDB'),
+  (161, 101, 0,   0,   1, 0, 1200, '/extensions/image-sitemap',         'Image Sitemap'),
+  (162, 101, 0,   0,   1, 0, 1300, '/extensions/nr-scheduler',          'Scheduler Toolkit'),
   -- 163 is the nr_textdb sysfolder (doktype 254), referenced by textDbPid.
-  (163,   1, 0,   0, 254, 0, '/textdb-translations',              'TextDB Translations'),
-  (164, 101, 0,   0,   1, 0, '/extensions/contexts',              'Contexts'),
+  (163,   1, 0,   0, 254, 0, 5100, '/textdb-translations',              'TextDB Translations'),
+  (164, 101, 0,   0,   1, 0, 1000, '/extensions/contexts',              'Contexts'),
   -- German translations, sys_language_uid = 1. l10n_source is set to l10n_parent.
-  (170,   0, 1,   1,   1, 0, '/',                                 'Demo-Projekt'),
-  (171,   1, 1, 101,   1, 0, '/erweiterungen',                    'Erweiterungen'),
-  (172,   1, 1,   6,   1, 0, '/inhaltsbeispiele',                 'Inhaltsbeispiele'),
-  (173,   1, 1,  66,   1, 0, '/seitenlayouts',                    'Seitenlayouts'),
-  (174,   1, 1,  84,   1, 0, '/seitenbeispiele',                  'Seitenbeispiele'),
-  (175,   1, 1,  92,   1, 0, '/kontakt',                          'Kontakt'),
-  (176,   1, 1,  93,   1, 0, '/anmelden',                         'Anmelden'),
-  (177,   1, 1,  96,   1, 0, '/datenschutz',                      'Datenschutzerklärung'),
+  (170,   0, 1,   1,   1, 0,  256, '/',                                 'Demo-Projekt'),
+  (171,   1, 1, 101,   1, 0,  525, '/erweiterungen',                    'Erweiterungen'),
+  (172,   1, 1,   6,   1, 0,  522, '/inhaltsbeispiele',                 'Inhaltsbeispiele'),
+  (173,   1, 1,  66,   1, 0,  520, '/seitenlayouts',                    'Seitenlayouts'),
+  (174,   1, 1,  84,   1, 0,  530, '/seitenbeispiele',                  'Seitenbeispiele'),
+  (175,   1, 1,  92,   1, 0,  536, '/kontakt',                          'Kontakt'),
+  (176,   1, 1,  93,   1, 0,  540, '/anmelden',                         'Anmelden'),
+  (177,   1, 1,  96,   1, 0,  568, '/datenschutz',                      'Datenschutzerklärung'),
   -- 178 translates a doktype 4 shortcut; shortcut_mode is left to the INSERT.
-  (178,   1, 1, 132,   4, 0, '/startseite',                       'Startseite'),
-  (179, 101, 1, 164,   1, 0, '/erweiterungen/kontexte',           'Kontexte'),
-  (180, 101, 1, 160,   1, 0, '/erweiterungen/textdb',             'TextDB'),
-  (181, 101, 1, 161,   1, 0, '/erweiterungen/bilder-sitemap',     'Bilder-Sitemap'),
-  (182, 101, 1, 162,   1, 0, '/erweiterungen/scheduler-toolkit',  'Scheduler-Toolkit');
+  (178,   1, 1, 132,   4, 0,  512, '/startseite',                       'Startseite'),
+  (179, 101, 1, 164,   1, 0, 1000, '/erweiterungen/kontexte',           'Kontexte'),
+  (180, 101, 1, 160,   1, 0, 1100, '/erweiterungen/textdb',             'TextDB'),
+  (181, 101, 1, 161,   1, 0, 1200, '/erweiterungen/bilder-sitemap',     'Bilder-Sitemap'),
+  (182, 101, 1, 162,   1, 0, 1300, '/erweiterungen/scheduler-toolkit',  'Scheduler-Toolkit');
 
 DROP TEMPORARY TABLE IF EXISTS seed_expected_content;
 CREATE TEMPORARY TABLE seed_expected_content (
@@ -1979,43 +2108,47 @@ CREATE TEMPORARY TABLE seed_expected_content (
     l18n_parent      int unsigned NOT NULL,
     colpos           int          NOT NULL,
     hidden           tinyint      NOT NULL,
+    -- See seed_expected_pages.sorting. This is the column that put content 605
+    -- (sorting 100) behind 606 and 607 on the live Contexts page, where an
+    -- earlier run had left it at 256.
+    sorting          int          NOT NULL,
     ctype            varchar(255) NOT NULL,
     header           varchar(255) NOT NULL
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---                     uid  pid  legacy_pid  lang  l18n_parent  colPos  hidden  CType  header
+--                     uid  pid  legacy_pid  lang  l18n_parent  colPos  hidden  sorting  CType  header
 INSERT INTO seed_expected_content VALUES
-  (400, 102, NULL, 0,   0, 0, 0, 'html',              'RTE CKEditor Image'),
-  (401, 103, NULL, 0,   0, 0, 0, 'html',              'AI Cowriter'),
-  (402, 104, NULL, 0,   0, 0, 0, 'html',              'NR LLM — AI Foundation for TYPO3'),
-  (403, 105, NULL, 0,   0, 0, 0, 'html',              'AI Landing Page Generator'),
-  (404, 106, NULL, 0,   0, 0, 0, 'html',              'Passwordless Backend Login with Passkeys'),
-  (405, 107, NULL, 0,   0, 0, 0, 'html',              'NR Vault — Secure Secrets Management'),
-  (406, 108, NULL, 0,   0, 0, 0, 'html',              'Automatic Cache Invalidation for Timed Content'),
-  (407, 109, NULL, 0,   0, 0, 0, 'html',              'Passkey-First Frontend Authentication'),
-  (409, 111, NULL, 0,   0, 0, 0, 'html',              'Repurpose Existing Content With AI'),
-  (410, 101, NULL, 0,   0, 0, 0, 'html',              'Netresearch TYPO3 Extensions'),
-  (522, 157, NULL, 0,   0, 0, 0, 'html',              'Conversational AI in the TYPO3 Backend'),
-  (601, 102, NULL, 0,   0, 0, 0, 'text',              'Click-to-Enlarge (Lightbox) — Live Demo'),
-  (602, 158, NULL, 0,   0, 0, 0, 'html',              ''),
-  (603, 158, NULL, 0,   0, 0, 0, 'nraisearch_search', 'AI Search'),
-  (604, 158, NULL, 0,   0, 0, 0, 'nraisearch_chat',   'AI Chat'),
+  (400, 102, NULL, 0,   0, 0, 0, 100, 'html',              'RTE CKEditor Image'),
+  (401, 103, NULL, 0,   0, 0, 0, 100, 'html',              'AI Cowriter'),
+  (402, 104, NULL, 0,   0, 0, 0, 100, 'html',              'NR LLM — AI Foundation for TYPO3'),
+  (403, 105, NULL, 0,   0, 0, 0, 100, 'html',              'AI Landing Page Generator'),
+  (404, 106, NULL, 0,   0, 0, 0, 100, 'html',              'Passwordless Backend Login with Passkeys'),
+  (405, 107, NULL, 0,   0, 0, 0, 100, 'html',              'NR Vault — Secure Secrets Management'),
+  (406, 108, NULL, 0,   0, 0, 0, 100, 'html',              'Automatic Cache Invalidation for Timed Content'),
+  (407, 109, NULL, 0,   0, 0, 0, 100, 'html',              'Passkey-First Frontend Authentication'),
+  (409, 111, NULL, 0,   0, 0, 0, 100, 'html',              'Repurpose Existing Content With AI'),
+  (410, 101, NULL, 0,   0, 0, 0, 100, 'html',              'Netresearch TYPO3 Extensions'),
+  (522, 157, NULL, 0,   0, 0, 0, 100, 'html',              'Conversational AI in the TYPO3 Backend'),
+  (601, 102, NULL, 0,   0, 0, 0, 150, 'text',              'Click-to-Enlarge (Lightbox) — Live Demo'),
+  (602, 158, NULL, 0,   0, 0, 0, 100, 'html',              ''),
+  (603, 158, NULL, 0,   0, 0, 0, 200, 'nraisearch_search', 'AI Search'),
+  (604, 158, NULL, 0,   0, 0, 0, 300, 'nraisearch_chat',   'AI Chat'),
   -- 605-607 and 620-622 were created at pid 159 before the Contexts page moved
   -- to uid 164; legacy_pid re-points any row an earlier run left behind.
-  (605, 164,  159, 0,   0, 0, 0, 'html',              'Contexts'),
-  (606, 164,  159, 0,   0, 0, 0, 'text',              'Mobile channel'),
-  (607, 164,  159, 0,   0, 0, 0, 'text',              'Default channel'),
-  (608, 160, NULL, 0,   0, 0, 0, 'html',              'TextDB'),
-  (609, 161, NULL, 0,   0, 0, 0, 'html',              'Image Sitemap'),
-  (610, 162, NULL, 0,   0, 0, 0, 'html',              'Scheduler Toolkit'),
+  (605, 164,  159, 0,   0, 0, 0, 100, 'html',              'Contexts'),
+  (606, 164,  159, 0,   0, 0, 0, 200, 'text',              'Mobile channel'),
+  (607, 164,  159, 0,   0, 0, 0, 300, 'text',              'Default channel'),
+  (608, 160, NULL, 0,   0, 0, 0, 100, 'html',              'TextDB'),
+  (609, 161, NULL, 0,   0, 0, 0, 100, 'html',              'Image Sitemap'),
+  (610, 162, NULL, 0,   0, 0, 0, 100, 'html',              'Scheduler Toolkit'),
   -- German translations, sys_language_uid = 1. l10n_source is set to l18n_parent.
-  (620, 164,  159, 1, 605, 0, 0, 'html',              'Kontexte'),
-  (621, 164,  159, 1, 606, 0, 0, 'text',              'Mobiler Kanal'),
-  (622, 164,  159, 1, 607, 0, 0, 'text',              'Standardkanal'),
-  (623, 160, NULL, 1, 608, 0, 0, 'html',              'TextDB'),
-  (624, 161, NULL, 1, 609, 0, 0, 'html',              'Bilder-Sitemap'),
-  (625, 162, NULL, 1, 610, 0, 0, 'html',              'Scheduler-Toolkit'),
-  (626, 101, NULL, 1, 410, 0, 0, 'html',              'Netresearch-Erweiterungen für TYPO3');
+  (620, 164,  159, 1, 605, 0, 0, 100, 'html',              'Kontexte'),
+  (621, 164,  159, 1, 606, 0, 0, 200, 'text',              'Mobiler Kanal'),
+  (622, 164,  159, 1, 607, 0, 0, 300, 'text',              'Standardkanal'),
+  (623, 160, NULL, 1, 608, 0, 0, 100, 'html',              'TextDB'),
+  (624, 161, NULL, 1, 609, 0, 0, 100, 'html',              'Bilder-Sitemap'),
+  (625, 162, NULL, 1, 610, 0, 0, 100, 'html',              'Scheduler-Toolkit'),
+  (626, 101, NULL, 1, 410, 0, 0, 100, 'html',              'Netresearch-Erweiterungen für TYPO3');
 
 -- --- Historical repair: content left behind on an abandoned pid ---------------
 -- Runs before the generic re-assert, which can only match a row that is already
@@ -2047,6 +2180,7 @@ UPDATE pages p
        p.l10n_parent      = e.l10n_parent,
        p.l10n_source      = e.l10n_parent,
        p.hidden           = e.hidden,
+       p.sorting          = e.sorting,
        p.deleted          = 0;
 
 -- --- Re-assert the content elements -------------------------------------------
@@ -2063,6 +2197,7 @@ UPDATE tt_content c
        c.l18n_parent      = e.l18n_parent,
        c.l10n_source      = e.l18n_parent,
        c.hidden           = e.hidden,
+       c.sorting          = e.sorting,
        c.deleted          = 0;
 
 -- --- Verification -------------------------------------------------------------
