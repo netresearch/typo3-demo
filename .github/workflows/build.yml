@@ -19,29 +19,23 @@ permissions:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          lfs: true
-
-      - uses: docker/setup-buildx-action@bb05f3f5519dd87d3ba754cc423b652a5edd6d2c # v4.2.0
-
-      - uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - uses: docker/bake-action@d3418bd7d0e9324001bca92fa8ba175ea7e6dc9b # v7.3.0
-        env:
-          GIT_SHA: ${{ github.sha }}
-          COMPOSER_AUTH: '{"github-oauth": {"github.com": "${{ secrets.GITHUB_TOKEN }}"}, "http-basic": {"git.netresearch.de": {"username": "oauth2", "password": "${{ secrets.GITLAB_COMPOSER_TOKEN }}"}}}'
-        with:
-          push: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-          set: |
-            *.cache-from=type=gha
-            *.cache-to=type=gha,mode=max
+    uses: netresearch/.github/.github/workflows/build-container-bake.yml@main
+    permissions:
+      contents: read
+      packages: write
+      security-events: write
+      id-token: write
+    with:
+      # Build the local LFS checkout (docker-bake.hcl target "web" has
+      # context "."); push only on main. GIT_SHA feeds the HCL sha tag.
+      # Trivy scan stays off to match the previous inline build.
+      bake-source: .
+      lfs: true
+      push: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+      scan: false
+      pre-build-command: echo "GIT_SHA=$GITHUB_SHA" >> "$GITHUB_ENV"
+    secrets:
+      COMPOSER_AUTH: '{"github-oauth": {"github.com": "${{ secrets.GITHUB_TOKEN }}"}, "http-basic": {"git.netresearch.de": {"username": "oauth2", "password": "${{ secrets.GITLAB_COMPOSER_TOKEN }}"}}}'
 
   validate:
     runs-on: ubuntu-latest
