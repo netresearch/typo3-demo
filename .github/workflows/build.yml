@@ -5,6 +5,10 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  # Required by the merge queue: `build` is a required check, and a required
+  # check that never reports on a merge group is treated as failed once
+  # check_response_timeout_minutes elapses, ejecting every queued entry.
+  merge_group:
   # Manual re-trigger: rebuilds the image so dev-main VCS deps (e.g.
   # netresearch/nr-ai-search) are re-resolved without a code change on main.
   workflow_dispatch:
