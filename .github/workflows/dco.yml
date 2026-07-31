@@ -1,0 +1,26 @@
+name: DCO
+
+# Replaces the probot DCO app as the *enforced* sign-off gate.
+#
+# The app reacts to pull_request events only, so it can never report on a
+# merge_group. A merge queue treats a required check that has not reported by
+# check_response_timeout_minutes as failed and ejects the entry — meaning the
+# app cannot be a required check on a queue-enabled branch. This reusable can:
+# on merge_group it reads the group's base_sha..head_sha range.
+#
+# The app stays installed and keeps posting its own advisory "DCO" check; only
+# the ruleset's required context moves to this workflow.
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  merge_group:
+
+permissions: {}
+
+jobs:
+  dco:
+    uses: netresearch/.github/.github/workflows/dco.yml@main # NOSONAR — own-org reusable deliberately tracks main
+    permissions:
+      contents: read
+      pull-requests: read
