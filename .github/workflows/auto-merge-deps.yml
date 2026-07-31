@@ -5,9 +5,22 @@ on:
     types: [opened, synchronize, reopened]
 
 # Thin caller of the shared reusable: approval + the merge gate are maintained
-# centrally in netresearch/.github. This repo has no required status checks, so
-# the reusable takes its self-gating path (waits for the other checks itself,
-# then merges) rather than GitHub-native auto-merge.
+# centrally in netresearch/.github.
+#
+# `main` has required status checks (`build`, `dco / DCO`) and a merge queue, so
+# the reusable takes the GitHub-native path: it arms auto-merge and the queue
+# does the merging. Two consequences worth knowing before touching this file.
+#
+# The command returns before the merge happens. `gh pr merge --auto` only
+# enqueues; the PR stays OPEN while the queue builds it, and only then merges.
+# Anything asserting "merged" must poll for `state == MERGED`, never the exit
+# code.
+#
+# The queue is also what makes these merges reach the instance. A merge pushed
+# with GITHUB_TOKEN does not trigger `push` workflows, so before the queue
+# existed an auto-merged dependency PR landed on `main` without a Build and
+# therefore without a deploy — the nr-vault ^0.12 security bump sat there until
+# it was rebuilt by hand. The queue's merge does fire the push event.
 permissions: {}
 
 jobs:
