@@ -239,6 +239,26 @@ services:
         height: 'medium'
         width: 'medium'
 
+  dashboard.widget.nrdemo.browserai:
+    class: 'Netresearch\DemoSite\Widgets\DemoExtensionCardWidget'
+    arguments:
+      $options:
+        description: 'An assistant that answers questions about the page a visitor is reading, using Chrome''s built-in Gemini Nano on that visitor''s own device. No API key, no server-side call, no chat history, no telemetry — and nothing metered, which is why its demo page is public where AI Search is not.'
+        howTo:
+          - 'Open the "Browser AI" demo page in the frontend at /extensions/browser-ai.'
+          - 'Without Chrome 148+ and the downloaded model you get the fallback card, which is an ordinary content element the editor picked — that is the point, and it is what most visitors will see.'
+          - 'With a supported Chrome, set the model up once, then ask something the page answers and something it does not, to see the grounding hold.'
+          - 'In the backend, edit the content element to change its title, introduction, editor instruction, context selector and fallback.'
+    tags:
+      - name: 'dashboard.widget'
+        identifier: 'nrdemo.browserai'
+        groupNames: 'netresearch'
+        title: 'NR Browser AI'
+        description: 'On-device page assistant, no API key and no server call'
+        iconIdentifier: 'actions-comment'
+        height: 'medium'
+        width: 'medium'
+
   dashboard.widget.nrdemo.imageoptimize:
     class: 'Netresearch\DemoSite\Widgets\DemoExtensionCardWidget'
     arguments:

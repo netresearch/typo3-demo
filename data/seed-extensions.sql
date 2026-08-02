@@ -2641,6 +2641,150 @@ ON DUPLICATE KEY UPDATE
                 VALUES(bodytext), bodytext);
 
 -- =============================================================================
+-- Browser AI (nr_browser_ai) — on-device assistant, frontend showcase page
+-- =============================================================================
+-- Unlike the AI Search page (uid 158) this one is PUBLIC. nr_browser_ai runs
+-- entirely in the visitor's browser through Chrome's Prompt API: no API key, no
+-- server-side call, nothing metered. The cost exposure that keeps uid 158 hidden
+-- does not exist here.
+--
+-- Most visitors will not have Chrome 148+ with the model downloaded and will see
+-- the fallback instead. That is why fallbackMode is contentElement and not none:
+-- an explaining card is a better demo than a bare "not supported" line, and it
+-- exercises the extension's fallback feature at the same time.
+--
+-- The extension's TypoScript reaches this site through the netresearch/browser-ai
+-- set, listed in the demo site package's own set. Without that dependency the
+-- content element below would render as TYPO3's "no rendering definition" error,
+-- because this instance has no sys_template to include a static template from.
+
+INSERT IGNORE INTO pages (uid, pid, tstamp, crdate, title, slug, doktype, sorting, hidden, deleted)
+VALUES (9003, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'Browser AI', '/extensions/browser-ai', 1, 1400, 0, 0);
+
+INSERT INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
+VALUES (9215, 9003, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', '',
+'<div class="card border-0 mb-4" style="background: #f8f9fa;">
+  <div class="card-body py-4">
+    <h1 class="h3 fw-bold mb-3">Browser AI</h1>
+    <p class="mb-2" style="max-width: 720px;">Ask a question about this page and have it answered on your own device. nr_browser_ai hands the text of the page to Chrome&rsquo;s built-in Gemini Nano through the Prompt API and grounds every answer in that text alone &mdash; no API key, no request to a server, no chat history, no telemetry.</p>
+    <p class="text-muted mb-0" style="font-size: 0.9rem; max-width: 720px;">Runtime note: this needs Chrome 148 or newer, about 22 GB of free storage for the model, and either a GPU with more than 4 GB of VRAM or 16 GB of RAM with four CPU cores. Every other browser sees the fallback card instead &mdash; an ordinary content element the editor selected, which is the mechanism any site would use.</p>
+  </div>
+</div>', 0, 100, 0, 0)
+ON DUPLICATE KEY UPDATE
+  bodytext = IF(pid = VALUES(pid) AND CType = VALUES(CType) AND header = VALUES(header),
+                VALUES(bodytext), bodytext);
+
+-- The plugin. contextSelector stays at the shipped default 'main', which is the
+-- element Bootstrap Package renders the page content into on this site.
+INSERT INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, pi_flexform, colPos, sorting, hidden, deleted)
+VALUES (9216, 9003, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'nrbrowserai_assistant', 'Browser AI', '',
+'<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<T3FlexForms>
+    <data>
+        <sheet index="sDEF">
+            <language index="lDEF">
+                <field index="settings.title">
+                    <value index="vDEF">Ask this page</value>
+                </field>
+                <field index="settings.introduction">
+                    <value index="vDEF">Questions are answered from the text of this page only, and everything happens on your device.</value>
+                </field>
+                <field index="settings.supplementalInstruction">
+                    <value index="vDEF">Keep answers to three sentences at most.</value>
+                </field>
+                <field index="settings.contextSelector">
+                    <value index="vDEF">main</value>
+                </field>
+                <field index="settings.fallbackMode">
+                    <value index="vDEF">contentElement</value>
+                </field>
+                <field index="settings.fallbackContent">
+                    <value index="vDEF">tt_content_9217</value>
+                </field>
+            </language>
+        </sheet>
+    </data>
+</T3FlexForms>', 0, 200, 0, 0)
+ON DUPLICATE KEY UPDATE
+  pi_flexform = IF(pid = VALUES(pid) AND CType = VALUES(CType) AND header = VALUES(header),
+                   VALUES(pi_flexform), pi_flexform);
+
+-- colPos 99, and enabled rather than hidden. The extension renders the fallback
+-- through TYPO3's RECORDS object, which applies enable fields — a hidden record
+-- would never reach the visitor. No backend layout on this site uses colPos 99,
+-- so the record stays out of the normal page flow and appears under "Unused
+-- elements" in the page module, where an editor can see how it is wired.
+INSERT INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
+VALUES (9217, 9003, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', '',
+'<div class="alert alert-light border" role="alert">
+  <p class="mb-2"><strong style="color: #2F99A4;">Browser AI is not available in this browser.</strong></p>
+  <p class="mb-0" style="font-size: 0.9rem;">The assistant runs entirely on the visitor&rsquo;s device and needs Chrome 148 or newer with the built-in Gemini Nano model downloaded. This box is a plain content element the editor picked as the fallback, so a visitor without the feature still gets something useful. See the <a href="https://github.com/netresearch/t3x-nr-browser-ai/blob/main/Documentation/User/BrowserSetup.rst">browser setup guide</a>, or the <a href="https://netresearch.github.io/t3x-nr-browser-ai/">standalone live demo</a>.</p>
+</div>', 99, 300, 0, 0)
+ON DUPLICATE KEY UPDATE
+  bodytext = IF(pid = VALUES(pid) AND CType = VALUES(CType) AND header = VALUES(header),
+                VALUES(bodytext), bodytext);
+
+-- --- Deutsche Übersetzung ----------------------------------------------------
+INSERT IGNORE INTO pages (uid, pid, tstamp, crdate, sys_language_uid, l10n_parent, l10n_source, title, nav_title, slug, doktype, sorting, hidden, deleted)
+VALUES (9112, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 9003, 9003, 'Browser-KI', 'Browser-KI', '/erweiterungen/browser-ki', 1, 1400, 0, 0);
+
+INSERT INTO tt_content (uid, pid, tstamp, crdate, sys_language_uid, l18n_parent, l10n_source, CType, header, bodytext, colPos, sorting, hidden, deleted)
+VALUES (9218, 9003, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 9215, 9215, 'html', '',
+'<div class="card border-0 mb-4" style="background: #f8f9fa;">
+  <div class="card-body py-4">
+    <h1 class="h3 fw-bold mb-3">Browser-KI</h1>
+    <p class="mb-2" style="max-width: 720px;">Stellen Sie eine Frage zu dieser Seite und lassen Sie sie auf Ihrem eigenen Gerät beantworten. nr_browser_ai übergibt den Text der Seite über die Prompt API an das in Chrome eingebaute Gemini Nano und stützt jede Antwort ausschließlich auf diesen Text &mdash; kein API-Schlüssel, keine Anfrage an einen Server, kein Gesprächsverlauf, keine Telemetrie.</p>
+    <p class="text-muted mb-0" style="font-size: 0.9rem; max-width: 720px;">Hinweis zum Betrieb: Voraussetzung sind Chrome 148 oder neuer, rund 22 GB freier Speicher für das Modell sowie entweder eine GPU mit mehr als 4 GB VRAM oder 16 GB RAM mit vier CPU-Kernen. Jeder andere Browser bekommt stattdessen die Fallback-Karte zu sehen &mdash; ein gewöhnliches Inhaltselement, das die Redaktion ausgewählt hat, also genau der Weg, den jede Website gehen würde.</p>
+  </div>
+</div>', 0, 100, 0, 0)
+ON DUPLICATE KEY UPDATE
+  bodytext = IF(pid = VALUES(pid) AND CType = VALUES(CType) AND header = VALUES(header),
+                VALUES(bodytext), bodytext);
+
+INSERT INTO tt_content (uid, pid, tstamp, crdate, sys_language_uid, l18n_parent, l10n_source, CType, header, bodytext, pi_flexform, colPos, sorting, hidden, deleted)
+VALUES (9219, 9003, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 9216, 9216, 'nrbrowserai_assistant', 'Browser-KI', '',
+'<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<T3FlexForms>
+    <data>
+        <sheet index="sDEF">
+            <language index="lDEF">
+                <field index="settings.title">
+                    <value index="vDEF">Diese Seite fragen</value>
+                </field>
+                <field index="settings.introduction">
+                    <value index="vDEF">Fragen werden ausschließlich aus dem Text dieser Seite beantwortet, und alles geschieht auf Ihrem Gerät.</value>
+                </field>
+                <field index="settings.supplementalInstruction">
+                    <value index="vDEF">Antworte in höchstens drei Sätzen.</value>
+                </field>
+                <field index="settings.contextSelector">
+                    <value index="vDEF">main</value>
+                </field>
+                <field index="settings.fallbackMode">
+                    <value index="vDEF">contentElement</value>
+                </field>
+                <field index="settings.fallbackContent">
+                    <value index="vDEF">tt_content_9220</value>
+                </field>
+            </language>
+        </sheet>
+    </data>
+</T3FlexForms>', 0, 200, 0, 0)
+ON DUPLICATE KEY UPDATE
+  pi_flexform = IF(pid = VALUES(pid) AND CType = VALUES(CType) AND header = VALUES(header),
+                   VALUES(pi_flexform), pi_flexform);
+
+INSERT INTO tt_content (uid, pid, tstamp, crdate, sys_language_uid, l18n_parent, l10n_source, CType, header, bodytext, colPos, sorting, hidden, deleted)
+VALUES (9220, 9003, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 9217, 9217, 'html', '',
+'<div class="alert alert-light border" role="alert">
+  <p class="mb-2"><strong style="color: #2F99A4;">Browser-KI steht in diesem Browser nicht zur Verfügung.</strong></p>
+  <p class="mb-0" style="font-size: 0.9rem;">Der Assistent läuft vollständig auf dem Gerät der Besucherin oder des Besuchers und setzt Chrome 148 oder neuer mit heruntergeladenem Gemini-Nano-Modell voraus. Dieser Kasten ist ein gewöhnliches Inhaltselement, das die Redaktion als Fallback ausgewählt hat &mdash; so bekommt auch ohne die Funktion jemand etwas Brauchbares zu sehen. Siehe die <a href="https://github.com/netresearch/t3x-nr-browser-ai/blob/main/Documentation/User/BrowserSetup.rst">Anleitung zur Browser-Einrichtung</a> oder die <a href="https://netresearch.github.io/t3x-nr-browser-ai/">eigenständige Live-Demo</a>.</p>
+</div>', 99, 300, 0, 0)
+ON DUPLICATE KEY UPDATE
+  bodytext = IF(pid = VALUES(pid) AND CType = VALUES(CType) AND header = VALUES(header),
+                VALUES(bodytext), bodytext);
+
+-- =============================================================================
 -- uid band high-water sentinel — KEEP THIS BLOCK BEFORE THE RE-ASSERT BLOCK
 -- =============================================================================
 -- One placeholder row per table at the very top of the reserved band (uid 9999).
@@ -2841,7 +2985,11 @@ INSERT INTO seed_expected_pages VALUES
   (9108, 101, 1, 109,   1, 0,  510, 0, '', 0, '/erweiterungen/passkeys-frontend',    'Passkeys (Frontend)',   'Passkeys (Frontend)'),
   (9109, 101, 1, 111,   1, 0,  900, 0, '', 0, '/erweiterungen/repurpose',            'Content Repurpose',     'Content Repurpose'),
   (9110, 101, 1, 157,   1, 0,  800, 0, '', 0, '/erweiterungen/ki-chat-agent',        'KI-Chat-Agent',         'KI-Chat-Agent'),
-  (9111, 101, 1, 158,   1, 1,  800, 0, '', 0, '/erweiterungen/ki-suche',             'KI-Suche',              'KI-Suche');
+  (9111, 101, 1, 158,   1, 1,  800, 0, '', 0, '/erweiterungen/ki-suche',             'KI-Suche',              'KI-Suche'),
+  -- Browser AI is public: it runs on the visitor's device and meters nothing,
+  -- so the cost exposure that keeps uid 158 hidden does not apply.
+  (9003, 101, 0,    0,  1, 0, 1400, 0, '', 0, '/extensions/browser-ai',              'Browser AI',            ''),
+  (9112, 101, 1, 9003,  1, 0, 1400, 0, '', 0, '/erweiterungen/browser-ki',           'Browser-KI',            'Browser-KI');
 
 DROP TEMPORARY TABLE IF EXISTS seed_expected_content;
 CREATE TEMPORARY TABLE seed_expected_content (
@@ -2915,7 +3063,16 @@ INSERT INTO seed_expected_content VALUES
   -- hidden flag, which is what keeps the paid widgets off the public site.
   (9212, 158, NULL, 1, 602, 0, 0, 100, 'html',              ''),
   (9213, 158, NULL, 1, 603, 0, 0, 200, 'nraisearch_search', 'KI-Suche'),
-  (9214, 158, NULL, 1, 604, 0, 0, 300, 'nraisearch_chat',   'KI-Chat');
+  (9214, 158, NULL, 1, 604, 0, 0, 300, 'nraisearch_chat',   'KI-Chat'),
+  -- Browser AI, public page 9003. 9217 and 9220 are the fallback cards on
+  -- colPos 99: enabled, because the RECORDS object that renders them applies
+  -- enable fields, and off the page flow because no layout uses that column.
+  (9215, 9003, NULL, 0,    0,  0, 0, 100, 'html',                  ''),
+  (9216, 9003, NULL, 0,    0,  0, 0, 200, 'nrbrowserai_assistant', 'Browser AI'),
+  (9217, 9003, NULL, 0,    0, 99, 0, 300, 'html',                  ''),
+  (9218, 9003, NULL, 1, 9215,  0, 0, 100, 'html',                  ''),
+  (9219, 9003, NULL, 1, 9216,  0, 0, 200, 'nrbrowserai_assistant', 'Browser-KI'),
+  (9220, 9003, NULL, 1, 9217, 99, 0, 300, 'html',                  '');
 
 -- --- Historical repair: content left behind on an abandoned pid ---------------
 -- Runs before the generic re-assert, which can only match a row that is already

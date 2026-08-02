@@ -12,3 +12,7 @@ dependencies:
   # netresearch/image-sitemap: registers the seo_sitemap_images PAGE object
   # (typeNum 1642072014). Depends on typo3/seo-sitemap itself.
   - netresearch/image-sitemap
+  # netresearch/browser-ai: the tt_content.nrbrowserai_assistant rendering
+  # definition plus the assistant's script and stylesheet. Same reason as
+  # netresearch/contexts above.
+  - netresearch/browser-ai
