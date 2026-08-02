@@ -2677,7 +2677,7 @@ ON DUPLICATE KEY UPDATE
 -- The plugin. contextSelector stays at the shipped default 'main', which is the
 -- element Bootstrap Package renders the page content into on this site.
 INSERT INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, pi_flexform, colPos, sorting, hidden, deleted)
-VALUES (9216, 9003, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'nrbrowserai_assistant', 'Browser AI', '',
+VALUES (9216, 9003, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'nrbrowserai_assistant', 'Try it on this page', '',
 '<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <T3FlexForms>
     <data>
@@ -2742,7 +2742,7 @@ ON DUPLICATE KEY UPDATE
                 VALUES(bodytext), bodytext);
 
 INSERT INTO tt_content (uid, pid, tstamp, crdate, sys_language_uid, l18n_parent, l10n_source, CType, header, bodytext, pi_flexform, colPos, sorting, hidden, deleted)
-VALUES (9219, 9003, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 9216, 9216, 'nrbrowserai_assistant', 'Browser-KI', '',
+VALUES (9219, 9003, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 9216, 9216, 'nrbrowserai_assistant', 'Auf dieser Seite ausprobieren', '',
 '<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <T3FlexForms>
     <data>
@@ -3068,10 +3068,10 @@ INSERT INTO seed_expected_content VALUES
   -- colPos 99: enabled, because the RECORDS object that renders them applies
   -- enable fields, and off the page flow because no layout uses that column.
   (9215, 9003, NULL, 0,    0,  0, 0, 100, 'html',                  ''),
-  (9216, 9003, NULL, 0,    0,  0, 0, 200, 'nrbrowserai_assistant', 'Browser AI'),
+  (9216, 9003, NULL, 0,    0,  0, 0, 200, 'nrbrowserai_assistant', 'Try it on this page'),
   (9217, 9003, NULL, 0,    0, 99, 0, 300, 'html',                  ''),
   (9218, 9003, NULL, 1, 9215,  0, 0, 100, 'html',                  ''),
-  (9219, 9003, NULL, 1, 9216,  0, 0, 200, 'nrbrowserai_assistant', 'Browser-KI'),
+  (9219, 9003, NULL, 1, 9216,  0, 0, 200, 'nrbrowserai_assistant', 'Auf dieser Seite ausprobieren'),
   (9220, 9003, NULL, 1, 9217, 99, 0, 300, 'html',                  '');
 
 -- --- Historical repair: content left behind on an abandoned pid ---------------
