@@ -26,6 +26,7 @@ return [
             'nrdemo.rteimage',
             'nrdemo.repurpose',
             'nrdemo.aisearch',
+            'nrdemo.browserai',
             'nrdemo.passkeysbe',
             'nrdemo.passkeysfe',
             'nrdemo.vault',

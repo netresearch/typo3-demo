@@ -19,6 +19,7 @@ host pulls and updates itself. There is no manual server editing.
 | `netresearch/nr-passkeys-fe` | Passkey login for frontend users | Web › FE Passkeys |
 | `netresearch/nr-repurpose` | Turn a page/PDF into a podcast, diagram and story | Web › Repurpose |
 | `netresearch/nr-landingpage` | AI-generated landing pages from reusable templates | Web › Landing Pages |
+| `netresearch/nr-browser-ai` | On-device page assistant via Chrome's built-in AI, no API key and no server call | (content element on `/extensions/browser-ai`) |
 | `netresearch/t3-cowriter` | AI writing assistant inside CKEditor | Tools › Cowriter Status |
 | `netresearch/nr-temporal-cache` | Time-based page-cache invalidation | Tools › Temporal Cache |
 | `netresearch/rte-ckeditor-image` | Image support inside the RTE | (RTE toolbar) |
