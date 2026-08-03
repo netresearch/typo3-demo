@@ -2720,6 +2720,12 @@ VALUES (9216, 9003, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'nrbrowserai_assistant',
                 <field index="settings.showConfiguration">
                     <value index="vDEF">1</value>
                 </field>
+                <field index="settings.notFoundMode">
+                    <value index="vDEF">contentElement</value>
+                </field>
+                <field index="settings.notFoundContent">
+                    <value index="vDEF">tt_content_9223</value>
+                </field>
                 <field index="settings.fallbackMode">
                     <value index="vDEF">contentElement</value>
                 </field>
@@ -2822,6 +2828,21 @@ ON DUPLICATE KEY UPDATE
   bodytext = IF(pid = VALUES(pid) AND CType = VALUES(CType) AND header = VALUES(header),
                 VALUES(bodytext), bodytext);
 
+
+-- The card shown when the assistant reports that this page does not answer the
+-- question. Same column and the same reasoning as the browser fallback above:
+-- the plugin renders it through the RECORDS object, so it must stay enabled,
+-- and no page layout outputs colPos 99.
+INSERT INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
+VALUES (9223, 9003, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', '',
+'<div class="alert alert-light border" role="alert">
+  <p class="mb-2"><strong style="color: #2F99A4;">That is not on this page.</strong></p>
+  <p class="mb-0" style="font-size: 0.9rem;">The assistant answers from this page alone, so it declines rather than inventing something. This box is what an editor can put in place of that refusal &mdash; here, two places worth trying: the <a href="/search">site search</a> covers every page, and the <a href="/contact">contact page</a> reaches a person. On your own site this would be whatever actually helps.</p>
+</div>', 99, 400, 0, 0)
+ON DUPLICATE KEY UPDATE
+  bodytext = IF(pid = VALUES(pid) AND CType = VALUES(CType) AND header = VALUES(header),
+                VALUES(bodytext), bodytext);
+
 -- --- Deutsche Übersetzung ----------------------------------------------------
 INSERT IGNORE INTO pages (uid, pid, tstamp, crdate, sys_language_uid, l10n_parent, l10n_source, title, nav_title, slug, doktype, sorting, hidden, deleted)
 VALUES (9112, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 9003, 9003, 'Browser-KI', 'Browser-KI', '/erweiterungen/browser-ki', 1, 1400, 0, 0);
@@ -2860,6 +2881,12 @@ VALUES (9219, 9003, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 9216, 9216, 'nrbrowse
                 </field>
                 <field index="settings.showConfiguration">
                     <value index="vDEF">1</value>
+                </field>
+                <field index="settings.notFoundMode">
+                    <value index="vDEF">contentElement</value>
+                </field>
+                <field index="settings.notFoundContent">
+                    <value index="vDEF">tt_content_9224</value>
                 </field>
                 <field index="settings.fallbackMode">
                     <value index="vDEF">contentElement</value>
@@ -2908,6 +2935,17 @@ UPDATE be_dashboards
  WHERE title = 'Netresearch Demo'
    AND JSON_VALID(widgets)
    AND JSON_SEARCH(widgets, 'one', 'nrdemo.browserai') IS NULL;
+
+
+INSERT INTO tt_content (uid, pid, tstamp, crdate, sys_language_uid, l18n_parent, l10n_source, CType, header, bodytext, colPos, sorting, hidden, deleted)
+VALUES (9224, 9003, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 9223, 9223, 'html', '',
+'<div class="alert alert-light border" role="alert">
+  <p class="mb-2"><strong style="color: #2F99A4;">Das steht nicht auf dieser Seite.</strong></p>
+  <p class="mb-0" style="font-size: 0.9rem;">Der Assistent antwortet ausschließlich aus dieser Seite und lehnt deshalb ab, statt sich etwas auszudenken. Dieser Kasten ist das, was die Redaktion anstelle der Absage zeigen kann &mdash; hier zwei Anlaufstellen: die <a href="/de/suche">Suche</a> erfasst alle Seiten, die <a href="/de/kontakt">Kontaktseite</a> führt zu einem Menschen. Auf Ihrer eigenen Website stünde hier, was tatsächlich weiterhilft.</p>
+</div>', 99, 400, 0, 0)
+ON DUPLICATE KEY UPDATE
+  bodytext = IF(pid = VALUES(pid) AND CType = VALUES(CType) AND header = VALUES(header),
+                VALUES(bodytext), bodytext);
 
 -- =============================================================================
 -- uid band high-water sentinel — KEEP THIS BLOCK BEFORE THE RE-ASSERT BLOCK
@@ -3199,7 +3237,9 @@ INSERT INTO seed_expected_content VALUES
   (9219, 9003, NULL, 1, 9216,  0, 0, 200, 'nrbrowserai_assistant', 'Auf dieser Seite ausprobieren'),
   (9220, 9003, NULL, 1, 9217, 99, 0, 300, 'html',                  ''),
   (9221, 9003, NULL, 0,    0,  0, 0, 250, 'html',                  ''),
-  (9222, 9003, NULL, 1, 9221,  0, 0, 250, 'html',                  '');
+  (9222, 9003, NULL, 1, 9221,  0, 0, 250, 'html',                  ''),
+  (9223, 9003, NULL, 0,    0, 99, 0, 400, 'html',                  ''),
+  (9224, 9003, NULL, 1, 9223, 99, 0, 400, 'html',                  '');
 
 -- --- Historical repair: content left behind on an abandoned pid ---------------
 -- Runs before the generic re-assert, which can only match a row that is already
