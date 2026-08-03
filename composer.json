@@ -46,7 +46,7 @@
     "hn/typo3-mcp-server": "^0.4",
     "lochmueller/index": "^2.2",
     "netresearch/nr-ai-search": "dev-main",
-    "netresearch/nr-browser-ai": "^0.3",
+    "netresearch/nr-browser-ai": "^0.4",
     "netresearch/typo3-demo-site": "@dev",
     "netresearch/nr-repurpose": "^0.3",
     "thieleundklose/autotranslate": "^3.2",
