@@ -31,7 +31,9 @@ jobs:
       # Trivy scan stays off to match the previous inline build.
       bake-source: .
       lfs: true
-      push: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+      # workflow_dispatch exists to rebuild and republish the image — without
+      # push the manual rebuild produced an image that never left the runner.
+      push: ${{ (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main' }}
       scan: false
       pre-build-command: echo "GIT_SHA=$GITHUB_SHA" >> "$GITHUB_ENV"
       # NRS-4588 phase 1: merge the declared Composer SBOM (from the committed
