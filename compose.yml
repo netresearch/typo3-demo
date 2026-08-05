@@ -107,7 +107,7 @@ services:
           memory: 1G
 
   db:
-    image: mariadb:12
+    image: mariadb:12@sha256:759869cb6f003234a95c6384cdee245b4bce7de26913fe607a8110362c0c007d
     logging: *default-logging
     environment:
       MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD:-root}
@@ -132,7 +132,7 @@ services:
           memory: 512M
 
   valkey:
-    image: valkey/valkey:9-alpine
+    image: valkey/valkey:9-alpine@sha256:ee91f7a174ac4d6a6b0685b3a60e321f0a9dbbb691f9b0e285be2ba1d1be8328
     logging: *default-logging
     healthcheck:
       test: ["CMD", "valkey-cli", "ping"]
@@ -149,7 +149,7 @@ services:
           memory: 128M
 
   caddy:
-    image: caddy:2-alpine
+    image: caddy:2-alpine@sha256:5f5c8640aae01df9654968d946d8f1a56c497f1dd5c5cda4cf95ab7c14d58648
     logging: *default-logging
     ports:
       - "${CADDY_HTTP_PORT:-80}:80"
