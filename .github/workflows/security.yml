@@ -29,11 +29,12 @@ jobs:
     with:
       skip-composer-audit: true
 
-  # Composer dependency audit (NRS-4587, SBOM Phase 0). The repo commits no
-  # composer.lock, so the lock is resolved first (metadata only, no dists,
-  # no scripts) and then audited. COMPOSER_AUTH matches build.yml: the GitHub
-  # token for the two public GitHub VCS repos (API rate limit), the GitLab
-  # token for the private git.netresearch.de source of nr-ai-search.
+  # Composer dependency audit. Since NRS-4588 the repo commits composer.lock,
+  # so the audit reads the same resolution the image and the declared SBOM are
+  # built from — no ad-hoc resolve, and no COMPOSER_AUTH needed here. The
+  # validate step is the freshness gate: it exits non-zero when composer.json
+  # was changed without refreshing the lock, which would decouple the image
+  # contents from the SBOM.
   composer-audit:
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -51,10 +52,8 @@ jobs:
           php-version: '8.5'
           coverage: none
 
-      - name: Resolve lock file
-        env:
-          COMPOSER_AUTH: '{"github-oauth": {"github.com": "${{ secrets.GITHUB_TOKEN }}"}, "http-basic": {"git.netresearch.de": {"username": "oauth2", "password": "${{ secrets.GITLAB_COMPOSER_TOKEN }}"}}}'
-        run: composer update --no-install --no-progress --no-interaction
+      - name: Verify composer.lock is in sync with composer.json
+        run: composer validate --no-check-publish
 
       - name: Run Composer audit
         run: composer audit --locked --format=plain --abandoned=report

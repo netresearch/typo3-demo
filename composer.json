@@ -55,7 +55,12 @@
   "repositories": [
     {
       "type": "path",
-      "url": "packages/*"
+      "url": "packages/*",
+      "options": {
+        "versions": {
+          "netresearch/typo3-demo-site": "1.0.0"
+        }
+      }
     },
     {
       "type": "vcs",
