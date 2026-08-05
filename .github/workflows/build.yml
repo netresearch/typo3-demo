@@ -34,8 +34,30 @@ jobs:
       push: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
       scan: false
       pre-build-command: echo "GIT_SHA=$GITHUB_SHA" >> "$GITHUB_ENV"
+      # NRS-4588 phase 1: merge the declared Composer SBOM (from the committed
+      # composer.lock) with the Syft image scan and attach it to the digest as
+      # a Cosign CycloneDX attestation. Only runs where push is true.
+      sbom-attest: true
     secrets:
       COMPOSER_AUTH: '{"github-oauth": {"github.com": "${{ secrets.GITHUB_TOKEN }}"}, "http-basic": {"git.netresearch.de": {"username": "oauth2", "password": "${{ secrets.GITLAB_COMPOSER_TOKEN }}"}}}'
+
+  # GitHub-issued SBOM attestation on top of the Cosign one, verifiable with
+  # `gh attestation verify oci://<image>@<digest> --owner netresearch`. Separate
+  # reusable because it needs `attestations: write`, which build-container-bake
+  # deliberately does not require. Guarded by the same condition as the `push`
+  # input above: without a pushed image there is no digest to attest, and the
+  # reusable fails rather than no-ops.
+  attest-sbom:
+    needs: build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    uses: netresearch/.github/.github/workflows/attest-sbom.yml@main
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+      attestations: write
+    with:
+      bake-metadata: ${{ needs.build.outputs.bake-metadata }}
 
   validate:
     runs-on: ubuntu-latest
