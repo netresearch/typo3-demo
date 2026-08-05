@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM composer:2 AS composer-builder
+FROM composer:2@sha256:4d71c3c2109c61d5415544264b59ad4087e4c5b7244481723664138fd36d5040 AS composer-builder
 WORKDIR /app
 ARG COMPOSER_AUTH
 COPY composer.json composer.lock* ./
@@ -13,7 +13,7 @@ RUN composer install --no-dev --prefer-dist --no-interaction --ignore-platform-r
 COPY docker/web/patch-lochmueller-index.php /tmp/patch-lochmueller-index.php
 RUN php /tmp/patch-lochmueller-index.php && rm -f /tmp/patch-lochmueller-index.php
 
-FROM php:8.5-fpm-alpine AS runtime
+FROM php:8.5-fpm-alpine@sha256:9dc81f4086ea5402227a6bcc489b04b4baba12394624d9621faa92ed812fb8ee AS runtime
 RUN apk add --no-cache --virtual .build-deps \
         freetype-dev libjpeg-turbo-dev libpng-dev libzip-dev icu-dev linux-headers $PHPIZE_DEPS \
     && apk add --no-cache \

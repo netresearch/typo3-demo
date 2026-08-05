@@ -17,15 +17,44 @@ jobs:
       contents: read
       pull-requests: write
 
-  composer-audit:
+  sast:
     uses: netresearch/typo3-ci-workflows/.github/workflows/security.yml@main
-    # The reusable runs `composer install` on a hosted runner with only the
-    # default GitHub token; it has no input/secret to pass COMPOSER_AUTH, so it
-    # cannot authenticate to the private git.netresearch.de source that provides
-    # netresearch/nr-ai-search (an internal-only extension, never on Packagist).
-    # Skipping only the Composer dependency audit keeps the rest of the reusable
-    # (Opengrep SAST) and the sibling gitleaks/dependency-review jobs running.
-    # The image build (build.yml) is the authoritative dependency-resolution
-    # gate and does carry the GitLab token via GITLAB_COMPOSER_TOKEN.
+    # The reusable's own Composer-audit job runs `composer install` on a hosted
+    # runner with only the default GitHub token; it has no input/secret to pass
+    # COMPOSER_AUTH, so it cannot authenticate to the private git.netresearch.de
+    # source that provides netresearch/nr-ai-search (an internal-only extension,
+    # never on Packagist). Its audit therefore stays skipped here; the dedicated
+    # composer-audit job below runs the audit with the same COMPOSER_AUTH the
+    # image build uses. This call keeps the reusable's Opengrep SAST running.
     with:
       skip-composer-audit: true
+
+  # Composer dependency audit (NRS-4587, SBOM Phase 0). The repo commits no
+  # composer.lock, so the lock is resolved first (metadata only, no dists,
+  # no scripts) and then audited. COMPOSER_AUTH matches build.yml: the GitHub
+  # token for the two public GitHub VCS repos (API rate limit), the GitLab
+  # token for the private git.netresearch.de source of nr-ai-search.
+  composer-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # 2.37.2
+        with:
+          php-version: '8.5'
+          coverage: none
+
+      - name: Resolve lock file
+        env:
+          COMPOSER_AUTH: '{"github-oauth": {"github.com": "${{ secrets.GITHUB_TOKEN }}"}, "http-basic": {"git.netresearch.de": {"username": "oauth2", "password": "${{ secrets.GITLAB_COMPOSER_TOKEN }}"}}}'
+        run: composer update --no-install --no-progress --no-interaction
+
+      - name: Run Composer audit
+        run: composer audit --locked --format=plain --abandoned=report
