@@ -51,7 +51,8 @@ jobs:
   # reusable fails rather than no-ops.
   attest-sbom:
     needs: build
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    # Same condition as the push input above — a dispatch rebuild pushes too.
+    if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
     uses: netresearch/.github/.github/workflows/attest-sbom.yml@main
     permissions:
       contents: read
@@ -59,7 +60,10 @@ jobs:
       id-token: write
       attestations: write
     with:
-      bake-metadata: ${{ needs.build.outputs.bake-metadata }}
+      # subjects, not bake-metadata: GitHub masks the raw metadata output away
+      # entirely when it matches a secret (tokens in build args), which
+      # silently emptied the attest matrix (run 31057574829).
+      subjects: ${{ needs.build.outputs.sbom-subjects }}
 
   validate:
     runs-on: ubuntu-latest
