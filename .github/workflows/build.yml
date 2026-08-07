@@ -41,7 +41,10 @@ jobs:
       # a Cosign CycloneDX attestation. Only runs where push is true.
       sbom-attest: true
     secrets:
-      COMPOSER_AUTH: '{"github-oauth": {"github.com": "${{ secrets.GITHUB_TOKEN }}"}, "http-basic": {"git.netresearch.de": {"username": "oauth2", "password": "${{ secrets.GITLAB_COMPOSER_TOKEN }}"}}}'
+      # gitlab-token, not http-basic: GITLAB_COMPOSER_TOKEN is a project access
+      # token, and GitLab's API only accepts those via the PRIVATE-TOKEN header
+      # (basic auth answers 404) — gitlab-token makes Composer send exactly that.
+      COMPOSER_AUTH: '{"github-oauth": {"github.com": "${{ secrets.GITHUB_TOKEN }}"}, "gitlab-token": {"git.netresearch.de": "${{ secrets.GITLAB_COMPOSER_TOKEN }}"}}'
 
   # GitHub-issued SBOM attestation on top of the Cosign one, verifiable with
   # `gh attestation verify oci://<image>@<digest> --owner netresearch`. Separate
