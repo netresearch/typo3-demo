@@ -147,13 +147,16 @@ config {
         201 = TEXT
         201.value (
             <style>
-            /* Felogin frame — clean card with solid teal top accent */
+            /* Felogin frame — clean card with solid teal top accent.
+               The header (h3) and the intro message render directly inside
+               .frame-inner, outside .nr-passkeys-fe-card, so the frame needs
+               its own padding or they sit flush against the card edge. */
             .frame-type-felogin_login > .frame-group-container > .frame-group-inner > .frame-container > .frame-inner {
                 background: #fff;
                 border: 1px solid rgba(0,0,0,0.06);
                 border-top: 3px solid #2F99A4;
                 border-radius: .75rem;
-                padding: 0;
+                padding: 1.5rem;
                 box-shadow: 0 1px 4px rgba(0,0,0,0.04);
                 overflow: hidden;
             }
