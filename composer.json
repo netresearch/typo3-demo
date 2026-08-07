@@ -83,6 +83,9 @@
     "platform": {
       "php": "8.5"
     },
+    "gitlab-domains": [
+      "git.netresearch.de"
+    ],
     "sort-packages": true
   },
   "extra": {
