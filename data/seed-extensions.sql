@@ -90,7 +90,7 @@ VALUES (400, 102, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'RTE CKEditor Imag
   <div class="col-md-4">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body text-center py-4">
-        <h6 class="fw-bold" style="font-size: 0.88rem;">Block Images</h6>
+        <h6 class="fw-bold" style="font-size: 1rem;">Block Images</h6>
         <p class="text-muted mb-0" style="font-size: 0.78rem;">Standalone images with captions and alignment. Processed as TYPO3 images with responsive srcset.</p>
       </div>
     </div>
@@ -98,7 +98,7 @@ VALUES (400, 102, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'RTE CKEditor Imag
   <div class="col-md-4">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body text-center py-4">
-        <h6 class="fw-bold" style="font-size: 0.88rem;">Inline Images</h6>
+        <h6 class="fw-bold" style="font-size: 1rem;">Inline Images</h6>
         <p class="text-muted mb-0" style="font-size: 0.78rem;">Images that flow naturally within text — icons, logos, and small illustrations inline with content.</p>
       </div>
     </div>
@@ -106,7 +106,7 @@ VALUES (400, 102, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'RTE CKEditor Imag
   <div class="col-md-4">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body text-center py-4">
-        <h6 class="fw-bold" style="font-size: 0.88rem;">Click-to-Enlarge</h6>
+        <h6 class="fw-bold" style="font-size: 1rem;">Click-to-Enlarge</h6>
         <p class="text-muted mb-0" style="font-size: 0.78rem;">Lightbox popup via <code>data-htmlarea-zoom</code>. Click any image to view full resolution.</p>
       </div>
     </div>
@@ -116,13 +116,13 @@ VALUES (400, 102, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'RTE CKEditor Imag
 <h2 class="fw-bold mb-3" style="font-size: 1.2rem;">Live Demos</h2>
 
 <h3 class="fw-bold mb-2" style="font-size: 1rem;">Block Image</h3>
-<p class="text-muted mb-2" style="font-size: 0.88rem;">A standalone image inserted via CKEditor — rendered with responsive srcset:</p>
+<p class="text-muted mb-2" style="font-size: 1rem;">A standalone image inserted via CKEditor — rendered with responsive srcset:</p>
 <p><img src="/fileadmin/user_upload/images/Home/CH5_7354.jpg" alt="Team photo demo" width="800" data-htmlarea-file-uid="190" data-htmlarea-file-table="sys_file"></p>
 
 <h3 class="fw-bold mb-2 mt-4" style="font-size: 1rem;">Inline Image in Text</h3>
-<p style="font-size: 0.88rem;">Text can contain inline images like this <img class="image image-inline" src="/fileadmin/user_upload/images/netresearch-typo3-demo.png" alt="inline logo" width="60" data-htmlarea-file-uid="1" data-htmlarea-file-table="sys_file"> logo that flows naturally within the paragraph.</p>
+<p style="font-size: 1rem;">Text can contain inline images like this <img class="image image-inline" src="/fileadmin/user_upload/images/netresearch-typo3-demo.png" alt="inline logo" width="60" data-htmlarea-file-uid="1" data-htmlarea-file-table="sys_file"> logo that flows naturally within the paragraph.</p>
 
-<div class="alert alert-light border mt-4" role="alert" style="font-size: 0.82rem;">
+<div class="alert alert-light border mt-4" role="alert" style="font-size: 1rem;">
   <strong style="color: #2F99A4;">For integrators:</strong> Edit this page in the TYPO3 backend to see the CKEditor image toolbar button in action. All images above are inserted via CKEditor, not the standard image content element.
 </div>',
 0, 100, 0, 0)
@@ -138,7 +138,7 @@ ON DUPLICATE KEY UPDATE
 -- Free uid above the base-dump tt_content max (522).
 INSERT INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
 VALUES (601, 102, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'text', 'Click-to-Enlarge (Lightbox) — Live Demo',
-'<p class="text-muted mb-2" style="font-size: 0.88rem;">Click the image below to see the zoom popup. Because this is a regular Text element, its rich text is processed by <code>lib.parseFunc_RTE</code>, so rte_ckeditor_image turns the <code>data-htmlarea-zoom</code> image into a click-to-enlarge link:</p>
+'<p class="text-muted mb-2" style="font-size: 1rem;">Click the image below to see the zoom popup. Because this is a regular Text element, its rich text is processed by <code>lib.parseFunc_RTE</code>, so rte_ckeditor_image turns the <code>data-htmlarea-zoom</code> image into a click-to-enlarge link:</p>
 <p><img src="/fileadmin/user_upload/images/Home/CH5_7203.jpg" alt="Click to enlarge" width="400" data-htmlarea-file-uid="188" data-htmlarea-file-table="sys_file" data-htmlarea-zoom="true"></p>',
 0, 150, 0, 0)
 ON DUPLICATE KEY UPDATE
@@ -171,52 +171,52 @@ VALUES (401, 103, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'AI Cowriter',
   <div class="col-md-4">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Rewrite &amp; Rephrase</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;">Change tone from formal to casual, simplify complex text, or rephrase for clarity — all without leaving the editor.</p>
+        <h6 class="fw-bold" style="font-size: 1rem; color: #2F99A4;">Rewrite &amp; Rephrase</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;">Change tone from formal to casual, simplify complex text, or rephrase for clarity — all without leaving the editor.</p>
       </div>
     </div>
   </div>
   <div class="col-md-4">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Summarize &amp; Extend</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;">Condense long articles into key points, or expand bullet points into full paragraphs with context.</p>
+        <h6 class="fw-bold" style="font-size: 1rem; color: #2F99A4;">Summarize &amp; Extend</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;">Condense long articles into key points, or expand bullet points into full paragraphs with context.</p>
       </div>
     </div>
   </div>
   <div class="col-md-4">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Translate &amp; Fix</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;">Translate between languages or fix grammar and spelling mistakes. Custom tasks with configurable prompts.</p>
+        <h6 class="fw-bold" style="font-size: 1rem; color: #2F99A4;">Translate &amp; Fix</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;">Translate between languages or fix grammar and spelling mistakes. Custom tasks with configurable prompts.</p>
       </div>
     </div>
   </div>
 </div>
 
 <div class="rounded-3 p-3 mb-4" style="background: #f8f9fa;">
-  <h5 class="fw-bold mb-3" style="font-size: 0.95rem;">How it works</h5>
+  <h5 class="fw-bold mb-3" style="font-size: 1rem;">How it works</h5>
   <div class="d-flex flex-column gap-2">
     <div class="d-flex align-items-start gap-2">
       <span class="badge rounded-circle text-white flex-shrink-0 d-flex align-items-center justify-content-center" style="width: 24px; height: 24px; font-size: 0.7rem; background: #2F99A4;">1</span>
-      <span style="font-size: 0.84rem;">Configure an LLM provider in the <a href="/extensions/nr-llm/" style="color: #2F99A4;">NR LLM</a> backend module</span>
+      <span style="font-size: 1rem;">Configure an LLM provider in the <a href="/extensions/nr-llm/" style="color: #2F99A4;">NR LLM</a> backend module</span>
     </div>
     <div class="d-flex align-items-start gap-2">
       <span class="badge rounded-circle text-white flex-shrink-0 d-flex align-items-center justify-content-center" style="width: 24px; height: 24px; font-size: 0.7rem; background: #2F99A4;">2</span>
-      <span style="font-size: 0.84rem;">Select text in CKEditor and click the Cowriter toolbar button</span>
+      <span style="font-size: 1rem;">Select text in CKEditor and click the Cowriter toolbar button</span>
     </div>
     <div class="d-flex align-items-start gap-2">
       <span class="badge rounded-circle text-white flex-shrink-0 d-flex align-items-center justify-content-center" style="width: 24px; height: 24px; font-size: 0.7rem; background: #2F99A4;">3</span>
-      <span style="font-size: 0.84rem;">Choose a task (Rewrite, Summarize, Translate, etc.) or write a custom prompt</span>
+      <span style="font-size: 1rem;">Choose a task (Rewrite, Summarize, Translate, etc.) or write a custom prompt</span>
     </div>
     <div class="d-flex align-items-start gap-2">
       <span class="badge rounded-circle text-white flex-shrink-0 d-flex align-items-center justify-content-center" style="width: 24px; height: 24px; font-size: 0.7rem; background: #FF4D00;">4</span>
-      <span style="font-size: 0.84rem;">Review the AI suggestion and apply it with one click</span>
+      <span style="font-size: 1rem;">Review the AI suggestion and apply it with one click</span>
     </div>
   </div>
 </div>
 
-<div class="alert alert-light border" role="alert" style="font-size: 0.82rem;">
+<div class="alert alert-light border" role="alert" style="font-size: 1rem;">
   <strong style="color: #2F99A4;">Try it:</strong> Edit this page in the TYPO3 backend to see the Cowriter button in the CKEditor toolbar.
 </div>',
 0, 100, 0, 0)
@@ -250,38 +250,38 @@ VALUES (402, 104, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'NR LLM — AI Fou
   <div class="col-md-6">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem; color: #585961;">Provider Management</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;">Configure Ollama, OpenAI, Anthropic, Google, or custom API endpoints. Switch providers without touching extension code.</p>
+        <h6 class="fw-bold" style="font-size: 1rem; color: #585961;">Provider Management</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;">Configure Ollama, OpenAI, Anthropic, Google, or custom API endpoints. Switch providers without touching extension code.</p>
       </div>
     </div>
   </div>
   <div class="col-md-6">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem; color: #585961;">Model Registry</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;">Manage available models with temperature, token limits, and context window settings. Assign models to specific tasks.</p>
+        <h6 class="fw-bold" style="font-size: 1rem; color: #585961;">Model Registry</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;">Manage available models with temperature, token limits, and context window settings. Assign models to specific tasks.</p>
       </div>
     </div>
   </div>
   <div class="col-md-6">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem; color: #585961;">Task Templates</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;">Reusable prompt templates shared across extensions. Define system prompts, output formats, and constraints once.</p>
+        <h6 class="fw-bold" style="font-size: 1rem; color: #585961;">Task Templates</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;">Reusable prompt templates shared across extensions. Define system prompts, output formats, and constraints once.</p>
       </div>
     </div>
   </div>
   <div class="col-md-6">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem; color: #585961;">Backend Module</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;">Visual management of all LLM resources under Admin Tools &gt; LLM. Test prompts, monitor usage, configure profiles.</p>
+        <h6 class="fw-bold" style="font-size: 1rem; color: #585961;">Backend Module</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;">Visual management of all LLM resources under Admin Tools &gt; LLM. Test prompts, monitor usage, configure profiles.</p>
       </div>
     </div>
   </div>
 </div>
 
-<div class="alert alert-light border" role="alert" style="font-size: 0.82rem;">
+<div class="alert alert-light border" role="alert" style="font-size: 1rem;">
   <strong style="color: #585961;">Powers:</strong> <a href="/extensions/cowriter/" style="color: #2F99A4;">AI Cowriter</a> and <a href="/extensions/landing-page/" style="color: #2F99A4;">Landing Page Generator</a> both use NR LLM for their AI capabilities.
 </div>',
 0, 100, 0, 0)
@@ -315,22 +315,22 @@ VALUES (403, 105, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'AI Landing Page G
   <div class="col-md-6">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Structured Output</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;">AI generates real TYPO3 content elements — hero sections, feature grids, text blocks, and contact forms. Not just text blobs.</p>
+        <h6 class="fw-bold" style="font-size: 1rem; color: #2F99A4;">Structured Output</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;">AI generates real TYPO3 content elements — hero sections, feature grids, text blocks, and contact forms. Not just text blobs.</p>
       </div>
     </div>
   </div>
   <div class="col-md-6">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Backend Wizard</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;">Visual wizard under Web &gt; Landing Pages. Enter your brief, choose a template, review the result, and publish.</p>
+        <h6 class="fw-bold" style="font-size: 1rem; color: #2F99A4;">Backend Wizard</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;">Visual wizard under Web &gt; Landing Pages. Enter your brief, choose a template, review the result, and publish.</p>
       </div>
     </div>
   </div>
 </div>
 
-<div class="alert alert-light border" role="alert" style="font-size: 0.82rem;">
+<div class="alert alert-light border" role="alert" style="font-size: 1rem;">
   <strong style="color: #2F99A4;">Requires:</strong> <a href="/extensions/nr-llm/" style="color: #2F99A4;">NR LLM</a> with a configured provider. Access the wizard in the TYPO3 backend under Web &gt; Landing Pages.
 </div>',
 0, 100, 0, 0)
@@ -364,38 +364,38 @@ VALUES (404, 106, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'Passwordless Back
   <div class="col-md-6">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem;">Per-Group Enforcement</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;">Four levels: <strong>Off</strong>, <strong>Encourage</strong> (nudge on login), <strong>Required</strong> (grace period), <strong>Enforced</strong> (immediate). Configure per backend user group.</p>
+        <h6 class="fw-bold" style="font-size: 1rem;">Per-Group Enforcement</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;">Four levels: <strong>Off</strong>, <strong>Encourage</strong> (nudge on login), <strong>Required</strong> (grace period), <strong>Enforced</strong> (immediate). Configure per backend user group.</p>
       </div>
     </div>
   </div>
   <div class="col-md-6">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem;">Adoption Dashboard</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;">Track passkey rollout across all backend users. See who has registered, who needs nudging, and overall adoption rates.</p>
+        <h6 class="fw-bold" style="font-size: 1rem;">Adoption Dashboard</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;">Track passkey rollout across all backend users. See who has registered, who needs nudging, and overall adoption rates.</p>
       </div>
     </div>
   </div>
   <div class="col-md-6">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem;">Multi-Device Support</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;">Register passkeys on laptop, phone, and security keys. Manage all credentials under User Settings &gt; Passkeys.</p>
+        <h6 class="fw-bold" style="font-size: 1rem;">Multi-Device Support</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;">Register passkeys on laptop, phone, and security keys. Manage all credentials under User Settings &gt; Passkeys.</p>
       </div>
     </div>
   </div>
   <div class="col-md-6">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem;">Interstitial Prompts</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;">Configurable enrollment prompts after password login. Encourage adoption gradually or enforce immediately.</p>
+        <h6 class="fw-bold" style="font-size: 1rem;">Interstitial Prompts</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;">Configurable enrollment prompts after password login. Encourage adoption gradually or enforce immediately.</p>
       </div>
     </div>
   </div>
 </div>
 
-<p class="text-muted" style="font-size: 0.82rem;">See also: <a href="/extensions/passkeys-fe/" style="color: #2F99A4; font-weight: 600;">Passkeys (Frontend)</a> for frontend user authentication.</p>',
+<p class="text-muted" style="font-size: 1rem;">See also: <a href="/extensions/passkeys-fe/" style="color: #2F99A4; font-weight: 600;">Passkeys (Frontend)</a> for frontend user authentication.</p>',
 0, 100, 0, 0)
 ON DUPLICATE KEY UPDATE
   bodytext = IF(pid = VALUES(pid) AND CType = VALUES(CType) AND header = VALUES(header),
@@ -428,60 +428,60 @@ VALUES (407, 109, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'Passkey-First Fro
   <div class="col-md-6">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem;">Passkey-First Login</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;">Tabbed felogin override: Passkey tab is default, password tab as fallback. Discoverable credentials via browser autofill.</p>
+        <h6 class="fw-bold" style="font-size: 1rem;">Passkey-First Login</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;">Tabbed felogin override: Passkey tab is default, password tab as fallback. Discoverable credentials via browser autofill.</p>
       </div>
     </div>
   </div>
   <div class="col-md-6">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem;">Management Plugin</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;">Frontend plugin for users to register, rename, and remove passkeys. Recovery codes for account access if all keys are lost.</p>
+        <h6 class="fw-bold" style="font-size: 1rem;">Management Plugin</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;">Frontend plugin for users to register, rename, and remove passkeys. Recovery codes for account access if all keys are lost.</p>
       </div>
     </div>
   </div>
   <div class="col-md-6">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem;">Zero Template Work</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;">Drop-in felogin override. Passkey tab, management UI, and enrollment prompts work out of the box. No Fluid templates to write.</p>
+        <h6 class="fw-bold" style="font-size: 1rem;">Zero Template Work</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;">Drop-in felogin override. Passkey tab, management UI, and enrollment prompts work out of the box. No Fluid templates to write.</p>
       </div>
     </div>
   </div>
   <div class="col-md-6">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem;">Recovery Codes</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;">One-time recovery codes for account access if all passkeys are lost. Generate, download, and manage via frontend UI.</p>
+        <h6 class="fw-bold" style="font-size: 1rem;">Recovery Codes</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;">One-time recovery codes for account access if all passkeys are lost. Generate, download, and manage via frontend UI.</p>
       </div>
     </div>
   </div>
 </div>
 
 <div class="rounded-3 p-3 mb-4" style="background: #f8f9fa;">
-  <h5 class="fw-bold mb-3" style="font-size: 0.95rem;">How it works</h5>
+  <h5 class="fw-bold mb-3" style="font-size: 1rem;">How it works</h5>
   <div class="d-flex flex-column gap-2">
     <div class="d-flex align-items-start gap-2">
       <span class="badge rounded-circle text-white flex-shrink-0 d-flex align-items-center justify-content-center" style="width: 24px; height: 24px; font-size: 0.7rem; background: #2F99A4;">1</span>
-      <span style="font-size: 0.84rem;"><code>composer require netresearch/nr-passkeys-fe</code></span>
+      <span style="font-size: 1rem;"><code>composer require netresearch/nr-passkeys-fe</code></span>
     </div>
     <div class="d-flex align-items-start gap-2">
       <span class="badge rounded-circle text-white flex-shrink-0 d-flex align-items-center justify-content-center" style="width: 24px; height: 24px; font-size: 0.7rem; background: #2F99A4;">2</span>
-      <span style="font-size: 0.84rem;">Add the passkey management plugin to a protected page</span>
+      <span style="font-size: 1rem;">Add the passkey management plugin to a protected page</span>
     </div>
     <div class="d-flex align-items-start gap-2">
       <span class="badge rounded-circle text-white flex-shrink-0 d-flex align-items-center justify-content-center" style="width: 24px; height: 24px; font-size: 0.7rem; background: #2F99A4;">3</span>
-      <span style="font-size: 0.84rem;">Felogin gets a passkey tab automatically — users see biometric login first</span>
+      <span style="font-size: 1rem;">Felogin gets a passkey tab automatically — users see biometric login first</span>
     </div>
     <div class="d-flex align-items-start gap-2">
       <span class="badge rounded-circle text-white flex-shrink-0 d-flex align-items-center justify-content-center" style="width: 24px; height: 24px; font-size: 0.7rem; background: #FF4D00;">4</span>
-      <span style="font-size: 0.84rem;">Users register passkeys and log in with fingerprint, face, or security key</span>
+      <span style="font-size: 1rem;">Users register passkeys and log in with fingerprint, face, or security key</span>
     </div>
   </div>
 </div>
 
-<p class="text-muted" style="font-size: 0.82rem;">See also: <a href="/extensions/passkeys-be/" style="color: #2F99A4; font-weight: 600;">Passkeys (Backend)</a> for backend user authentication.</p>',
+<p class="text-muted" style="font-size: 1rem;">See also: <a href="/extensions/passkeys-be/" style="color: #2F99A4; font-weight: 600;">Passkeys (Backend)</a> for backend user authentication.</p>',
 0, 100, 0, 0)
 ON DUPLICATE KEY UPDATE
   bodytext = IF(pid = VALUES(pid) AND CType = VALUES(CType) AND header = VALUES(header),
@@ -513,32 +513,32 @@ VALUES (405, 107, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'NR Vault — Secu
   <div class="col-md-6">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem;">Envelope Encryption</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;">Each secret encrypted with its own data key, wrapped by a master key. Industry-standard envelope encryption pattern.</p>
+        <h6 class="fw-bold" style="font-size: 1rem;">Envelope Encryption</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;">Each secret encrypted with its own data key, wrapped by a master key. Industry-standard envelope encryption pattern.</p>
       </div>
     </div>
   </div>
   <div class="col-md-6">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem;">Access Control</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;">Scope secrets to extensions, backend user groups, or environments. Granular permissions for who can read what.</p>
+        <h6 class="fw-bold" style="font-size: 1rem;">Access Control</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;">Scope secrets to extensions, backend user groups, or environments. Granular permissions for who can read what.</p>
       </div>
     </div>
   </div>
   <div class="col-md-6">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem;">CLI &amp; Backend Module</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;"><code>vault:init</code>, <code>vault:store</code>, <code>vault:retrieve</code>, <code>vault:rotate</code> — manage secrets via CLI or the visual backend module.</p>
+        <h6 class="fw-bold" style="font-size: 1rem;">CLI &amp; Backend Module</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;"><code>vault:init</code>, <code>vault:store</code>, <code>vault:retrieve</code>, <code>vault:rotate</code> — manage secrets via CLI or the visual backend module.</p>
       </div>
     </div>
   </div>
   <div class="col-md-6">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem;">Audit &amp; Rotation</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;">Full audit trail of who accessed which secret and when. Rotate master keys without re-encrypting all secrets.</p>
+        <h6 class="fw-bold" style="font-size: 1rem;">Audit &amp; Rotation</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;">Full audit trail of who accessed which secret and when. Rotate master keys without re-encrypting all secrets.</p>
       </div>
     </div>
   </div>
@@ -574,22 +574,22 @@ VALUES (406, 108, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'Automatic Cache I
   <div class="col-md-6">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem;">Automatic Invalidation</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;">Cache clears precisely when content becomes visible or expires. No more stale pages showing hidden content.</p>
+        <h6 class="fw-bold" style="font-size: 1rem;">Automatic Invalidation</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;">Cache clears precisely when content becomes visible or expires. No more stale pages showing hidden content.</p>
       </div>
     </div>
   </div>
   <div class="col-md-6">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem;">Flexible Scoping</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;">Invalidate single pages, page trees, or all pages. Scheduler-based or on-demand cache clearing strategies.</p>
+        <h6 class="fw-bold" style="font-size: 1rem;">Flexible Scoping</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;">Invalidate single pages, page trees, or all pages. Scheduler-based or on-demand cache clearing strategies.</p>
       </div>
     </div>
   </div>
 </div>
 
-<div class="alert alert-light border" role="alert" style="font-size: 0.82rem;">
+<div class="alert alert-light border" role="alert" style="font-size: 1rem;">
   <strong style="color: #585961;">Zero config:</strong> Works transparently with all content types that use TYPO3 starttime/endtime fields. Install and forget.
 </div>',
 0, 100, 0, 0)
@@ -630,38 +630,38 @@ VALUES (522, 157, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'Conversational AI
   <div class="col-md-6">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Tool-Grounded Answers</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;">Every response is grounded in what the MCP tools actually return — pages, records, backend users, extensions, and logs — instead of guessing.</p>
+        <h6 class="fw-bold" style="font-size: 1rem; color: #2F99A4;">Tool-Grounded Answers</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;">Every response is grounded in what the MCP tools actually return — pages, records, backend users, extensions, and logs — instead of guessing.</p>
       </div>
     </div>
   </div>
   <div class="col-md-6">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Reads &amp; Acts</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;">Look up a record, inspect a failing log entry, or change content directly from the conversation — the agent calls the right tool for you.</p>
+        <h6 class="fw-bold" style="font-size: 1rem; color: #2F99A4;">Reads &amp; Acts</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;">Look up a record, inspect a failing log entry, or change content directly from the conversation — the agent calls the right tool for you.</p>
       </div>
     </div>
   </div>
   <div class="col-md-6">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Built on NR LLM</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;">Uses the provider, model, and task templates configured in <a href="/extensions/nr-llm/" style="color: #2F99A4;">NR LLM</a>. No separate AI setup required.</p>
+        <h6 class="fw-bold" style="font-size: 1rem; color: #2F99A4;">Built on NR LLM</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;">Uses the provider, model, and task templates configured in <a href="/extensions/nr-llm/" style="color: #2F99A4;">NR LLM</a>. No separate AI setup required.</p>
       </div>
     </div>
   </div>
   <div class="col-md-6">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Speaks Your Language</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;">Replies in the language you write in and never impersonates another vendor — it is the Netresearch Backend AI Chat.</p>
+        <h6 class="fw-bold" style="font-size: 1rem; color: #2F99A4;">Speaks Your Language</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;">Replies in the language you write in and never impersonates another vendor — it is the Netresearch Backend AI Chat.</p>
       </div>
     </div>
   </div>
 </div>
 
-<div class="alert alert-light border" role="alert" style="font-size: 0.82rem;">
+<div class="alert alert-light border" role="alert" style="font-size: 1rem;">
   <strong style="color: #2F99A4;">Try it:</strong> Open the AI Chat from the TYPO3 backend module (Admin Tools / Web) and ask it about this installation.
 </div>',
 0, 100, 0, 0)
@@ -695,38 +695,38 @@ VALUES (409, 111, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'Repurpose Existin
   <div class="col-md-6">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Reuse What You Have</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;">Start from an existing page and generate derived formats — no need to re-enter the source content by hand.</p>
+        <h6 class="fw-bold" style="font-size: 1rem; color: #2F99A4;">Reuse What You Have</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;">Start from an existing page and generate derived formats — no need to re-enter the source content by hand.</p>
       </div>
     </div>
   </div>
   <div class="col-md-6">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Channel-Ready Variants</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;">Produce short social copy, concise summaries, and alternative phrasings tuned for different audiences and channels.</p>
+        <h6 class="fw-bold" style="font-size: 1rem; color: #2F99A4;">Channel-Ready Variants</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;">Produce short social copy, concise summaries, and alternative phrasings tuned for different audiences and channels.</p>
       </div>
     </div>
   </div>
   <div class="col-md-6">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Built on NR LLM</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;">Uses the provider and models configured in <a href="/extensions/nr-llm/" style="color: #2F99A4;">NR LLM</a>, so repurposing follows your central AI setup.</p>
+        <h6 class="fw-bold" style="font-size: 1rem; color: #2F99A4;">Built on NR LLM</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;">Uses the provider and models configured in <a href="/extensions/nr-llm/" style="color: #2F99A4;">NR LLM</a>, so repurposing follows your central AI setup.</p>
       </div>
     </div>
   </div>
   <div class="col-md-6">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Editor Workflow</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;">Review and refine the AI output before it goes anywhere. You stay in control of what gets published.</p>
+        <h6 class="fw-bold" style="font-size: 1rem; color: #2F99A4;">Editor Workflow</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;">Review and refine the AI output before it goes anywhere. You stay in control of what gets published.</p>
       </div>
     </div>
   </div>
 </div>
 
-<div class="alert alert-light border" role="alert" style="font-size: 0.82rem;">
+<div class="alert alert-light border" role="alert" style="font-size: 1rem;">
   <strong style="color: #2F99A4;">Where to find it:</strong> Open the Repurpose module in the TYPO3 backend under Web &gt; Repurpose.
 </div>',
 0, 100, 0, 0)
@@ -749,40 +749,40 @@ VALUES (410, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'Netresearch TYPO3
     <div class="card h-100 border-0 shadow-sm"><div class="card-body">
       <div class="d-flex align-items-center gap-2 mb-2">
         <span class="badge rounded-pill text-white" style="background: #2F99A4; font-size: 0.65rem;">CKEditor</span>
-        <h6 class="card-title fw-bold mb-0" style="font-size: 0.92rem;">RTE CKEditor Image</h6>
+        <h6 class="card-title fw-bold mb-0" style="font-size: 1rem;">RTE CKEditor Image</h6>
       </div>
-      <p class="card-text text-muted" style="font-size: 0.82rem;">Block images, inline images, lightbox, and linked images in the rich text editor.</p>
-      <a href="/extensions/rte-ckeditor-image/" class="fw-semibold text-decoration-none" style="font-size: 0.82rem; color: #FF4D00;">Explore &rarr;</a>
+      <p class="card-text text-muted" style="font-size: 1rem;">Block images, inline images, lightbox, and linked images in the rich text editor.</p>
+      <a href="/extensions/rte-ckeditor-image/" class="fw-semibold text-decoration-none" style="font-size: 1rem; color: #FF4D00;">Explore &rarr;</a>
     </div></div>
   </div>
   <div class="col-md-4">
     <div class="card h-100 border-0 shadow-sm"><div class="card-body">
       <div class="d-flex align-items-center gap-2 mb-2">
         <span class="badge rounded-pill text-white" style="background: #2F99A4; font-size: 0.65rem;">AI</span>
-        <h6 class="card-title fw-bold mb-0" style="font-size: 0.92rem;">AI Cowriter</h6>
+        <h6 class="card-title fw-bold mb-0" style="font-size: 1rem;">AI Cowriter</h6>
       </div>
-      <p class="card-text text-muted" style="font-size: 0.82rem;">Rewrite, summarize, translate, and fix grammar — AI assistant in CKEditor.</p>
-      <a href="/extensions/cowriter/" class="fw-semibold text-decoration-none" style="font-size: 0.82rem; color: #FF4D00;">Explore &rarr;</a>
+      <p class="card-text text-muted" style="font-size: 1rem;">Rewrite, summarize, translate, and fix grammar — AI assistant in CKEditor.</p>
+      <a href="/extensions/cowriter/" class="fw-semibold text-decoration-none" style="font-size: 1rem; color: #FF4D00;">Explore &rarr;</a>
     </div></div>
   </div>
   <div class="col-md-4">
     <div class="card h-100 border-0 shadow-sm"><div class="card-body">
       <div class="d-flex align-items-center gap-2 mb-2">
         <span class="badge rounded-pill text-white" style="background: #2F99A4; font-size: 0.65rem;">AI</span>
-        <h6 class="card-title fw-bold mb-0" style="font-size: 0.92rem;">Landing Page Generator</h6>
+        <h6 class="card-title fw-bold mb-0" style="font-size: 1rem;">Landing Page Generator</h6>
       </div>
-      <p class="card-text text-muted" style="font-size: 0.82rem;">Create complete landing pages with hero, features, and CTAs using AI.</p>
-      <a href="/extensions/landing-page/" class="fw-semibold text-decoration-none" style="font-size: 0.82rem; color: #FF4D00;">Explore &rarr;</a>
+      <p class="card-text text-muted" style="font-size: 1rem;">Create complete landing pages with hero, features, and CTAs using AI.</p>
+      <a href="/extensions/landing-page/" class="fw-semibold text-decoration-none" style="font-size: 1rem; color: #FF4D00;">Explore &rarr;</a>
     </div></div>
   </div>
   <div class="col-md-4">
     <div class="card h-100 border-0 shadow-sm"><div class="card-body">
       <div class="d-flex align-items-center gap-2 mb-2">
         <span class="badge rounded-pill text-white" style="background: #2F99A4; font-size: 0.65rem;">Content</span>
-        <h6 class="card-title fw-bold mb-0" style="font-size: 0.92rem;">Content Repurpose</h6>
+        <h6 class="card-title fw-bold mb-0" style="font-size: 1rem;">Content Repurpose</h6>
       </div>
-      <p class="card-text text-muted" style="font-size: 0.82rem;">Turn existing pages into social posts, summaries, and channel-ready variants with AI.</p>
-      <a href="/extensions/repurpose/" class="fw-semibold text-decoration-none" style="font-size: 0.82rem; color: #FF4D00;">Explore &rarr;</a>
+      <p class="card-text text-muted" style="font-size: 1rem;">Turn existing pages into social posts, summaries, and channel-ready variants with AI.</p>
+      <a href="/extensions/repurpose/" class="fw-semibold text-decoration-none" style="font-size: 1rem; color: #FF4D00;">Explore &rarr;</a>
     </div></div>
   </div>
 </div>
@@ -793,20 +793,20 @@ VALUES (410, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'Netresearch TYPO3
     <div class="card h-100 border-0 shadow-sm"><div class="card-body">
       <div class="d-flex align-items-center gap-2 mb-2">
         <span class="badge rounded-pill text-white" style="background: #585961; font-size: 0.65rem;">Core</span>
-        <h6 class="card-title fw-bold mb-0" style="font-size: 0.92rem;">NR LLM</h6>
+        <h6 class="card-title fw-bold mb-0" style="font-size: 1rem;">NR LLM</h6>
       </div>
-      <p class="card-text text-muted" style="font-size: 0.82rem;">One LLM setup for every extension. Providers, models, task templates, and a visual backend module.</p>
-      <a href="/extensions/nr-llm/" class="fw-semibold text-decoration-none" style="font-size: 0.82rem; color: #FF4D00;">Explore &rarr;</a>
+      <p class="card-text text-muted" style="font-size: 1rem;">One LLM setup for every extension. Providers, models, task templates, and a visual backend module.</p>
+      <a href="/extensions/nr-llm/" class="fw-semibold text-decoration-none" style="font-size: 1rem; color: #FF4D00;">Explore &rarr;</a>
     </div></div>
   </div>
   <div class="col-md-6">
     <div class="card h-100 border-0 shadow-sm"><div class="card-body">
       <div class="d-flex align-items-center gap-2 mb-2">
         <span class="badge rounded-pill text-white" style="background: #2F99A4; font-size: 0.65rem;">AI</span>
-        <h6 class="card-title fw-bold mb-0" style="font-size: 0.92rem;">AI Chat Agent</h6>
+        <h6 class="card-title fw-bold mb-0" style="font-size: 1rem;">AI Chat Agent</h6>
       </div>
-      <p class="card-text text-muted" style="font-size: 0.82rem;">Conversational AI assistant in the TYPO3 backend that reads and acts on your site via MCP tools.</p>
-      <a href="/extensions/ai-agent/" class="fw-semibold text-decoration-none" style="font-size: 0.82rem; color: #FF4D00;">Explore &rarr;</a>
+      <p class="card-text text-muted" style="font-size: 1rem;">Conversational AI assistant in the TYPO3 backend that reads and acts on your site via MCP tools.</p>
+      <a href="/extensions/ai-agent/" class="fw-semibold text-decoration-none" style="font-size: 1rem; color: #FF4D00;">Explore &rarr;</a>
     </div></div>
   </div>
 </div>
@@ -817,30 +817,30 @@ VALUES (410, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'Netresearch TYPO3
     <div class="card h-100 border-0 shadow-sm"><div class="card-body">
       <div class="d-flex align-items-center gap-2 mb-2">
         <span class="badge rounded-pill text-white" style="background: #FF4D00; font-size: 0.65rem;">Security</span>
-        <h6 class="card-title fw-bold mb-0" style="font-size: 0.92rem;">Passkeys (Backend)</h6>
+        <h6 class="card-title fw-bold mb-0" style="font-size: 1rem;">Passkeys (Backend)</h6>
       </div>
-      <p class="card-text text-muted" style="font-size: 0.82rem;">Passwordless WebAuthn login for backend users with per-group enforcement.</p>
-      <a href="/extensions/passkeys-be/" class="fw-semibold text-decoration-none" style="font-size: 0.82rem; color: #FF4D00;">Explore &rarr;</a>
+      <p class="card-text text-muted" style="font-size: 1rem;">Passwordless WebAuthn login for backend users with per-group enforcement.</p>
+      <a href="/extensions/passkeys-be/" class="fw-semibold text-decoration-none" style="font-size: 1rem; color: #FF4D00;">Explore &rarr;</a>
     </div></div>
   </div>
   <div class="col-md-4">
     <div class="card h-100 border-0 shadow-sm"><div class="card-body">
       <div class="d-flex align-items-center gap-2 mb-2">
         <span class="badge rounded-pill text-white" style="background: #FF4D00; font-size: 0.65rem;">Security</span>
-        <h6 class="card-title fw-bold mb-0" style="font-size: 0.92rem;">Passkeys (Frontend)</h6>
+        <h6 class="card-title fw-bold mb-0" style="font-size: 1rem;">Passkeys (Frontend)</h6>
       </div>
-      <p class="card-text text-muted" style="font-size: 0.82rem;">Passkey-first authentication for frontend users. <a href="/login" style="color: #2F99A4;">Try the demo</a>.</p>
-      <a href="/extensions/passkeys-fe/" class="fw-semibold text-decoration-none" style="font-size: 0.82rem; color: #FF4D00;">Explore &rarr;</a>
+      <p class="card-text text-muted" style="font-size: 1rem;">Passkey-first authentication for frontend users. <a href="/login" style="color: #2F99A4;">Try the demo</a>.</p>
+      <a href="/extensions/passkeys-fe/" class="fw-semibold text-decoration-none" style="font-size: 1rem; color: #FF4D00;">Explore &rarr;</a>
     </div></div>
   </div>
   <div class="col-md-4">
     <div class="card h-100 border-0 shadow-sm"><div class="card-body">
       <div class="d-flex align-items-center gap-2 mb-2">
         <span class="badge rounded-pill text-white" style="background: #FF4D00; font-size: 0.65rem;">Security</span>
-        <h6 class="card-title fw-bold mb-0" style="font-size: 0.92rem;">Secrets Vault</h6>
+        <h6 class="card-title fw-bold mb-0" style="font-size: 1rem;">Secrets Vault</h6>
       </div>
-      <p class="card-text text-muted" style="font-size: 0.82rem;">Envelope encryption, access control, key rotation, and audit logging.</p>
-      <a href="/extensions/vault/" class="fw-semibold text-decoration-none" style="font-size: 0.82rem; color: #FF4D00;">Explore &rarr;</a>
+      <p class="card-text text-muted" style="font-size: 1rem;">Envelope encryption, access control, key rotation, and audit logging.</p>
+      <a href="/extensions/vault/" class="fw-semibold text-decoration-none" style="font-size: 1rem; color: #FF4D00;">Explore &rarr;</a>
     </div></div>
   </div>
 </div>
@@ -851,16 +851,16 @@ VALUES (410, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'Netresearch TYPO3
     <div class="card h-100 border-0 shadow-sm"><div class="card-body">
       <div class="d-flex align-items-center gap-2 mb-2">
         <span class="badge rounded-pill text-white" style="background: #585961; font-size: 0.65rem;">Cache</span>
-        <h6 class="card-title fw-bold mb-0" style="font-size: 0.92rem;">Temporal Cache</h6>
+        <h6 class="card-title fw-bold mb-0" style="font-size: 1rem;">Temporal Cache</h6>
       </div>
-      <p class="card-text text-muted" style="font-size: 0.82rem;">Automatic cache invalidation when timed content starts or expires.</p>
-      <a href="/extensions/temporal-cache/" class="fw-semibold text-decoration-none" style="font-size: 0.82rem; color: #FF4D00;">Explore &rarr;</a>
+      <p class="card-text text-muted" style="font-size: 1rem;">Automatic cache invalidation when timed content starts or expires.</p>
+      <a href="/extensions/temporal-cache/" class="fw-semibold text-decoration-none" style="font-size: 1rem; color: #FF4D00;">Explore &rarr;</a>
     </div></div>
   </div>
 </div>
 
 <div class="text-center mt-4 pt-3" style="border-top: 1px solid rgba(0,0,0,0.06);">
-  <p class="text-muted mb-2" style="font-size: 0.82rem;">All extensions are open source and TYPO3 v14 compatible.</p>
+  <p class="text-muted mb-2" style="font-size: 1rem;">All extensions are open source and TYPO3 v14 compatible.</p>
   <a href="https://github.com/netresearch" target="_blank" rel="noopener" class="btn btn-sm text-white" style="background: #2F99A4;">View all on GitHub</a>
 </div>',
 0, 100, 0, 0)
@@ -1140,7 +1140,7 @@ VALUES (602, 158, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', '',
   <div class="card-body py-4">
     <h1 class="h3 fw-bold mb-3">AI Search &amp; Chat</h1>
     <p class="mb-2" style="max-width: 720px;">Ask this website a question in natural language. nr_ai_search embeds the site content into a vector store and grounds every answer strictly in what it retrieves &mdash; the search box returns a synthesised answer with sources, and the chat widget holds a short grounded conversation.</p>
-    <p class="text-muted mb-0" style="font-size: 0.9rem; max-width: 720px;">Runtime note: answers require an API key for the LLM provider, stored in the Vault module (frontend-accessible), and content that has been indexed and embedded. Any provider supported by nr_llm can be used; OpenAI is the tested default. Without both, the widgets render but report that they cannot answer.</p>
+    <p class="text-muted mb-0" style="font-size: 1rem; max-width: 720px;">Runtime note: answers require an API key for the LLM provider, stored in the Vault module (frontend-accessible), and content that has been indexed and embedded. Any provider supported by nr_llm can be used; OpenAI is the tested default. Without both, the widgets render but report that they cannot answer.</p>
   </div>
 </div>', 0, 100, 0, 0)
 ON DUPLICATE KEY UPDATE
@@ -1236,44 +1236,44 @@ VALUES (605, 164, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'Contexts',
   <div class="col-md-6">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">No Duplicated Page Trees</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;">Editors maintain one page and mark per context where it appears, instead of keeping a parallel tree per channel in sync by hand.</p>
+        <h6 class="fw-bold" style="font-size: 1rem; color: #2F99A4;">No Duplicated Page Trees</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;">Editors maintain one page and mark per context where it appears, instead of keeping a parallel tree per channel in sync by hand.</p>
       </div>
     </div>
   </div>
   <div class="col-md-6">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Six Context Types</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;">Domain, GET parameter, IP range, HTTP header, and session value, plus a combination type that joins them with AND, OR, and NOT.</p>
+        <h6 class="fw-bold" style="font-size: 1rem; color: #2F99A4;">Six Context Types</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;">Domain, GET parameter, IP range, HTTP header, and session value, plus a combination type that joins them with AND, OR, and NOT.</p>
       </div>
     </div>
   </div>
   <div class="col-md-6">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Enforced In The Query Layer</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;">Visibility is applied as a Doctrine query restriction, so restricted records never reach the rendering stage &mdash; not in menus, not in listings, not in search.</p>
+        <h6 class="fw-bold" style="font-size: 1rem; color: #2F99A4;">Enforced In The Query Layer</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;">Visibility is applied as a Doctrine query restriction, so restricted records never reach the rendering stage &mdash; not in menus, not in listings, not in search.</p>
       </div>
     </div>
   </div>
   <div class="col-md-6">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Cache-Aware</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;">The active context combination is part of the page cache identifier, so each channel gets its own cache entry instead of the first-rendered variant being served to everyone.</p>
+        <h6 class="fw-bold" style="font-size: 1rem; color: #2F99A4;">Cache-Aware</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;">The active context combination is part of the page cache identifier, so each channel gets its own cache entry instead of the first-rendered variant being served to everyone.</p>
       </div>
     </div>
   </div>
 </div>
 
 <h2 class="fw-bold mb-3" style="font-size: 1.2rem;">Live demo</h2>
-<p class="text-muted mb-3" style="font-size: 0.88rem;">A context of type <strong>GET parameter</strong> named &quot;Demo channel&quot; matches when <code>nrdemo=mobile</code> is present. The two blocks below sit on this very page:</p>
-<ul style="font-size: 0.88rem;">
+<p class="text-muted mb-3" style="font-size: 1rem;">A context of type <strong>GET parameter</strong> named &quot;Demo channel&quot; matches when <code>nrdemo=mobile</code> is present. The two blocks below sit on this very page:</p>
+<ul style="font-size: 1rem;">
   <li>Open <a href="/extensions/contexts">/extensions/contexts</a> &mdash; the <em>default channel</em> block is rendered.</li>
   <li>Open <a href="/extensions/contexts?nrdemo=mobile">/extensions/contexts?nrdemo=mobile</a> &mdash; the <em>mobile channel</em> block replaces it.</li>
 </ul>
-<div class="alert alert-light border mt-4" role="alert" style="font-size: 0.82rem;">
+<div class="alert alert-light border mt-4" role="alert" style="font-size: 1rem;">
   <strong style="color: #2F99A4;">For integrators:</strong> Edit either element in the backend and open its <em>Contexts</em> panel to see the per-context visibility switches. Pages carrying a context restriction also get an overlay badge in the page tree. The context records themselves live in Web &gt; List on the home page and are admin-only.
 </div>',
 0, 100, 0, 0)
@@ -1287,7 +1287,7 @@ ON DUPLICATE KEY UPDATE
 -- after this file is imported.
 INSERT INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
 VALUES (606, 164, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'text', 'Mobile channel',
-'<p style="font-size: 0.88rem;">You are seeing the <strong>mobile channel</strong> variant. This element has the &quot;Demo channel&quot; context set to <em>enable</em>, so it is only part of the rendered page while <code>nrdemo=mobile</code> is present.</p>',
+'<p style="font-size: 1rem;">You are seeing the <strong>mobile channel</strong> variant. This element has the &quot;Demo channel&quot; context set to <em>enable</em>, so it is only part of the rendered page while <code>nrdemo=mobile</code> is present.</p>',
 0, 200, 0, 0)
 ON DUPLICATE KEY UPDATE
   bodytext = IF(pid = VALUES(pid) AND CType = VALUES(CType) AND header = VALUES(header),
@@ -1296,7 +1296,7 @@ ON DUPLICATE KEY UPDATE
 -- Visible ONLY while the "Demo channel" context does NOT match.
 INSERT INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
 VALUES (607, 164, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'text', 'Default channel',
-'<p style="font-size: 0.88rem;">You are seeing the <strong>default channel</strong> variant. This element has the &quot;Demo channel&quot; context set to <em>disable</em>, so it disappears as soon as <code>nrdemo=mobile</code> is present.</p>',
+'<p style="font-size: 1rem;">You are seeing the <strong>default channel</strong> variant. This element has the &quot;Demo channel&quot; context set to <em>disable</em>, so it disappears as soon as <code>nrdemo=mobile</code> is present.</p>',
 0, 300, 0, 0)
 ON DUPLICATE KEY UPDATE
   bodytext = IF(pid = VALUES(pid) AND CType = VALUES(CType) AND header = VALUES(header),
@@ -1337,38 +1337,38 @@ VALUES (608, 160, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'TextDB',
   <div class="col-md-6">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Editors, Not Developers</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;">Wording changes happen in the backend module and take effect immediately, instead of going through a pull request and a release.</p>
+        <h6 class="fw-bold" style="font-size: 1rem; color: #2F99A4;">Editors, Not Developers</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;">Wording changes happen in the backend module and take effect immediately, instead of going through a pull request and a release.</p>
       </div>
     </div>
   </div>
   <div class="col-md-6">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Self-Filling Catalogue</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;">A key rendered for the first time creates its own record. The catalogue documents exactly the strings the site really uses, with no manual inventory.</p>
+        <h6 class="fw-bold" style="font-size: 1rem; color: #2F99A4;">Self-Filling Catalogue</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;">A key rendered for the first time creates its own record. The catalogue documents exactly the strings the site really uses, with no manual inventory.</p>
       </div>
     </div>
   </div>
   <div class="col-md-6">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">XLIFF Import And Export</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;">Upload an XLIFF file to bulk-load translations, or export the current filtered set as a ZIP to hand to a translation agency.</p>
+        <h6 class="fw-bold" style="font-size: 1rem; color: #2F99A4;">XLIFF Import And Export</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;">Upload an XLIFF file to bulk-load translations, or export the current filtered set as a ZIP to hand to a translation agency.</p>
       </div>
     </div>
   </div>
   <div class="col-md-6">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Environment, Component, Type</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;">Every string is filed under an environment, a component, and a type, so a large catalogue stays navigable and a component can be exported on its own.</p>
+        <h6 class="fw-bold" style="font-size: 1rem; color: #2F99A4;">Environment, Component, Type</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;">Every string is filed under an environment, a component, and a type, so a large catalogue stays navigable and a component can be exported on its own.</p>
       </div>
     </div>
   </div>
 </div>
 
-<div class="alert alert-light border" role="alert" style="font-size: 0.82rem;">
+<div class="alert alert-light border" role="alert" style="font-size: 1rem;">
   <strong style="color: #2F99A4;">Try it:</strong> Open <em>Netresearch &gt; TextDb</em> in the module menu and filter by component <code>demo</code>. This demo ships four seeded labels, each with a German translation &mdash; switch the module to the translated view to compare them side by side. The records are stored in the <em>TextDB Translations</em> folder in the page tree.
 </div>',
 0, 100, 0, 0)
@@ -1400,7 +1400,7 @@ VALUES (609, 161, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'Image Sitemap',
 </div>
 
 <h2 class="fw-bold mb-3" style="font-size: 1.2rem;">See it</h2>
-<p class="text-muted mb-3" style="font-size: 0.88rem;">This extension has no backend module. Its output <em>is</em> the sitemap, so the demo is the XML itself:</p>
+<p class="text-muted mb-3" style="font-size: 1rem;">This extension has no backend module. Its output <em>is</em> the sitemap, so the demo is the XML itself:</p>
 <div class="d-flex gap-2 flex-wrap mb-4">
   <a href="/?type=1642072014" target="_blank" rel="noopener" class="btn btn-sm text-white" style="background: #2F99A4;">Open the image sitemap</a>
   <a href="/sitemap.xml" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">Compare: core sitemap</a>
@@ -1410,22 +1410,22 @@ VALUES (609, 161, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'Image Sitemap',
   <div class="col-md-6">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Straight From FAL</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;">The data comes from <code>sys_file_reference</code>, so title and caption are exactly what editors entered on the image &mdash; no separate maintenance.</p>
+        <h6 class="fw-bold" style="font-size: 1rem; color: #2F99A4;">Straight From FAL</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;">The data comes from <code>sys_file_reference</code>, so title and caption are exactly what editors entered on the image &mdash; no separate maintenance.</p>
       </div>
     </div>
   </div>
   <div class="col-md-6">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">No Moving Parts</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;">Rendered on request and cached like any other page type. Nothing to schedule, nothing that can silently stop running.</p>
+        <h6 class="fw-bold" style="font-size: 1rem; color: #2F99A4;">No Moving Parts</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;">Rendered on request and cached like any other page type. Nothing to schedule, nothing that can silently stop running.</p>
       </div>
     </div>
   </div>
 </div>
 
-<div class="alert alert-light border" role="alert" style="font-size: 0.82rem;">
+<div class="alert alert-light border" role="alert" style="font-size: 1rem;">
   <strong style="color: #2F99A4;">Demo note:</strong> This showcase instance sends <code>NOINDEX,NOFOLLOW</code> for every page, so the sitemap here is a demonstration artefact rather than a live SEO signal. Add an image to any content element, flush the frontend cache, and reload the sitemap to watch the new entry appear.
 </div>',
 0, 100, 0, 0)
@@ -1460,38 +1460,38 @@ VALUES (610, 162, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'Scheduler Toolkit
   <div class="col-md-6">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Failure Reports By E-Mail</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;">A failing task notifies a configurable list of recipients with its own subject and message, instead of only turning red in a module nobody has open.</p>
+        <h6 class="fw-bold" style="font-size: 1rem; color: #2F99A4;">Failure Reports By E-Mail</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;">A failing task notifies a configurable list of recipients with its own subject and message, instead of only turning red in a module nobody has open.</p>
       </div>
     </div>
   </div>
   <div class="col-md-6">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Context Gating</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;">A task can be bound to application contexts, so the same configuration is deployed everywhere but only executes where it is meant to &mdash; Production, not Development.</p>
+        <h6 class="fw-bold" style="font-size: 1rem; color: #2F99A4;">Context Gating</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;">A task can be bound to application contexts, so the same configuration is deployed everywhere but only executes where it is meant to &mdash; Production, not Development.</p>
       </div>
     </div>
   </div>
   <div class="col-md-6">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Typed Field Builder</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;">Text, text area, password, checkbox, select, and multi-select fields are declared as objects. The additional-field provider renders and validates them for you.</p>
+        <h6 class="fw-bold" style="font-size: 1rem; color: #2F99A4;">Typed Field Builder</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;">Text, text area, password, checkbox, select, and multi-select fields are declared as objects. The additional-field provider renders and validates them for you.</p>
       </div>
     </div>
   </div>
   <div class="col-md-6">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">A Library, Not A Module</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;">The extension ships no module and no task of its own. It extends the core Scheduler, and the extra fields appear on tasks that a consuming extension builds on it.</p>
+        <h6 class="fw-bold" style="font-size: 1rem; color: #2F99A4;">A Library, Not A Module</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;">The extension ships no module and no task of its own. It extends the core Scheduler, and the extra fields appear on tasks that a consuming extension builds on it.</p>
       </div>
     </div>
   </div>
 </div>
 
-<div class="alert alert-light border" role="alert" style="font-size: 0.82rem;">
+<div class="alert alert-light border" role="alert" style="font-size: 1rem;">
   <strong style="color: #2F99A4;">Where to find it:</strong> Open <em>Admin Tools &gt; Scheduler</em> in the TYPO3 backend. This demo installs the toolkit and the core Scheduler module; the extra fields become visible on tasks of an extension that derives from these base classes, such as <a href="https://github.com/netresearch/t3x-nr-sync" target="_blank" rel="noopener" style="color: #2F99A4;">nr-sync</a>. The module is admin-only.
 </div>',
 0, 100, 0, 0)
@@ -1571,44 +1571,44 @@ VALUES (620, 164, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 605, 605, 'html', 'Kont
   <div class="col-md-6">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Kein doppelter Seitenbaum</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;">Die Redaktion pflegt eine Seite und markiert je Kontext, wo sie erscheint. Ein paralleler Baum je Kanal, der von Hand synchron gehalten werden muss, entfällt.</p>
+        <h6 class="fw-bold" style="font-size: 1rem; color: #2F99A4;">Kein doppelter Seitenbaum</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;">Die Redaktion pflegt eine Seite und markiert je Kontext, wo sie erscheint. Ein paralleler Baum je Kanal, der von Hand synchron gehalten werden muss, entfällt.</p>
       </div>
     </div>
   </div>
   <div class="col-md-6">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Sechs Kontexttypen</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;">Domain, GET-Parameter, IP-Bereich, HTTP-Header und Session-Wert, dazu ein Kombinationstyp, der diese mit UND, ODER und NICHT verknüpft.</p>
+        <h6 class="fw-bold" style="font-size: 1rem; color: #2F99A4;">Sechs Kontexttypen</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;">Domain, GET-Parameter, IP-Bereich, HTTP-Header und Session-Wert, dazu ein Kombinationstyp, der diese mit UND, ODER und NICHT verknüpft.</p>
       </div>
     </div>
   </div>
   <div class="col-md-6">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Wirkt auf Datenbankebene</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;">Die Sichtbarkeit greift als Doctrine-Query-Restriction. Gesperrte Datensätze erreichen die Ausgabe gar nicht erst &mdash; weder im Menü noch in Listen oder in der Suche.</p>
+        <h6 class="fw-bold" style="font-size: 1rem; color: #2F99A4;">Wirkt auf Datenbankebene</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;">Die Sichtbarkeit greift als Doctrine-Query-Restriction. Gesperrte Datensätze erreichen die Ausgabe gar nicht erst &mdash; weder im Menü noch in Listen oder in der Suche.</p>
       </div>
     </div>
   </div>
   <div class="col-md-6">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Cache je Kanal</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;">Die aktive Kontextkombination geht in den Seiten-Cache-Schlüssel ein. Jeder Kanal bekommt seinen eigenen Cache-Eintrag, statt dass alle die zuerst gerenderte Variante sehen.</p>
+        <h6 class="fw-bold" style="font-size: 1rem; color: #2F99A4;">Cache je Kanal</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;">Die aktive Kontextkombination geht in den Seiten-Cache-Schlüssel ein. Jeder Kanal bekommt seinen eigenen Cache-Eintrag, statt dass alle die zuerst gerenderte Variante sehen.</p>
       </div>
     </div>
   </div>
 </div>
 
 <h2 class="fw-bold mb-3" style="font-size: 1.2rem;">Live ausprobieren</h2>
-<p class="text-muted mb-3" style="font-size: 0.88rem;">Ein Kontext vom Typ <strong>GET-Parameter</strong> mit dem Namen &bdquo;Demo channel&ldquo; greift, sobald <code>nrdemo=mobile</code> gesetzt ist. Die beiden Blöcke darunter liegen auf genau dieser Seite:</p>
-<ul style="font-size: 0.88rem;">
+<p class="text-muted mb-3" style="font-size: 1rem;">Ein Kontext vom Typ <strong>GET-Parameter</strong> mit dem Namen &bdquo;Demo channel&ldquo; greift, sobald <code>nrdemo=mobile</code> gesetzt ist. Die beiden Blöcke darunter liegen auf genau dieser Seite:</p>
+<ul style="font-size: 1rem;">
   <li><a href="/de/erweiterungen/kontexte">/de/erweiterungen/kontexte</a> aufrufen &mdash; der Block <em>Standardkanal</em> wird ausgegeben.</li>
   <li><a href="/de/erweiterungen/kontexte?nrdemo=mobile">/de/erweiterungen/kontexte?nrdemo=mobile</a> aufrufen &mdash; der Block <em>Mobiler Kanal</em> tritt an seine Stelle.</li>
 </ul>
-<div class="alert alert-light border mt-4" role="alert" style="font-size: 0.82rem;">
+<div class="alert alert-light border mt-4" role="alert" style="font-size: 1rem;">
   <strong style="color: #2F99A4;">Für Integratoren:</strong> Eines der beiden Inhaltselemente im Backend öffnen und den Reiter <em>Contexts</em> aufklappen &mdash; dort stehen die Schalter je Kontext. Seiten mit einer Kontextbeschränkung erhalten zusätzlich ein Overlay-Symbol im Seitenbaum. Die Kontextdatensätze selbst liegen unter Web &gt; Liste auf der Startseite und sind nur für Administratoren sichtbar.
 </div>',
 0, 100, 0, 0)
@@ -1618,7 +1618,7 @@ ON DUPLICATE KEY UPDATE
 
 INSERT INTO tt_content (uid, pid, tstamp, crdate, sys_language_uid, l18n_parent, l10n_source, CType, header, bodytext, colPos, sorting, hidden, deleted)
 VALUES (621, 164, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 606, 606, 'text', 'Mobiler Kanal',
-'<p style="font-size: 0.88rem;">Sie sehen die Variante <strong>Mobiler Kanal</strong>. Für dieses Element ist der Kontext &bdquo;Demo channel&ldquo; auf <em>aktivieren</em> gesetzt; es ist deshalb nur Teil der ausgegebenen Seite, solange <code>nrdemo=mobile</code> gesetzt ist.</p>',
+'<p style="font-size: 1rem;">Sie sehen die Variante <strong>Mobiler Kanal</strong>. Für dieses Element ist der Kontext &bdquo;Demo channel&ldquo; auf <em>aktivieren</em> gesetzt; es ist deshalb nur Teil der ausgegebenen Seite, solange <code>nrdemo=mobile</code> gesetzt ist.</p>',
 0, 200, 0, 0)
 ON DUPLICATE KEY UPDATE
   bodytext = IF(pid = VALUES(pid) AND CType = VALUES(CType) AND header = VALUES(header),
@@ -1626,7 +1626,7 @@ ON DUPLICATE KEY UPDATE
 
 INSERT INTO tt_content (uid, pid, tstamp, crdate, sys_language_uid, l18n_parent, l10n_source, CType, header, bodytext, colPos, sorting, hidden, deleted)
 VALUES (622, 164, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 607, 607, 'text', 'Standardkanal',
-'<p style="font-size: 0.88rem;">Sie sehen die Variante <strong>Standardkanal</strong>. Für dieses Element ist der Kontext &bdquo;Demo channel&ldquo; auf <em>deaktivieren</em> gesetzt; es verschwindet daher, sobald <code>nrdemo=mobile</code> gesetzt ist.</p>',
+'<p style="font-size: 1rem;">Sie sehen die Variante <strong>Standardkanal</strong>. Für dieses Element ist der Kontext &bdquo;Demo channel&ldquo; auf <em>deaktivieren</em> gesetzt; es verschwindet daher, sobald <code>nrdemo=mobile</code> gesetzt ist.</p>',
 0, 300, 0, 0)
 ON DUPLICATE KEY UPDATE
   bodytext = IF(pid = VALUES(pid) AND CType = VALUES(CType) AND header = VALUES(header),
@@ -1654,38 +1654,38 @@ VALUES (623, 160, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 608, 608, 'html', 'Text
   <div class="col-md-6">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Redaktion statt Entwicklung</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;">Änderungen am Wortlaut passieren im Backend-Modul und wirken sofort, statt über einen Pull Request und ein Release zu laufen.</p>
+        <h6 class="fw-bold" style="font-size: 1rem; color: #2F99A4;">Redaktion statt Entwicklung</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;">Änderungen am Wortlaut passieren im Backend-Modul und wirken sofort, statt über einen Pull Request und ein Release zu laufen.</p>
       </div>
     </div>
   </div>
   <div class="col-md-6">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Katalog füllt sich selbst</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;">Ein Schlüssel, der zum ersten Mal ausgegeben wird, legt seinen Datensatz selbst an. Der Katalog bildet damit genau die Texte ab, die die Website wirklich verwendet.</p>
+        <h6 class="fw-bold" style="font-size: 1rem; color: #2F99A4;">Katalog füllt sich selbst</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;">Ein Schlüssel, der zum ersten Mal ausgegeben wird, legt seinen Datensatz selbst an. Der Katalog bildet damit genau die Texte ab, die die Website wirklich verwendet.</p>
       </div>
     </div>
   </div>
   <div class="col-md-6">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">XLIFF-Import und -Export</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;">Eine XLIFF-Datei hochladen, um Übersetzungen gebündelt einzuspielen, oder die gefilterte Auswahl als ZIP exportieren und an ein Übersetzungsbüro geben.</p>
+        <h6 class="fw-bold" style="font-size: 1rem; color: #2F99A4;">XLIFF-Import und -Export</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;">Eine XLIFF-Datei hochladen, um Übersetzungen gebündelt einzuspielen, oder die gefilterte Auswahl als ZIP exportieren und an ein Übersetzungsbüro geben.</p>
       </div>
     </div>
   </div>
   <div class="col-md-6">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Umgebung, Komponente, Typ</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;">Jeder Text ist einer Umgebung, einer Komponente und einem Typ zugeordnet. Auch ein großer Katalog bleibt so navigierbar, und eine Komponente lässt sich einzeln exportieren.</p>
+        <h6 class="fw-bold" style="font-size: 1rem; color: #2F99A4;">Umgebung, Komponente, Typ</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;">Jeder Text ist einer Umgebung, einer Komponente und einem Typ zugeordnet. Auch ein großer Katalog bleibt so navigierbar, und eine Komponente lässt sich einzeln exportieren.</p>
       </div>
     </div>
   </div>
 </div>
 
-<div class="alert alert-light border" role="alert" style="font-size: 0.82rem;">
+<div class="alert alert-light border" role="alert" style="font-size: 1rem;">
   <strong style="color: #2F99A4;">Ausprobieren:</strong> <em>Netresearch &gt; TextDb</em> im Modulmenü öffnen und nach der Komponente <code>demo</code> filtern. Diese Demo bringt vier Texte mit, jeweils mit deutscher Übersetzung &mdash; in der Ansicht der übersetzten Einträge stehen sie nebeneinander. Abgelegt sind die Datensätze im Ordner <em>TextDB Translations</em> im Seitenbaum.
 </div>',
 0, 100, 0, 0)
@@ -1711,7 +1711,7 @@ VALUES (624, 161, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 609, 609, 'html', 'Bild
 </div>
 
 <h2 class="fw-bold mb-3" style="font-size: 1.2rem;">Ansehen</h2>
-<p class="text-muted mb-3" style="font-size: 0.88rem;">Diese Erweiterung hat kein Backend-Modul. Ihre Ausgabe <em>ist</em> die Sitemap &mdash; das XML selbst ist also die Demo:</p>
+<p class="text-muted mb-3" style="font-size: 1rem;">Diese Erweiterung hat kein Backend-Modul. Ihre Ausgabe <em>ist</em> die Sitemap &mdash; das XML selbst ist also die Demo:</p>
 <div class="d-flex gap-2 flex-wrap mb-4">
   <a href="/de/?type=1642072014" target="_blank" rel="noopener" class="btn btn-sm text-white" style="background: #2F99A4;">Bilder-Sitemap öffnen</a>
   <a href="/de/sitemap.xml" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">Zum Vergleich: Standard-Sitemap</a>
@@ -1721,22 +1721,22 @@ VALUES (624, 161, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 609, 609, 'html', 'Bild
   <div class="col-md-6">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Direkt aus FAL</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;">Die Daten stammen aus <code>sys_file_reference</code>. Titel und Bildunterschrift sind damit genau das, was die Redaktion am Bild hinterlegt hat &mdash; ohne separate Pflege.</p>
+        <h6 class="fw-bold" style="font-size: 1rem; color: #2F99A4;">Direkt aus FAL</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;">Die Daten stammen aus <code>sys_file_reference</code>. Titel und Bildunterschrift sind damit genau das, was die Redaktion am Bild hinterlegt hat &mdash; ohne separate Pflege.</p>
       </div>
     </div>
   </div>
   <div class="col-md-6">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Nichts, was laufen muss</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;">Die Sitemap wird bei Aufruf erzeugt und wie jeder andere Seitentyp zwischengespeichert. Es gibt keinen Job, der unbemerkt stehen bleiben könnte.</p>
+        <h6 class="fw-bold" style="font-size: 1rem; color: #2F99A4;">Nichts, was laufen muss</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;">Die Sitemap wird bei Aufruf erzeugt und wie jeder andere Seitentyp zwischengespeichert. Es gibt keinen Job, der unbemerkt stehen bleiben könnte.</p>
       </div>
     </div>
   </div>
 </div>
 
-<div class="alert alert-light border" role="alert" style="font-size: 0.82rem;">
+<div class="alert alert-light border" role="alert" style="font-size: 1rem;">
   <strong style="color: #2F99A4;">Hinweis zur Demo:</strong> Diese Schaufenster-Instanz sendet für jede Seite <code>NOINDEX,NOFOLLOW</code>. Die Sitemap ist hier also ein Anschauungsobjekt und kein produktives SEO-Signal. Ein Bild in ein beliebiges Inhaltselement einfügen, den Frontend-Cache leeren und die Sitemap neu laden &mdash; der neue Eintrag erscheint.
 </div>',
 0, 100, 0, 0)
@@ -1765,38 +1765,38 @@ VALUES (625, 162, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 610, 610, 'html', 'Sche
   <div class="col-md-6">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Fehlermeldung per E-Mail</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;">Eine fehlgeschlagene Aufgabe benachrichtigt eine konfigurierbare Empfängerliste mit eigenem Betreff und Text, statt nur in einem Modul rot zu werden, das gerade niemand offen hat.</p>
+        <h6 class="fw-bold" style="font-size: 1rem; color: #2F99A4;">Fehlermeldung per E-Mail</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;">Eine fehlgeschlagene Aufgabe benachrichtigt eine konfigurierbare Empfängerliste mit eigenem Betreff und Text, statt nur in einem Modul rot zu werden, das gerade niemand offen hat.</p>
       </div>
     </div>
   </div>
   <div class="col-md-6">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Steuerung über den Kontext</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;">Eine Aufgabe lässt sich an Application Contexts binden. Dieselbe Konfiguration wird überall ausgerollt, ausgeführt wird sie nur dort, wo sie hingehört &mdash; in Production, nicht in Development.</p>
+        <h6 class="fw-bold" style="font-size: 1rem; color: #2F99A4;">Steuerung über den Kontext</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;">Eine Aufgabe lässt sich an Application Contexts binden. Dieselbe Konfiguration wird überall ausgerollt, ausgeführt wird sie nur dort, wo sie hingehört &mdash; in Production, nicht in Development.</p>
       </div>
     </div>
   </div>
   <div class="col-md-6">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Typisierte Formularfelder</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;">Text-, Textarea-, Passwort-, Checkbox-, Auswahl- und Mehrfachauswahlfelder werden als Objekte deklariert. Der Additional-Field-Provider rendert und prüft sie.</p>
+        <h6 class="fw-bold" style="font-size: 1rem; color: #2F99A4;">Typisierte Formularfelder</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;">Text-, Textarea-, Passwort-, Checkbox-, Auswahl- und Mehrfachauswahlfelder werden als Objekte deklariert. Der Additional-Field-Provider rendert und prüft sie.</p>
       </div>
     </div>
   </div>
   <div class="col-md-6">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Bibliothek, kein Modul</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;">Die Erweiterung liefert weder ein eigenes Modul noch eine eigene Aufgabe. Sie erweitert den Kern-Scheduler; die zusätzlichen Felder erscheinen an Aufgaben, die eine andere Erweiterung darauf aufbaut.</p>
+        <h6 class="fw-bold" style="font-size: 1rem; color: #2F99A4;">Bibliothek, kein Modul</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;">Die Erweiterung liefert weder ein eigenes Modul noch eine eigene Aufgabe. Sie erweitert den Kern-Scheduler; die zusätzlichen Felder erscheinen an Aufgaben, die eine andere Erweiterung darauf aufbaut.</p>
       </div>
     </div>
   </div>
 </div>
 
-<div class="alert alert-light border" role="alert" style="font-size: 0.82rem;">
+<div class="alert alert-light border" role="alert" style="font-size: 1rem;">
   <strong style="color: #2F99A4;">Wo es zu finden ist:</strong> <em>Admin-Werkzeuge &gt; Scheduler</em> im TYPO3-Backend öffnen. Diese Demo installiert das Toolkit und das Scheduler-Modul des Kerns; die zusätzlichen Felder werden an Aufgaben einer Erweiterung sichtbar, die von diesen Basisklassen erbt &mdash; etwa <a href="https://github.com/netresearch/t3x-nr-sync" target="_blank" rel="noopener" style="color: #2F99A4;">nr-sync</a>. Das Modul ist Administratoren vorbehalten.
 </div>',
 0, 100, 0, 0)
@@ -1818,40 +1818,40 @@ VALUES (626, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 410, 410, 'html', 'Netr
     <div class="card h-100 border-0 shadow-sm"><div class="card-body">
       <div class="d-flex align-items-center gap-2 mb-2">
         <span class="badge rounded-pill text-white" style="background: #2F99A4; font-size: 0.65rem;">CKEditor</span>
-        <h6 class="card-title fw-bold mb-0" style="font-size: 0.92rem;">RTE CKEditor Image</h6>
+        <h6 class="card-title fw-bold mb-0" style="font-size: 1rem;">RTE CKEditor Image</h6>
       </div>
-      <p class="card-text text-muted" style="font-size: 0.82rem;">Blockbilder, Inlinebilder, Lightbox und verlinkte Bilder im Rich-Text-Editor.</p>
-      <a href="/de/extensions/rte-ckeditor-image/" class="fw-semibold text-decoration-none" style="font-size: 0.82rem; color: #FF4D00;">Ansehen &rarr;</a>
+      <p class="card-text text-muted" style="font-size: 1rem;">Blockbilder, Inlinebilder, Lightbox und verlinkte Bilder im Rich-Text-Editor.</p>
+      <a href="/de/extensions/rte-ckeditor-image/" class="fw-semibold text-decoration-none" style="font-size: 1rem; color: #FF4D00;">Ansehen &rarr;</a>
     </div></div>
   </div>
   <div class="col-md-4">
     <div class="card h-100 border-0 shadow-sm"><div class="card-body">
       <div class="d-flex align-items-center gap-2 mb-2">
         <span class="badge rounded-pill text-white" style="background: #2F99A4; font-size: 0.65rem;">KI</span>
-        <h6 class="card-title fw-bold mb-0" style="font-size: 0.92rem;">AI Cowriter</h6>
+        <h6 class="card-title fw-bold mb-0" style="font-size: 1rem;">AI Cowriter</h6>
       </div>
-      <p class="card-text text-muted" style="font-size: 0.82rem;">Umformulieren, zusammenfassen, übersetzen und Grammatik korrigieren &mdash; der KI-Assistent im CKEditor.</p>
-      <a href="/de/extensions/cowriter/" class="fw-semibold text-decoration-none" style="font-size: 0.82rem; color: #FF4D00;">Ansehen &rarr;</a>
+      <p class="card-text text-muted" style="font-size: 1rem;">Umformulieren, zusammenfassen, übersetzen und Grammatik korrigieren &mdash; der KI-Assistent im CKEditor.</p>
+      <a href="/de/extensions/cowriter/" class="fw-semibold text-decoration-none" style="font-size: 1rem; color: #FF4D00;">Ansehen &rarr;</a>
     </div></div>
   </div>
   <div class="col-md-4">
     <div class="card h-100 border-0 shadow-sm"><div class="card-body">
       <div class="d-flex align-items-center gap-2 mb-2">
         <span class="badge rounded-pill text-white" style="background: #2F99A4; font-size: 0.65rem;">KI</span>
-        <h6 class="card-title fw-bold mb-0" style="font-size: 0.92rem;">Landingpage-Generator</h6>
+        <h6 class="card-title fw-bold mb-0" style="font-size: 1rem;">Landingpage-Generator</h6>
       </div>
-      <p class="card-text text-muted" style="font-size: 0.82rem;">Vollständige Landingpages mit Hero, Funktionsübersicht und Handlungsaufrufen per KI erzeugen.</p>
-      <a href="/de/extensions/landing-page/" class="fw-semibold text-decoration-none" style="font-size: 0.82rem; color: #FF4D00;">Ansehen &rarr;</a>
+      <p class="card-text text-muted" style="font-size: 1rem;">Vollständige Landingpages mit Hero, Funktionsübersicht und Handlungsaufrufen per KI erzeugen.</p>
+      <a href="/de/extensions/landing-page/" class="fw-semibold text-decoration-none" style="font-size: 1rem; color: #FF4D00;">Ansehen &rarr;</a>
     </div></div>
   </div>
   <div class="col-md-4">
     <div class="card h-100 border-0 shadow-sm"><div class="card-body">
       <div class="d-flex align-items-center gap-2 mb-2">
         <span class="badge rounded-pill text-white" style="background: #2F99A4; font-size: 0.65rem;">Inhalte</span>
-        <h6 class="card-title fw-bold mb-0" style="font-size: 0.92rem;">Content Repurpose</h6>
+        <h6 class="card-title fw-bold mb-0" style="font-size: 1rem;">Content Repurpose</h6>
       </div>
-      <p class="card-text text-muted" style="font-size: 0.82rem;">Bestehende Seiten per KI zu Social-Media-Beiträgen, Zusammenfassungen und kanalfertigen Varianten weiterverwerten.</p>
-      <a href="/de/extensions/repurpose/" class="fw-semibold text-decoration-none" style="font-size: 0.82rem; color: #FF4D00;">Ansehen &rarr;</a>
+      <p class="card-text text-muted" style="font-size: 1rem;">Bestehende Seiten per KI zu Social-Media-Beiträgen, Zusammenfassungen und kanalfertigen Varianten weiterverwerten.</p>
+      <a href="/de/extensions/repurpose/" class="fw-semibold text-decoration-none" style="font-size: 1rem; color: #FF4D00;">Ansehen &rarr;</a>
     </div></div>
   </div>
 </div>
@@ -1862,20 +1862,20 @@ VALUES (626, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 410, 410, 'html', 'Netr
     <div class="card h-100 border-0 shadow-sm"><div class="card-body">
       <div class="d-flex align-items-center gap-2 mb-2">
         <span class="badge rounded-pill text-white" style="background: #2F99A4; font-size: 0.65rem;">Basis</span>
-        <h6 class="card-title fw-bold mb-0" style="font-size: 0.92rem;">NR LLM</h6>
+        <h6 class="card-title fw-bold mb-0" style="font-size: 1rem;">NR LLM</h6>
       </div>
-      <p class="card-text text-muted" style="font-size: 0.82rem;">Eine KI-Konfiguration für alle Erweiterungen: Anbieter, Modelle, Aufgabenvorlagen und ein Backend-Modul dafür.</p>
-      <a href="/de/extensions/nr-llm/" class="fw-semibold text-decoration-none" style="font-size: 0.82rem; color: #FF4D00;">Ansehen &rarr;</a>
+      <p class="card-text text-muted" style="font-size: 1rem;">Eine KI-Konfiguration für alle Erweiterungen: Anbieter, Modelle, Aufgabenvorlagen und ein Backend-Modul dafür.</p>
+      <a href="/de/extensions/nr-llm/" class="fw-semibold text-decoration-none" style="font-size: 1rem; color: #FF4D00;">Ansehen &rarr;</a>
     </div></div>
   </div>
   <div class="col-md-4">
     <div class="card h-100 border-0 shadow-sm"><div class="card-body">
       <div class="d-flex align-items-center gap-2 mb-2">
         <span class="badge rounded-pill text-white" style="background: #2F99A4; font-size: 0.65rem;">KI</span>
-        <h6 class="card-title fw-bold mb-0" style="font-size: 0.92rem;">KI-Chat im Backend</h6>
+        <h6 class="card-title fw-bold mb-0" style="font-size: 1rem;">KI-Chat im Backend</h6>
       </div>
-      <p class="card-text text-muted" style="font-size: 0.82rem;">Ein Chat-Assistent im TYPO3-Backend, der die Website über MCP-Werkzeuge ausliest und bearbeitet.</p>
-      <a href="/de/extensions/ai-agent/" class="fw-semibold text-decoration-none" style="font-size: 0.82rem; color: #FF4D00;">Ansehen &rarr;</a>
+      <p class="card-text text-muted" style="font-size: 1rem;">Ein Chat-Assistent im TYPO3-Backend, der die Website über MCP-Werkzeuge ausliest und bearbeitet.</p>
+      <a href="/de/extensions/ai-agent/" class="fw-semibold text-decoration-none" style="font-size: 1rem; color: #FF4D00;">Ansehen &rarr;</a>
     </div></div>
   </div>
 </div>
@@ -1886,30 +1886,30 @@ VALUES (626, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 410, 410, 'html', 'Netr
     <div class="card h-100 border-0 shadow-sm"><div class="card-body">
       <div class="d-flex align-items-center gap-2 mb-2">
         <span class="badge rounded-pill text-white" style="background: #2F99A4; font-size: 0.65rem;">Sicherheit</span>
-        <h6 class="card-title fw-bold mb-0" style="font-size: 0.92rem;">Passkeys (Backend)</h6>
+        <h6 class="card-title fw-bold mb-0" style="font-size: 1rem;">Passkeys (Backend)</h6>
       </div>
-      <p class="card-text text-muted" style="font-size: 0.82rem;">Anmeldung ohne Passwort per WebAuthn für Backend-Benutzer, mit Richtlinien je Benutzergruppe.</p>
-      <a href="/de/extensions/passkeys-be/" class="fw-semibold text-decoration-none" style="font-size: 0.82rem; color: #FF4D00;">Ansehen &rarr;</a>
+      <p class="card-text text-muted" style="font-size: 1rem;">Anmeldung ohne Passwort per WebAuthn für Backend-Benutzer, mit Richtlinien je Benutzergruppe.</p>
+      <a href="/de/extensions/passkeys-be/" class="fw-semibold text-decoration-none" style="font-size: 1rem; color: #FF4D00;">Ansehen &rarr;</a>
     </div></div>
   </div>
   <div class="col-md-4">
     <div class="card h-100 border-0 shadow-sm"><div class="card-body">
       <div class="d-flex align-items-center gap-2 mb-2">
         <span class="badge rounded-pill text-white" style="background: #2F99A4; font-size: 0.65rem;">Sicherheit</span>
-        <h6 class="card-title fw-bold mb-0" style="font-size: 0.92rem;">Passkeys (Frontend)</h6>
+        <h6 class="card-title fw-bold mb-0" style="font-size: 1rem;">Passkeys (Frontend)</h6>
       </div>
-      <p class="card-text text-muted" style="font-size: 0.82rem;">Passkey-Anmeldung für Website-Benutzer. <a href="/de/anmelden" style="color: #2F99A4;">Demo ausprobieren</a>.</p>
-      <a href="/de/extensions/passkeys-fe/" class="fw-semibold text-decoration-none" style="font-size: 0.82rem; color: #FF4D00;">Ansehen &rarr;</a>
+      <p class="card-text text-muted" style="font-size: 1rem;">Passkey-Anmeldung für Website-Benutzer. <a href="/de/anmelden" style="color: #2F99A4;">Demo ausprobieren</a>.</p>
+      <a href="/de/extensions/passkeys-fe/" class="fw-semibold text-decoration-none" style="font-size: 1rem; color: #FF4D00;">Ansehen &rarr;</a>
     </div></div>
   </div>
   <div class="col-md-4">
     <div class="card h-100 border-0 shadow-sm"><div class="card-body">
       <div class="d-flex align-items-center gap-2 mb-2">
         <span class="badge rounded-pill text-white" style="background: #2F99A4; font-size: 0.65rem;">Sicherheit</span>
-        <h6 class="card-title fw-bold mb-0" style="font-size: 0.92rem;">Secrets Vault</h6>
+        <h6 class="card-title fw-bold mb-0" style="font-size: 1rem;">Secrets Vault</h6>
       </div>
-      <p class="card-text text-muted" style="font-size: 0.82rem;">Envelope-Verschlüsselung, Zugriffssteuerung, Schlüsselwechsel und Protokollierung jedes Zugriffs.</p>
-      <a href="/de/extensions/vault/" class="fw-semibold text-decoration-none" style="font-size: 0.82rem; color: #FF4D00;">Ansehen &rarr;</a>
+      <p class="card-text text-muted" style="font-size: 1rem;">Envelope-Verschlüsselung, Zugriffssteuerung, Schlüsselwechsel und Protokollierung jedes Zugriffs.</p>
+      <a href="/de/extensions/vault/" class="fw-semibold text-decoration-none" style="font-size: 1rem; color: #FF4D00;">Ansehen &rarr;</a>
     </div></div>
   </div>
 </div>
@@ -1920,16 +1920,16 @@ VALUES (626, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 410, 410, 'html', 'Netr
     <div class="card h-100 border-0 shadow-sm"><div class="card-body">
       <div class="d-flex align-items-center gap-2 mb-2">
         <span class="badge rounded-pill text-white" style="background: #2F99A4; font-size: 0.65rem;">Cache</span>
-        <h6 class="card-title fw-bold mb-0" style="font-size: 0.92rem;">Temporal Cache</h6>
+        <h6 class="card-title fw-bold mb-0" style="font-size: 1rem;">Temporal Cache</h6>
       </div>
-      <p class="card-text text-muted" style="font-size: 0.82rem;">Der Cache wird automatisch ungültig, sobald zeitgesteuerte Inhalte erscheinen oder ablaufen.</p>
-      <a href="/de/extensions/temporal-cache/" class="fw-semibold text-decoration-none" style="font-size: 0.82rem; color: #FF4D00;">Ansehen &rarr;</a>
+      <p class="card-text text-muted" style="font-size: 1rem;">Der Cache wird automatisch ungültig, sobald zeitgesteuerte Inhalte erscheinen oder ablaufen.</p>
+      <a href="/de/extensions/temporal-cache/" class="fw-semibold text-decoration-none" style="font-size: 1rem; color: #FF4D00;">Ansehen &rarr;</a>
     </div></div>
   </div>
 </div>
 
 <div class="text-center mt-4 pt-3" style="border-top: 1px solid rgba(0,0,0,0.06);">
-  <p class="text-muted mb-2" style="font-size: 0.82rem;">Alle Erweiterungen sind quelloffen und mit TYPO3 v14 kompatibel.</p>
+  <p class="text-muted mb-2" style="font-size: 1rem;">Alle Erweiterungen sind quelloffen und mit TYPO3 v14 kompatibel.</p>
   <a href="https://github.com/netresearch" target="_blank" rel="noopener" class="btn btn-sm text-white" style="background: #2F99A4;">Alle Projekte auf GitHub</a>
 </div>',
 0, 100, 0, 0)
@@ -1993,7 +1993,7 @@ VALUES (9201, 102, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 400, 400, 'html', 'RTE
   <div class="col-md-4">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body text-center py-4">
-        <h6 class="fw-bold" style="font-size: 0.88rem;">Block-Bilder</h6>
+        <h6 class="fw-bold" style="font-size: 1rem;">Block-Bilder</h6>
         <p class="text-muted mb-0" style="font-size: 0.78rem;">Eigenständige Bilder mit Bildunterschrift und Ausrichtung. Sie laufen durch die TYPO3-Bildverarbeitung und bekommen ein responsives srcset.</p>
       </div>
     </div>
@@ -2001,7 +2001,7 @@ VALUES (9201, 102, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 400, 400, 'html', 'RTE
   <div class="col-md-4">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body text-center py-4">
-        <h6 class="fw-bold" style="font-size: 0.88rem;">Inline-Bilder</h6>
+        <h6 class="fw-bold" style="font-size: 1rem;">Inline-Bilder</h6>
         <p class="text-muted mb-0" style="font-size: 0.78rem;">Bilder, die im Textfluss mitlaufen — Icons, Logos und kleine Illustrationen mitten im Absatz.</p>
       </div>
     </div>
@@ -2009,7 +2009,7 @@ VALUES (9201, 102, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 400, 400, 'html', 'RTE
   <div class="col-md-4">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body text-center py-4">
-        <h6 class="fw-bold" style="font-size: 0.88rem;">Klick zum Vergrößern</h6>
+        <h6 class="fw-bold" style="font-size: 1rem;">Klick zum Vergrößern</h6>
         <p class="text-muted mb-0" style="font-size: 0.78rem;">Lightbox-Popup über <code>data-htmlarea-zoom</code>. Ein Klick auf das Bild öffnet die volle Auflösung.</p>
       </div>
     </div>
@@ -2019,13 +2019,13 @@ VALUES (9201, 102, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 400, 400, 'html', 'RTE
 <h2 class="fw-bold mb-3" style="font-size: 1.2rem;">Live-Demos</h2>
 
 <h3 class="fw-bold mb-2" style="font-size: 1rem;">Block-Bild</h3>
-<p class="text-muted mb-2" style="font-size: 0.88rem;">Ein eigenständiges Bild, im CKEditor eingefügt und mit responsivem srcset ausgegeben:</p>
+<p class="text-muted mb-2" style="font-size: 1rem;">Ein eigenständiges Bild, im CKEditor eingefügt und mit responsivem srcset ausgegeben:</p>
 <p><img src="/fileadmin/user_upload/images/Home/CH5_7354.jpg" alt="Teamfoto (Demo)" width="800" data-htmlarea-file-uid="190" data-htmlarea-file-table="sys_file"></p>
 
 <h3 class="fw-bold mb-2 mt-4" style="font-size: 1rem;">Inline-Bild im Text</h3>
-<p style="font-size: 0.88rem;">Text kann Inline-Bilder enthalten, etwa dieses <img class="image image-inline" src="/fileadmin/user_upload/images/netresearch-typo3-demo.png" alt="Inline-Logo" width="60" data-htmlarea-file-uid="1" data-htmlarea-file-table="sys_file"> Logo, das ganz normal im Absatz mitläuft.</p>
+<p style="font-size: 1rem;">Text kann Inline-Bilder enthalten, etwa dieses <img class="image image-inline" src="/fileadmin/user_upload/images/netresearch-typo3-demo.png" alt="Inline-Logo" width="60" data-htmlarea-file-uid="1" data-htmlarea-file-table="sys_file"> Logo, das ganz normal im Absatz mitläuft.</p>
 
-<div class="alert alert-light border mt-4" role="alert" style="font-size: 0.82rem;">
+<div class="alert alert-light border mt-4" role="alert" style="font-size: 1rem;">
   <strong style="color: #2F99A4;">Für Integratoren:</strong> Diese Seite im TYPO3-Backend öffnen — dann zeigt sich die Bild-Schaltfläche in der CKEditor-Toolbar. Alle Bilder oben stecken im Rich Text, nicht in einem Bild-Inhaltselement.
 </div>',
 0, 100, 0, 0)
@@ -2036,7 +2036,7 @@ ON DUPLICATE KEY UPDATE
 -- Übersetzung von tt_content 601 (Seite 102, deutsche Seite 9101)
 INSERT INTO tt_content (uid, pid, tstamp, crdate, sys_language_uid, l18n_parent, l10n_source, CType, header, bodytext, colPos, sorting, hidden, deleted)
 VALUES (9202, 102, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 601, 601, 'text', 'Klick zum Vergrößern (Lightbox) — Live-Demo',
-'<p class="text-muted mb-2" style="font-size: 0.88rem;">Ein Klick auf das Bild unten öffnet das Zoom-Popup. Weil dies ein normales Text-Element ist, läuft sein Rich Text durch <code>lib.parseFunc_RTE</code> — und erst dadurch macht rte_ckeditor_image aus dem <code>data-htmlarea-zoom</code>-Bild einen Link zum Vergrößern:</p>
+'<p class="text-muted mb-2" style="font-size: 1rem;">Ein Klick auf das Bild unten öffnet das Zoom-Popup. Weil dies ein normales Text-Element ist, läuft sein Rich Text durch <code>lib.parseFunc_RTE</code> — und erst dadurch macht rte_ckeditor_image aus dem <code>data-htmlarea-zoom</code>-Bild einen Link zum Vergrößern:</p>
 <p><img src="/fileadmin/user_upload/images/Home/CH5_7203.jpg" alt="Zum Vergrößern klicken" width="400" data-htmlarea-file-uid="188" data-htmlarea-file-table="sys_file" data-htmlarea-zoom="true"></p>',
 0, 150, 0, 0)
 ON DUPLICATE KEY UPDATE
@@ -2064,52 +2064,52 @@ VALUES (9203, 103, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 401, 401, 'html', 'KI-
   <div class="col-md-4">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Umschreiben &amp; umformulieren</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;">Den Ton von förmlich auf locker drehen, verschachtelte Sätze vereinfachen oder eine Passage klarer fassen — ohne den Editor zu verlassen.</p>
+        <h6 class="fw-bold" style="font-size: 1rem; color: #2F99A4;">Umschreiben &amp; umformulieren</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;">Den Ton von förmlich auf locker drehen, verschachtelte Sätze vereinfachen oder eine Passage klarer fassen — ohne den Editor zu verlassen.</p>
       </div>
     </div>
   </div>
   <div class="col-md-4">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Zusammenfassen &amp; ausbauen</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;">Lange Artikel auf die Kernaussagen eindampfen oder aus Stichpunkten ausformulierte Absätze machen.</p>
+        <h6 class="fw-bold" style="font-size: 1rem; color: #2F99A4;">Zusammenfassen &amp; ausbauen</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;">Lange Artikel auf die Kernaussagen eindampfen oder aus Stichpunkten ausformulierte Absätze machen.</p>
       </div>
     </div>
   </div>
   <div class="col-md-4">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Übersetzen &amp; korrigieren</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;">Zwischen Sprachen übersetzen oder Grammatik- und Rechtschreibfehler beheben. Eigene Aufgaben mit frei formulierten Prompts.</p>
+        <h6 class="fw-bold" style="font-size: 1rem; color: #2F99A4;">Übersetzen &amp; korrigieren</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;">Zwischen Sprachen übersetzen oder Grammatik- und Rechtschreibfehler beheben. Eigene Aufgaben mit frei formulierten Prompts.</p>
       </div>
     </div>
   </div>
 </div>
 
 <div class="rounded-3 p-3 mb-4" style="background: #f8f9fa;">
-  <h5 class="fw-bold mb-3" style="font-size: 0.95rem;">So läuft es ab</h5>
+  <h5 class="fw-bold mb-3" style="font-size: 1rem;">So läuft es ab</h5>
   <div class="d-flex flex-column gap-2">
     <div class="d-flex align-items-start gap-2">
       <span class="badge rounded-circle text-white flex-shrink-0 d-flex align-items-center justify-content-center" style="width: 24px; height: 24px; font-size: 0.7rem; background: #2F99A4;">1</span>
-      <span style="font-size: 0.84rem;">Im Backend-Modul <a href="/de/erweiterungen/nr-llm" style="color: #2F99A4;">NR LLM</a> einen beliebigen Anbieter hinterlegen — OpenAI ist die getestete Voreinstellung</span>
+      <span style="font-size: 1rem;">Im Backend-Modul <a href="/de/erweiterungen/nr-llm" style="color: #2F99A4;">NR LLM</a> einen beliebigen Anbieter hinterlegen — OpenAI ist die getestete Voreinstellung</span>
     </div>
     <div class="d-flex align-items-start gap-2">
       <span class="badge rounded-circle text-white flex-shrink-0 d-flex align-items-center justify-content-center" style="width: 24px; height: 24px; font-size: 0.7rem; background: #2F99A4;">2</span>
-      <span style="font-size: 0.84rem;">Im CKEditor Text markieren und die Cowriter-Schaltfläche in der Toolbar anklicken</span>
+      <span style="font-size: 1rem;">Im CKEditor Text markieren und die Cowriter-Schaltfläche in der Toolbar anklicken</span>
     </div>
     <div class="d-flex align-items-start gap-2">
       <span class="badge rounded-circle text-white flex-shrink-0 d-flex align-items-center justify-content-center" style="width: 24px; height: 24px; font-size: 0.7rem; background: #2F99A4;">3</span>
-      <span style="font-size: 0.84rem;">Eine Aufgabe wählen (Umschreiben, Zusammenfassen, Übersetzen …) oder einen eigenen Prompt eintippen</span>
+      <span style="font-size: 1rem;">Eine Aufgabe wählen (Umschreiben, Zusammenfassen, Übersetzen …) oder einen eigenen Prompt eintippen</span>
     </div>
     <div class="d-flex align-items-start gap-2">
       <span class="badge rounded-circle text-white flex-shrink-0 d-flex align-items-center justify-content-center" style="width: 24px; height: 24px; font-size: 0.7rem; background: #FF4D00;">4</span>
-      <span style="font-size: 0.84rem;">Den Vorschlag prüfen und per Klick übernehmen</span>
+      <span style="font-size: 1rem;">Den Vorschlag prüfen und per Klick übernehmen</span>
     </div>
   </div>
 </div>
 
-<div class="alert alert-light border" role="alert" style="font-size: 0.82rem;">
+<div class="alert alert-light border" role="alert" style="font-size: 1rem;">
   <strong style="color: #2F99A4;">Ausprobieren:</strong> Diese Seite im TYPO3-Backend öffnen — die Cowriter-Schaltfläche sitzt in der CKEditor-Toolbar.
 </div>',
 0, 100, 0, 0)
@@ -2138,38 +2138,38 @@ VALUES (9204, 104, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 402, 402, 'html', 'NR 
   <div class="col-md-6">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem; color: #585961;">Anbieterverwaltung</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;">Ollama, OpenAI, Anthropic, Google oder ein eigener API-Endpoint. Der Wechsel des Anbieters kommt ohne Änderung am Erweiterungscode aus.</p>
+        <h6 class="fw-bold" style="font-size: 1rem; color: #585961;">Anbieterverwaltung</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;">Ollama, OpenAI, Anthropic, Google oder ein eigener API-Endpoint. Der Wechsel des Anbieters kommt ohne Änderung am Erweiterungscode aus.</p>
       </div>
     </div>
   </div>
   <div class="col-md-6">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem; color: #585961;">Modell-Registry</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;">Verfügbare Modelle mit Temperature, Token-Limit und Kontextfenster pflegen und einzelnen Aufgaben zuordnen.</p>
+        <h6 class="fw-bold" style="font-size: 1rem; color: #585961;">Modell-Registry</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;">Verfügbare Modelle mit Temperature, Token-Limit und Kontextfenster pflegen und einzelnen Aufgaben zuordnen.</p>
       </div>
     </div>
   </div>
   <div class="col-md-6">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem; color: #585961;">Aufgabenvorlagen</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;">Wiederverwendbare Prompt-Vorlagen, die sich alle Erweiterungen teilen. System-Prompt, Ausgabeformat und Vorgaben werden einmal festgelegt.</p>
+        <h6 class="fw-bold" style="font-size: 1rem; color: #585961;">Aufgabenvorlagen</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;">Wiederverwendbare Prompt-Vorlagen, die sich alle Erweiterungen teilen. System-Prompt, Ausgabeformat und Vorgaben werden einmal festgelegt.</p>
       </div>
     </div>
   </div>
   <div class="col-md-6">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem; color: #585961;">Backend-Modul</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;">Alle LLM-Ressourcen unter Admin-Werkzeuge &gt; LLM verwalten: Prompts testen, Verbrauch beobachten, Profile einrichten.</p>
+        <h6 class="fw-bold" style="font-size: 1rem; color: #585961;">Backend-Modul</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;">Alle LLM-Ressourcen unter Admin-Werkzeuge &gt; LLM verwalten: Prompts testen, Verbrauch beobachten, Profile einrichten.</p>
       </div>
     </div>
   </div>
 </div>
 
-<div class="alert alert-light border" role="alert" style="font-size: 0.82rem;">
+<div class="alert alert-light border" role="alert" style="font-size: 1rem;">
   <strong style="color: #585961;">Treibt an:</strong> <a href="/de/erweiterungen/cowriter" style="color: #2F99A4;">KI-Cowriter</a> und <a href="/de/erweiterungen/landingpage-generator" style="color: #2F99A4;">Landing Page Generator</a> beziehen ihre KI-Funktionen über NR LLM.
 </div>',
 0, 100, 0, 0)
@@ -2214,22 +2214,22 @@ VALUES (9205, 105, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 403, 403, 'html', 'Lan
   <div class="col-md-6">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Strukturierte Ausgabe</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;">Die KI erzeugt echte TYPO3-Inhaltselemente: Hero-Bereiche, Feature-Grids, Textblöcke und Kontaktformulare, keinen bloßen Fließtext.</p>
+        <h6 class="fw-bold" style="font-size: 1rem; color: #2F99A4;">Strukturierte Ausgabe</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;">Die KI erzeugt echte TYPO3-Inhaltselemente: Hero-Bereiche, Feature-Grids, Textblöcke und Kontaktformulare, keinen bloßen Fließtext.</p>
       </div>
     </div>
   </div>
   <div class="col-md-6">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Assistent im Backend</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;">Grafischer Assistent unter Web &gt; Landingpages. Briefing eintragen, Vorlage wählen, Ergebnis prüfen, veröffentlichen.</p>
+        <h6 class="fw-bold" style="font-size: 1rem; color: #2F99A4;">Assistent im Backend</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;">Grafischer Assistent unter Web &gt; Landingpages. Briefing eintragen, Vorlage wählen, Ergebnis prüfen, veröffentlichen.</p>
       </div>
     </div>
   </div>
 </div>
 
-<div class="alert alert-light border" role="alert" style="font-size: 0.82rem;">
+<div class="alert alert-light border" role="alert" style="font-size: 1rem;">
   <strong style="color: #2F99A4;">Voraussetzung:</strong> <a href="/de/erweiterungen/nr-llm" style="color: #2F99A4;">NR LLM</a> mit einem konfigurierten Anbieter. Der Assistent liegt im TYPO3-Backend unter Web &gt; Landingpages.
 </div>',
 0, 100, 0, 0)
@@ -2258,38 +2258,38 @@ VALUES (9206, 106, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 404, 404, 'html', 'Pas
   <div class="col-md-6">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem;">Pflicht je Gruppe</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;">Vier Stufen: <strong>Aus</strong>, <strong>Empfohlen</strong> (Hinweis bei der Anmeldung), <strong>Erforderlich</strong> (mit Übergangsfrist), <strong>Erzwungen</strong> (sofort). Einstellbar je Backend-Benutzergruppe.</p>
+        <h6 class="fw-bold" style="font-size: 1rem;">Pflicht je Gruppe</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;">Vier Stufen: <strong>Aus</strong>, <strong>Empfohlen</strong> (Hinweis bei der Anmeldung), <strong>Erforderlich</strong> (mit Übergangsfrist), <strong>Erzwungen</strong> (sofort). Einstellbar je Backend-Benutzergruppe.</p>
       </div>
     </div>
   </div>
   <div class="col-md-6">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem;">Dashboard zur Verbreitung</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;">Zeigt den Passkey-Rollout über alle Backend-Benutzer hinweg: wer bereits registriert hat, wo noch ein Hinweis nötig ist und wie hoch die Quote insgesamt liegt.</p>
+        <h6 class="fw-bold" style="font-size: 1rem;">Dashboard zur Verbreitung</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;">Zeigt den Passkey-Rollout über alle Backend-Benutzer hinweg: wer bereits registriert hat, wo noch ein Hinweis nötig ist und wie hoch die Quote insgesamt liegt.</p>
       </div>
     </div>
   </div>
   <div class="col-md-6">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem;">Mehrere Geräte</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;">Passkeys lassen sich auf Laptop, Smartphone und Security Keys registrieren. Verwaltet werden sie unter Benutzereinstellungen &gt; Passkeys.</p>
+        <h6 class="fw-bold" style="font-size: 1rem;">Mehrere Geräte</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;">Passkeys lassen sich auf Laptop, Smartphone und Security Keys registrieren. Verwaltet werden sie unter Benutzereinstellungen &gt; Passkeys.</p>
       </div>
     </div>
   </div>
   <div class="col-md-6">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem;">Hinweise nach der Anmeldung</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;">Konfigurierbare Aufforderungen zur Einrichtung nach der Passwortanmeldung. Die Umstellung lässt sich schrittweise anstoßen oder sofort erzwingen.</p>
+        <h6 class="fw-bold" style="font-size: 1rem;">Hinweise nach der Anmeldung</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;">Konfigurierbare Aufforderungen zur Einrichtung nach der Passwortanmeldung. Die Umstellung lässt sich schrittweise anstoßen oder sofort erzwingen.</p>
       </div>
     </div>
   </div>
 </div>
 
-<p class="text-muted" style="font-size: 0.82rem;">Siehe auch: <a href="/de/erweiterungen/passkeys-frontend" style="color: #2F99A4; font-weight: 600;">Passkeys (Frontend)</a> für die Anmeldung von Frontend-Benutzern.</p>',
+<p class="text-muted" style="font-size: 1rem;">Siehe auch: <a href="/de/erweiterungen/passkeys-frontend" style="color: #2F99A4; font-weight: 600;">Passkeys (Frontend)</a> für die Anmeldung von Frontend-Benutzern.</p>',
 0, 100, 0, 0)
 ON DUPLICATE KEY UPDATE
   bodytext = IF(pid = VALUES(pid) AND CType = VALUES(CType) AND header = VALUES(header),
@@ -2316,32 +2316,32 @@ VALUES (9207, 107, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 405, 405, 'html', 'NR 
   <div class="col-md-6">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem;">Envelope-Verschlüsselung</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;">Jedes Secret wird mit einem eigenen Data Key verschlüsselt, den wiederum ein Master Key umschließt. Envelope-Verschlüsselung nach gängigem Standard.</p>
+        <h6 class="fw-bold" style="font-size: 1rem;">Envelope-Verschlüsselung</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;">Jedes Secret wird mit einem eigenen Data Key verschlüsselt, den wiederum ein Master Key umschließt. Envelope-Verschlüsselung nach gängigem Standard.</p>
       </div>
     </div>
   </div>
   <div class="col-md-6">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem;">Zugriffssteuerung</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;">Secrets lassen sich auf Erweiterungen, Backend-Benutzergruppen oder Umgebungen einschränken. Feingranular geregelt, wer was lesen darf.</p>
+        <h6 class="fw-bold" style="font-size: 1rem;">Zugriffssteuerung</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;">Secrets lassen sich auf Erweiterungen, Backend-Benutzergruppen oder Umgebungen einschränken. Feingranular geregelt, wer was lesen darf.</p>
       </div>
     </div>
   </div>
   <div class="col-md-6">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem;">CLI &amp; Backend-Modul</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;"><code>vault:init</code>, <code>vault:store</code>, <code>vault:retrieve</code>, <code>vault:rotate</code>: Secrets über die CLI oder das grafische Backend-Modul verwalten.</p>
+        <h6 class="fw-bold" style="font-size: 1rem;">CLI &amp; Backend-Modul</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;"><code>vault:init</code>, <code>vault:store</code>, <code>vault:retrieve</code>, <code>vault:rotate</code>: Secrets über die CLI oder das grafische Backend-Modul verwalten.</p>
       </div>
     </div>
   </div>
   <div class="col-md-6">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem;">Audit &amp; Rotation</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;">Das Audit-Log hält fest, wer wann auf welches Secret zugegriffen hat. Master Keys lassen sich rotieren, ohne alle Secrets neu zu verschlüsseln.</p>
+        <h6 class="fw-bold" style="font-size: 1rem;">Audit &amp; Rotation</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;">Das Audit-Log hält fest, wer wann auf welches Secret zugegriffen hat. Master Keys lassen sich rotieren, ohne alle Secrets neu zu verschlüsseln.</p>
       </div>
     </div>
   </div>
@@ -2372,22 +2372,22 @@ VALUES (9208, 108, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 406, 406, 'html', 'Aut
   <div class="col-md-6">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem;">Automatische Invalidierung</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;">Der Cache wird genau dann geleert, wenn ein Inhalt sichtbar wird oder ausläuft. Keine veralteten Seiten mehr, die längst ausgeblendete Inhalte zeigen.</p>
+        <h6 class="fw-bold" style="font-size: 1rem;">Automatische Invalidierung</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;">Der Cache wird genau dann geleert, wenn ein Inhalt sichtbar wird oder ausläuft. Keine veralteten Seiten mehr, die längst ausgeblendete Inhalte zeigen.</p>
       </div>
     </div>
   </div>
   <div class="col-md-6">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem;">Flexibler Geltungsbereich</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;">Invalidieren lassen sich einzelne Seiten, ganze Seitenbäume oder alle Seiten. Wahlweise über den Scheduler oder bei Bedarf.</p>
+        <h6 class="fw-bold" style="font-size: 1rem;">Flexibler Geltungsbereich</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;">Invalidieren lassen sich einzelne Seiten, ganze Seitenbäume oder alle Seiten. Wahlweise über den Scheduler oder bei Bedarf.</p>
       </div>
     </div>
   </div>
 </div>
 
-<div class="alert alert-light border" role="alert" style="font-size: 0.82rem;">
+<div class="alert alert-light border" role="alert" style="font-size: 1rem;">
   <strong style="color: #585961;">Ohne Konfiguration:</strong> Greift für alle Inhaltstypen, die die TYPO3-Felder starttime und endtime nutzen. Installieren und vergessen.
 </div>',
 0, 100, 0, 0)
@@ -2433,60 +2433,60 @@ VALUES (9209, 109, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 407, 407, 'html', 'Pas
   <div class="col-md-6">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem;">Passkey steht vorn</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;">Felogin wird durch eine Variante mit Reitern ersetzt: Der Passkey-Reiter ist vorausgewählt, das Passwort bleibt als Rückfallebene. Discoverable Credentials füllt der Browser selbst aus.</p>
+        <h6 class="fw-bold" style="font-size: 1rem;">Passkey steht vorn</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;">Felogin wird durch eine Variante mit Reitern ersetzt: Der Passkey-Reiter ist vorausgewählt, das Passwort bleibt als Rückfallebene. Discoverable Credentials füllt der Browser selbst aus.</p>
       </div>
     </div>
   </div>
   <div class="col-md-6">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem;">Plugin zur Verwaltung</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;">Ein Frontend-Plugin, mit dem Benutzer ihre Passkeys anlegen, umbenennen und wieder entfernen. Wiederherstellungscodes sichern den Zugang ab, falls alle Schlüssel verloren gehen.</p>
+        <h6 class="fw-bold" style="font-size: 1rem;">Plugin zur Verwaltung</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;">Ein Frontend-Plugin, mit dem Benutzer ihre Passkeys anlegen, umbenennen und wieder entfernen. Wiederherstellungscodes sichern den Zugang ab, falls alle Schlüssel verloren gehen.</p>
       </div>
     </div>
   </div>
   <div class="col-md-6">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem;">Kein Template-Aufwand</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;">Das Felogin-Override greift sofort. Passkey-Reiter, Verwaltungsoberfläche und die Aufforderung zum Einrichten laufen ohne Zutun. Ein eigenes Fluid-Template braucht es nicht.</p>
+        <h6 class="fw-bold" style="font-size: 1rem;">Kein Template-Aufwand</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;">Das Felogin-Override greift sofort. Passkey-Reiter, Verwaltungsoberfläche und die Aufforderung zum Einrichten laufen ohne Zutun. Ein eigenes Fluid-Template braucht es nicht.</p>
       </div>
     </div>
   </div>
   <div class="col-md-6">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem;">Wiederherstellungscodes</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;">Einmalcodes für den Fall, dass alle Passkeys abhandenkommen. Erzeugen, herunterladen und verwalten lässt sich alles im Frontend.</p>
+        <h6 class="fw-bold" style="font-size: 1rem;">Wiederherstellungscodes</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;">Einmalcodes für den Fall, dass alle Passkeys abhandenkommen. Erzeugen, herunterladen und verwalten lässt sich alles im Frontend.</p>
       </div>
     </div>
   </div>
 </div>
 
 <div class="rounded-3 p-3 mb-4" style="background: #f8f9fa;">
-  <h5 class="fw-bold mb-3" style="font-size: 0.95rem;">So funktioniert es</h5>
+  <h5 class="fw-bold mb-3" style="font-size: 1rem;">So funktioniert es</h5>
   <div class="d-flex flex-column gap-2">
     <div class="d-flex align-items-start gap-2">
       <span class="badge rounded-circle text-white flex-shrink-0 d-flex align-items-center justify-content-center" style="width: 24px; height: 24px; font-size: 0.7rem; background: #2F99A4;">1</span>
-      <span style="font-size: 0.84rem;"><code>composer require netresearch/nr-passkeys-fe</code></span>
+      <span style="font-size: 1rem;"><code>composer require netresearch/nr-passkeys-fe</code></span>
     </div>
     <div class="d-flex align-items-start gap-2">
       <span class="badge rounded-circle text-white flex-shrink-0 d-flex align-items-center justify-content-center" style="width: 24px; height: 24px; font-size: 0.7rem; background: #2F99A4;">2</span>
-      <span style="font-size: 0.84rem;">Das Plugin zur Passkey-Verwaltung auf einer geschützten Seite einbinden</span>
+      <span style="font-size: 1rem;">Das Plugin zur Passkey-Verwaltung auf einer geschützten Seite einbinden</span>
     </div>
     <div class="d-flex align-items-start gap-2">
       <span class="badge rounded-circle text-white flex-shrink-0 d-flex align-items-center justify-content-center" style="width: 24px; height: 24px; font-size: 0.7rem; background: #2F99A4;">3</span>
-      <span style="font-size: 0.84rem;">Felogin bekommt automatisch einen Passkey-Reiter — die biometrische Anmeldung steht damit vorn</span>
+      <span style="font-size: 1rem;">Felogin bekommt automatisch einen Passkey-Reiter — die biometrische Anmeldung steht damit vorn</span>
     </div>
     <div class="d-flex align-items-start gap-2">
       <span class="badge rounded-circle text-white flex-shrink-0 d-flex align-items-center justify-content-center" style="width: 24px; height: 24px; font-size: 0.7rem; background: #FF4D00;">4</span>
-      <span style="font-size: 0.84rem;">Benutzer richten ihre Passkeys ein und melden sich mit Fingerabdruck, Gesicht oder Security-Key an</span>
+      <span style="font-size: 1rem;">Benutzer richten ihre Passkeys ein und melden sich mit Fingerabdruck, Gesicht oder Security-Key an</span>
     </div>
   </div>
 </div>
 
-<p class="text-muted" style="font-size: 0.82rem;">Siehe auch: <a href="/de/erweiterungen/passkeys-backend" style="color: #2F99A4; font-weight: 600;">Passkeys (Backend)</a> für die Anmeldung von Backend-Benutzern.</p>',
+<p class="text-muted" style="font-size: 1rem;">Siehe auch: <a href="/de/erweiterungen/passkeys-backend" style="color: #2F99A4; font-weight: 600;">Passkeys (Backend)</a> für die Anmeldung von Backend-Benutzern.</p>',
 0, 100, 0, 0)
 ON DUPLICATE KEY UPDATE
   bodytext = IF(pid = VALUES(pid) AND CType = VALUES(CType) AND header = VALUES(header),
@@ -2513,38 +2513,38 @@ VALUES (9210, 111, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 409, 409, 'html', 'Vor
   <div class="col-md-6">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Vorhandenes weiterverwenden</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;">Ausgangspunkt ist eine bestehende Seite, daraus entstehen die abgeleiteten Formate. Der Quelltext muss nicht noch einmal von Hand erfasst werden.</p>
+        <h6 class="fw-bold" style="font-size: 1rem; color: #2F99A4;">Vorhandenes weiterverwenden</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;">Ausgangspunkt ist eine bestehende Seite, daraus entstehen die abgeleiteten Formate. Der Quelltext muss nicht noch einmal von Hand erfasst werden.</p>
       </div>
     </div>
   </div>
   <div class="col-md-6">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Varianten je Kanal</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;">Kurze Social-Texte, knappe Zusammenfassungen und alternative Formulierungen, zugeschnitten auf die jeweilige Zielgruppe und den jeweiligen Kanal.</p>
+        <h6 class="fw-bold" style="font-size: 1rem; color: #2F99A4;">Varianten je Kanal</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;">Kurze Social-Texte, knappe Zusammenfassungen und alternative Formulierungen, zugeschnitten auf die jeweilige Zielgruppe und den jeweiligen Kanal.</p>
       </div>
     </div>
   </div>
   <div class="col-md-6">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Setzt auf NR LLM auf</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;">Anbieter und Modelle kommen aus der Konfiguration von <a href="/de/erweiterungen/nr-llm" style="color: #2F99A4;">NR LLM</a> — über nr-llm lässt sich ein beliebiger Anbieter einbinden. Die Aufbereitung folgt damit dem zentral eingerichteten Zugang.</p>
+        <h6 class="fw-bold" style="font-size: 1rem; color: #2F99A4;">Setzt auf NR LLM auf</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;">Anbieter und Modelle kommen aus der Konfiguration von <a href="/de/erweiterungen/nr-llm" style="color: #2F99A4;">NR LLM</a> — über nr-llm lässt sich ein beliebiger Anbieter einbinden. Die Aufbereitung folgt damit dem zentral eingerichteten Zugang.</p>
       </div>
     </div>
   </div>
   <div class="col-md-6">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Die Redaktion entscheidet</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;">Der Vorschlag der KI wird geprüft und überarbeitet, bevor er irgendwo landet. Was am Ende veröffentlicht wird, bestimmen weiterhin Sie.</p>
+        <h6 class="fw-bold" style="font-size: 1rem; color: #2F99A4;">Die Redaktion entscheidet</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;">Der Vorschlag der KI wird geprüft und überarbeitet, bevor er irgendwo landet. Was am Ende veröffentlicht wird, bestimmen weiterhin Sie.</p>
       </div>
     </div>
   </div>
 </div>
 
-<div class="alert alert-light border" role="alert" style="font-size: 0.82rem;">
+<div class="alert alert-light border" role="alert" style="font-size: 1rem;">
   <strong style="color: #2F99A4;">Wo es zu finden ist:</strong> Das Modul Repurpose liegt im TYPO3-Backend unter Web &gt; Repurpose.
 </div>',
 0, 100, 0, 0)
@@ -2573,38 +2573,38 @@ VALUES (9211, 157, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 522, 522, 'html', 'KI 
   <div class="col-md-6">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Antworten aus echten Daten</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;">Jede Antwort stützt sich auf das, was die MCP-Tools tatsächlich zurückgeben: Seiten, Datensätze, Backend-Benutzer, Erweiterungen und Logs. Geraten wird nicht.</p>
+        <h6 class="fw-bold" style="font-size: 1rem; color: #2F99A4;">Antworten aus echten Daten</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;">Jede Antwort stützt sich auf das, was die MCP-Tools tatsächlich zurückgeben: Seiten, Datensätze, Backend-Benutzer, Erweiterungen und Logs. Geraten wird nicht.</p>
       </div>
     </div>
   </div>
   <div class="col-md-6">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Liest &amp; handelt</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;">Einen Datensatz nachschlagen, einen auffälligen Log-Eintrag ansehen oder Inhalte ändern — alles aus dem Gespräch heraus. Den passenden Tool-Aufruf übernimmt der Agent.</p>
+        <h6 class="fw-bold" style="font-size: 1rem; color: #2F99A4;">Liest &amp; handelt</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;">Einen Datensatz nachschlagen, einen auffälligen Log-Eintrag ansehen oder Inhalte ändern — alles aus dem Gespräch heraus. Den passenden Tool-Aufruf übernimmt der Agent.</p>
       </div>
     </div>
   </div>
   <div class="col-md-6">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Setzt auf NR LLM auf</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;">Anbieter, Modell und Aufgaben-Templates stammen aus <a href="/de/erweiterungen/nr-llm" style="color: #2F99A4;">NR LLM</a>; über nr-llm lässt sich ein beliebiger Anbieter einbinden. Eine eigene KI-Einrichtung braucht es nicht.</p>
+        <h6 class="fw-bold" style="font-size: 1rem; color: #2F99A4;">Setzt auf NR LLM auf</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;">Anbieter, Modell und Aufgaben-Templates stammen aus <a href="/de/erweiterungen/nr-llm" style="color: #2F99A4;">NR LLM</a>; über nr-llm lässt sich ein beliebiger Anbieter einbinden. Eine eigene KI-Einrichtung braucht es nicht.</p>
       </div>
     </div>
   </div>
   <div class="col-md-6">
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
-        <h6 class="fw-bold" style="font-size: 0.9rem; color: #2F99A4;">Spricht Ihre Sprache</h6>
-        <p class="text-muted mb-0" style="font-size: 0.82rem;">Der Agent antwortet in der Sprache, in der Sie schreiben, und gibt sich nie als ein fremdes Produkt aus — es ist der Netresearch Backend AI Chat.</p>
+        <h6 class="fw-bold" style="font-size: 1rem; color: #2F99A4;">Spricht Ihre Sprache</h6>
+        <p class="text-muted mb-0" style="font-size: 1rem;">Der Agent antwortet in der Sprache, in der Sie schreiben, und gibt sich nie als ein fremdes Produkt aus — es ist der Netresearch Backend AI Chat.</p>
       </div>
     </div>
   </div>
 </div>
 
-<div class="alert alert-light border" role="alert" style="font-size: 0.82rem;">
+<div class="alert alert-light border" role="alert" style="font-size: 1rem;">
   <strong style="color: #2F99A4;">Ausprobieren:</strong> Den AI Chat im TYPO3-Backend öffnen (Admin Tools / Web) und ihn nach dieser Installation fragen.
 </div>',
 0, 100, 0, 0)
@@ -2619,7 +2619,7 @@ VALUES (9212, 158, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 602, 602, 'html', '',
   <div class="card-body py-4">
     <h1 class="h3 fw-bold mb-3">KI-Suche &amp; Chat</h1>
     <p class="mb-2" style="max-width: 720px;">Stellen Sie dieser Website eine Frage in natürlicher Sprache. nr_ai_search legt die Seiteninhalte als Embeddings in einem Vector Store ab und stützt jede Antwort ausschließlich auf das, was dabei gefunden wird &mdash; das Suchfeld liefert eine zusammengefasste Antwort samt Quellen, das Chat-Widget führt ein kurzes, an den Seiteninhalt gebundenes Gespräch.</p>
-    <p class="text-muted mb-0" style="font-size: 0.9rem; max-width: 720px;">Hinweis zum Betrieb: Antworten setzen zweierlei voraus &mdash; einen API-Schlüssel des LLM-Anbieters, hinterlegt im Vault-Modul und für das Frontend freigegeben, sowie Inhalte, die indexiert und als Embeddings abgelegt sind. Über nr-llm lässt sich ein beliebiger Anbieter einbinden, getestet ist die Voreinstellung OpenAI. Fehlt eines von beidem, werden die Widgets zwar ausgegeben, melden aber, dass sie nicht antworten können.</p>
+    <p class="text-muted mb-0" style="font-size: 1rem; max-width: 720px;">Hinweis zum Betrieb: Antworten setzen zweierlei voraus &mdash; einen API-Schlüssel des LLM-Anbieters, hinterlegt im Vault-Modul und für das Frontend freigegeben, sowie Inhalte, die indexiert und als Embeddings abgelegt sind. Über nr-llm lässt sich ein beliebiger Anbieter einbinden, getestet ist die Voreinstellung OpenAI. Fehlt eines von beidem, werden die Widgets zwar ausgegeben, melden aber, dass sie nicht antworten können.</p>
   </div>
 </div>', 0, 100, 0, 0)
 ON DUPLICATE KEY UPDATE
@@ -2689,7 +2689,7 @@ VALUES (9215, 9003, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', '',
   <div class="card-body py-4">
     <h1 class="h3 fw-bold mb-3">Browser AI</h1>
     <p class="mb-2" style="max-width: 720px;">Ask a question about this page and have it answered on your own device. nr_browser_ai hands the text of the page to Chrome&rsquo;s built-in Gemini Nano through the Prompt API and grounds every answer in that text alone &mdash; no API key, no request to a server, no chat history, no telemetry.</p>
-    <p class="text-muted mb-0" style="font-size: 0.9rem; max-width: 720px;">Runtime note: this needs Chrome 148 or newer, about 22 GB of free storage for the model, and either a GPU with more than 4 GB of VRAM or 16 GB of RAM with four CPU cores. Every other browser sees the fallback card instead &mdash; an ordinary content element the editor selected, which is the mechanism any site would use.</p>
+    <p class="text-muted mb-0" style="font-size: 1rem; max-width: 720px;">Runtime note: this needs Chrome 148 or newer, about 22 GB of free storage for the model, and either a GPU with more than 4 GB of VRAM or 16 GB of RAM with four CPU cores. Every other browser sees the fallback card instead &mdash; an ordinary content element the editor selected, which is the mechanism any site would use.</p>
   </div>
 </div>', 0, 100, 0, 0)
 ON DUPLICATE KEY UPDATE
@@ -2749,7 +2749,7 @@ INSERT INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPo
 VALUES (9217, 9003, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', '',
 '<div class="alert alert-light border" role="alert">
   <p class="mb-2"><strong style="color: #2F99A4;">Browser AI is not available in this browser.</strong></p>
-  <p class="mb-0" style="font-size: 0.9rem;">The assistant runs entirely on the visitor&rsquo;s device and needs Chrome 148 or newer with the built-in Gemini Nano model downloaded. This box is a plain content element the editor picked as the fallback, so a visitor without the feature still gets something useful. See the <a href="https://github.com/netresearch/t3x-nr-browser-ai/blob/main/Documentation/User/BrowserSetup.rst">browser setup guide</a>, or the <a href="https://netresearch.github.io/t3x-nr-browser-ai/">standalone live demo</a>.</p>
+  <p class="mb-0" style="font-size: 1rem;">The assistant runs entirely on the visitor&rsquo;s device and needs Chrome 148 or newer with the built-in Gemini Nano model downloaded. This box is a plain content element the editor picked as the fallback, so a visitor without the feature still gets something useful. See the <a href="https://github.com/netresearch/t3x-nr-browser-ai/blob/main/Documentation/User/BrowserSetup.rst">browser setup guide</a>, or the <a href="https://netresearch.github.io/t3x-nr-browser-ai/">standalone live demo</a>.</p>
 </div>', 99, 300, 0, 0)
 ON DUPLICATE KEY UPDATE
   bodytext = IF(pid = VALUES(pid) AND CType = VALUES(CType) AND header = VALUES(header),
@@ -2837,7 +2837,7 @@ INSERT INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPo
 VALUES (9223, 9003, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', '',
 '<div class="alert alert-light border" role="alert">
   <p class="mb-2"><strong style="color: #2F99A4;">That is not on this page.</strong></p>
-  <p class="mb-0" style="font-size: 0.9rem;">The assistant answers from this page alone, so it declines rather than inventing something. This box is what an editor can put in place of that refusal &mdash; here, two places worth trying: the <a href="/search">site search</a> covers every page, and the <a href="/contact">contact page</a> reaches a person. On your own site this would be whatever actually helps.</p>
+  <p class="mb-0" style="font-size: 1rem;">The assistant answers from this page alone, so it declines rather than inventing something. This box is what an editor can put in place of that refusal &mdash; here, two places worth trying: the <a href="/search">site search</a> covers every page, and the <a href="/contact">contact page</a> reaches a person. On your own site this would be whatever actually helps.</p>
 </div>', 99, 400, 0, 0)
 ON DUPLICATE KEY UPDATE
   bodytext = IF(pid = VALUES(pid) AND CType = VALUES(CType) AND header = VALUES(header),
@@ -2853,7 +2853,7 @@ VALUES (9218, 9003, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 9215, 9215, 'html', '
   <div class="card-body py-4">
     <h1 class="h3 fw-bold mb-3">Browser-KI</h1>
     <p class="mb-2" style="max-width: 720px;">Stellen Sie eine Frage zu dieser Seite und lassen Sie sie auf Ihrem eigenen Gerät beantworten. nr_browser_ai übergibt den Text der Seite über die Prompt API an das in Chrome eingebaute Gemini Nano und stützt jede Antwort ausschließlich auf diesen Text &mdash; kein API-Schlüssel, keine Anfrage an einen Server, kein Gesprächsverlauf, keine Telemetrie.</p>
-    <p class="text-muted mb-0" style="font-size: 0.9rem; max-width: 720px;">Hinweis zum Betrieb: Voraussetzung sind Chrome 148 oder neuer, rund 22 GB freier Speicher für das Modell sowie entweder eine GPU mit mehr als 4 GB VRAM oder 16 GB RAM mit vier CPU-Kernen. Jeder andere Browser bekommt stattdessen die Fallback-Karte zu sehen &mdash; ein gewöhnliches Inhaltselement, das die Redaktion ausgewählt hat, also genau der Weg, den jede Website gehen würde.</p>
+    <p class="text-muted mb-0" style="font-size: 1rem; max-width: 720px;">Hinweis zum Betrieb: Voraussetzung sind Chrome 148 oder neuer, rund 22 GB freier Speicher für das Modell sowie entweder eine GPU mit mehr als 4 GB VRAM oder 16 GB RAM mit vier CPU-Kernen. Jeder andere Browser bekommt stattdessen die Fallback-Karte zu sehen &mdash; ein gewöhnliches Inhaltselement, das die Redaktion ausgewählt hat, also genau der Weg, den jede Website gehen würde.</p>
   </div>
 </div>', 0, 100, 0, 0)
 ON DUPLICATE KEY UPDATE
@@ -2906,7 +2906,7 @@ INSERT INTO tt_content (uid, pid, tstamp, crdate, sys_language_uid, l18n_parent,
 VALUES (9220, 9003, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 9217, 9217, 'html', '',
 '<div class="alert alert-light border" role="alert">
   <p class="mb-2"><strong style="color: #2F99A4;">Browser-KI steht in diesem Browser nicht zur Verfügung.</strong></p>
-  <p class="mb-0" style="font-size: 0.9rem;">Der Assistent läuft vollständig auf dem Gerät der Besucherin oder des Besuchers und setzt Chrome 148 oder neuer mit heruntergeladenem Gemini-Nano-Modell voraus. Dieser Kasten ist ein gewöhnliches Inhaltselement, das die Redaktion als Fallback ausgewählt hat &mdash; so bekommt auch ohne die Funktion jemand etwas Brauchbares zu sehen. Siehe die <a href="https://github.com/netresearch/t3x-nr-browser-ai/blob/main/Documentation/User/BrowserSetup.rst">Anleitung zur Browser-Einrichtung</a> oder die <a href="https://netresearch.github.io/t3x-nr-browser-ai/">eigenständige Live-Demo</a>.</p>
+  <p class="mb-0" style="font-size: 1rem;">Der Assistent läuft vollständig auf dem Gerät der Besucherin oder des Besuchers und setzt Chrome 148 oder neuer mit heruntergeladenem Gemini-Nano-Modell voraus. Dieser Kasten ist ein gewöhnliches Inhaltselement, das die Redaktion als Fallback ausgewählt hat &mdash; so bekommt auch ohne die Funktion jemand etwas Brauchbares zu sehen. Siehe die <a href="https://github.com/netresearch/t3x-nr-browser-ai/blob/main/Documentation/User/BrowserSetup.rst">Anleitung zur Browser-Einrichtung</a> oder die <a href="https://netresearch.github.io/t3x-nr-browser-ai/">eigenständige Live-Demo</a>.</p>
 </div>', 99, 300, 0, 0)
 ON DUPLICATE KEY UPDATE
   bodytext = IF(pid = VALUES(pid) AND CType = VALUES(CType) AND header = VALUES(header),
@@ -2941,7 +2941,7 @@ INSERT INTO tt_content (uid, pid, tstamp, crdate, sys_language_uid, l18n_parent,
 VALUES (9224, 9003, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 9223, 9223, 'html', '',
 '<div class="alert alert-light border" role="alert">
   <p class="mb-2"><strong style="color: #2F99A4;">Das steht nicht auf dieser Seite.</strong></p>
-  <p class="mb-0" style="font-size: 0.9rem;">Der Assistent antwortet ausschließlich aus dieser Seite und lehnt deshalb ab, statt sich etwas auszudenken. Dieser Kasten ist das, was die Redaktion anstelle der Absage zeigen kann &mdash; hier zwei Anlaufstellen: die <a href="/de/suche">Suche</a> erfasst alle Seiten, die <a href="/de/kontakt">Kontaktseite</a> führt zu einem Menschen. Auf Ihrer eigenen Website stünde hier, was tatsächlich weiterhilft.</p>
+  <p class="mb-0" style="font-size: 1rem;">Der Assistent antwortet ausschließlich aus dieser Seite und lehnt deshalb ab, statt sich etwas auszudenken. Dieser Kasten ist das, was die Redaktion anstelle der Absage zeigen kann &mdash; hier zwei Anlaufstellen: die <a href="/de/suche">Suche</a> erfasst alle Seiten, die <a href="/de/kontakt">Kontaktseite</a> führt zu einem Menschen. Auf Ihrer eigenen Website stünde hier, was tatsächlich weiterhilft.</p>
 </div>', 99, 400, 0, 0)
 ON DUPLICATE KEY UPDATE
   bodytext = IF(pid = VALUES(pid) AND CType = VALUES(CType) AND header = VALUES(header),
