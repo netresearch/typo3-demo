@@ -35,7 +35,7 @@ down: ## Stop all services
 
 reset: ## Full reset: purge app data and re-seed (preserves Caddy TLS certs)
 	$(COMPOSE) down --volumes --remove-orphans
-	docker volume rm -f typo3-demo_typo3-db typo3-demo_typo3-fileadmin typo3-demo_typo3-var typo3-demo_typo3-config 2>/dev/null || true
+	docker volume rm -f typo3-demo_typo3-db-v2 typo3-demo_typo3-db typo3-demo_typo3-fileadmin typo3-demo_typo3-var typo3-demo_typo3-config 2>/dev/null || true
 	@echo "App volumes purged (caddy-data preserved). Run 'make up' to re-seed."
 
 update: ## Update code without purging data

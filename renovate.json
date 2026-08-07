@@ -5,5 +5,12 @@
   ],
   "lockFileMaintenance": {
     "enabled": true
-  }
+  },
+  "packageRules": [
+    {
+      "description": "dhi.io serves no anonymous requests and Renovate holds no credentials for it, so every lookup fails. The db image therefore rides a floating tag that docker compose pull refreshes on each deploy; there is nothing here for Renovate to raise.",
+      "matchPackageNames": ["dhi.io/mariadb"],
+      "enabled": false
+    }
+  ]
 }

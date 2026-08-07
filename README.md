@@ -44,11 +44,18 @@ command — populate the index via **Web › Search › Index Queue** plus the
 
 ## Quick start
 
-Requires Docker with the Compose plugin.
+Requires Docker with the Compose plugin, plus one login: the database runs the
+**MariaDB Docker Hardened Image**, and `dhi.io` serves no anonymous pulls.
 
 ```bash
+docker login dhi.io           # Docker Hub account with DHI entitlement
 make up                       # pulls prebuilt images from GHCR, starts the stack, seeds on first boot
 ```
+
+The hardened image carries a minimal debian-13 base and an entrypoint that
+honours `MARIADB_ROOT_PASSWORD` and nothing else. Creating the application
+database and user and importing `data/db.sql.gz` is therefore done by the
+one-shot `db-init` service (`docker/db/init.sh`) instead of by the image.
 
 Then open the URL printed by `make up` (defaults to `localhost`). The backend is
 at `/typo3/`. Backend user is **`nr_admin`**; the demo password lives in the

@@ -77,6 +77,11 @@ jobs:
         with:
           lfs: true
 
+      # The db service runs the MariaDB Docker Hardened Image; dhi.io serves no
+      # anonymous pulls, so the stack cannot come up without this.
+      - name: Log in to dhi.io
+        run: echo "${{ secrets.DHI_TOKEN }}" | docker login dhi.io -u "${{ secrets.DHI_USERNAME }}" --password-stdin
+
       - name: Start services
         run: |
           cp .env.example .env
