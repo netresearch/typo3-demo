@@ -16,6 +16,9 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      # The application user does not exist until db-init has run.
+      db-init:
+        condition: service_completed_successfully
       valkey:
         condition: service_healthy
     environment:
@@ -106,17 +109,41 @@ services:
         limits:
           memory: 1G
 
+  # MariaDB as a Docker Hardened Image: minimal debian-13 base, no package
+  # manager and no shell tooling beyond what the server itself needs. Pulling it
+  # requires a Docker Hub account with DHI entitlement (`docker login dhi.io`) —
+  # dhi.io refuses anonymous pulls.
+  #
+  # Deliberately a floating tag where every other service here is digest-pinned:
+  # Renovate has no dhi.io credentials, so a digest would never be bumped and
+  # this stack would run a frozen "hardened" image — the opposite of the point.
+  # `make update` pulls on every deploy, so the tag stays current by itself.
+  #
+  # Two consequences of the hardened entrypoint, both handled here rather than
+  # by swapping the image out for a patched one:
+  #   * it honours MARIADB_ROOT_PASSWORD and nothing else — no MARIADB_DATABASE
+  #     /MARIADB_USER, no /docker-entrypoint-initdb.d. Database, application user
+  #     and seed import live in the `db-init` service below.
+  #   * it ships no configuration file, so the server falls back to its built-in
+  #     collation, and its entrypoint execs a fixed `mariadbd --datadir=...`
+  #     that drops any command arguments. docker/db/my.cnf is mounted to the one
+  #     path the server still reads on its own.
   db:
-    image: mariadb:12@sha256:759869cb6f003234a95c6384cdee245b4bce7de26913fe607a8110362c0c007d
+    image: dhi.io/mariadb:12
     logging: *default-logging
     environment:
+      # Only MARIADB_ROOT_PASSWORD reaches the hardened entrypoint. The other
+      # three are ignored by it — db-init acts on them — but they stay declared
+      # here because `docker compose exec db` is how this repo opens a client
+      # (make db-shell, make export-seed, the diagnostics and BE-reset
+      # workflows) and those read the credentials from this environment.
       MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD:-root}
       MARIADB_DATABASE: ${MARIADB_DATABASE:-typo3}
       MARIADB_USER: ${MARIADB_USER:-typo3}
       MARIADB_PASSWORD: ${MARIADB_PASSWORD:-typo3}
     volumes:
-      - typo3-db:/var/lib/mysql
-      - ./data/db.sql.gz:/docker-entrypoint-initdb.d/db.sql.gz:ro
+      - typo3-db-v2:/var/lib/mysql
+      - ./docker/db/my.cnf:/etc/my.cnf:ro
     healthcheck:
       test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
       interval: 10s
@@ -130,6 +157,33 @@ services:
       resources:
         limits:
           memory: 512M
+
+  # What the hardened image's entrypoint does not do: create the application
+  # database and user, and import data/db.sql.gz on first boot. Runs once per
+  # stack start against the healthy server and is idempotent — the seed only
+  # enters a database that has no tables, so live data always wins.
+  db-init:
+    image: dhi.io/mariadb:12
+    logging: *default-logging
+    depends_on:
+      db:
+        condition: service_healthy
+    entrypoint: ["/bin/sh", "/init.sh"]
+    environment:
+      MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD:-root}
+      MARIADB_DATABASE: ${MARIADB_DATABASE:-typo3}
+      MARIADB_USER: ${MARIADB_USER:-typo3}
+      MARIADB_PASSWORD: ${MARIADB_PASSWORD:-typo3}
+    volumes:
+      - ./docker/db/init.sh:/init.sh:ro
+      - ./data/db.sql.gz:/seed/db.sql.gz:ro
+    restart: "no"
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          memory: 256M
 
   valkey:
     image: valkey/valkey:9-alpine@sha256:ee91f7a174ac4d6a6b0685b3a60e321f0a9dbbb691f9b0e285be2ba1d1be8328
@@ -179,7 +233,11 @@ services:
           memory: 256M
 
 volumes:
-  typo3-db:
+  # -v2 because the hardened image runs as a different uid than the official one
+  # that created the previous volume; a rename gets every environment a fresh,
+  # correctly owned data directory (re-seeded from data/db.sql.gz) instead of a
+  # permission-denied crash loop. The demo database is disposable by design.
+  typo3-db-v2:
   typo3-fileadmin:
   typo3-var:
   typo3-config:
