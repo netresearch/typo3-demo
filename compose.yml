@@ -202,8 +202,21 @@ services:
         limits:
           memory: 128M
 
+  # Caddy as a Docker Hardened Image, for the same reasons as the database and
+  # with the same floating tag (Renovate cannot resolve dhi.io, so a digest
+  # would freeze). The measured difference is not theoretical: caddy:2-alpine —
+  # pinned to the current upstream digest, which has not been rebuilt since
+  # 2026-06-22 — carries 26 fixable CVEs, ten of them CRITICAL or HIGH, in the
+  # Go standard library the caddy binary is built from and in curl. The
+  # hardened image reports none.
+  #
+  # It contains exactly one executable, /usr/local/bin/caddy: no shell, no
+  # wget, so the previous admin-API healthcheck cannot run. `caddy reload` is
+  # the probe the binary itself provides — it reaches the admin API and returns
+  # "config is unchanged" in ~0.1s, so it reports liveness without mutating
+  # anything in practice.
   caddy:
-    image: caddy:2-alpine@sha256:5f5c8640aae01df9654968d946d8f1a56c497f1dd5c5cda4cf95ab7c14d58648
+    image: dhi.io/caddy:2
     logging: *default-logging
     ports:
       - "${CADDY_HTTP_PORT:-80}:80"
@@ -211,16 +224,16 @@ services:
       - "${CADDY_HTTPS_PORT:-443}:443/udp"
     volumes:
       - ./docker/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
-      - caddy-data:/data
-      - caddy-config:/config
+      - caddy-data-v2:/data
+      - caddy-config-v2:/config
     environment:
       TYPO3_DOMAIN: ${TYPO3_DOMAIN:-localhost}
     depends_on:
       web:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:2019/config/"]
-      interval: 15s
+      test: ["CMD", "/usr/local/bin/caddy", "reload", "--config", "/etc/caddy/Caddyfile", "--adapter", "caddyfile"]
+      interval: 30s
       timeout: 5s
       retries: 3
       start_period: 10s
@@ -241,5 +254,9 @@ volumes:
   typo3-fileadmin:
   typo3-var:
   typo3-config:
-  caddy-data:
-  caddy-config:
+  # Same reason as above: the old caddy volumes were created by a root-running
+  # image and the hardened one cannot write them (verified: it exits 1 on
+  # "mkdir /data/caddy/pki: permission denied"). Caddy issues a fresh
+  # certificate into the new volume on first start.
+  caddy-data-v2:
+  caddy-config-v2:

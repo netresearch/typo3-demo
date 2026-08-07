@@ -1,3 +1,13 @@
+{
+	# The container healthcheck probes the admin API through `caddy reload`
+	# (the hardened image carries no HTTP client). Without this the probe would
+	# write three access-log lines per run — thousands a day for no information.
+	# The admin endpoint listens on localhost only and nothing else uses it.
+	log default {
+		exclude admin.api
+	}
+}
+
 {$TYPO3_DOMAIN:localhost} {
     reverse_proxy web:80 {
         transport http {
