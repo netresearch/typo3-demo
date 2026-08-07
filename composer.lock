@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "94ee831c051f5e64e3bb620d472c255c",
+    "content-hash": "125a7564f850e0e5c669e9eaae55684b",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -2100,67 +2100,6 @@
             "time": "2026-03-10T11:56:47+00:00"
         },
         {
-            "name": "laminas/laminas-escaper",
-            "version": "2.18.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/laminas/laminas-escaper.git",
-                "reference": "06f211dfffff18d91844c1f55250d5d13c007e18"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-escaper/zipball/06f211dfffff18d91844c1f55250d5d13c007e18",
-                "reference": "06f211dfffff18d91844c1f55250d5d13c007e18",
-                "shasum": ""
-            },
-            "require": {
-                "ext-ctype": "*",
-                "ext-mbstring": "*",
-                "php": "~8.2.0 || ~8.3.0 || ~8.4.0 || ~8.5.0"
-            },
-            "conflict": {
-                "zendframework/zend-escaper": "*"
-            },
-            "require-dev": {
-                "infection/infection": "^0.31.0",
-                "laminas/laminas-coding-standard": "~3.1.0",
-                "phpunit/phpunit": "^11.5.42",
-                "psalm/plugin-phpunit": "^0.19.5",
-                "vimeo/psalm": "^6.13.1"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Laminas\\Escaper\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "BSD-3-Clause"
-            ],
-            "description": "Securely and safely escape HTML, HTML attributes, JavaScript, CSS, and URLs",
-            "homepage": "https://laminas.dev",
-            "keywords": [
-                "escaper",
-                "laminas"
-            ],
-            "support": {
-                "chat": "https://laminas.dev/chat",
-                "docs": "https://docs.laminas.dev/laminas-escaper/",
-                "forum": "https://discourse.laminas.dev",
-                "issues": "https://github.com/laminas/laminas-escaper/issues",
-                "rss": "https://github.com/laminas/laminas-escaper/releases.atom",
-                "source": "https://github.com/laminas/laminas-escaper"
-            },
-            "funding": [
-                {
-                    "url": "https://funding.communitybridge.org/projects/laminas-project",
-                    "type": "community_bridge"
-                }
-            ],
-            "time": "2025-10-14T18:31:13+00:00"
-        },
-        {
             "name": "league/commonmark",
             "version": "2.9.0",
             "source": {
@@ -2697,14 +2636,20 @@
             "version": "dev-main",
             "source": {
                 "type": "git",
-                "url": "https://git.netresearch.de/support/nr-ai-search.git",
-                "reference": "c899a9a1de1c6972f13e33af2944a11036929a90"
+                "url": "git@git.netresearch.de:support/nr-ai-search.git",
+                "reference": "3b2a6c9d63c881bad5da64ca10484f8bcb917071"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://git.netresearch.de/api/v4/projects/support%2Fnr-ai-search/repository/archive.zip?sha=3b2a6c9d63c881bad5da64ca10484f8bcb917071",
+                "reference": "3b2a6c9d63c881bad5da64ca10484f8bcb917071",
+                "shasum": ""
             },
             "require": {
                 "centamiv/vektor": "^2.0",
                 "doctrine/dbal": "^4.4",
                 "league/commonmark": "^2.4",
-                "netresearch/nr-llm": "^0.25",
+                "netresearch/nr-llm": "^0.26",
                 "php": "^8.3",
                 "psr/clock": "^1.0",
                 "symfony/ai-store": "^0.10 || ^0.11",
@@ -2788,7 +2733,10 @@
                 "GPL-2.0-or-later"
             ],
             "description": "RAG-based content search and chat for TYPO3 websites.",
-            "time": "2026-07-24T10:29:12+00:00"
+            "support": {
+                "source": "https://git.netresearch.de/support/nr-ai-search/-/tree/main"
+            },
+            "time": "2026-08-07T07:48:25+02:00"
         },
         {
             "name": "netresearch/nr-browser-ai",
@@ -3010,20 +2958,20 @@
         },
         {
             "name": "netresearch/nr-landingpage",
-            "version": "v0.2.0",
+            "version": "v0.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/nr-landingpage.git",
-                "reference": "a447718f0a313cabd60a3a17382bb621444e1521"
+                "reference": "c497900eee8831b294439d7f3ca28d1f48e54ed6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/nr-landingpage/zipball/a447718f0a313cabd60a3a17382bb621444e1521",
-                "reference": "a447718f0a313cabd60a3a17382bb621444e1521",
+                "url": "https://api.github.com/repos/netresearch/nr-landingpage/zipball/c497900eee8831b294439d7f3ca28d1f48e54ed6",
+                "reference": "c497900eee8831b294439d7f3ca28d1f48e54ed6",
                 "shasum": ""
             },
             "require": {
-                "netresearch/nr-llm": "^0.25",
+                "netresearch/nr-llm": "^0.26",
                 "php": "^8.2",
                 "typo3/cms-backend": "^13.4 || ^14.0",
                 "typo3/cms-core": "^13.4 || ^14.0"
@@ -3059,26 +3007,26 @@
             "description": "TYPO3 Landing Page Generator powered by LLM",
             "support": {
                 "issues": "https://github.com/netresearch/nr-landingpage/issues",
-                "source": "https://github.com/netresearch/nr-landingpage/tree/v0.2.0"
+                "source": "https://github.com/netresearch/nr-landingpage/tree/v0.3.0"
             },
-            "time": "2026-07-24T10:29:28+00:00"
+            "time": "2026-08-07T05:39:40+00:00"
         },
         {
             "name": "netresearch/nr-llm",
-            "version": "v0.25.1",
+            "version": "v0.26.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/t3x-nr-llm.git",
-                "reference": "db6cff904278669ec52efca6f8ebbdc8b7d8e960"
+                "reference": "80fc867f9e6590493f3da195f449100fb6422b3e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/t3x-nr-llm/zipball/db6cff904278669ec52efca6f8ebbdc8b7d8e960",
-                "reference": "db6cff904278669ec52efca6f8ebbdc8b7d8e960",
+                "url": "https://api.github.com/repos/netresearch/t3x-nr-llm/zipball/80fc867f9e6590493f3da195f449100fb6422b3e",
+                "reference": "80fc867f9e6590493f3da195f449100fb6422b3e",
                 "shasum": ""
             },
             "require": {
-                "netresearch/nr-vault": "^0.10.1 || ^0.11.0 || ^0.12.0",
+                "netresearch/nr-vault": "^0.14.0",
                 "php": "^8.2",
                 "psr/http-client": "^1.0",
                 "psr/http-factory": "^1.0",
@@ -3087,10 +3035,8 @@
                 "typo3/cms-core": "^13.4 || ^14.3"
             },
             "require-dev": {
-                "ergebnis/composer-normalize": "^2.52",
                 "fakerphp/faker": "^1.24",
-                "giorgiosironi/eris": "^1.1",
-                "netresearch/typo3-ci-workflows": "^1.3",
+                "netresearch/typo3-ci-workflows": "^1.4",
                 "tpwd/ke_search": "^7.0",
                 "typo3/cms-dashboard": "^13.4 || ^14.3",
                 "typo3/cms-indexed-search": "^13.4 || ^14.3",
@@ -3109,7 +3055,7 @@
                     "Package": {
                         "providesPackages": []
                     },
-                    "version": "0.25.1",
+                    "version": "0.26.0",
                     "web-dir": ".Build/Web",
                     "extension-key": "nr_llm"
                 },
@@ -3154,24 +3100,24 @@
                 "issues": "https://github.com/netresearch/t3x-nr-llm/issues",
                 "source": "https://github.com/netresearch/t3x-nr-llm"
             },
-            "time": "2026-07-27T20:06:49+00:00"
+            "time": "2026-08-06T23:24:35+00:00"
         },
         {
             "name": "netresearch/nr-mcp-agent",
-            "version": "v0.7.0",
+            "version": "v0.8.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/t3x-nr-mcp-agent.git",
-                "reference": "f262f339baf885fe841fd5d6f53f490d39364f9d"
+                "reference": "e78b487b49a0ecd9ae3509f0d534576f1296e09e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/t3x-nr-mcp-agent/zipball/f262f339baf885fe841fd5d6f53f490d39364f9d",
-                "reference": "f262f339baf885fe841fd5d6f53f490d39364f9d",
+                "url": "https://api.github.com/repos/netresearch/t3x-nr-mcp-agent/zipball/e78b487b49a0ecd9ae3509f0d534576f1296e09e",
+                "reference": "e78b487b49a0ecd9ae3509f0d534576f1296e09e",
                 "shasum": ""
             },
             "require": {
-                "netresearch/nr-llm": "^0.25",
+                "netresearch/nr-llm": "^0.26",
                 "php": "^8.2",
                 "phpoffice/phpword": "^1.0",
                 "smalot/pdfparser": "^2.0",
@@ -3179,20 +3125,12 @@
                 "typo3/cms-core": "^13.4 || ^14.0"
             },
             "require-dev": {
-                "captainhook/captainhook": "^5.0",
-                "captainhook/hook-installer": "^1.0",
-                "friendsofphp/php-cs-fixer": "^3.0",
-                "infection/infection": "^0.29 || ^0.34",
-                "phpat/phpat": "^0.12",
-                "phpstan/phpstan": "^2.0",
-                "phpunit/phpunit": "^10.5 || ^11.0",
-                "rector/rector": "^2.0",
-                "saschaegerer/phpstan-typo3": "^3.0",
-                "typo3/testing-framework": "^8.0 || ^9.0"
+                "netresearch/typo3-ci-workflows": "^1.3",
+                "phpunit/phpunit": "^10.5 || ^11.0"
             },
             "suggest": {
                 "hn/typo3-mcp-server": "For TYPO3 content management tools (^1.0)",
-                "netresearch/nr-vault": "For secure API key storage (^0.4)",
+                "netresearch/nr-vault": "For secure API key storage (^0.14)",
                 "phpoffice/phpspreadsheet": "^3.0 — Required for XLSX upload support"
             },
             "type": "typo3-cms-extension",
@@ -3236,7 +3174,7 @@
                 "issues": "https://github.com/netresearch/t3x-nr-mcp-agent/issues",
                 "source": "https://github.com/netresearch/t3x-nr-mcp-agent"
             },
-            "time": "2026-07-24T10:30:26+00:00"
+            "time": "2026-08-07T05:39:35+00:00"
         },
         {
             "name": "netresearch/nr-passkeys-be",
@@ -3398,22 +3336,21 @@
         },
         {
             "name": "netresearch/nr-repurpose",
-            "version": "v0.3.1",
+            "version": "v0.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/t3x-nr-repurpose.git",
-                "reference": "08d5837b9dec74ea551afdec8f68490cec32aa08"
+                "reference": "75c36a6ff1eade7a04d90eff068fbe6b32089ac0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/t3x-nr-repurpose/zipball/08d5837b9dec74ea551afdec8f68490cec32aa08",
-                "reference": "08d5837b9dec74ea551afdec8f68490cec32aa08",
+                "url": "https://api.github.com/repos/netresearch/t3x-nr-repurpose/zipball/75c36a6ff1eade7a04d90eff068fbe6b32089ac0",
+                "reference": "75c36a6ff1eade7a04d90eff068fbe6b32089ac0",
                 "shasum": ""
             },
             "require": {
                 "ext-json": "*",
-                "netresearch/nr-llm": "^0.25",
-                "netresearch/nr-vault": "^0.10.0 || ^0.11.0 || ^0.12.0",
+                "netresearch/nr-llm": "^0.26",
                 "php": "^8.3",
                 "psr/log": "^3.0",
                 "smalot/pdfparser": "^2.12",
@@ -3427,14 +3364,14 @@
                 "typo3/cms-install": "^14.3"
             },
             "require-dev": {
+                "netresearch/typo3-ci-workflows": "^1.4",
                 "phpunit/phpunit": "^11.5",
                 "typo3/cms-belog": "^14.3",
                 "typo3/cms-beuser": "^14.3",
                 "typo3/cms-filelist": "^14.3",
                 "typo3/cms-lowlevel": "^14.3",
                 "typo3/cms-setup": "^14.3",
-                "typo3/cms-tstemplate": "^14.3",
-                "typo3/testing-framework": "^9.0"
+                "typo3/cms-tstemplate": "^14.3"
             },
             "type": "typo3-cms-extension",
             "extra": {
@@ -3464,9 +3401,9 @@
             "homepage": "https://github.com/netresearch/t3x-nr-repurpose",
             "support": {
                 "issues": "https://github.com/netresearch/t3x-nr-repurpose/issues",
-                "source": "https://github.com/netresearch/t3x-nr-repurpose/tree/v0.3.1"
+                "source": "https://github.com/netresearch/t3x-nr-repurpose/tree/v0.4.0"
             },
-            "time": "2026-07-31T08:46:49+00:00"
+            "time": "2026-08-07T05:39:28+00:00"
         },
         {
             "name": "netresearch/nr-scheduler",
@@ -3766,16 +3703,16 @@
         },
         {
             "name": "netresearch/nr-vault",
-            "version": "v0.12.2",
+            "version": "v0.14.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/t3x-nr-vault.git",
-                "reference": "c7d40a6c6c958d1649aac776157a3f072210f15a"
+                "reference": "db283d62d1fbd6012b34371e8ed79185fa9d8970"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/t3x-nr-vault/zipball/c7d40a6c6c958d1649aac776157a3f072210f15a",
-                "reference": "c7d40a6c6c958d1649aac776157a3f072210f15a",
+                "url": "https://api.github.com/repos/netresearch/t3x-nr-vault/zipball/db283d62d1fbd6012b34371e8ed79185fa9d8970",
+                "reference": "db283d62d1fbd6012b34371e8ed79185fa9d8970",
                 "shasum": ""
             },
             "require": {
@@ -3790,7 +3727,7 @@
             },
             "require-dev": {
                 "mikey179/vfsstream": "^1.6",
-                "netresearch/typo3-ci-workflows": "^1.0",
+                "netresearch/typo3-ci-workflows": "^1.3",
                 "roave/security-advisories": "dev-latest",
                 "typo3/cms-dashboard": "^13.4 || ^14.3",
                 "typo3/cms-scheduler": "^13.4 || ^14.3"
@@ -3846,7 +3783,7 @@
                 "issues": "https://github.com/netresearch/t3x-nr-vault/issues",
                 "source": "https://github.com/netresearch/t3x-nr-vault"
             },
-            "time": "2026-07-27T17:24:24+00:00"
+            "time": "2026-08-06T07:45:35+00:00"
         },
         {
             "name": "netresearch/rte-ckeditor-image",
@@ -4003,20 +3940,20 @@
         },
         {
             "name": "netresearch/t3-cowriter",
-            "version": "v3.5.0",
+            "version": "v3.6.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/t3x-cowriter.git",
-                "reference": "54af1afc529db9ae09ed439bc0f77d56f95a1fa1"
+                "reference": "e880296f16fef61653a6ed0899e3a210162d4574"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/t3x-cowriter/zipball/54af1afc529db9ae09ed439bc0f77d56f95a1fa1",
-                "reference": "54af1afc529db9ae09ed439bc0f77d56f95a1fa1",
+                "url": "https://api.github.com/repos/netresearch/t3x-cowriter/zipball/e880296f16fef61653a6ed0899e3a210162d4574",
+                "reference": "e880296f16fef61653a6ed0899e3a210162d4574",
                 "shasum": ""
             },
             "require": {
-                "netresearch/nr-llm": "^0.25",
+                "netresearch/nr-llm": "^0.26",
                 "php": "^8.2",
                 "typo3/cms-backend": "^13.4 || ^14.3",
                 "typo3/cms-core": "^13.4 || ^14.3",
@@ -4088,7 +4025,7 @@
                 "issues": "https://github.com/netresearch/t3x-cowriter/issues",
                 "source": "https://github.com/netresearch/t3x-cowriter"
             },
-            "time": "2026-07-24T10:29:51+00:00"
+            "time": "2026-08-07T06:03:37+00:00"
         },
         {
             "name": "netresearch/typo3-demo-site",
@@ -4961,44 +4898,96 @@
             "time": "2026-01-06T21:53:42+00:00"
         },
         {
-            "name": "phpoffice/phpword",
-            "version": "1.1.0",
+            "name": "phpoffice/math",
+            "version": "0.3.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/PHPOffice/PHPWord.git",
-                "reference": "90a55955e6a772bb4cd9b1ef6a7e88c8976c2561"
+                "url": "https://github.com/PHPOffice/Math.git",
+                "reference": "fc31c8f57a7a81f962cbf389fd89f4d9d06fc99a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPOffice/PHPWord/zipball/90a55955e6a772bb4cd9b1ef6a7e88c8976c2561",
-                "reference": "90a55955e6a772bb4cd9b1ef6a7e88c8976c2561",
+                "url": "https://api.github.com/repos/PHPOffice/Math/zipball/fc31c8f57a7a81f962cbf389fd89f4d9d06fc99a",
+                "reference": "fc31c8f57a7a81f962cbf389fd89f4d9d06fc99a",
                 "shasum": ""
             },
             "require": {
                 "ext-dom": "*",
-                "ext-json": "*",
                 "ext-xml": "*",
-                "laminas/laminas-escaper": ">=2.6",
                 "php": "^7.1|^8.0"
             },
             "require-dev": {
-                "dompdf/dompdf": "^2.0",
+                "phpstan/phpstan": "^0.12.88 || ^1.0.0",
+                "phpunit/phpunit": "^7.0 || ^9.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "PhpOffice\\Math\\": "src/Math/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Progi1984",
+                    "homepage": "https://lefevre.dev"
+                }
+            ],
+            "description": "Math - Manipulate Math Formula",
+            "homepage": "https://phpoffice.github.io/Math/",
+            "keywords": [
+                "MathML",
+                "officemathml",
+                "php"
+            ],
+            "support": {
+                "issues": "https://github.com/PHPOffice/Math/issues",
+                "source": "https://github.com/PHPOffice/Math/tree/0.3.0"
+            },
+            "time": "2025-05-29T08:31:49+00:00"
+        },
+        {
+            "name": "phpoffice/phpword",
+            "version": "1.4.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/PHPOffice/PHPWord.git",
+                "reference": "6d75328229bc93790b37e93741adf70646cea958"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/PHPOffice/PHPWord/zipball/6d75328229bc93790b37e93741adf70646cea958",
+                "reference": "6d75328229bc93790b37e93741adf70646cea958",
+                "shasum": ""
+            },
+            "require": {
+                "ext-dom": "*",
                 "ext-gd": "*",
-                "ext-libxml": "*",
+                "ext-json": "*",
+                "ext-xml": "*",
                 "ext-zip": "*",
+                "php": "^7.1|^8.0",
+                "phpoffice/math": "^0.3"
+            },
+            "require-dev": {
+                "dompdf/dompdf": "^2.0 || ^3.0",
+                "ext-libxml": "*",
                 "friendsofphp/php-cs-fixer": "^3.3",
-                "mpdf/mpdf": "^8.1",
+                "mpdf/mpdf": "^7.0 || ^8.0",
                 "phpmd/phpmd": "^2.13",
+                "phpstan/phpstan": "^0.12.88 || ^1.0.0",
+                "phpstan/phpstan-phpunit": "^1.0 || ^2.0",
                 "phpunit/phpunit": ">=7.0",
-                "symfony/process": "^4.4",
+                "symfony/process": "^4.4 || ^5.0",
                 "tecnickcom/tcpdf": "^6.5"
             },
             "suggest": {
                 "dompdf/dompdf": "Allows writing PDF",
-                "ext-gd2": "Allows adding images",
                 "ext-xmlwriter": "Allows writing OOXML and ODF",
-                "ext-xsl": "Allows applying XSL style sheet to headers, to main document part, and to footers of an OOXML template",
-                "ext-zip": "Allows writing OOXML and ODF"
+                "ext-xsl": "Allows applying XSL style sheet to headers, to main document part, and to footers of an OOXML template"
             },
             "type": "library",
             "autoload": {
@@ -5008,7 +4997,7 @@
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
-                "LGPL-3.0"
+                "LGPL-3.0-only"
             ],
             "authors": [
                 {
@@ -5036,7 +5025,7 @@
                 }
             ],
             "description": "PHPWord - A pure PHP library for reading and writing word processing documents (OOXML, ODF, RTF, HTML, PDF)",
-            "homepage": "https://phpword.readthedocs.io/",
+            "homepage": "https://phpoffice.github.io/PHPWord/",
             "keywords": [
                 "ISO IEC 29500",
                 "OOXML",
@@ -5064,9 +5053,9 @@
             ],
             "support": {
                 "issues": "https://github.com/PHPOffice/PHPWord/issues",
-                "source": "https://github.com/PHPOffice/PHPWord/tree/1.1.0"
+                "source": "https://github.com/PHPOffice/PHPWord/tree/1.4.0"
             },
-            "time": "2023-05-30T07:59:14+00:00"
+            "time": "2025-06-05T10:32:36+00:00"
         },
         {
             "name": "phpstan/phpdoc-parser",
