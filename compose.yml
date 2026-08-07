@@ -119,6 +119,9 @@ services:
       MARIADB_DATABASE: ${MARIADB_DATABASE:-typo3}
       MARIADB_USER: ${MARIADB_USER:-typo3}
       MARIADB_PASSWORD: ${MARIADB_PASSWORD:-typo3}
+      # Runs mariadb-upgrade on an existing datadir when the server minor
+      # changes (12 -> 12.3 on the deployed volume); no-op on fresh volumes.
+      MARIADB_AUTO_UPGRADE: "1"
     volumes:
       - typo3-db:/var/lib/mysql
       - ./data/db.sql.gz:/docker-entrypoint-initdb.d/db.sql.gz:ro
