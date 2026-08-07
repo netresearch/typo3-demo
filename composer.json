@@ -35,7 +35,7 @@
     "netresearch/nr-llm": "^0.26",
     "netresearch/nr-mcp-agent": "^0.8",
     "netresearch/nr-passkeys-be": "^0.12",
-    "netresearch/nr-passkeys-fe": "^0.5",
+    "netresearch/nr-passkeys-fe": "^0.6",
     "netresearch/nr-scheduler": "^2.0",
     "netresearch/nr-temporal-cache": "@dev",
     "netresearch/nr-textdb": "^4.0",

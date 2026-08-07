@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "125a7564f850e0e5c669e9eaae55684b",
+    "content-hash": "79e55a1a9c8133ac78c044ff28776f26",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -3178,16 +3178,16 @@
         },
         {
             "name": "netresearch/nr-passkeys-be",
-            "version": "v0.12.0",
+            "version": "v0.12.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/t3x-nr-passkeys-be.git",
-                "reference": "58f02dc4e7fd3791f2602648061f24e25903cdcc"
+                "reference": "f06d4657d8db3e6122ca068c948ca884ae574b42"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/t3x-nr-passkeys-be/zipball/58f02dc4e7fd3791f2602648061f24e25903cdcc",
-                "reference": "58f02dc4e7fd3791f2602648061f24e25903cdcc",
+                "url": "https://api.github.com/repos/netresearch/t3x-nr-passkeys-be/zipball/f06d4657d8db3e6122ca068c948ca884ae574b42",
+                "reference": "f06d4657d8db3e6122ca068c948ca884ae574b42",
                 "shasum": ""
             },
             "require": {
@@ -3201,7 +3201,7 @@
                 "dg/bypass-finals": "^1.9",
                 "ergebnis/phpstan-rules": "^2.6",
                 "friendsofphp/php-cs-fixer": "^3.68",
-                "netresearch/typo3-ci-workflows": "^1.2",
+                "netresearch/typo3-ci-workflows": "^1.4",
                 "phpat/phpat": "^0.12",
                 "phpstan/extension-installer": "^1.4",
                 "phpstan/phpstan": "^2.1",
@@ -3256,20 +3256,20 @@
                 "issues": "https://github.com/netresearch/t3x-nr-passkeys-be/issues",
                 "source": "https://github.com/netresearch/t3x-nr-passkeys-be"
             },
-            "time": "2026-07-24T08:37:17+00:00"
+            "time": "2026-08-07T12:25:49+00:00"
         },
         {
             "name": "netresearch/nr-passkeys-fe",
-            "version": "v0.5.0",
+            "version": "v0.6.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/t3x-nr-passkeys-fe.git",
-                "reference": "b6111173861106f4503e6bd74cfe3c5278529f8d"
+                "reference": "14830319aca02efb1591607001cda3c3afd53adc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/t3x-nr-passkeys-fe/zipball/b6111173861106f4503e6bd74cfe3c5278529f8d",
-                "reference": "b6111173861106f4503e6bd74cfe3c5278529f8d",
+                "url": "https://api.github.com/repos/netresearch/t3x-nr-passkeys-fe/zipball/14830319aca02efb1591607001cda3c3afd53adc",
+                "reference": "14830319aca02efb1591607001cda3c3afd53adc",
                 "shasum": ""
             },
             "require": {
@@ -3282,11 +3282,10 @@
                 "typo3/cms-frontend": "^13.4 || ^14.1"
             },
             "require-dev": {
-                "dg/bypass-finals": "^1.9",
-                "ergebnis/phpstan-rules": "^2.6",
-                "giorgiosironi/eris": "^1.0",
                 "netresearch/typo3-ci-workflows": "^1.1",
-                "typo3/cms-dashboard": "^13.4 || ^14.1"
+                "typo3/cms-dashboard": "^13.4 || ^14.1",
+                "typo3/cms-felogin": "^13.4 || ^14.1",
+                "typo3/cms-install": "^13.4 || ^14.1"
             },
             "suggest": {
                 "typo3/cms-dashboard": "Adds passkey adoption / credential count widgets to the TYPO3 dashboard"
@@ -3332,7 +3331,7 @@
                 "issues": "https://github.com/netresearch/t3x-nr-passkeys-fe/issues",
                 "source": "https://github.com/netresearch/t3x-nr-passkeys-fe"
             },
-            "time": "2026-07-24T09:31:28+00:00"
+            "time": "2026-08-07T12:24:44+00:00"
         },
         {
             "name": "netresearch/nr-repurpose",
