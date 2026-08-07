@@ -26,7 +26,7 @@ jobs:
           host: ${{ secrets.HETZNER_SSH_HOST }}
           username: ${{ secrets.HETZNER_SSH_USER }}
           key: ${{ secrets.HETZNER_SSH_KEY }}
-          envs: TYPO3_DOMAIN,TYPO3_SITE_BASE,MARIADB_ROOT_PASSWORD,MARIADB_PASSWORD,TYPO3_ENCRYPTION_KEY
+          envs: TYPO3_DOMAIN,TYPO3_SITE_BASE,MARIADB_ROOT_PASSWORD,MARIADB_PASSWORD,TYPO3_ENCRYPTION_KEY,NR_REGISTRY_USER,NR_REGISTRY_TOKEN
           script: |
             cd /opt/typo3-demo
             git pull --ff-only
@@ -42,6 +42,10 @@ jobs:
               "TYPO3_ENCRYPTION_KEY=${TYPO3_ENCRYPTION_KEY}" \
               "TYPO3_CONTEXT=Production" \
               > .env
+            # The db image comes from registry.netresearch.de (DHI-based
+            # docker/mariadb line, no anonymous pulls).
+            echo "${NR_REGISTRY_TOKEN}" | docker login registry.netresearch.de \
+              -u "${NR_REGISTRY_USER}" --password-stdin
             make reset
             make up
         env:
@@ -50,3 +54,5 @@ jobs:
           MARIADB_ROOT_PASSWORD: ${{ secrets.MARIADB_ROOT_PASSWORD }}
           MARIADB_PASSWORD: ${{ secrets.MARIADB_PASSWORD }}
           TYPO3_ENCRYPTION_KEY: ${{ secrets.TYPO3_ENCRYPTION_KEY }}
+          NR_REGISTRY_USER: ${{ secrets.NR_REGISTRY_USER }}
+          NR_REGISTRY_TOKEN: ${{ secrets.NR_REGISTRY_TOKEN }}

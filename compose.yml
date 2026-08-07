@@ -107,7 +107,12 @@ services:
           memory: 1G
 
   db:
-    image: mariadb:12@sha256:759869cb6f003234a95c6384cdee245b4bce7de26913fe607a8110362c0c007d
+    # DHI-based MariaDB line (Docker Hardened Image base + vendored official
+    # entrypoint, NRS-4593): minimal debian-13 OS layer, same env-init /
+    # initdb.d / healthcheck.sh behaviour as the official image. Pulls need a
+    # read_registry token (docker login registry.netresearch.de) - dhi.io
+    # allows no anonymous pulls, so the upstream base is gated either way.
+    image: registry.netresearch.de/docker/mariadb:12.3@sha256:3282be9171234effdf421ae6d323563485d6529083d245cff23b03a15bd0132d
     logging: *default-logging
     environment:
       MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD:-root}

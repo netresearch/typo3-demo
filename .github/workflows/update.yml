@@ -26,8 +26,15 @@ jobs:
           host: ${{ secrets.HETZNER_SSH_HOST }}
           username: ${{ secrets.HETZNER_SSH_USER }}
           key: ${{ secrets.HETZNER_SSH_KEY }}
+          envs: NR_REGISTRY_USER,NR_REGISTRY_TOKEN
           script: |
             cd /opt/typo3-demo
+
+            # The db image comes from registry.netresearch.de (DHI-based
+            # docker/mariadb line, no anonymous pulls) - read_registry deploy
+            # token, stored as repo secrets.
+            echo "${NR_REGISTRY_TOKEN}" | docker login registry.netresearch.de \
+              -u "${NR_REGISTRY_USER}" --password-stdin
 
             # A full disk makes `git pull` fail with "write error. Out of
             # diskspace" while it writes the index, which reads like a git
@@ -53,3 +60,6 @@ jobs:
             git pull --ff-only
             git lfs pull
             make update
+        env:
+          NR_REGISTRY_USER: ${{ secrets.NR_REGISTRY_USER }}
+          NR_REGISTRY_TOKEN: ${{ secrets.NR_REGISTRY_TOKEN }}

@@ -8,6 +8,14 @@ The instance runs the **same container stack in local dev and in production**
 deployed site. It is fully GitOps-driven: merge to `main` → images build → the
 host pulls and updates itself. There is no manual server editing.
 
+The MariaDB service uses the Netresearch [docker/mariadb](https://git.netresearch.de/docker/mariadb)
+`12.3` line, which is built on the **Docker Hardened Image** base (minimal
+debian-13 OS layer) with the official image's entrypoint behaviour restored
+(env init, `/docker-entrypoint-initdb.d`, `healthcheck.sh`). Pulling it needs a
+`docker login registry.netresearch.de` with a read token — upstream `dhi.io`
+allows no anonymous pulls either, so a fully anonymous `compose up` is not
+possible with a hardened db image; every other service remains public.
+
 ## Showcased extensions
 
 | Extension | What it demonstrates | Backend entry point |

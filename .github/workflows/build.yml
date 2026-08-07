@@ -77,6 +77,9 @@ jobs:
         with:
           lfs: true
 
+      - name: Log in to registry.netresearch.de (DHI-based db image, no anonymous pulls)
+        run: echo "${{ secrets.NR_REGISTRY_TOKEN }}" | docker login registry.netresearch.de -u "${{ secrets.NR_REGISTRY_USER }}" --password-stdin
+
       - name: Start services
         run: |
           cp .env.example .env
