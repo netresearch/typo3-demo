@@ -1,0 +1,14 @@
+# Loaded automatically for every backend user because this package ships it as
+# Configuration/user.tsconfig (core: TsConfigTreeBuilder, v14.3).
+#
+# A backend user's dashboards are created exactly once — on the first open of
+# the module, and only while the user still has none at all
+# (DashboardInitializationService::getDashboardsForUser). Which dashboards
+# appear then comes from this setting, and EXT:dashboard defaults it to
+# 'default' alone. Naming both presets from Configuration/Backend/DashboardPresets.php
+# gives a new user the explainer dashboard AND the live-widget dashboard;
+# without it the second one would have to be assembled by hand.
+#
+# Users that already exist are past that one-time branch, so they are served by
+# the be_dashboards rows in data/seed-extensions.sql instead.
+options.dashboard.dashboardPresetsForNewUsers = default,netresearch-widgets
