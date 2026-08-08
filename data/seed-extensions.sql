@@ -929,6 +929,31 @@ INSERT IGNORE INTO be_dashboards (uid, pid, tstamp, crdate, cruser_id, identifie
 VALUES (9002, 0, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 4, '25f43128cc74df8b65d3adcc8c4e1cb80d7ac01f', 'Netresearch Widgets',
  '{"03d7a7eb7529603e1c10a95f4c39b46159aaae3a":{"identifier":"nrllm-monthly-cost"},"f0c32137f7f65dc86bc9ac6e28c6600c1948d7e0":{"identifier":"nrllm-requests-by-provider"},"a427f12398a6bc44a8c5b1dd092a3e9bb3d1cd12":{"identifier":"nrvault-secrets"},"7b044231a02c5ca4cdc191a1c1003e555d835e91":{"identifier":"nrvault-audit-activity"},"3556f93a69b85c8e7e17da01470adb899f624eb1":{"identifier":"nrpasskeysbe-adoption"},"79ec1a718ea7d9b4a014cb9a8f5d2e86e24ff7c1":{"identifier":"nrpasskeysbe-credentials"},"6299350d8faf4767b2ae5a6153ee2a83027bc403":{"identifier":"nrpasskeysfe-adoption"},"a18ee281f1c2c3ed44ed4f39d552236aa7d7c5fa":{"identifier":"nrpasskeysfe-credentials"}}');
 
+-- First dashboard: the 'default' preset from Configuration/Backend/DashboardPresets.php.
+-- EXT:dashboard builds a preset into a real dashboard only while a user has NO
+-- dashboard at all (DashboardInitializationService::getDashboardsForUser). The
+-- 'Netresearch Widgets' rows above occupy exactly that one-time branch, so every
+-- seeded user would otherwise never receive the explainer dashboard — which is
+-- the one the demo is about. These rows hand it over directly.
+-- New users are covered the other way round, by
+-- packages/netresearch-demo-site/Configuration/user.tsconfig naming both presets.
+--
+-- Driven off be_users rather than a uid list so a user added to the dump later is
+-- included automatically. Excluded are the two accounts that never open a backend
+-- module: the CLI identity and the nr_ai_search technical user seeded below.
+-- Idempotent AND duplicate-safe through NOT EXISTS on (user, title): a user who
+-- already has this dashboard — because they opened the module before this seed
+-- existed — keeps their own arrangement instead of gaining a second copy.
+INSERT INTO be_dashboards (pid, tstamp, crdate, cruser_id, identifier, title, widgets)
+SELECT 0, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), u.uid,
+       SHA1(CONCAT('netresearch-demo-default:', u.uid)), 'Netresearch Demo',
+ '{"08b4a8351bea0e3e025bcfaba7f6bb6fa889b5ff":{"identifier":"nrdemo.llm"},"5cbf4b650d80864f6f09c2e07a76d6d3dcf40954":{"identifier":"nrdemo.mcpagent"},"5f5077051952e9c2adf1f4abe15ea402c94702a0":{"identifier":"nrdemo.landingpage"},"6b30ddd8059fc43969c718ef9409735664efccbe":{"identifier":"nrdemo.cowriter"},"3d5a2bb31d87aa2c67088dca4caa82214f6de790":{"identifier":"nrdemo.rteimage"},"1210ca41afaaa3b774509122360b3c71c587f960":{"identifier":"nrdemo.repurpose"},"f055ef1ca972484400a91bba8fd0be0264fea378":{"identifier":"nrdemo.aisearch"},"f1cef8697250de9ade6c5796ff5b6e13d9bdff72":{"identifier":"nrdemo.browserai"},"435cc50ee4a3886e9c305c9363914b3f8f3e7f60":{"identifier":"nrdemo.passkeysbe"},"1ed281b3708264e5340eec3667402a2d88f662ab":{"identifier":"nrdemo.passkeysfe"},"9d4478ca577ac55e2392ab781f8ba337a655d28e":{"identifier":"nrdemo.vault"},"6814f994f860c55305693c4b4f7cb7ff95f3d422":{"identifier":"nrdemo.temporalcache"},"50752c5fa70771ce1a62daab2b19e2858c6db9d6":{"identifier":"nrdemo.imageoptimize"},"375a046c93d8abdc33848720a07548d66085310e":{"identifier":"nrdemo.imagesitemap"},"b25f7416a715557eadd67c24aa5f5274da48a879":{"identifier":"nrdemo.contexts"},"8f335d61b826c6b61c405d407e61f732ecd6bfec":{"identifier":"nrdemo.textdb"},"c036474a00df548614780c77cd0be57d0ea025a8":{"identifier":"nrdemo.scheduler"},"12dd8fdc8c8c7d2d97ee45d1763d39d5f767629f":{"identifier":"t3information"}}'
+  FROM be_users u
+ WHERE u.deleted = 0
+   AND u.username NOT IN ('_cli_', 'nr_ai_search_technical')
+   AND NOT EXISTS (SELECT 1 FROM be_dashboards d
+                    WHERE d.cruser_id = u.uid AND d.title = 'Netresearch Demo');
+
 -- =============================================================================
 -- Backend AI Chat (nr-mcp-agent) — dedicated nr-llm system configuration
 -- =============================================================================
@@ -3001,6 +3026,99 @@ UPDATE tt_content
 ALTER TABLE pages      AUTO_INCREMENT = 10000;
 ALTER TABLE tt_content AUTO_INCREMENT = 10000;
 
+
+-- =============================================================================
+-- nr-llm usage analytics — 90 days of history
+-- =============================================================================
+-- The Analytics backend module reads tx_nrllm_service_usage and nothing else:
+-- no joins, no pid or be_user restriction (UsageAnalyticsService). On a freshly
+-- imported demo the table is empty, so every chart renders blank and the module
+-- looks broken rather than demonstrating anything.
+--
+-- The rows below are SYNTHETIC. They are not measurements — no request behind
+-- them was ever sent — and they exist so the module has a shape to draw. They
+-- stay inside what this instance can actually do: the only configured provider
+-- is OpenAI (tx_nrllm_provider uid 1) and the only two models are the chat model
+-- uid 1 and the embedding model uid 90 seeded above, so the per-provider and
+-- per-model breakdowns show this demo's real inventory, not invented vendors.
+--
+-- Shape: one row per day and dimension combination, matching the aggregation key
+-- of UsageTrackerService::trackUsage (service_type, provider, be_user,
+-- configuration_uid, model_uid, model_id, task_uid, request_date), with
+-- request_date at midnight — the bucket the module groups on.
+--
+-- Days 1..90 only: today is left to real usage, which also keeps the seed clear
+-- of the PHP-vs-MySQL midnight question (strtotime('today') resolves in PHP's
+-- timezone, CURDATE() in the server's).
+--
+-- Volume follows the weekday: weekends drop to roughly a third, because an
+-- editorial demo that is busiest on a Sunday reads as noise, not as data.
+--
+-- Idempotent through NOT EXISTS on the full aggregation key: re-running tops up
+-- only the days still missing, and a bucket already holding REAL usage is left
+-- untouched rather than being inflated by synthetic counts.
+INSERT INTO tx_nrllm_service_usage
+    (pid, service_type, service_provider, configuration_uid, model_uid, model_id, task_uid,
+     be_user, request_count, tokens_used, prompt_tokens, completion_tokens,
+     characters_used, audio_seconds_used, images_generated, estimated_cost,
+     request_date, tstamp, crdate)
+SELECT 0, r.service_type, 'openai', r.configuration_uid, r.model_uid, r.model_id, r.task_uid,
+       r.be_user, r.request_count,
+       r.prompt_tokens + r.completion_tokens, r.prompt_tokens, r.completion_tokens,
+       0, 0, 0,
+       -- List prices per million tokens at the time of seeding; the point is a
+       -- believable cost curve, not an invoice.
+       ROUND(r.prompt_tokens / 1000000 * r.usd_in + r.completion_tokens / 1000000 * r.usd_out, 6),
+       r.request_date, UNIX_TIMESTAMP(), UNIX_TIMESTAMP()
+-- Two derived levels rather than one: the token counts are a multiple of
+-- request_count, and MariaDB has no LATERAL to reach a sibling's alias with.
+  FROM (
+        SELECT d.service_type, d.configuration_uid, d.model_uid, d.model_id, d.task_uid,
+               d.be_user, d.usd_in, d.usd_out, d.request_date, d.request_count,
+               d.request_count * (d.prompt_avg + (d.seq * 13 + d.salt) MOD 120) AS prompt_tokens,
+               d.request_count * (d.completion_avg + (d.seq * 7 + d.salt) MOD 90) AS completion_tokens
+          FROM (
+                SELECT s.seq, c.service_type, c.configuration_uid, c.model_uid, c.model_id,
+                       c.task_uid, c.be_user, c.usd_in, c.usd_out,
+                       c.salt, c.prompt_avg, c.completion_avg,
+                       UNIX_TIMESTAMP(CURDATE() - INTERVAL s.seq DAY) AS request_date,
+                       GREATEST(
+                         1,
+                         CAST(
+                           (c.base + (s.seq * 11 + c.salt) MOD 7)
+                           * CASE WHEN DAYOFWEEK(CURDATE() - INTERVAL s.seq DAY) IN (1, 7)
+                                  THEN 0.35 ELSE 1 END
+                           AS SIGNED)
+                       ) AS request_count
+                  FROM seq_1_to_90 s
+                 CROSS JOIN (
+                        SELECT 'chat' AS service_type, 1 AS configuration_uid, 1 AS model_uid,
+                               'gpt-5.3-chat-latest' AS model_id, 1 AS task_uid, 2 AS be_user,
+                               14 AS base, 3 AS salt, 520 AS prompt_avg, 180 AS completion_avg,
+                               2.50 AS usd_in, 10.00 AS usd_out
+                         UNION ALL
+                        SELECT 'chat', 2, 1, 'gpt-5.3-chat-latest', 0, 4,
+                               9, 17, 610, 240, 2.50, 10.00
+                         UNION ALL
+                        SELECT 'chat', 1, 1, 'gpt-5.3-chat-latest', 1, 5,
+                               6, 29, 480, 150, 2.50, 10.00
+                         UNION ALL
+                        SELECT 'embed', 0, 90, 'text-embedding-3-small', 0, 990,
+                               22, 41, 310, 0, 0.02, 0.00
+                       ) c
+               ) d
+       ) r
+ WHERE NOT EXISTS (
+       SELECT 1 FROM tx_nrllm_service_usage u
+        WHERE u.request_date      = r.request_date
+          AND u.service_type      = r.service_type
+          AND u.service_provider  = 'openai'
+          AND u.be_user           = r.be_user
+          AND u.configuration_uid = r.configuration_uid
+          AND u.model_uid         = r.model_uid
+          AND u.model_id          = r.model_id
+          AND u.task_uid          = r.task_uid);
+
 -- =============================================================================
 -- Re-assert every seeded record, then verify — KEEP THIS BLOCK LAST
 -- =============================================================================
@@ -3339,6 +3457,21 @@ SELECT CONCAT('SEED-PROBLEM: be_dashboards ', d.uid, ' Netresearch Widgets missi
   FROM (SELECT 9001 AS uid UNION ALL SELECT 9002) d
  WHERE NOT EXISTS (
        SELECT 1 FROM be_dashboards b WHERE b.uid = d.uid AND b.title = 'Netresearch Widgets')
+UNION ALL
+-- Checked per user rather than per uid: these rows carry no fixed uid, because
+-- which users exist comes from the dump and the guard is (user, title).
+SELECT CONCAT('SEED-PROBLEM: be_dashboards Netresearch Demo missing for be_users ', u.uid, ' ', u.username)
+  FROM be_users u
+ WHERE u.deleted = 0
+   AND u.username NOT IN ('_cli_', 'nr_ai_search_technical')
+   AND NOT EXISTS (
+       SELECT 1 FROM be_dashboards b WHERE b.cruser_id = u.uid AND b.title = 'Netresearch Demo')
+UNION ALL
+-- Only that history EXISTS is asserted, not how much of it: the rows are topped
+-- up per day, and a day already holding real usage is deliberately left alone.
+SELECT 'SEED-PROBLEM: tx_nrllm_service_usage has no history — Analytics renders empty'
+  FROM DUAL
+ WHERE NOT EXISTS (SELECT 1 FROM tx_nrllm_service_usage)
 UNION ALL
 -- The sentinels are checked WITHOUT `deleted = 0`: unlike every record above,
 -- they are supposed to be soft-deleted. What matters is only that the row is
