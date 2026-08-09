@@ -1,0 +1,28 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.6",
+  "version": 1,
+  "metadata": {
+    "component": {
+      "type": "application",
+      "name": "typo3-demo",
+      "description": "External services this instance talks to. Hand-maintained: no scanner can derive it, because it is about what the running site calls rather than what its images contain. The pull-based ingest on the Dependency-Track host fetches this file from the default branch and injects it into the stack BOM. Measured before writing: the front page loads no third-party resource at all — every script, style and image comes from the instance itself, and the twitter/facebook/youtube occurrences in the markup are plain links, not requests."
+    }
+  },
+  "services": [
+    {
+      "bom-ref": "service:openai",
+      "provider": { "name": "OpenAI, L.L.C.", "url": ["https://openai.com/"] },
+      "group": "com.openai",
+      "name": "OpenAI API",
+      "description": "The one external call this demo makes. EXT:nr_llm sends prompts server-side for the chat, vision and embedding features the instance showcases; the API key lives in EXT:nr_vault, never in the image. Which provider is configured is a backend setting — api.openai.com is what the shipped seed carries, and the extension is provider-agnostic.",
+      "endpoints": ["https://api.openai.com/v1/"],
+      "authenticated": true,
+      "x-trust-boundary": true,
+      "data": [
+        { "flow": "outbound", "classification": "prompt-content" },
+        { "flow": "inbound", "classification": "generated-content" }
+      ]
+    }
+  ]
+}
