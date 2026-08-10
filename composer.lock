@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "79e55a1a9c8133ac78c044ff28776f26",
+    "content-hash": "f87fd998530178676916b1a269ca08ee",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -1833,16 +1833,16 @@
         },
         {
             "name": "hn/typo3-mcp-server",
-            "version": "v0.4.4",
+            "version": "v0.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hauptsacheNet/typo3-mcp-server.git",
-                "reference": "6830569dabbf475d51b8bdd88d3f3d2cc46aadeb"
+                "reference": "077c424f80c022dee427909da9055d529234045a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hauptsacheNet/typo3-mcp-server/zipball/6830569dabbf475d51b8bdd88d3f3d2cc46aadeb",
-                "reference": "6830569dabbf475d51b8bdd88d3f3d2cc46aadeb",
+                "url": "https://api.github.com/repos/hauptsacheNet/typo3-mcp-server/zipball/077c424f80c022dee427909da9055d529234045a",
+                "reference": "077c424f80c022dee427909da9055d529234045a",
                 "shasum": ""
             },
             "require": {
@@ -1884,9 +1884,9 @@
             "homepage": "https://github.com/hauptsacheNet/typo3-mcp-server",
             "support": {
                 "issues": "https://github.com/hauptsacheNet/typo3-mcp-server/issues",
-                "source": "https://github.com/hauptsacheNet/typo3-mcp-server/tree/v0.4.4"
+                "source": "https://github.com/hauptsacheNet/typo3-mcp-server/tree/v0.5.0"
             },
-            "time": "2026-06-22T09:22:54+00:00"
+            "time": "2026-07-28T11:37:44+00:00"
         },
         {
             "name": "intervention/gif",
