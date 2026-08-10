@@ -1,16 +1,39 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+      xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
+      data-namespace-typo3-fluid="true">
 <f:layout name="Widget/Widget"/>
 <f:section name="main">
 
-    <p>{description}</p>
+    <div class="nrdemo-card">
+        <div class="nrdemo-card__head">
+            <f:comment>
+                Each extension registers its own backend icon and none of them
+                reached the card, so eighteen cards looked identical. This is the
+                one piece of imagery already available — no new assets needed.
+            </f:comment>
+            <f:if condition="{configuration.iconIdentifier}">
+                <span class="nrdemo-card__icon">
+                    <core:icon identifier="{configuration.iconIdentifier}" size="medium" />
+                </span>
+            </f:if>
+            <p class="nrdemo-card__lead">{description}</p>
+        </div>
 
-    <f:if condition="{howTo}">
-        <h4>How to demo it</h4>
-        <ol>
-            <f:for each="{howTo}" as="step">
-                <li>{step}</li>
-            </f:for>
-        </ol>
-    </f:if>
+        <f:if condition="{howTo}">
+            <f:comment>
+                Collapsed by default: the steps are the manual, and a card that
+                opens on a numbered list buries the reason to read it.
+            </f:comment>
+            <details class="nrdemo-card__steps">
+                <summary>Try it yourself</summary>
+                <ol>
+                    <f:for each="{howTo}" as="step">
+                        <li>{step}</li>
+                    </f:for>
+                </ol>
+            </details>
+        </f:if>
+    </div>
 
 </f:section>
 <f:section name="footer">
@@ -18,3 +41,4 @@
         <a href="{moduleUri}" class="widget-cta">{buttonLabel}</a>
     </f:if>
 </f:section>
+</html>

@@ -1,0 +1,90 @@
+/*
+ * Styling for the Netresearch demo extension cards.
+ *
+ * The cards used to be a paragraph followed by a numbered list, eighteen times
+ * over, which reads as documentation rather than as an invitation to look at
+ * anything. The extensions each register their own backend icon and none of
+ * them appeared. This gives every card its extension's icon, leads with the
+ * promise rather than the manual, and folds the steps away until someone wants
+ * them.
+ *
+ * Colours come from the TYPO3 backend custom properties so the cards follow the
+ * light and dark scheme; the teal is the Netresearch accent, with a literal
+ * fallback only inside var().
+ */
+
+.nrdemo-card {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    height: 100%;
+}
+
+.nrdemo-card__head {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.nrdemo-card__icon {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    background: color-mix(in srgb, var(--nrdemo-accent, #2f99a4) 12%, transparent);
+    color: var(--nrdemo-accent, #2f99a4);
+}
+
+.nrdemo-card__icon .t3js-icon,
+.nrdemo-card__icon .icon {
+    width: 32px;
+    height: 32px;
+}
+
+/* The lead is the reason to care; it gets the weight the step list used to. */
+.nrdemo-card__lead {
+    margin: 0;
+    font-size: 1.05rem;
+    line-height: 1.45;
+}
+
+.nrdemo-card__steps {
+    margin: 0;
+    border-top: 1px solid var(--typo3-border-color, rgba(0, 0, 0, 0.12));
+    padding-top: 8px;
+}
+
+.nrdemo-card__steps > summary {
+    cursor: pointer;
+    font-weight: 600;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--nrdemo-accent, #2f99a4);
+}
+
+.nrdemo-card__steps > summary::-webkit-details-marker {
+    display: none;
+}
+
+.nrdemo-card__steps > summary::before {
+    content: '▸';
+    transition: transform 0.15s ease;
+}
+
+.nrdemo-card__steps[open] > summary::before {
+    transform: rotate(90deg);
+}
+
+.nrdemo-card__steps ol {
+    margin: 8px 0 0;
+    padding-left: 1.4em;
+}
+
+.nrdemo-card__steps li + li {
+    margin-top: 4px;
+}

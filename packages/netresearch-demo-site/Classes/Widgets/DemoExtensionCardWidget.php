@@ -16,6 +16,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Backend\Routing\Exception\RouteNotFoundException;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
 use TYPO3\CMS\Backend\View\BackendViewFactory;
+use TYPO3\CMS\Dashboard\Widgets\AdditionalCssInterface;
 use TYPO3\CMS\Dashboard\Widgets\RequestAwareWidgetInterface;
 use TYPO3\CMS\Dashboard\Widgets\WidgetConfigurationInterface;
 use TYPO3\CMS\Dashboard\Widgets\WidgetInterface;
@@ -29,7 +30,7 @@ use TYPO3\CMS\Dashboard\Widgets\WidgetInterface;
  * - moduleRoute  string        backend module route identifier for the CTA button (optional)
  * - buttonLabel  string        label of the CTA button (optional, used with moduleRoute)
  */
-final class DemoExtensionCardWidget implements WidgetInterface, RequestAwareWidgetInterface
+final class DemoExtensionCardWidget implements WidgetInterface, RequestAwareWidgetInterface, AdditionalCssInterface
 {
     private ServerRequestInterface $request;
 
@@ -70,6 +71,15 @@ final class DemoExtensionCardWidget implements WidgetInterface, RequestAwareWidg
         ]);
 
         return $view->render('Widget/DemoExtensionCard');
+    }
+
+    /**
+     * The dashboard loads these once per page, not once per widget, so all
+     * eighteen cards share the single file.
+     */
+    public function getCssFiles(): array
+    {
+        return ['EXT:netresearch_demo_site/Resources/Public/Css/demo-extension-card.css'];
     }
 
     public function getOptions(): array
