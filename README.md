@@ -110,6 +110,32 @@ Merging to `main` triggers, in order:
 
 Never SSH in to edit files by hand; change the repo and let the pipeline deploy.
 
+## Verifying the image SBOM
+
+Every image pushed from `main` carries a CycloneDX SBOM as a signed GitHub
+attestation. Verifying it needs two flags that are easy to miss:
+
+```console
+$ gh attestation verify oci://ghcr.io/netresearch/typo3-demo:latest \
+    --repo netresearch/typo3-demo \
+    --predicate-type https://cyclonedx.org/bom \
+    --signer-repo netresearch/.github
+```
+
+Without them the command fails, and it fails in a way that reads like the
+attestation is missing rather than like the query is wrong:
+
+- **`--predicate-type`** — `verify` looks for SLSA provenance unless told
+  otherwise, and this is an SBOM attestation. Omitting it answers `HTTP 404:
+  Not Found`.
+- **`--signer-repo`** — the attestation is signed by the shared workflow, not
+  by this repository. The certificate names
+  `netresearch/.github/.github/workflows/attest-sbom.yml@refs/heads/main`, so
+  `--repo` alone cannot match the signer and verification is refused.
+
+To read the SBOM itself, add `--format json` and take `.[0].verificationResult
+.statement.predicate`.
+
 ## Operations workflows (manual, `workflow_dispatch`)
 
 Run these from the repo's **Actions** tab:
