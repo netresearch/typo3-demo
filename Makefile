@@ -9,7 +9,9 @@ TYPO3       := $(COMPOSE) exec -T -u www-data web vendor/bin/typo3
 # Identifier under which the OpenAI key lives in nr_vault. It is a name, not the
 # key: tx_nrllm_provider.api_key stores this string and nr_vault resolves the
 # value from it, so the key itself never touches the database in plaintext.
-LLM_KEY_ID  := openai-api-key
+# Underscores, no hyphens: nr_vault validates a non-UUID identifier against
+# /^[a-zA-Z]\w*$$/ (IdentifierValidator::USER_PATTERN) and rejects anything else.
+LLM_KEY_ID  := openai_api_key
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
@@ -75,6 +77,16 @@ provision-llm-key: ## Store $OPENAI_API_KEY in the vault and point the OpenAI pr
 		echo "OPENAI_API_KEY is not set - skipping LLM key provisioning."; \
 		echo "         The AI modules remain non-functional until it is provided."; \
 		exit 0; \
+	fi; \
+	case "$(LLM_KEY_ID)" in \
+		[a-zA-Z]*) : ;; \
+		*) echo "ERROR: LLM_KEY_ID '$(LLM_KEY_ID)' must start with a letter." >&2; exit 1 ;; \
+	esac; \
+	if printf '%s' "$(LLM_KEY_ID)" | grep -q '[^a-zA-Z0-9_]'; then \
+		echo "ERROR: LLM_KEY_ID '$(LLM_KEY_ID)' may contain only letters, digits" >&2; \
+		echo "       and underscores - nr_vault rejects anything else, and finding" >&2; \
+		echo "       that out costs a whole deploy cycle." >&2; \
+		exit 1; \
 	fi; \
 	echo "Storing the OpenAI key as vault secret '$(LLM_KEY_ID)' ..."; \
 	if ! out=$$(printf '%s' "$$OPENAI_API_KEY" | $(TYPO3) vault:store $(LLM_KEY_ID) --stdin 2>&1); then \
