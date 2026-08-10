@@ -26,7 +26,7 @@ jobs:
           host: ${{ secrets.HETZNER_SSH_HOST }}
           username: ${{ secrets.HETZNER_SSH_USER }}
           key: ${{ secrets.HETZNER_SSH_KEY }}
-          envs: DHI_USERNAME,DHI_TOKEN
+          envs: DHI_USERNAME,DHI_TOKEN,OPENAI_API_KEY
           script: |
             cd /opt/typo3-demo
 
@@ -63,3 +63,7 @@ jobs:
         env:
           DHI_USERNAME: ${{ secrets.DHI_USERNAME }}
           DHI_TOKEN: ${{ secrets.DHI_TOKEN }}
+          # Consumed by `make provision-llm-key` inside `make update`. Absent or
+          # empty, the deploy still succeeds and says the AI modules stay dead —
+          # a missing key must not take the whole instance down with it.
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
