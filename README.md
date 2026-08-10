@@ -110,6 +110,26 @@ Merging to `main` triggers, in order:
 
 Never SSH in to edit files by hand; change the repo and let the pipeline deploy.
 
+## The OpenAI key
+
+Every AI module on this instance resolves its key through nr-vault, and the
+committed dump deliberately carries neither the vault secret nor the provider's
+reference to it — `scripts/export-seed-sanitized.sh` strips both before the dump
+is published, because the repository is public.
+
+Something therefore has to put the key back after every import, and that is the
+`OPENAI_API_KEY` repository secret. `make update` runs `make provision-llm-key`
+just before the seed: it stores the value as the vault secret `openai-api-key`
+(passed on stdin, never as an argument, never echoed) and points
+`tx_nrllm_provider.api_key` at that identifier. The step is idempotent, verifies
+both halves afterwards, and fails the deploy if either is missing.
+
+Without the secret the deploy still succeeds and says so — a missing key must
+not take the whole instance down — but every AI module reports "API key
+identifier is required for provider OpenAI" until it is set. Rotating the key
+means updating the repository secret and re-running the deploy; nothing has to
+be clicked in the backend, and no reset can lose it again.
+
 ## Verifying the image SBOM
 
 Every image pushed from `main` carries a CycloneDX SBOM as a signed GitHub

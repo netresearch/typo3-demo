@@ -1,4 +1,4 @@
-.PHONY: up down reset update logs shell db-shell seed seed-extensions export-seed build clean dev dev-down prune help
+.PHONY: up down reset update logs shell db-shell seed seed-extensions provision-llm-key export-seed build clean dev dev-down prune help
 
 COMPOSE     := docker compose
 COMPOSE_DEV := docker compose -f compose.yml -f compose.dev.yml
@@ -6,6 +6,10 @@ COMPOSE_DEV := docker compose -f compose.yml -f compose.dev.yml
 # cache/log files that php-fpm (www-data) can no longer write, which breaks
 # the backend on the next warning-level log record.
 TYPO3       := $(COMPOSE) exec -T -u www-data web vendor/bin/typo3
+# Identifier under which the OpenAI key lives in nr_vault. It is a name, not the
+# key: tx_nrllm_provider.api_key stores this string and nr_vault resolves the
+# value from it, so the key itself never touches the database in plaintext.
+LLM_KEY_ID  := openai-api-key
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
@@ -45,11 +49,47 @@ update: ## Update code without purging data
 	# grew a 29.6GB writable layer, which filled the disk and broke the deploy.
 	$(COMPOSE) up -d --remove-orphans --wait --wait-timeout 180 || $(COMPOSE) up -d --remove-orphans
 	$(TYPO3) database:updateschema || true
+	# Before seed-extensions, not after: the seed's grant on the vault secret is
+	# conditional on tx_nrllm_provider.api_key being non-empty and silently does
+	# nothing while it is not.
+	$(MAKE) provision-llm-key
 	$(MAKE) seed-extensions
 	$(TYPO3) extension:setup || true
 	$(TYPO3) cache:flush
 	$(TYPO3) cache:warmup
 	$(MAKE) prune
+
+provision-llm-key: ## Store $OPENAI_API_KEY in the vault and point the OpenAI provider at it
+	@# Without this the demo has no LLM at all: the sanitized dump ships
+	@# tx_nrllm_provider.api_key empty by design (export-seed-sanitized.sh clears
+	@# it and drops tx_nrvault_secret), so every AI module fails with "API key
+	@# identifier is required for provider OpenAI" until something sets it. That
+	@# something used to be a human clicking through the backend, which no reset
+	@# survived and nothing reproduced.
+	@#
+	@# The value is passed on stdin and never as an argument: /proc is readable
+	@# inside the container, so an argv secret is visible to every process there.
+	@# It is never echoed either — only its presence is reported.
+	@set -e; \
+	if [ -z "$${OPENAI_API_KEY:-}" ]; then \
+		echo "OPENAI_API_KEY is not set - skipping LLM key provisioning."; \
+		echo "         The AI modules remain non-functional until it is provided."; \
+		exit 0; \
+	fi; \
+	echo "Storing the OpenAI key as vault secret '$(LLM_KEY_ID)' ..."; \
+	printf '%s' "$$OPENAI_API_KEY" | $(TYPO3) vault:store $(LLM_KEY_ID) --stdin >/dev/null; \
+	echo "UPDATE tx_nrllm_provider SET api_key = '$(LLM_KEY_ID)' WHERE uid = 1;" \
+		| $(COMPOSE) exec -T db sh -c 'MYSQL_PWD="$$MARIADB_PASSWORD" mariadb -u "$$MARIADB_USER" "$$MARIADB_DATABASE"'; \
+	state=$$(echo "SELECT CONCAT(\
+		(SELECT COUNT(*) FROM tx_nrvault_secret WHERE identifier = '$(LLM_KEY_ID)' AND deleted = 0), \
+		':', \
+		(SELECT LENGTH(api_key) FROM tx_nrllm_provider WHERE uid = 1));" \
+		| $(COMPOSE) exec -T db sh -c 'MYSQL_PWD="$$MARIADB_PASSWORD" mariadb -N -u "$$MARIADB_USER" "$$MARIADB_DATABASE"'); \
+	case "$$state" in \
+		0:*) echo "ERROR: vault:store reported success but no secret '$(LLM_KEY_ID)' exists." >&2; exit 1 ;; \
+		*:0) echo "ERROR: the provider row was not linked to the vault secret." >&2; exit 1 ;; \
+	esac; \
+	echo "OpenAI key provisioned and linked to provider 1."
 
 prune: ## Remove dangling images left behind by image pulls (keeps volumes + in-use images)
 	docker image prune -f
