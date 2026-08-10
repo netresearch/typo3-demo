@@ -939,8 +939,13 @@ VALUES (9002, 0, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 4, '25f43128cc74df8b65d3adc
 -- packages/netresearch-demo-site/Configuration/user.tsconfig naming both presets.
 --
 -- Driven off be_users rather than a uid list so a user added to the dump later is
--- included automatically. Excluded are the two accounts that never open a backend
--- module: the CLI identity and the nr_ai_search technical user seeded below.
+-- included automatically. Only accounts that can actually log in are included,
+-- and that is decided by the password rather than by a list of names: an
+-- interactive user carries a real hash ('$...'), _cli_ has none at all, and every
+-- technical identity here is seeded with a deliberately invalid '!...' string.
+-- A name list would have to be extended for each new technical user, and the one
+-- that was added for the vault provisioner promptly tripped the verification
+-- below.
 -- Idempotent AND duplicate-safe through NOT EXISTS on (user, title): a user who
 -- already has this dashboard — because they opened the module before this seed
 -- existed — keeps their own arrangement instead of gaining a second copy.
@@ -950,7 +955,7 @@ SELECT 0, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), u.uid,
  '{"08b4a8351bea0e3e025bcfaba7f6bb6fa889b5ff":{"identifier":"nrdemo.llm"},"5cbf4b650d80864f6f09c2e07a76d6d3dcf40954":{"identifier":"nrdemo.mcpagent"},"5f5077051952e9c2adf1f4abe15ea402c94702a0":{"identifier":"nrdemo.landingpage"},"6b30ddd8059fc43969c718ef9409735664efccbe":{"identifier":"nrdemo.cowriter"},"3d5a2bb31d87aa2c67088dca4caa82214f6de790":{"identifier":"nrdemo.rteimage"},"1210ca41afaaa3b774509122360b3c71c587f960":{"identifier":"nrdemo.repurpose"},"f055ef1ca972484400a91bba8fd0be0264fea378":{"identifier":"nrdemo.aisearch"},"f1cef8697250de9ade6c5796ff5b6e13d9bdff72":{"identifier":"nrdemo.browserai"},"435cc50ee4a3886e9c305c9363914b3f8f3e7f60":{"identifier":"nrdemo.passkeysbe"},"1ed281b3708264e5340eec3667402a2d88f662ab":{"identifier":"nrdemo.passkeysfe"},"9d4478ca577ac55e2392ab781f8ba337a655d28e":{"identifier":"nrdemo.vault"},"6814f994f860c55305693c4b4f7cb7ff95f3d422":{"identifier":"nrdemo.temporalcache"},"50752c5fa70771ce1a62daab2b19e2858c6db9d6":{"identifier":"nrdemo.imageoptimize"},"375a046c93d8abdc33848720a07548d66085310e":{"identifier":"nrdemo.imagesitemap"},"b25f7416a715557eadd67c24aa5f5274da48a879":{"identifier":"nrdemo.contexts"},"8f335d61b826c6b61c405d407e61f732ecd6bfec":{"identifier":"nrdemo.textdb"},"c036474a00df548614780c77cd0be57d0ea025a8":{"identifier":"nrdemo.scheduler"},"12dd8fdc8c8c7d2d97ee45d1763d39d5f767629f":{"identifier":"t3information"}}'
   FROM be_users u
  WHERE u.deleted = 0
-   AND u.username NOT IN ('_cli_', 'nr_ai_search_technical')
+   AND u.password LIKE '$%'
    AND NOT EXISTS (SELECT 1 FROM be_dashboards d
                     WHERE d.cruser_id = u.uid AND d.title = 'Netresearch Demo');
 
@@ -1113,6 +1118,40 @@ VALUES (990, 0, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0, 0,
      'nr_ai_search_technical', '!nr_ai_search_technical_no_login',
      'AI Search technical user',
      'Synthetic non-admin identity; all anonymous frontend nr_ai_search calls are attributed here for nr_llm budget accounting. Not for interactive login.');
+
+-- 3a2) The identity that provisions the OpenAI key from the deploy.
+--
+--      The alternative is nr_vault's `allowCliAccess`, which grants secret
+--      creation to every process holding a shell in the web container and
+--      attributes the write to nobody. It was switched on here once and
+--      deliberately removed again (72e123a); this replaces it rather than
+--      turning it back on.
+--
+--      A technical actor's grants are read from its groups' custom_options
+--      (AccessControlService::technicalActorGroupsGrant), matched with
+--      GeneralUtility::inList — so a NON-ADMIN user in a group carrying exactly
+--      these two options can create and rotate this one secret and nothing
+--      else. `vault:store --as-provisioner` enters that identity via
+--      TechnicalActorContext::runAs().
+--
+--      Fixed uids 991 are above the seed maxima (be_groups max uid 3,
+--      be_users max uid 5). The password is a deliberately invalid hash: this
+--      identity is never logged into.
+INSERT IGNORE INTO be_groups (uid, pid, tstamp, crdate, deleted, hidden, title, custom_options, description)
+VALUES (991, 0, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0, 'Vault provisioning',
+     'tx_nrvault:secret.create,tx_nrvault:secret.rotate',
+     'Carries the two nr_vault operation permissions the deploy needs to store the OpenAI key. Grants nothing else, and no interactive user belongs in here.');
+
+INSERT IGNORE INTO be_users
+    (uid, pid, tstamp, crdate, deleted, disable, admin, username, password, usergroup, realName, description)
+VALUES (991, 0, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0, 0,
+     'nr_vault_provisioner', '!nr_vault_provisioner_no_login', '991',
+     'Vault provisioning identity',
+     'Synthetic non-admin identity used by `make provision-llm-key`. Every secret it writes is attributable to it in the vault audit log. Not for interactive login.');
+
+-- Re-assert the group membership: a re-run must repair a hand-edited user, and
+-- INSERT IGNORE above skips the row entirely once it exists.
+UPDATE be_users SET usergroup = '991' WHERE uid = 991 AND usergroup <> '991';
 
 -- 3b) Grant the technical user (uid 990) read access to the OpenAI provider key
 --     in nr_vault. Content indexing runs in the bounded 'nr_ai_search' messenger
@@ -3463,7 +3502,7 @@ UNION ALL
 SELECT CONCAT('SEED-PROBLEM: be_dashboards Netresearch Demo missing for be_users ', u.uid, ' ', u.username)
   FROM be_users u
  WHERE u.deleted = 0
-   AND u.username NOT IN ('_cli_', 'nr_ai_search_technical')
+   AND u.password LIKE '$%'
    AND NOT EXISTS (
        SELECT 1 FROM be_dashboards b WHERE b.cruser_id = u.uid AND b.title = 'Netresearch Demo')
 UNION ALL
