@@ -13,5 +13,13 @@
       "matchPackageNames": ["dhi.io/mariadb", "dhi.io/caddy", "/^dhi\\.io\\//"],
       "enabled": false
     }
+  ],
+  "hostRules": [
+    {
+      "description": "composer.json declares a VCS repository at git.netresearch.de for netresearch/nr-ai-search. That project is internal, so an anonymous fetch answers 401, Renovate cannot resolve the pool, and every composer lockfile update fails with 'Artifact file update failure' - leaving a pull request that cannot build. The credential is a project access token on support/nr-ai-search carrying read_api and read_repository at Reporter level: it can read that one project and write nothing.",
+      "hostType": "gitlab",
+      "matchHost": "git.netresearch.de",
+      "token": "{{ secrets.GITLAB_COMPOSER_TOKEN }}"
+    }
   ]
 }
