@@ -8,8 +8,9 @@
   },
   "packageRules": [
     {
-      "description": "dhi.io serves no anonymous requests and Renovate holds no credentials for it, so every lookup fails. The db image therefore rides a floating tag that docker compose pull refreshes on each deploy; there is nothing here for Renovate to raise.",
-      "matchPackageNames": ["dhi.io/mariadb"],
+      "description": "dhi.io serves no anonymous requests and Renovate holds no credentials for it, so every lookup fails with no-result and lands in the dependency dashboard. The hardened images ride a floating tag that docker compose pull refreshes on each deploy, so there is nothing here for Renovate to raise. Both concrete images are named because that is provably matched today, and the host pattern is there so a further dhi.io image does not reintroduce the warning.",
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["dhi.io/mariadb", "dhi.io/caddy", "/^dhi\\.io\\//"],
       "enabled": false
     }
   ]
