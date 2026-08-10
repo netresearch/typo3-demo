@@ -77,7 +77,14 @@ provision-llm-key: ## Store $OPENAI_API_KEY in the vault and point the OpenAI pr
 		exit 0; \
 	fi; \
 	echo "Storing the OpenAI key as vault secret '$(LLM_KEY_ID)' ..."; \
-	printf '%s' "$$OPENAI_API_KEY" | $(TYPO3) vault:store $(LLM_KEY_ID) --stdin >/dev/null; \
+	if ! out=$$(printf '%s' "$$OPENAI_API_KEY" | $(TYPO3) vault:store $(LLM_KEY_ID) --stdin 2>&1); then \
+		echo "ERROR: vault:store failed. Its output follows; the key is passed on" >&2; \
+		echo "       stdin, so it cannot appear in the command line it reports." >&2; \
+		printf '%s\n' "$$out" | sed 's/^/    /' >&2; \
+		echo "    --- commands the CLI actually offers under 'vault' ---" >&2; \
+		$(TYPO3) list vault 2>&1 | sed 's/^/    /' >&2 || true; \
+		exit 1; \
+	fi; \
 	echo "UPDATE tx_nrllm_provider SET api_key = '$(LLM_KEY_ID)' WHERE uid = 1;" \
 		| $(COMPOSE) exec -T db sh -c 'MYSQL_PWD="$$MARIADB_PASSWORD" mariadb -u "$$MARIADB_USER" "$$MARIADB_DATABASE"'; \
 	state=$$(echo "SELECT CONCAT(\
