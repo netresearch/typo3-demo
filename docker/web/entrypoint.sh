@@ -201,9 +201,16 @@ fi
 if [ -f config/system/settings.php ]; then
     php -r '
         $f = "config/system/additional.php";
+        // The marker text is load-bearing: the replacement below finds the old
+        // block by searching for it. Renaming it would leave every existing
+        // additional.php with an orphaned block nobody removes, so it keeps the
+        // nr_ai_search name even though the block now also carries nr_vault.
         $begin = "// >>> nr_ai_search (managed by entrypoint, do not edit this block)";
         $end   = "// <<< nr_ai_search";
         $block = $begin . "\n"
+            // The identity `vault:store --as-provisioner` acts as; seeded in
+            // data/seed-extensions.sql with exactly two vault permissions.
+            . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"nr_vault\"][\"provisioningBeUserUid\"] = \"991\";\n"
             . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"nr_ai_search\"][\"embeddingConfiguration\"] = \"nr_ai_search.embeddings\";\n"
             . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"nr_ai_search\"][\"chatConfiguration\"] = \"nr_ai_search.chat\";\n"
             . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"nr_ai_search\"][\"embeddingDimensions\"] = \"1536\";\n"
@@ -225,7 +232,7 @@ if [ -f config/system/settings.php ]; then
         }
         $existing = rtrim($existing, "\n") . "\n\n" . $block . "\n";
         file_put_contents($f, $existing);
-        echo "additional.php: nr_ai_search configured (technicalBeUserUid=990, dims=1536), index dev-sync on." . PHP_EOL;
+        echo "additional.php: nr_ai_search configured (technicalBeUserUid=990, dims=1536), nr_vault provisioning actor 991, index dev-sync on." . PHP_EOL;
     ' || echo "WARNING: failed to write nr_ai_search additional.php block" >&2
 fi
 

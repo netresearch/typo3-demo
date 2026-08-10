@@ -72,6 +72,15 @@ provision-llm-key: ## Store $OPENAI_API_KEY in the vault and point the OpenAI pr
 	@# The value is passed on stdin and never as an argument: /proc is readable
 	@# inside the container, so an argv secret is visible to every process there.
 	@# It is never echoed either — only its presence is reported.
+	@#
+	@# --as-provisioner writes as the seeded be_user 991 instead of the
+	@# unattributed CLI actor. That user holds no admin flag; its group carries
+	@# exactly tx_nrvault:secret.create and secret.rotate, so the deploy can
+	@# create and rotate this one secret and nothing else, and every write is
+	@# attributable to it in the vault audit log. The alternative, nr_vault's
+	@# allowCliAccess, grants the same operation to every process with a shell
+	@# in this container — it was removed here on purpose (72e123a) and is not
+	@# coming back.
 	@set -e; \
 	if [ -z "$${OPENAI_API_KEY:-}" ]; then \
 		echo "OPENAI_API_KEY is not set - skipping LLM key provisioning."; \
@@ -89,7 +98,7 @@ provision-llm-key: ## Store $OPENAI_API_KEY in the vault and point the OpenAI pr
 		exit 1; \
 	fi; \
 	echo "Storing the OpenAI key as vault secret '$(LLM_KEY_ID)' ..."; \
-	if ! out=$$(printf '%s' "$$OPENAI_API_KEY" | $(TYPO3) vault:store $(LLM_KEY_ID) --stdin 2>&1); then \
+	if ! out=$$(printf '%s' "$$OPENAI_API_KEY" | $(TYPO3) vault:store $(LLM_KEY_ID) --stdin --as-provisioner 2>&1); then \
 		echo "ERROR: vault:store failed. Its output follows; the key is passed on" >&2; \
 		echo "       stdin, so it cannot appear in the command line it reports." >&2; \
 		printf '%s\n' "$$out" | sed 's/^/    /' >&2; \
