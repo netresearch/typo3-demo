@@ -43,7 +43,7 @@
     "netresearch/rte-ckeditor-image": "^13.10",
     "netresearch/t3-cowriter": "^3.2",
     "friendsoftypo3/content-blocks": "^2.0",
-    "hn/typo3-mcp-server": "^0.4",
+    "hn/typo3-mcp-server": "^0.5",
     "lochmueller/index": "^2.2",
     "netresearch/nr-ai-search": "dev-main",
     "netresearch/nr-browser-ai": "^0.4",
