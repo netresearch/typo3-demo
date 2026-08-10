@@ -51,9 +51,23 @@ update: ## Update code without purging data
 	# grew a 29.6GB writable layer, which filled the disk and broke the deploy.
 	$(COMPOSE) up -d --remove-orphans --wait --wait-timeout 180 || $(COMPOSE) up -d --remove-orphans
 	$(TYPO3) database:updateschema || true
-	# Before seed-extensions, not after: the seed's grant on the vault secret is
-	# conditional on tx_nrllm_provider.api_key being non-empty and silently does
-	# nothing while it is not.
+	# Three steps in a cycle, and the order is the whole point:
+	#
+	#   seed      creates be_users 991 and its group — the identity
+	#             provision-llm-key acts as
+	#   provision creates the vault secret and links tx_nrllm_provider.api_key
+	#             to it
+	#   seed      grants the nr_ai_search technical user ownership of that
+	#             secret, which it can only do once the secret exists AND
+	#             api_key is non-empty
+	#
+	# Provisioning first looked right — the grant is conditional on api_key —
+	# but the actor it needs is created by the very step that was supposed to
+	# follow it. The deploy said so plainly: "Technical actor uid 991 does not
+	# resolve to a non-deleted be_users record". The seed is idempotent and
+	# takes well under a second, so running it on both sides of the
+	# provisioning is cheaper than splitting it.
+	$(MAKE) seed-extensions
 	$(MAKE) provision-llm-key
 	$(MAKE) seed-extensions
 	$(TYPO3) extension:setup || true
