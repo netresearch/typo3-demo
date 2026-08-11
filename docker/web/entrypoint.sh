@@ -216,6 +216,11 @@ if [ -f config/system/settings.php ]; then
             . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"nr_ai_search\"][\"embeddingDimensions\"] = \"1536\";\n"
             . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"nr_ai_search\"][\"technicalBeUserUid\"] = \"990\";\n"
             . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"nr_ai_search\"][\"rateLimitPerMinute\"] = \"10\";\n"
+            // nr_repurpose 0.4.2 runs its generation job as this backend user.
+            // Without it the setting stays 0, the job keeps booting an
+            // unauthenticated CLI user, and nr_vault denies the provider key --
+            // which is the failure the release fixes but does not configure.
+            . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"nr_repurpose\"][\"technicalBeUserUid\"] = \"992\";\n"
             . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"nr_ai_search\"][\"hybridSearchEnabled\"] = \"0\";\n"
             . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"index\"][\"defaultTransportInDevelopmentContext\"] = \"1\";\n"
             . $end;
@@ -232,7 +237,7 @@ if [ -f config/system/settings.php ]; then
         }
         $existing = rtrim($existing, "\n") . "\n\n" . $block . "\n";
         file_put_contents($f, $existing);
-        echo "additional.php: nr_ai_search configured (technicalBeUserUid=990, dims=1536), nr_vault provisioning actor 991, index dev-sync on." . PHP_EOL;
+        echo "additional.php: nr_ai_search configured (technicalBeUserUid=990, dims=1536), nr_vault provisioning actor 991, nr_repurpose actor 992, index dev-sync on." . PHP_EOL;
     ' || echo "WARNING: failed to write nr_ai_search additional.php block" >&2
 fi
 
