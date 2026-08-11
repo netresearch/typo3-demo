@@ -1114,26 +1114,40 @@ WHERE deleted = 0 AND cost_input = 0 AND cost_output = 0;
 -- but read back from this account's own API, which answers the call with:
 --   404 The model `gpt-5.3-chat-latest` has been deprecated
 -- The whole versioned family went the same way -- gpt-5-chat-latest,
--- gpt-5.1-chat-latest and gpt-5.2-chat-latest all return the same 404. What
--- remains is the unversioned alias 'chat-latest', which answers 200. It is the
--- direct successor: same ChatGPT-tuned chat alias, minus the version pin that
--- made this row go stale in the first place.
+-- gpt-5.1-chat-latest and gpt-5.2-chat-latest all return the same 404.
 --
--- Deliberately NOT a reasoning model. gpt-5, gpt-5.5, o1, o3* and o4-mini all
--- answer 200 with an EMPTY message when the token budget is small, because they
--- spend it on reasoning tokens -- which presents as "HTTP 200, no answer", the
--- exact symptom NEXT-145 was filed for. Verified against the live account on
--- 2026-08-11; 49 of 72 candidates are callable, and this is the one that
--- matches the previous configuration's intent.
+-- The obvious successor is the unversioned alias 'chat-latest', and that was
+-- the first correction here. It was wrong for THIS installation, which only
+-- became visible by running nr-llm's own pipeline instead of a bare API call:
+--   ProviderResponseException: Unsupported value: 'temperature' does not
+--   support 0.7 with this model. Only the default (1) value is supported.
+-- Answering a plain call and serving this installation are different claims.
 --
--- Guarded on the stale value, so an operator who picks a different model in the
--- backend keeps it: this migrates the known-dead id, it does not re-assert a
--- choice on every run.
+-- Three requirements, each measured per model against the live account
+-- (2026-08-11):
+--   1. answers with CONTENT -- gpt-5, gpt-5.5, o1, o3*, o4-mini return 200 with
+--      an EMPTY message on a small budget, because they spend it on reasoning
+--      tokens. That presents as "HTTP 200, no answer" -- the exact symptom
+--      NEXT-145 was filed for, so a reasoning model would have replaced a loud
+--      failure with a silent one.
+--   2. accepts a temperature -- configurations here carry 0.30 and 0.70, and
+--      nr-llm's completeFactual()/completeCreative() presets send their own
+--      values, so a temperature-rigid model breaks paths no config field
+--      reaches. 'chat-latest' and the whole gpt-5.6-* line refuse it.
+--   3. accepts tools -- nr_ai_search.chat selects its model on the `tools`
+--      capability. The gpt-5.6-* line refuses tools as well.
+--
+-- gpt-5.4 is the newest model that satisfies all three. Also verified: 5.4-mini,
+-- 5.2, 5.1, 4.1, 4.1-mini, 4o, 4o-mini.
+--
+-- Guarded on the two known-bad values rather than re-asserted unconditionally,
+-- so an operator who picks their own model in the backend keeps it.
 UPDATE tx_nrllm_model
-   SET model_id = 'chat-latest',
-       name     = 'OpenAI Chat (latest)',
+   SET model_id = 'gpt-5.4',
+       name     = 'OpenAI GPT-5.4',
        tstamp   = UNIX_TIMESTAMP()
- WHERE uid = 1 AND deleted = 0 AND model_id = 'gpt-5.3-chat-latest';
+ WHERE uid = 1 AND deleted = 0
+   AND model_id IN ('gpt-5.3-chat-latest', 'chat-latest');
 
 -- =============================================================================
 -- AI Search & Chat (nr_ai_search) — RAG embeddings + chat configuration
@@ -3969,10 +3983,22 @@ UNION ALL
 -- deprecated and answers 404, so a chat model still carrying one is a dead
 -- configuration -- every Cowriter, AI-Search and Repurpose call fails against
 -- it. Fail the deploy instead of shipping a demo whose AI silently does
--- nothing. The unversioned 'chat-latest' does not match this pattern.
+-- nothing.
 SELECT CONCAT('SEED-PROBLEM: tx_nrllm_model 1 carries deprecated model_id ', model_id)
   FROM tx_nrllm_model
  WHERE uid = 1 AND deleted = 0 AND model_id LIKE 'gpt-%-chat-latest'
+UNION ALL
+-- Separate failure, separate message: these ids are NOT deprecated and answer a
+-- plain call, but they refuse the temperature this installation sends (and the
+-- gpt-5.6-* line refuses tools too), so every nr-llm call fails with
+-- "Unsupported value: 'temperature'". An explicit list will go stale as models
+-- come and go -- when it fires, re-measure rather than trusting it: send one
+-- chat/completions call with temperature 0.7 and one carrying a `tools` array.
+SELECT CONCAT('SEED-PROBLEM: tx_nrllm_model 1 carries ', model_id,
+              ', which refuses a non-default temperature')
+  FROM tx_nrllm_model
+ WHERE uid = 1 AND deleted = 0
+   AND (model_id = 'chat-latest' OR model_id LIKE 'gpt-5.6-%')
 UNION ALL
 SELECT CONCAT('SEED-PROBLEM: tx_nrlandingpage_domain_model_template ', t.uid, ' missing or foreign')
   FROM (SELECT 901 AS uid UNION ALL SELECT 902 UNION ALL SELECT 903 UNION ALL SELECT 904) t
