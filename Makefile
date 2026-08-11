@@ -148,8 +148,16 @@ persist-env-secret: ## Write $$SECRET_NAME from the environment into .env (usage
 	@# every later boot carry it, in the same file that already holds
 	@# MARIADB_PASSWORD.
 	@#
-	@# The value is never echoed and never passed as an argument; the file is
-	@# rewritten through a temporary file created under a restrictive umask.
+	@# The value is never echoed and never passed as an argument, and the file is
+	@# rewritten through a temporary file that a trap removes on any failure - it
+	@# holds a full copy of .env, secrets included, until the mv lands.
+	@#
+	@# A literal dollar is doubled on the way in. compose interpolates .env values
+	@# ($$NAME expands) and collapses $$$$ back to one dollar there exactly as it
+	@# does in compose.yml. Measured with printenv INSIDE a running container,
+	@# compose v5.3.1: `V=sk-a$$$$b` arrives as `sk-a$$b`. Do NOT verify this with
+	@# `docker compose config` - it re-escapes a literal dollar back to $$$$ in its
+	@# own output, which reads exactly like a failure and is not one.
 	@set -e; \
 	test -n "$(SECRET_NAME)" || { echo "ERROR: SECRET_NAME= is required." >&2; exit 1; }; \
 	case "$(SECRET_NAME)" in [A-Z]*) : ;; *) echo "ERROR: SECRET_NAME '$(SECRET_NAME)' must be an uppercase environment variable name." >&2; exit 1 ;; esac; \
@@ -160,25 +168,16 @@ persist-env-secret: ## Write $$SECRET_NAME from the environment into .env (usage
 		exit 0; \
 	fi; \
 	test -f .env || { echo "ERROR: .env is missing - run 'make up' first." >&2; exit 1; }; \
-	case "$$value" in \
-		*'$$'*) \
-			echo "ERROR: $(SECRET_NAME) contains a dollar sign, which .env cannot carry." >&2; \
-			echo "       Measured against compose v5.3.1: a value written plainly has its" >&2; \
-			echo "       \$$NAME interpolated away, and doubling it to \$$\$$ arrives literally" >&2; \
-			echo "       doubled - .env does not collapse it the way compose.yml does." >&2; \
-			echo "       There is no encoding that yields a literal dollar, so this refuses" >&2; \
-			echo "       rather than deliver a corrupted secret. OpenAI and DeepL keys do not" >&2; \
-			echo "       contain one; if a provider ever issues such a key, it needs a" >&2; \
-			echo "       different transport than the environment." >&2; \
-			exit 1 ;; \
-	esac; \
 	umask 077; \
 	tmp=$$(mktemp .env.XXXXXX); \
+	trap 'rm -f "$$tmp"' EXIT INT TERM; \
+	escaped=$$(printf '%s' "$$value" | sed 's/\$$/$$$$/g'); \
 	grep -v "^$(SECRET_NAME)=" .env > "$$tmp" || true; \
-	printf '%s=%s\n' "$(SECRET_NAME)" "$$value" >> "$$tmp"; \
-	chmod --reference=.env "$$tmp" 2>/dev/null || chmod 600 "$$tmp"; \
+	printf '%s=%s\n' "$(SECRET_NAME)" "$$escaped" >> "$$tmp"; \
+	chmod 600 "$$tmp"; \
 	mv "$$tmp" .env; \
-	echo "$(SECRET_NAME) written to .env (length $${#value})."
+	trap - EXIT INT TERM; \
+	echo "$(SECRET_NAME) written to .env (length $${#value}), file mode 600."
 
 prune: ## Remove dangling images left behind by image pulls (keeps volumes + in-use images)
 	docker image prune -f

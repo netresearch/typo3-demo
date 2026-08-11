@@ -145,25 +145,41 @@ be clicked in the backend, and no reset can lose it again.
 to the alt-text field, an automatic run on upload, and `vendor/bin/typo3
 ai:generate-alt-texts` for the existing stock. It ships no backend module.
 
-It cannot use nr-vault. Like autotranslate, it reads a plain key from its own
-extension configuration — and it speaks the OpenAI API directly, so the existing
-`OPENAI_API_KEY` secret covers it and no second secret is needed. `make update`
-runs `make persist-env-secret SECRET_NAME=OPENAI_API_KEY` before `up`, which
-writes the value into the host `.env`; compose passes it to `web`; the entrypoint
-writes it into `config/system/additional.php` as a managed block and keeps a copy
-in `config/system/.openai-key` (0600) so a boot without the variable does not
-wipe it.
+It cannot use nr-vault. Like autotranslate it reads a plain key from its own
+extension configuration — but unlike DeepL it speaks the OpenAI API directly, so
+the existing `OPENAI_API_KEY` secret covers it and no second secret is needed.
+
+`make update` runs `make persist-env-secret SECRET_NAME=OPENAI_API_KEY` before
+`up`, which writes the value into the host `.env` (so a reboot keeps it); compose
+passes it to `web`; and the entrypoint writes it, together with the four
+behaviour settings, into **`config/system/settings.php`**.
+
+That file, not `additional.php`, is the one that works — and the difference is
+not cosmetic. The extension reads its behaviour settings through
+`ConfigurationService` → `ConfigurationManager::getMergedLocalConfiguration()`,
+which is `getDefaultConfiguration()` merged with `require settings.php`.
+`additional.php` is applied on top of `$GLOBALS` instead and never reaches that
+call, so four of the five keys would silently fall back to the extension's
+catch-defaults — and those fail **open**: `imageResizing = 0` (no downscaling,
+full-resolution images billed by the pixel) and `generateAltTextInFrontend =
+true` (a synchronous OpenAI call while a visitor waits for the page). Only
+`apiKey` would have arrived, because that one is read via
+`ExtensionConfiguration::get()`, which does read `$GLOBALS`.
+
+The key therefore sits in `settings.php` in plaintext, next to
+`MARIADB_PASSWORD`. There is no alternative for this extension: it has no
+nr-vault support, and `typo3 extension:setup` would copy the value there anyway.
 
 Two things that cost a measurement each, so they are written down rather than
 rediscovered:
 
-- **`.env` cannot carry a value containing `$`.** Compose interpolates `.env`
-  values (`abc$HOME-def` arrives as `abc/home/you-def`), and doubling to `$$`
-  is *not* collapsed there the way it is in `compose.yml` (`abc$$HOME-def`
-  arrives literally). There is no encoding that yields a literal `$`, so
-  `persist-env-secret` refuses such a value instead of delivering a corrupted
-  secret. Measured against compose v5.3.1. OpenAI and DeepL keys do not contain
-  one.
+- **`.env` values are interpolated, and `$$` is the escape.** compose expands
+  `$NAME` in a `.env` value and collapses `$$` back to one literal `$` there,
+  exactly as it does in `compose.yml`. `persist-env-secret` doubles dollars on
+  the way in. **Do not verify this with `docker compose config`** — it
+  re-escapes a literal `$` back to `$$` in its own output, which reads exactly
+  like a failure and is not one. Measure with `printenv` inside a running
+  container; against compose v5.3.1, `V=sk-a$$b` in `.env` arrives as `sk-a$b`.
 - **`imageResizing` is a cost control, not a quality setting.** Images are
   billed by the pixel and a 50-word alt text does not need full resolution;
   the demo shrinks to 512.
