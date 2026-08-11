@@ -3057,10 +3057,11 @@ VALUES (9226, 9004, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', '',
   <ul style="max-width: 720px;">
     <li><code>Will the weekend in Leipzig be any good for a barbecue?</code> &mdash; picks a place, a short forecast range, and the daily variables that answer it: maximum temperature, precipitation total, wind.</li>
     <li><code>How much rain fell in Hamburg over the past two weeks?</code> &mdash; sets past days rather than forecast days, and switches to a precipitation total.</li>
-    <li><code>Snow depth and wind gusts in Innsbruck for the next ten days, in metres per second</code> &mdash; two hourly variables, a range, and a unit group nobody would find by scrolling.</li>
+    <li><code>Wind gusts and cloud cover in Innsbruck for the next ten days, in metres per second</code> &mdash; two hourly variables, a range, and a unit group nobody would find by scrolling.</li>
     <li><code>Is it raining in Tokyo right now?</code> &mdash; uses the current-conditions block instead of a forecast, and the time zone of the place.</li>
+    <li><code>Compare the rainfall of the past week in Tokyo and in Leipzig</code> &mdash; one sentence, two queries, one answer. Each result gets its own table below.</li>
   </ul>
-  <p class="text-muted" style="font-size: 1rem; max-width: 720px;">Then change something by hand and press <em>Run query</em>. The second run needs no model at all: it reads the form as it now stands. Open <em>What this form exposes to an assistant</em> underneath to see the schema the model was constrained to and the exact arguments it returned.</p>
+  <p class="text-muted" style="font-size: 1rem; max-width: 720px;">The answer appears in words directly under your sentence, and the form folds away so it does not sit between the question and the answer &mdash; open it again to see or correct the values that were derived. Then press <em>Run query</em>: the second run needs no model at all, it reads the form as it now stands. Open <em>What this form exposes to an assistant</em> underneath to see the schema the model was constrained to and the exact arguments it returned.</p>
 </div>', 0, 200, 0, 0)
 ON DUPLICATE KEY UPDATE
   bodytext = IF(pid = VALUES(pid) AND CType = VALUES(CType) AND header = VALUES(header),
@@ -3129,7 +3130,8 @@ VALUES (9228, 9004, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', '',
   <p style="max-width: 720px;">What is needed on your side is a form definition, a data source the browser may call, and a sentence per field explaining what it means. The last one is the part that is usually missing, and it is also the part that makes the form better for people, not only for models.</p>
 
   <h3 class="h5 fw-bold mt-4 mb-2">What this deliberately does not do</h3>
-  <p style="max-width: 720px;">It does not answer in prose. The numbers in the result are the answer; asking a small on-device model to restate a table would spend the context the form&rsquo;s own schema needs. It does not invent a place either: the name is resolved by the data source&rsquo;s own search, the first match wins, and the resolved name is shown with the result so a wrong match is visible rather than silent.</p>
+  <p style="max-width: 720px;">The sentence above the form is a summary, not the result. It is written by a small on-device model from the query result and kept short, and the tables are what the data source actually returned &mdash; read those when a number matters. When the phrasing call fails, the tables stay and nothing is said rather than something guessed.</p>
+  <p style="max-width: 720px;">One request runs at most four queries; beyond that a request has stopped being a question. And it does not invent a place: the name is resolved by the data source&rsquo;s own search, the first match wins, and the resolved name is shown with the result so a wrong match is visible rather than silent.</p>
   <p style="max-width: 720px;">And without JavaScript the form renders and validates but cannot run, because the query is made from the browser and there is no server-side counterpart for it.</p>
 
   <p class="mt-4" style="max-width: 720px;">The other plugin in this extension, the one that answers questions from the text of a page, is on the <a href="/extensions/browser-ai">Browser AI page</a>. Source and manual: <a href="https://github.com/netresearch/t3x-nr-browser-ai">netresearch/t3x-nr-browser-ai</a>.</p>
@@ -3163,10 +3165,11 @@ VALUES (9230, 9004, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 9226, 9226, 'html', '
   <ul style="max-width: 720px;">
     <li><code>Taugt das Wochenende in Leipzig zum Grillen?</code> &mdash; wählt Ort, kurzen Vorhersagezeitraum und die täglichen Größen, die das beantworten: Höchsttemperatur, Niederschlagssumme, Wind.</li>
     <li><code>Wie viel Regen ist in Hamburg in den letzten zwei Wochen gefallen?</code> &mdash; setzt vergangene statt künftiger Tage und wechselt zur Niederschlagssumme.</li>
-    <li><code>Schneehöhe und Windböen in Innsbruck für die nächsten zehn Tage, in Metern pro Sekunde</code> &mdash; zwei stündliche Größen, ein Zeitraum und eine Einheit, die niemand durch Scrollen findet.</li>
+    <li><code>Windböen und Bewölkung in Innsbruck für die nächsten zehn Tage, in Metern pro Sekunde</code> &mdash; zwei stündliche Größen, ein Zeitraum und eine Einheit, die niemand durch Scrollen findet.</li>
     <li><code>Regnet es gerade in Tokio?</code> &mdash; nimmt die aktuellen Werte statt einer Vorhersage und die Zeitzone des Ortes.</li>
+    <li><code>Vergleiche den Niederschlag der letzten Woche in Tokio und in Leipzig</code> &mdash; ein Satz, zwei Abfragen, eine Antwort. Jedes Ergebnis bekommt unten seine eigene Tabelle.</li>
   </ul>
-  <p class="text-muted" style="font-size: 1rem; max-width: 720px;">Ändern Sie danach etwas von Hand und drücken Sie <em>Abfrage starten</em>. Der zweite Lauf braucht überhaupt kein Modell: Er liest das Formular so, wie es dann dasteht. Klappen Sie darunter <em>Was dieses Formular einem Assistenten anbietet</em> auf, um das Schema zu sehen, auf das das Modell festgelegt war, und die Argumente, die es zurückgegeben hat.</p>
+  <p class="text-muted" style="font-size: 1rem; max-width: 720px;">Die Antwort erscheint in Worten direkt unter Ihrem Satz, und das Formular klappt zu, damit es nicht zwischen Frage und Antwort steht &mdash; klappen Sie es wieder auf, um die abgeleiteten Werte zu sehen oder zu ändern. Drücken Sie dann <em>Abfrage starten</em>: Der zweite Lauf braucht überhaupt kein Modell, er liest das Formular so, wie es dann dasteht. Klappen Sie darunter <em>Was dieses Formular einem Assistenten anbietet</em> auf, um das Schema zu sehen, auf das das Modell festgelegt war, und die Argumente, die es zurückgegeben hat.</p>
 </div>', 0, 200, 0, 0)
 ON DUPLICATE KEY UPDATE
   bodytext = IF(pid = VALUES(pid) AND CType = VALUES(CType) AND header = VALUES(header),
@@ -3233,7 +3236,8 @@ VALUES (9232, 9004, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 9228, 9228, 'html', '
   <p style="max-width: 720px;">Nötig sind auf Ihrer Seite eine Formulardefinition, eine Datenquelle, die der Browser aufrufen darf, und je ein Satz pro Feld, was es bedeutet. Der letzte Punkt fehlt meistens &mdash; und er ist zugleich der, der das Formular auch für Menschen besser macht, nicht nur für Modelle.</p>
 
   <h3 class="h5 fw-bold mt-4 mb-2">Was es bewusst nicht tut</h3>
-  <p style="max-width: 720px;">Es antwortet nicht in Prosa. Die Zahlen im Ergebnis sind die Antwort; ein kleines Modell auf dem Gerät zu bitten, eine Tabelle nachzuerzählen, verbraucht den Kontext, den das Schema des Formulars selbst braucht. Es erfindet auch keinen Ort: Der Name wird von der Suche der Datenquelle aufgelöst, der erste Treffer gewinnt, und der aufgelöste Name steht beim Ergebnis &mdash; ein falscher Treffer ist damit sichtbar statt still.</p>
+  <p style="max-width: 720px;">Der Satz über dem Formular ist eine Zusammenfassung, nicht das Ergebnis. Ein kleines Modell auf dem Gerät schreibt ihn aus der Abfrageantwort und hält ihn kurz; was die Datenquelle tatsächlich geliefert hat, steht in den Tabellen &mdash; die sind zu lesen, sobald es auf eine Zahl ankommt. Scheitert der Formulierungsaufruf, bleiben die Tabellen stehen und es wird nichts gesagt statt etwas geraten.</p>
+  <p style="max-width: 720px;">Eine Anfrage löst höchstens vier Abfragen aus; darüber hinaus ist es keine Frage mehr. Und es erfindet keinen Ort: Der Name wird von der Suche der Datenquelle aufgelöst, der erste Treffer gewinnt, und der aufgelöste Name steht beim Ergebnis &mdash; ein falscher Treffer ist damit sichtbar statt still.</p>
   <p style="max-width: 720px;">Und ohne JavaScript wird das Formular zwar ausgegeben und geprüft, kann aber nicht abfragen, weil die Anfrage aus dem Browser heraus gestellt wird und es kein serverseitiges Gegenstück dazu gibt.</p>
 
   <p class="mt-4" style="max-width: 720px;">Das andere Plugin dieser Erweiterung, das Fragen aus dem Text einer Seite beantwortet, liegt auf der Seite <a href="/de/erweiterungen/browser-ki">Browser-KI</a>. Quellcode und Handbuch: <a href="https://github.com/netresearch/t3x-nr-browser-ai">netresearch/t3x-nr-browser-ai</a>.</p>
