@@ -1,0 +1,36 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" data-namespace-typo3-fluid="true">
+<f:comment>
+    Override of EXT:bootstrap_package Resources/Private/Partials/Page/Navigation/Language.html (16.0.0).
+
+    Upstream gates the link on {item.available}. The core menu sets available=0 for
+    every language whose page has no `pages` translation record, regardless of the
+    site's fallback configuration — see AbstractMenuContentObject::processItemStates(),
+    which maps that case to ITEM_STATE USERDEF1, and LanguageMenuProcessor, which turns
+    USERDEF1 into available=0.
+
+    This site declares DE with fallbackType: fallback (config/sites/default/config.yaml),
+    so every /de/ URL resolves and serves the English source. The demo has no page
+    translations yet, so upstream would render a dead, greyed-out "Deutsch" on every
+    page. Gate on {item.link} instead: the menu generates the link for unavailable
+    items too, and an empty link still degrades to the plain span rather than to an
+    anchor with an empty href.
+</f:comment>
+<f:if condition="{languagenavigation}">
+    <ul id="language_menu" class="language-menu">
+        <f:for each="{languagenavigation}" as="item">
+            <li class="{f:if(condition: item.active, then: 'active')} {f:if(condition: item.link, else: 'inactive')}">
+                <f:if condition="{item.link}">
+                    <f:then>
+                        <a href="{item.link}" hreflang="{item.hreflang}" title="{item.title}">
+                            <span>{item.navigationTitle}</span>
+                        </a>
+                    </f:then>
+                    <f:else>
+                        <span>{item.navigationTitle}</span>
+                    </f:else>
+                </f:if>
+            </li>
+        </f:for>
+    </ul>
+</f:if>
+</html>

@@ -16,10 +16,18 @@ page.theme.breadcrumb.enable: true
 # Footer navigation (disable sitemap-style navigation)
 page.theme.footernavigation.enable: false
 
-# Footer meta: disable site name, language selector, copyright (old site only had social icons)
+# Footer meta: disable site name and copyright (old site only had social icons).
+# The language selector stays on: the site runs a second language (DE, fallback to
+# EN, see config/sites/default/config.yaml) and the footer meta section is the only
+# place bootstrap_package 16 renders a language menu.
 page.theme.meta.enable: false
-page.theme.language.enable: false
+page.theme.language.enable: true
 page.theme.copyright.enable: false
+
+# Partial overrides for the PAGE object. bootstrap_package maps partialRootPaths.0
+# to its own directory and .1 to this constant, so only the files that exist here
+# override; everything else still resolves from bootstrap_package.
+page.fluidtemplate.partialRootPath: EXT:netresearch_demo_site/Resources/Private/Partials/Page/
 
 # Social media
 page.theme.socialmedia.channels.facebook.label: Facebook
