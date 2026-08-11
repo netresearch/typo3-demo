@@ -1330,6 +1330,63 @@ WHERE s.deleted = 0
   AND s.identifier = (SELECT api_key FROM tx_nrllm_provider WHERE uid = 1 LIMIT 1)
   AND (SELECT api_key FROM tx_nrllm_provider WHERE uid = 1 LIMIT 1) <> '';
 
+-- 3d) Identity for the nr_repurpose generation job (release 0.4.2).
+--
+--     The job runs in a Messenger consumer, where TYPO3 boots an
+--     unauthenticated command-line user. nr_vault then has no actor to
+--     authorise and refuses the provider key, so the job died in 'analyzing'.
+--     0.4.2 wraps the work in TechnicalActorContext::runAs() -- but its
+--     technicalBeUserUid defaults to 0, so the release alone changes nothing
+--     until an identity is configured. entrypoint.sh points it at uid 992.
+--
+--     A separate identity rather than reusing 990: attributing repurpose jobs
+--     to the AI-Search user would mix them into that extension's budget
+--     accounting and its audit trail, which is exactly what a named technical
+--     actor exists to keep apart.
+--
+--     The grant is the READ tier, not ownership. Ownership stays with 990
+--     (step 3b) -- a secret has one owner, and taking it away would break the
+--     indexing worker. AccessControlService resolves READ as
+--     allowed_groups UNION write_groups, so membership of group 992 in
+--     allowed_groups is enough and grants nothing beyond reading this secret.
+--     No custom_options are needed: those carry create/rotate/delete, and this
+--     identity does none of them.
+--
+--     Fixed uids 992 are above the seed maxima (be_groups 991, be_users 991).
+--     The password is a deliberately invalid hash: never logged into.
+INSERT IGNORE INTO be_groups (uid, pid, tstamp, crdate, deleted, hidden, title, description)
+VALUES (992, 0, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0, 'Repurpose vault read',
+     'Read access to the OpenAI provider secret for the nr_repurpose generation job. Carries no vault operation permissions and no interactive members.');
+
+INSERT IGNORE INTO be_users
+    (uid, pid, tstamp, crdate, deleted, disable, admin, username, password, usergroup, realName, description)
+VALUES (992, 0, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0, 0,
+     'nr_repurpose_technical', '!nr_repurpose_technical_no_login', '992',
+     'Repurpose technical user',
+     'Synthetic non-admin identity the asynchronous nr_repurpose job runs as. Not for interactive login.');
+
+-- Re-assert the membership: INSERT IGNORE skips an existing, possibly
+-- hand-edited row entirely (same reason as uid 991 above).
+UPDATE be_users SET usergroup = '992' WHERE uid = 992 AND usergroup <> '992';
+
+-- Read tier on the provider secret. Same MM caveat as step 3c: the
+-- `allowed_groups` column holds the relation COUNT, so the relation goes into
+-- the MM table and the count is synced from it afterwards.
+INSERT IGNORE INTO tx_nrvault_secret_begroups_mm (uid_local, uid_foreign, sorting, sorting_foreign)
+SELECT s.uid, 992, 1, 0
+FROM tx_nrvault_secret s
+WHERE s.deleted = 0
+  AND s.identifier = (SELECT api_key FROM tx_nrllm_provider WHERE uid = 1 LIMIT 1)
+  AND (SELECT api_key FROM tx_nrllm_provider WHERE uid = 1 LIMIT 1) <> '';
+
+UPDATE tx_nrvault_secret s
+SET s.allowed_groups = (
+    SELECT COUNT(*) FROM tx_nrvault_secret_begroups_mm mm WHERE mm.uid_local = s.uid
+)
+WHERE s.deleted = 0
+  AND s.identifier = (SELECT api_key FROM tx_nrllm_provider WHERE uid = 1 LIMIT 1)
+  AND (SELECT api_key FROM tx_nrllm_provider WHERE uid = 1 LIMIT 1) <> '';
+
 -- 4) Frontend showcase page under "Extensions" (uid 101) carrying the two
 --    nr_ai_search plugin content elements. Page uid 158 and tt_content uids
 --    602-604 are above the seed maxima (pages 157, tt_content 601). Both plugins
@@ -3901,6 +3958,9 @@ SELECT 'SEED-PROBLEM: fe_users 2 demo missing or foreign' FROM DUAL
 UNION ALL
 SELECT 'SEED-PROBLEM: be_users 990 nr_ai_search_technical missing or foreign' FROM DUAL
  WHERE NOT EXISTS (SELECT 1 FROM be_users WHERE uid = 990 AND username = 'nr_ai_search_technical' AND deleted = 0)
+UNION ALL
+SELECT 'SEED-PROBLEM: be_users 992 nr_repurpose_technical missing or foreign' FROM DUAL
+ WHERE NOT EXISTS (SELECT 1 FROM be_users WHERE uid = 992 AND username = 'nr_repurpose_technical' AND deleted = 0)
 UNION ALL
 SELECT 'SEED-PROBLEM: tx_nrllm_model 90 text-embedding-3-small missing or foreign' FROM DUAL
  WHERE NOT EXISTS (SELECT 1 FROM tx_nrllm_model WHERE uid = 90 AND identifier = 'text-embedding-3-small' AND deleted = 0)
