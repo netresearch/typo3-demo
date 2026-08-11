@@ -136,15 +136,24 @@ jobs:
       - name: Verify the language switcher renders and links
         run: |
           html=$(curl -sSfL --proto '=https' --proto-redir '=https' --cacert "$RUNNER_TEMP/caddy-root.crt" https://localhost)
+          # The whole <ul>, not a fixed number of lines after the wrapper div:
+          # bootstrap_package's markup puts the German entry 17 lines below it,
+          # so an -A8 window reported a missing link on markup that was correct.
+          menu=$(printf '%s' "$html" | awk '/<ul id="language_menu"/,/<\/ul>/')
           fail() {
             echo "ERROR: $1"
             printf '%s' "$html" | grep -c 'footer-section-meta' | sed 's/^/footer-section-meta occurrences: /'
-            printf '%s' "$html" | grep -A8 'class="footer-language"' || echo '(no footer-language block at all)'
+            if [ -n "$menu" ]; then
+              echo '--- rendered language menu ---'
+              printf '%s\n' "$menu"
+            else
+              echo '(no language_menu block in the response at all)'
+            fi
             exit 1
           }
-          printf '%s' "$html" | grep -q 'id="language_menu"' \
+          [ -n "$menu" ] \
             || fail 'the language menu is not rendered (page.theme.language.enable?)'
-          printf '%s' "$html" | grep -A8 'class="footer-language"' | grep -q 'href="/de/"' \
+          printf '%s' "$menu" | grep -q 'href="/de/"' \
             || fail 'the German entry renders without a link (partial override not in effect?)'
           echo "Language switcher renders and links to /de/."
 
