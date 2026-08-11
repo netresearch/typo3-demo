@@ -3,9 +3,10 @@
 
     Upstream gates the link on {item.available}. The core menu sets available=0 for
     every language whose page has no `pages` translation record, regardless of the
-    site's fallback configuration — see AbstractMenuContentObject::processItemStates(),
-    which maps that case to ITEM_STATE USERDEF1, and LanguageMenuProcessor, which turns
-    USERDEF1 into available=0.
+    site's fallback configuration — see
+    AbstractMenuContentObject::prepareMenuItemsForLanguageMenu(), which maps that case
+    to ITEM_STATE USERDEF1, and LanguageMenuProcessor, which turns USERDEF1 into
+    available=0.
 
     This site declares DE with fallbackType: fallback (config/sites/default/config.yaml),
     so every /de/ URL resolves and serves the English source. The demo has no page
@@ -24,7 +25,13 @@
             <li class="{f:if(condition: item.active, then: 'active')} {f:if(condition: item.link, else: 'inactive')}">
                 <f:if condition="{item.link}">
                     <f:then>
-                        <a href="{item.link}" hreflang="{item.hreflang}" title="{item.title}">
+                        <f:comment>
+                            No title attribute: LanguageMenuProcessor sets item.title to the
+                            language title and item.navigationTitle to the navigation title,
+                            and this site configures both as "Deutsch" / "English" — the
+                            attribute would only make a screen reader announce the link twice.
+                        </f:comment>
+                        <a href="{item.link}" hreflang="{item.hreflang}" aria-current="{f:if(condition: item.active, then: 'true', else: 'false')}">
                             <span>{item.navigationTitle}</span>
                         </a>
                     </f:then>

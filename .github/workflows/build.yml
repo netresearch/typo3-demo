@@ -117,6 +117,26 @@ jobs:
           docker compose logs web
           exit 1
 
+      # The seed carries no `pages` translation, which is exactly the state in
+      # which the core language menu marks German unavailable and bootstrap_package
+      # would render a dead span. The site runs fallbackType: fallback, so the link
+      # is valid anyway and the site package overrides the partial to emit it. That
+      # override is invisible to every static check, so assert it on a real render.
+      - name: Verify the language switcher renders and links
+        run: |
+          html=$(curl -sSfkL https://localhost)
+          fail() {
+            echo "ERROR: $1"
+            printf '%s' "$html" | grep -c 'footer-section-meta' | sed 's/^/footer-section-meta occurrences: /'
+            printf '%s' "$html" | grep -A8 'class="footer-language"' || echo '(no footer-language block at all)'
+            exit 1
+          }
+          printf '%s' "$html" | grep -q 'id="language_menu"' \
+            || fail 'the language menu is not rendered (page.theme.language.enable?)'
+          printf '%s' "$html" | grep -A8 'class="footer-language"' | grep -q 'href="/de/"' \
+            || fail 'the German entry renders without a link (partial override not in effect?)'
+          echo "Language switcher renders and links to /de/."
+
       - name: Cleanup
         if: always()
         run: docker compose down -v
