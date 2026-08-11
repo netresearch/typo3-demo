@@ -130,6 +130,39 @@ identifier is required for provider OpenAI" until it is set. Rotating the key
 means updating the repository secret and re-running the deploy; nothing has to
 be clicked in the backend, and no reset can lose it again.
 
+## Alternative texts (ai_filemetadata)
+
+`mfd/ai-filemetadata` generates alt texts for FAL images: a generate button next
+to the alt-text field, an automatic run on upload, and `vendor/bin/typo3
+ai:generate-alt-texts` for the existing stock. It ships no backend module.
+
+It cannot use nr-vault. Like autotranslate, it reads a plain key from its own
+extension configuration — and it speaks the OpenAI API directly, so the existing
+`OPENAI_API_KEY` secret covers it and no second secret is needed. `make update`
+runs `make persist-env-secret SECRET_NAME=OPENAI_API_KEY` before `up`, which
+writes the value into the host `.env`; compose passes it to `web`; the entrypoint
+writes it into `config/system/additional.php` as a managed block and keeps a copy
+in `config/system/.openai-key` (0600) so a boot without the variable does not
+wipe it.
+
+Two things that cost a measurement each, so they are written down rather than
+rediscovered:
+
+- **`.env` cannot carry a value containing `$`.** Compose interpolates `.env`
+  values (`abc$HOME-def` arrives as `abc/home/you-def`), and doubling to `$$`
+  is *not* collapsed there the way it is in `compose.yml` (`abc$$HOME-def`
+  arrives literally). There is no encoding that yields a literal `$`, so
+  `persist-env-secret` refuses such a value instead of delivering a corrupted
+  secret. Measured against compose v5.3.1. OpenAI and DeepL keys do not contain
+  one.
+- **`imageResizing` is a cost control, not a quality setting.** Images are
+  billed by the pixel and a 50-word alt text does not need full resolution;
+  the demo shrinks to 512.
+
+`generateAltTextInFrontend` is off: a missing alt text must not trigger a
+synchronous API call while a visitor waits for the page. `enableTokenTracking`
+is on, and the three token widgets sit on the Netresearch Widgets dashboard.
+
 ## Verifying the image SBOM
 
 Every image pushed from `main` carries a CycloneDX SBOM as a signed GitHub

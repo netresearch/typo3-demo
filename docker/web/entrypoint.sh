@@ -236,6 +236,66 @@ if [ -f config/system/settings.php ]; then
     ' || echo "WARNING: failed to write nr_ai_search additional.php block" >&2
 fi
 
+# Configure ai_filemetadata (AI-generated alternative texts for FAL images).
+#
+# Like autotranslate, this extension reads a plain API key from its own
+# extension configuration and knows nothing about nr-vault, so the vault route
+# the LLM modules take is unavailable to it. It speaks the OpenAI API directly,
+# which means the existing OPENAI_API_KEY secret covers it — no second secret.
+#
+# The key is only written when the variable is non-empty; an empty variable
+# leaves whatever a previous boot stored, same rule as everywhere else here.
+#
+# imageResizing = 512 shrinks images before upload. That is a cost control, not
+# a quality setting: full-resolution uploads are billed by the pixel and add
+# nothing to a 50-word alt text.
+# generateAltTextInFrontend = 0 keeps a missing alt text from triggering a
+# synchronous API call while a visitor waits for the page.
+if [ -f config/system/settings.php ]; then
+    php -r '
+        $f = "config/system/additional.php";
+        $begin = "// >>> ai_filemetadata (managed by entrypoint, do not edit this block)";
+        $end   = "// <<< ai_filemetadata";
+        $store = "config/system/.openai-key";
+        $key = (string) getenv("OPENAI_API_KEY");
+        $origin = "provisioned from OPENAI_API_KEY";
+        if ($key === "" && is_file($store)) {
+            $key = trim((string) file_get_contents($store));
+            $origin = "kept from the previous provisioning";
+        }
+        if ($key !== "") {
+            file_put_contents($store, $key);
+            chmod($store, 0600);
+        }
+        $block = $begin . "\n"
+            . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"ai_filemetadata\"][\"imageResizing\"] = \"512\";\n"
+            . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"ai_filemetadata\"][\"generateAltTextOnFileUpload\"] = \"1\";\n"
+            . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"ai_filemetadata\"][\"generateAltTextInFrontend\"] = \"0\";\n"
+            . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"ai_filemetadata\"][\"enableTokenTracking\"] = \"1\";\n";
+        if ($key !== "") {
+            $block .= "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"ai_filemetadata\"][\"apiKey\"] = "
+                . var_export($key, true) . ";\n";
+        }
+        $block .= $end;
+        $existing = is_file($f) ? (string) file_get_contents($f) : "";
+        if (strpos($existing, "<?php") === false) {
+            $existing = "<?php\n" . ($existing === "" ? "" : $existing . "\n");
+        }
+        $b = strpos($existing, $begin);
+        if ($b !== false) {
+            $e = strpos($existing, $end, $b);
+            $existing = $e !== false
+                ? substr($existing, 0, $b) . substr($existing, $e + strlen($end))
+                : substr($existing, 0, $b);
+        }
+        $existing = rtrim($existing, "\n") . "\n\n" . $block . "\n";
+        file_put_contents($f, $existing);
+        echo "additional.php: ai_filemetadata configured, OpenAI key "
+            . ($key !== "" ? $origin : "NOT set - alt-text generation will fail")
+            . "." . PHP_EOL;
+    ' || echo "WARNING: failed to write ai_filemetadata additional.php block" >&2
+fi
+
 # Configure nr_textdb (database-backed frontend translations).
 # textDbPid MUST match the sysfolder seeded in data/seed-extensions.sql (uid
 # 163). With textDbPid = 0 every repository queries pid 0

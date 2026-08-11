@@ -1,4 +1,4 @@
-.PHONY: up down reset update logs shell db-shell seed seed-extensions provision-llm-key export-seed build clean dev dev-down prune help
+.PHONY: up down reset update logs shell db-shell seed seed-extensions provision-llm-key persist-env-secret export-seed build clean dev dev-down prune help
 
 COMPOSE     := docker compose
 COMPOSE_DEV := docker compose -f compose.yml -f compose.dev.yml
@@ -45,6 +45,9 @@ reset: ## Full reset: purge app data and re-seed (preserves Caddy TLS certs)
 	@echo "App volumes purged (caddy-data preserved). Run 'make up' to re-seed."
 
 update: ## Update code without purging data
+	# Runs before `up`: containers read their environment from .env at creation
+	# time, and the deploy session's variables are gone by the next host reboot.
+	$(MAKE) persist-env-secret SECRET_NAME=OPENAI_API_KEY
 	$(COMPOSE) pull
 	# --remove-orphans: a service deleted from compose.yml otherwise keeps running
 	# forever. The reverted EXT:solr spike kept its container alive for 8 days and
@@ -132,6 +135,50 @@ provision-llm-key: ## Store $OPENAI_API_KEY in the vault and point the OpenAI pr
 		*:0) echo "ERROR: the provider row was not linked to the vault secret." >&2; exit 1 ;; \
 	esac; \
 	echo "OpenAI key provisioned and linked to provider 1."
+
+persist-env-secret: ## Write $$SECRET_NAME from the environment into .env (usage: make persist-env-secret SECRET_NAME=FOO)
+	@# Some extensions cannot use nr_vault. ai_filemetadata reads a plain OpenAI
+	@# key from its own extension configuration and has no vault support at all,
+	@# so the key has to reach the container as an environment variable, which
+	@# compose reads from .env at container creation time.
+	@#
+	@# The deploy passes it in the SSH session's environment, and that is enough
+	@# for `compose up` during the deploy — but not for a `compose up` after a
+	@# host reboot, which has no such session. Writing it into .env once makes
+	@# every later boot carry it, in the same file that already holds
+	@# MARIADB_PASSWORD.
+	@#
+	@# The value is never echoed and never passed as an argument; the file is
+	@# rewritten through a temporary file created under a restrictive umask.
+	@set -e; \
+	test -n "$(SECRET_NAME)" || { echo "ERROR: SECRET_NAME= is required." >&2; exit 1; }; \
+	case "$(SECRET_NAME)" in [A-Z]*) : ;; *) echo "ERROR: SECRET_NAME '$(SECRET_NAME)' must be an uppercase environment variable name." >&2; exit 1 ;; esac; \
+	value=$$(printenv "$(SECRET_NAME)" || true); \
+	if [ -z "$$value" ]; then \
+		echo "$(SECRET_NAME) is not set - leaving .env untouched."; \
+		echo "         A value stored on a previous deploy is kept."; \
+		exit 0; \
+	fi; \
+	test -f .env || { echo "ERROR: .env is missing - run 'make up' first." >&2; exit 1; }; \
+	case "$$value" in \
+		*'$$'*) \
+			echo "ERROR: $(SECRET_NAME) contains a dollar sign, which .env cannot carry." >&2; \
+			echo "       Measured against compose v5.3.1: a value written plainly has its" >&2; \
+			echo "       \$$NAME interpolated away, and doubling it to \$$\$$ arrives literally" >&2; \
+			echo "       doubled - .env does not collapse it the way compose.yml does." >&2; \
+			echo "       There is no encoding that yields a literal dollar, so this refuses" >&2; \
+			echo "       rather than deliver a corrupted secret. OpenAI and DeepL keys do not" >&2; \
+			echo "       contain one; if a provider ever issues such a key, it needs a" >&2; \
+			echo "       different transport than the environment." >&2; \
+			exit 1 ;; \
+	esac; \
+	umask 077; \
+	tmp=$$(mktemp .env.XXXXXX); \
+	grep -v "^$(SECRET_NAME)=" .env > "$$tmp" || true; \
+	printf '%s=%s\n' "$(SECRET_NAME)" "$$value" >> "$$tmp"; \
+	chmod --reference=.env "$$tmp" 2>/dev/null || chmod 600 "$$tmp"; \
+	mv "$$tmp" .env; \
+	echo "$(SECRET_NAME) written to .env (length $${#value})."
 
 prune: ## Remove dangling images left behind by image pulls (keeps volumes + in-use images)
 	docker image prune -f
