@@ -15,9 +15,10 @@
     items too, and an empty link still degrades to the plain span rather than to an
     anchor with an empty href.
 
-    No <html> wrapper on purpose. The file uses only the built-in f: namespace, which
-    needs no declaration, and the wrapper made static analysis read the partial as a
-    standalone HTML page (missing doctype, lang, title).
+    No namespace-carrying root element on purpose. The file uses only the built-in
+    f: namespace, which needs no declaration, and upstream's wrapper made SonarCloud
+    read the partial as a standalone page and report a missing doctype, lang and
+    title (three Web:* rules, seen on PR #145).
 </f:comment>
 <f:if condition="{languagenavigation}">
     <ul id="language_menu" class="language-menu">
