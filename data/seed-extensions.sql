@@ -3273,6 +3273,9 @@ ON DUPLICATE KEY UPDATE
 -- file is fed to the client as one session.
 SET @sentinel_slug  = '/seed-uid-band-sentinel';
 SET @sentinel_title = 'Seed uid band sentinel — do not delete';
+-- The part of the title that survives a wrong client charset unchanged, used to
+-- recognise a sentinel whose em dash was mangled by an earlier import.
+SET @sentinel_prefix = 'Seed uid band sentinel ';
 
 INSERT IGNORE INTO pages (uid, pid, tstamp, crdate, title, slug, doktype, sorting, hidden, deleted)
 VALUES (9999, 1, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), @sentinel_title, @sentinel_slug, 254, 32767, 1, 1);
@@ -3282,13 +3285,27 @@ VALUES (9999, 1, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'text', @sentinel_title, 0,
 
 -- Scoped by our own slug/header, so a foreign row that ever occupies uid 9999 is
 -- never written to — the same discipline the re-assert block below follows.
+--
+-- tt_content is matched on the ASCII-only PREFIX rather than the full title,
+-- because the title carries an em dash and the header column is the only place
+-- the sentinel's identity is stored there (pages has its ASCII slug). An import
+-- run by a client that did not announce utf8mb4 wrote that dash as mojibake, and
+-- an exact-title match then repairs nothing: INSERT IGNORE skips the occupied
+-- uid, this UPDATE misses the row, and the verification at the end of this file
+-- reports "tt_content 9999 uid band sentinel missing or foreign" on every
+-- subsequent deploy — stating the charset fixed the next import but could not
+-- repair the row already written. The prefix is encoding-stable (mojibake only
+-- ever begins at the dash), so this reclaims our own sentinel while a genuinely
+-- foreign row, which does not carry that prefix, stays untouched. The header is
+-- rewritten to the canonical spelling in the same pass.
 UPDATE pages
-   SET doktype = 254, hidden = 1, deleted = 1
+   SET doktype = 254, hidden = 1, deleted = 1, title = @sentinel_title
  WHERE uid = 9999 AND slug = @sentinel_slug;
 
 UPDATE tt_content
-   SET hidden = 1, deleted = 1
- WHERE uid = 9999 AND header = @sentinel_title;
+   SET hidden = 1, deleted = 1, header = @sentinel_title
+ WHERE uid = 9999
+   AND (header = @sentinel_title OR header LIKE CONCAT(@sentinel_prefix, '%'));
 
 -- Belt to the sentinel's braces, and the guarantee stated outright rather than
 -- left to emerge from the row above. InnoDB clamps this value up to at least
