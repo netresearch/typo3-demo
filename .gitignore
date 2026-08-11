@@ -9,6 +9,11 @@
 
 # Environment
 .env
+# `make persist-env-secret` rewrites .env through `mktemp .env.XXXXXX`, and that
+# temporary file holds a full copy including every secret until the mv lands. A
+# trap removes it on failure, but a SIGKILL leaves it behind — and the server
+# runs the deploy inside a git checkout, so an unignored copy would sit there.
+.env.*
 !.env.example
 
 # IDE
