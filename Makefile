@@ -141,6 +141,24 @@ seed: ## Seed fileadmin from data/ into volume
 	$(COMPOSE) exec -T web chown -R www-data:www-data /var/www/public/fileadmin
 
 seed-extensions: ## Apply data/seed-extensions.sql to the DB (idempotent; fails on SEED-PROBLEM)
+	@# --default-character-set is stated rather than left to the client default.
+	@# Every German string this file seeds currently reaches the frontend
+	@# double-encoded — "genügt" renders as "genÃ¼gt" on both German extension
+	@# pages, 93 and 94 occurrences respectively — which is what a UTF-8 file
+	@# announced to the server as latin1 produces.
+	@#
+	@# What is proven: the file is UTF-8, the frontend output is double-encoded,
+	@# and on the stock mariadb image the client already defaults to utf8mb4, so
+	@# the flag changes nothing there. What is NOT proven: that the hardened
+	@# image this stack runs defaults differently. It ships no configuration file
+	@# at all, and the my.cnf mounted beside it sets only [mariadbd], leaving the
+	@# client to its compiled-in default — but that server could not be stood up
+	@# outside this stack to measure it.
+	@#
+	@# So the flag is a no-op if the diagnosis is wrong and a repair if it is
+	@# right, and the seed re-asserts bodytext and pi_flexform on every import,
+	@# which means the next deploy rewrites the affected rows either way. The
+	@# next German page load is the measurement.
 	@# The client output is captured rather than piped so that BOTH failure modes
 	@# stay visible: a real SQL error (the client exits non-zero and aborts the
 	@# import) and a silently skipped record (the import succeeds, but the
@@ -150,7 +168,7 @@ seed-extensions: ## Apply data/seed-extensions.sql to the DB (idempotent; fails 
 	out=$$(mktemp); \
 	trap 'rm -f "$$out"' EXIT; \
 	echo "Applying data/seed-extensions.sql ..."; \
-	if ! $(COMPOSE) exec -T db sh -c 'MYSQL_PWD="$$MARIADB_PASSWORD" mariadb -u "$$MARIADB_USER" "$$MARIADB_DATABASE"' < data/seed-extensions.sql > "$$out" 2>&1; then \
+	if ! $(COMPOSE) exec -T db sh -c 'MYSQL_PWD="$$MARIADB_PASSWORD" mariadb --default-character-set=utf8mb4 -u "$$MARIADB_USER" "$$MARIADB_DATABASE"' < data/seed-extensions.sql > "$$out" 2>&1; then \
 		cat "$$out" >&2; \
 		echo "ERROR: seed import failed — the database client reported an error (above)." >&2; \
 		exit 1; \
