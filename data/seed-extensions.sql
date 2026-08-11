@@ -1181,6 +1181,47 @@ WHERE deleted = 0
   AND identifier = (SELECT api_key FROM tx_nrllm_provider WHERE uid = 1 LIMIT 1)
   AND (SELECT api_key FROM tx_nrllm_provider WHERE uid = 1 LIMIT 1) <> '';
 
+-- 3c) Give the provisioning group (991) the WRITE tier on that same secret.
+--     Handing ownership to 990 above takes the write access away from the
+--     identity that has to refresh the key: `make provision-llm-key` runs
+--     `vault:store --as-provisioner` as be_user 991, and nr_vault's
+--     AccessControlService::hasTechnicalActorAccess() grants a write on an
+--     EXISTING secret only to an admin, to its owner, or to a member of its
+--     write-tier groups. 991 is none of those once 990 owns the row, so every
+--     deploy after the first died with `Access denied to secret
+--     "openai_api_key": update permission denied` and `make update` never
+--     reached extension:setup, cache:flush or cache:warmup.
+--
+--     The relation lives in the MM table, NOT in tx_nrvault_secret.write_groups:
+--     for an MM-backed TCA group field that column holds the relation COUNT
+--     (RelationHandler::countItems()), so writing a uid into it would grant
+--     nothing and corrupt the count at the same time. It is kept in sync from
+--     the MM table right after.
+--
+--     Ownership deliberately stays with 990: that is what gets the indexing
+--     worker its read access. The write tier is the narrower, additional grant,
+--     and the provisioning group holds nothing beyond it
+--     (tx_nrvault:secret.create, secret.rotate).
+--
+--     sorting_foreign stays 0: the TCA field declares no MM_opposite_field, so
+--     the relation is one-directional and DataHandler only ever fills `sorting`.
+--     Writing anything else differs from what a save in the Vault module leaves
+--     behind.
+INSERT IGNORE INTO tx_nrvault_secret_writegroups_mm (uid_local, uid_foreign, sorting, sorting_foreign)
+SELECT s.uid, 991, 1, 0
+FROM tx_nrvault_secret s
+WHERE s.deleted = 0
+  AND s.identifier = (SELECT api_key FROM tx_nrllm_provider WHERE uid = 1 LIMIT 1)
+  AND (SELECT api_key FROM tx_nrllm_provider WHERE uid = 1 LIMIT 1) <> '';
+
+UPDATE tx_nrvault_secret s
+SET s.write_groups = (
+    SELECT COUNT(*) FROM tx_nrvault_secret_writegroups_mm mm WHERE mm.uid_local = s.uid
+)
+WHERE s.deleted = 0
+  AND s.identifier = (SELECT api_key FROM tx_nrllm_provider WHERE uid = 1 LIMIT 1)
+  AND (SELECT api_key FROM tx_nrllm_provider WHERE uid = 1 LIMIT 1) <> '';
+
 -- 4) Frontend showcase page under "Extensions" (uid 101) carrying the two
 --    nr_ai_search plugin content elements. Page uid 158 and tt_content uids
 --    602-604 are above the seed maxima (pages 157, tt_content 601). Both plugins
@@ -3273,6 +3314,9 @@ ON DUPLICATE KEY UPDATE
 -- file is fed to the client as one session.
 SET @sentinel_slug  = '/seed-uid-band-sentinel';
 SET @sentinel_title = 'Seed uid band sentinel — do not delete';
+-- The part of the title that survives a wrong client charset unchanged, used to
+-- recognise a sentinel whose em dash was mangled by an earlier import.
+SET @sentinel_prefix = 'Seed uid band sentinel ';
 
 INSERT IGNORE INTO pages (uid, pid, tstamp, crdate, title, slug, doktype, sorting, hidden, deleted)
 VALUES (9999, 1, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), @sentinel_title, @sentinel_slug, 254, 32767, 1, 1);
@@ -3282,13 +3326,32 @@ VALUES (9999, 1, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'text', @sentinel_title, 0,
 
 -- Scoped by our own slug/header, so a foreign row that ever occupies uid 9999 is
 -- never written to — the same discipline the re-assert block below follows.
+--
+-- tt_content is matched on the ASCII-only PREFIX rather than the full title,
+-- because the title carries an em dash and the header column is the only place
+-- the sentinel's identity is stored there (pages has its ASCII slug). An import
+-- run by a client that did not announce utf8mb4 wrote that dash as mojibake, and
+-- an exact-title match then repairs nothing: INSERT IGNORE skips the occupied
+-- uid, this UPDATE misses the row, and the verification at the end of this file
+-- reports "tt_content 9999 uid band sentinel missing or foreign" on every
+-- subsequent deploy — stating the charset fixed the next import but could not
+-- repair the row already written. The prefix is encoding-stable (mojibake only
+-- ever begins at the dash), so this reclaims our own sentinel while a genuinely
+-- foreign row, which does not carry that prefix, stays untouched. The header is
+-- rewritten to the canonical spelling in the same pass.
+--
+-- Compared with LEFT() rather than LIKE: LIKE would read `_` and `%` in the
+-- prefix as wildcards, so renaming the sentinel to anything carrying one would
+-- silently widen what this statement claims as ours. LEFT() has no such
+-- metacharacters and costs the same.
 UPDATE pages
-   SET doktype = 254, hidden = 1, deleted = 1
+   SET doktype = 254, hidden = 1, deleted = 1, title = @sentinel_title
  WHERE uid = 9999 AND slug = @sentinel_slug;
 
 UPDATE tt_content
-   SET hidden = 1, deleted = 1
- WHERE uid = 9999 AND header = @sentinel_title;
+   SET hidden = 1, deleted = 1, header = @sentinel_title
+ WHERE uid = 9999
+   AND (header = @sentinel_title OR LEFT(header, CHAR_LENGTH(@sentinel_prefix)) = @sentinel_prefix);
 
 -- Belt to the sentinel's braces, and the guarantee stated outright rather than
 -- left to emerge from the row above. InnoDB clamps this value up to at least
@@ -3760,6 +3823,20 @@ UNION ALL
 SELECT 'SEED-PROBLEM: tx_nrllm_service_usage has no history — Analytics renders empty'
   FROM DUAL
  WHERE NOT EXISTS (SELECT 1 FROM tx_nrllm_service_usage)
+UNION ALL
+-- The write tier from step 3c, asserted because its absence does not show up
+-- here otherwise: the deploy then dies two steps later in provision-llm-key with
+-- "update permission denied", which reads like a vault problem rather than a
+-- missing seed grant. Conditional on the secret existing at all, so a fresh
+-- instance — where the key has not been provisioned yet — reports nothing.
+SELECT 'SEED-PROBLEM: provisioning group 991 has no write tier on the OpenAI secret'
+  FROM tx_nrvault_secret s
+ WHERE s.deleted = 0
+   AND s.identifier = (SELECT api_key FROM tx_nrllm_provider WHERE uid = 1 LIMIT 1)
+   AND (SELECT api_key FROM tx_nrllm_provider WHERE uid = 1 LIMIT 1) <> ''
+   AND NOT EXISTS (
+       SELECT 1 FROM tx_nrvault_secret_writegroups_mm mm
+        WHERE mm.uid_local = s.uid AND mm.uid_foreign = 991)
 UNION ALL
 -- The sentinels are checked WITHOUT `deleted = 0`: unlike every record above,
 -- they are supposed to be soft-deleted. What matters is only that the row is
