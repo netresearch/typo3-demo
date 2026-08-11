@@ -96,8 +96,17 @@ make export-seed              # dump the current DB back to data/db.sql.gz
 disk stays bounded across repeated deploys.
 
 To change installed extension **versions**, edit the constraints in
-`composer.json` and merge — dependencies resolve at image-build time (there is
-no committed `composer.lock`).
+`composer.json` **and refresh `composer.lock` in the same commit**:
+
+```bash
+composer update <package> --no-install --no-scripts
+```
+
+A partial update leaves every other package at its locked version and does not
+need the private `git.netresearch.de` credential. `composer validate` in the
+`composer-audit` job is the freshness gate and fails the build when the two
+files disagree — the image and the attested SBOM would otherwise describe
+different resolutions.
 
 ## How deployment works
 
