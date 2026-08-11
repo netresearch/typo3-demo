@@ -1202,9 +1202,11 @@ WHERE deleted = 0
 --     worker its read access. The write tier is the narrower, additional grant,
 --     and the provisioning group holds nothing beyond it
 --     (tx_nrvault:secret.create, secret.rotate).
--- sorting_foreign stays 0: the TCA field declares no MM_opposite_field, so the
--- relation is one-directional and DataHandler only ever fills `sorting`. Writing
--- anything else here would differ from what a save in the Vault module produces.
+--
+--     sorting_foreign stays 0: the TCA field declares no MM_opposite_field, so
+--     the relation is one-directional and DataHandler only ever fills `sorting`.
+--     Writing anything else differs from what a save in the Vault module leaves
+--     behind.
 INSERT IGNORE INTO tx_nrvault_secret_writegroups_mm (uid_local, uid_foreign, sorting, sorting_foreign)
 SELECT s.uid, 991, 1, 0
 FROM tx_nrvault_secret s
@@ -3337,6 +3339,11 @@ VALUES (9999, 1, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'text', @sentinel_title, 0,
 -- ever begins at the dash), so this reclaims our own sentinel while a genuinely
 -- foreign row, which does not carry that prefix, stays untouched. The header is
 -- rewritten to the canonical spelling in the same pass.
+--
+-- Compared with LEFT() rather than LIKE: LIKE would read `_` and `%` in the
+-- prefix as wildcards, so renaming the sentinel to anything carrying one would
+-- silently widen what this statement claims as ours. LEFT() has no such
+-- metacharacters and costs the same.
 UPDATE pages
    SET doktype = 254, hidden = 1, deleted = 1, title = @sentinel_title
  WHERE uid = 9999 AND slug = @sentinel_slug;
@@ -3344,7 +3351,7 @@ UPDATE pages
 UPDATE tt_content
    SET hidden = 1, deleted = 1, header = @sentinel_title
  WHERE uid = 9999
-   AND (header = @sentinel_title OR header LIKE CONCAT(@sentinel_prefix, '%'));
+   AND (header = @sentinel_title OR LEFT(header, CHAR_LENGTH(@sentinel_prefix)) = @sentinel_prefix);
 
 -- Belt to the sentinel's braces, and the guarantee stated outright rather than
 -- left to emerge from the row above. InnoDB clamps this value up to at least
@@ -3816,6 +3823,20 @@ UNION ALL
 SELECT 'SEED-PROBLEM: tx_nrllm_service_usage has no history — Analytics renders empty'
   FROM DUAL
  WHERE NOT EXISTS (SELECT 1 FROM tx_nrllm_service_usage)
+UNION ALL
+-- The write tier from step 3c, asserted because its absence does not show up
+-- here otherwise: the deploy then dies two steps later in provision-llm-key with
+-- "update permission denied", which reads like a vault problem rather than a
+-- missing seed grant. Conditional on the secret existing at all, so a fresh
+-- instance — where the key has not been provisioned yet — reports nothing.
+SELECT 'SEED-PROBLEM: provisioning group 991 has no write tier on the OpenAI secret'
+  FROM tx_nrvault_secret s
+ WHERE s.deleted = 0
+   AND s.identifier = (SELECT api_key FROM tx_nrllm_provider WHERE uid = 1 LIMIT 1)
+   AND (SELECT api_key FROM tx_nrllm_provider WHERE uid = 1 LIMIT 1) <> ''
+   AND NOT EXISTS (
+       SELECT 1 FROM tx_nrvault_secret_writegroups_mm mm
+        WHERE mm.uid_local = s.uid AND mm.uid_foreign = 991)
 UNION ALL
 -- The sentinels are checked WITHOUT `deleted = 0`: unlike every record above,
 -- they are supposed to be soft-deleted. What matters is only that the row is
