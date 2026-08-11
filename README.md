@@ -16,9 +16,9 @@ host pulls and updates itself. There is no manual server editing.
 | `netresearch/nr-mcp-agent` | Tool-using AI chat agent in the backend | Admin Tools › AI Chat |
 | `netresearch/nr-vault` | Encrypted secrets management (backs the LLM API keys) | Admin Tools › Vault |
 | `netresearch/nr-passkeys-be` | Passwordless backend login (WebAuthn/FIDO2) | User Settings › Account security |
-| `netresearch/nr-passkeys-fe` | Passkey login for frontend users | Web › FE Passkeys |
-| `netresearch/nr-repurpose` | Turn a page/PDF into a podcast, diagram and story | Web › Repurpose |
-| `netresearch/nr-landingpage` | AI-generated landing pages from reusable templates | Web › Landing Pages |
+| `netresearch/nr-passkeys-fe` | Passkey login for frontend users | Frontend Passkeys module |
+| `netresearch/nr-repurpose` | Turn a page/PDF into a podcast, diagram and story | Content › Repurpose |
+| `netresearch/nr-landingpage` | AI-generated landing pages from reusable templates | Content › Landing Pages |
 | `netresearch/nr-browser-ai` | On-device page assistant via Chrome's built-in AI, no API key and no server call | (content element on `/extensions/browser-ai`) |
 | `netresearch/t3-cowriter` | AI writing assistant inside CKEditor | Tools › Cowriter Status |
 | `netresearch/nr-temporal-cache` | Time-based page-cache invalidation | Tools › Temporal Cache |

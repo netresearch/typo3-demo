@@ -81,7 +81,7 @@ services:
       $options:
         description: 'Passkey-first login for website users (fe_users): Touch ID, Face ID, Windows Hello, or hardware keys instead of passwords, as a drop-in felogin override.'
         howTo:
-          - 'Open Site > Frontend Passkeys for the admin overview.'
+          - 'Open the Frontend Passkeys module for the admin overview.'
           - 'Visit /login on the site and log in as demo / demo.'
           - 'Register a passkey via the management plugin, then log in again with it.'
         moduleRoute: 'nr_passkeys_fe'
