@@ -286,23 +286,44 @@ if [ -f config/system/settings.php ]; then
             $ext["apiKey"] = $key;
         }
         $cfg["EXTENSIONS"]["ai_filemetadata"] = $ext;
-        $written = file_put_contents($f, "<?php\nreturn " . var_export($cfg, true) . ";\n");
-        if ($written === false) {
-            fwrite(STDERR, "failed to write settings.php" . PHP_EOL);
+
+        // Write to a sibling and rename. file_put_contents() truncates in place,
+        // and settings.php is the one file whose corruption bricks the instance:
+        // a partial write (full volume) leaves a parse error, the
+        // installToolPassword step above then dies under `set -eu` before nginx
+        // starts, and no boot regenerates the file because it still exists.
+        // rename() within the same directory is atomic, so a reader either sees
+        // the old file or the new one - never half of either. That also closes
+        // the window in which a php-fpm request could include a half-written file.
+        $tmp = $f . ".tmp";
+        $payload = "<?php\nreturn " . var_export($cfg, true) . ";\n";
+        $written = @file_put_contents($tmp, $payload);
+        if ($written === false || $written !== strlen($payload)) {
+            @unlink($tmp);
+            fwrite(STDERR, "failed to write " . $tmp . " (wrote " . var_export($written, true)
+                . " of " . strlen($payload) . " bytes) - settings.php left untouched" . PHP_EOL);
             exit(1);
         }
-        // Read back rather than trust the write: a full volume truncates the file
-        // while file_put_contents reports a byte count, and a silently emptied
-        // settings.php takes the whole instance down on the next request.
-        $check = include $f;
+        // Verify the candidate before it replaces anything.
+        $check = include $tmp;
         if (!is_array($check) || ($check["EXTENSIONS"]["ai_filemetadata"]["imageResizing"] ?? null) !== "512") {
-            fwrite(STDERR, "settings.php did not survive the write - refusing to report success" . PHP_EOL);
+            @unlink($tmp);
+            fwrite(STDERR, "the new settings.php did not parse back - settings.php left untouched" . PHP_EOL);
+            exit(1);
+        }
+        $perms = @fileperms($f);
+        if ($perms !== false) {
+            @chmod($tmp, $perms & 0777);
+        }
+        if (!@rename($tmp, $f)) {
+            @unlink($tmp);
+            fwrite(STDERR, "failed to rename " . $tmp . " over settings.php - settings.php left untouched" . PHP_EOL);
             exit(1);
         }
         echo "settings.php: ai_filemetadata configured, OpenAI key "
             . ($key !== "" ? $origin : "NOT set - alt-text generation will fail")
             . "." . PHP_EOL;
-    ' || { echo "ERROR: failed to configure ai_filemetadata in settings.php" >&2; exit 1; }
+    ' || echo "WARNING: ai_filemetadata is NOT configured - settings.php was left untouched, so alt-text generation runs on the extension's fail-open defaults (no image downscaling, frontend generation on)" >&2
 fi
 
 # Configure nr_textdb (database-backed frontend translations).

@@ -152,12 +152,15 @@ persist-env-secret: ## Write $$SECRET_NAME from the environment into .env (usage
 	@# rewritten through a temporary file that a trap removes on any failure - it
 	@# holds a full copy of .env, secrets included, until the mv lands.
 	@#
-	@# A literal dollar is doubled on the way in. compose interpolates .env values
-	@# ($$NAME expands) and collapses $$$$ back to one dollar there exactly as it
-	@# does in compose.yml. Measured with printenv INSIDE a running container,
-	@# compose v5.3.1: `V=sk-a$$$$b` arrives as `sk-a$$b`. Do NOT verify this with
-	@# `docker compose config` - it re-escapes a literal dollar back to $$$$ in its
-	@# own output, which reads exactly like a failure and is not one.
+	@# A literal dollar in the value is doubled on the way into .env. compose
+	@# interpolates .env values, and it collapses a doubled dollar back to a single
+	@# one there exactly as it does in compose.yml. Measured with printenv INSIDE a
+	@# running container, compose v5.3.1.
+	@#
+	@# Do NOT verify this with `docker compose config`: it re-escapes a literal
+	@# dollar in its own output, so a correct value is printed doubled and reads
+	@# exactly like a corrupted one. That artefact already produced one wrong
+	@# "measurement" in this file.
 	@set -e; \
 	test -n "$(SECRET_NAME)" || { echo "ERROR: SECRET_NAME= is required." >&2; exit 1; }; \
 	case "$(SECRET_NAME)" in [A-Z]*) : ;; *) echo "ERROR: SECRET_NAME '$(SECRET_NAME)' must be an uppercase environment variable name." >&2; exit 1 ;; esac; \
@@ -172,7 +175,12 @@ persist-env-secret: ## Write $$SECRET_NAME from the environment into .env (usage
 	tmp=$$(mktemp .env.XXXXXX); \
 	trap 'rm -f "$$tmp"' EXIT INT TERM; \
 	escaped=$$(printf '%s' "$$value" | sed 's/\$$/$$$$/g'); \
-	grep -v "^$(SECRET_NAME)=" .env > "$$tmp" || true; \
+	: 'grep exit 1 means no line matched, which is normal; anything above that'; \
+	: 'is a real failure and must not be swallowed - it would leave a .env'; \
+	: 'holding only the new line. The status is captured directly, because'; \
+	: 'inside an if-not construct the status reads as the negated one.'; \
+	rc=0; grep -v "^$(SECRET_NAME)=" .env > "$$tmp" || rc=$$?; \
+	[ "$$rc" -le 1 ] || { echo "ERROR: grep over .env failed (exit $$rc) - refusing to write a truncated .env" >&2; exit 1; }; \
 	printf '%s=%s\n' "$(SECRET_NAME)" "$$escaped" >> "$$tmp"; \
 	chmod 600 "$$tmp"; \
 	mv "$$tmp" .env; \

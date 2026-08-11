@@ -34,7 +34,9 @@ services:
       # ai_filemetadata reads a plain OpenAI key from its own extension
       # configuration and has no nr_vault support, so it cannot use the vault
       # route the LLM modules take. The entrypoint writes it into
-      # config/system/additional.php; empty here keeps a previously stored key.
+      # config/system/settings.php - which is the file the extension actually
+      # reads; additional.php is not on its lookup path. Empty here keeps the
+      # key already stored there.
       OPENAI_API_KEY: ${OPENAI_API_KEY:-}
     volumes:
       - typo3-fileadmin:/var/www/public/fileadmin
