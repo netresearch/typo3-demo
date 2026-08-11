@@ -1021,6 +1021,85 @@ SET configuration_uid = (
     is_active = 1
 WHERE uid = 1;
 
+-- 4) The six standard Cowriter tasks.
+--
+--    t3_cowriter's AjaxController::getTasksAction() calls
+--    findByCategory('content') - the category is hard-coded - and renders one
+--    dropdown entry per row. On this instance that query returned exactly one
+--    row ('content-editor', which the block above repoints at the MCP agent's
+--    configuration), so the editor was offered a single unrelated task.
+--
+--    The extension's documentation says these six are "seeded during
+--    installation". They are not: t3_cowriter ships no ext_tables.sql, no
+--    dataset, no upgrade wizard and no setup command, and nothing in nr_llm
+--    creates tasks either. Its own JavaScript concedes it - with an empty list
+--    the dialog shows instructions for creating tasks by hand. So the demo has
+--    to seed them.
+--
+--    Keyed on `identifier`, not on a fixed uid: tx_nrllm_task carries no unique
+--    index on it (deliberately - a soft-deleted row would otherwise block
+--    re-seeding), so the guard is a NOT EXISTS on the identifier instead, which
+--    is also what makes re-running this file a no-op.
+--
+--    configuration_uid points at 'content-assistant' rather than at a model:
+--    the task layer never names a model, and repointing that one configuration
+--    is what switches every task at once.
+--
+--    prompt_template must be non-empty. With an empty template and no typed
+--    instruction the extension rejects the request with a different error, so an
+--    empty template would trade one broken state for another. {{input}} is the
+--    placeholder it substitutes the selected text into.
+INSERT INTO tx_nrllm_task
+    (pid, identifier, name, description, category, configuration_uid, prompt_template,
+     input_type, output_format, is_active, is_system, sorting, tstamp, crdate, deleted, hidden)
+SELECT 0, t.identifier, t.name, t.description, 'content',
+       COALESCE((SELECT uid FROM tx_nrllm_configuration
+                  WHERE identifier = 'content-assistant' AND deleted = 0
+                  ORDER BY uid ASC LIMIT 1), 0),
+       t.prompt_template, 'manual', 'markdown', 1, 0, t.sorting,
+       UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0
+  FROM (
+        SELECT 'improve-text' AS identifier, 'Improve Text' AS name,
+               'Rewrites the selected text for clarity and flow, keeping its meaning and language.' AS description,
+               'Improve the following text: make it clearer and easier to read, keep its meaning, its language and its tone, and do not add facts that are not in it. Return only the improved text.\n\n{{input}}' AS prompt_template,
+               10 AS sorting
+        UNION ALL SELECT 'summarize', 'Summarize',
+               'Condenses the selected text to its essentials.',
+               'Summarize the following text in the same language. Keep every essential point, drop the rest, and return only the summary.\n\n{{input}}', 20
+        UNION ALL SELECT 'extend', 'Extend',
+               'Expands the selected text, staying with what it already says.',
+               'Expand the following text in the same language and tone. Elaborate on what it already says; do not invent facts, figures or sources. Return only the expanded text.\n\n{{input}}', 30
+        UNION ALL SELECT 'fix-grammar', 'Fix Grammar & Spelling',
+               'Corrects grammar, spelling and punctuation without rewriting.',
+               'Correct grammar, spelling and punctuation in the following text. Keep the wording, the language and the tone as they are - correct only what is wrong. Return only the corrected text.\n\n{{input}}', 40
+        UNION ALL SELECT 'translate-en', 'Translate to English',
+               'Translates the selected text into English.',
+               'Translate the following text into English. Keep its tone and formatting, and return only the translation.\n\n{{input}}', 50
+        UNION ALL SELECT 'translate-de', 'Translate to German',
+               'Translates the selected text into German.',
+               'Translate the following text into German. Keep its tone and formatting, and return only the translation.\n\n{{input}}', 60
+       ) AS t
+ WHERE NOT EXISTS (
+       SELECT 1 FROM tx_nrllm_task e
+        WHERE e.identifier = t.identifier AND e.deleted = 0);
+
+-- Re-assert the fields a later correction would need to reach: an instance
+-- seeded by an earlier run keeps its row, and without this an edited prompt or a
+-- repointed configuration would never arrive (the NOT EXISTS above stops
+-- matching once the row is there). Scoped to the six identifiers this file owns.
+UPDATE tx_nrllm_task e
+  JOIN (
+        SELECT 'improve-text' AS identifier UNION ALL SELECT 'summarize'
+        UNION ALL SELECT 'extend' UNION ALL SELECT 'fix-grammar'
+        UNION ALL SELECT 'translate-en' UNION ALL SELECT 'translate-de'
+       ) AS owned ON owned.identifier = e.identifier
+   SET e.category = 'content',
+       e.is_active = 1,
+       e.configuration_uid = COALESCE((SELECT uid FROM tx_nrllm_configuration
+                                        WHERE identifier = 'content-assistant' AND deleted = 0
+                                        ORDER BY uid ASC LIMIT 1), e.configuration_uid)
+ WHERE e.deleted = 0;
+
 -- Give unpriced demo models cost metrics so the LLM cost module + Monthly-Cost
 -- widget show non-zero figures (cents per 1M tokens). Idempotent: the WHERE stops
 -- matching once set, so re-running make seed-extensions is a no-op.
@@ -3811,6 +3890,18 @@ SELECT CONCAT('SEED-PROBLEM: be_dashboards ', d.uid, ' Netresearch Widgets missi
 UNION ALL
 -- Checked per user rather than per uid: these rows carry no fixed uid, because
 -- which users exist comes from the dump and the guard is (user, title).
+SELECT CONCAT('SEED-PROBLEM: Cowriter task ', w.identifier, ' missing, inactive, out of category, or with an empty prompt_template')
+  FROM (
+        SELECT 'improve-text' AS identifier UNION ALL SELECT 'summarize'
+        UNION ALL SELECT 'extend' UNION ALL SELECT 'fix-grammar'
+        UNION ALL SELECT 'translate-en' UNION ALL SELECT 'translate-de'
+       ) AS w
+ WHERE NOT EXISTS (
+       SELECT 1 FROM tx_nrllm_task t
+        WHERE t.identifier = w.identifier AND t.deleted = 0
+          AND t.is_active = 1 AND t.category = 'content'
+          AND t.prompt_template <> '')
+UNION ALL
 SELECT CONCAT('SEED-PROBLEM: be_dashboards Netresearch Demo missing for be_users ', u.uid, ' ', u.username)
   FROM be_users u
  WHERE u.deleted = 0
