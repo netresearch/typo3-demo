@@ -81,7 +81,7 @@ services:
       $options:
         description: 'Passkey-first login for website users (fe_users): Touch ID, Face ID, Windows Hello, or hardware keys instead of passwords, as a drop-in felogin override.'
         howTo:
-          - 'Open Web > Frontend Passkeys for the admin overview.'
+          - 'Open the Frontend Passkeys module for the admin overview.'
           - 'Visit /login on the site and log in as demo / demo.'
           - 'Register a passkey via the management plugin, then log in again with it.'
         moduleRoute: 'nr_passkeys_fe'
@@ -102,7 +102,7 @@ services:
       $options:
         description: 'Turns a web page or PDF into a podcast, a diagram, and an Instagram story — content repurposing built on the nr-llm foundation.'
         howTo:
-          - 'Open Web > Repurpose in the module menu.'
+          - 'Open Content > Repurpose in the module menu.'
           - 'Create a new job and paste a page URL or upload a PDF.'
           - 'Open the finished job to preview the generated podcast, diagram, and story.'
         moduleRoute: 'web_nrrepurpose'
@@ -165,9 +165,9 @@ services:
       $options:
         description: 'Generates complete landing pages with AI from a short briefing: structured content elements, brand colors, and SEO fields — driven by reusable wizard templates.'
         howTo:
-          - 'Open Web > Landing Pages in the module menu.'
+          - 'Open Content > Landing Pages in the module menu.'
           - 'Pick a template, e.g. "Product Launch" or "Creative One-Pager".'
-          - 'Enter a short briefing and generate — then review the created page in Web > Page.'
+          - 'Enter a short briefing and generate — then review the created page in Content > Layout.'
         moduleRoute: 'nr_landingpage'
         buttonLabel: 'Open Landing Pages'
     tags:
@@ -186,10 +186,10 @@ services:
       $options:
         description: 'An AI writing assistant in CKEditor: rewrite, summarize, translate, or fix grammar of the selected text — right where editors work.'
         howTo:
-          - 'Open Web > Page and edit a text element, e.g. on the "AI Cowriter" demo page.'
-          - 'Select some text in the rich text editor.'
-          - 'Click the Cowriter button in the editor toolbar and choose a task such as "Rewrite".'
-          - 'Review the AI suggestion and apply it with one click.'
+          - 'Open Content > Layout on Content Examples > Text > Rich Text — that page has a real RTE element to work in.'
+          - 'Select some text in the rich text editor and click the Cowriter button in the toolbar.'
+          - 'Pick a task from the dropdown, or choose "Custom instruction" and type what should happen.'
+          - 'The suggestion appears as a preview — confirm it with "Insert", or use "Retry".'
     tags:
       - name: 'dashboard.widget'
         identifier: 'nrdemo.cowriter'
@@ -206,7 +206,7 @@ services:
       $options:
         description: 'Image support inside the CKEditor 5 rich text editor: insert FAL images, responsive magic-image processing, captions, and click-to-enlarge — no separate image content elements needed.'
         howTo:
-          - 'Open Web > Page and edit the text element on the "RTE CKEditor Image" demo page.'
+          - 'Open Content > Layout and edit the text element on the "RTE CKEditor Image" demo page.'
           - 'Click the image button in the editor toolbar.'
           - 'Pick an image from fileadmin, set alternative text, and save — the frontend renders it responsively.'
     tags:
@@ -289,7 +289,7 @@ services:
           - 'Open the Extensions > Contexts page in the frontend at /extensions/contexts — you see the default-channel element.'
           - 'Append ?nrdemo=mobile to that URL and reload: the mobile-channel element replaces it.'
           - 'In the backend, edit either element on that page and open its Contexts panel to see the per-context visibility switches.'
-          - 'Open Web > List on the home page to inspect the "Demo channel (mobile)" context record itself (admin only).'
+          - 'Open Content > List on the home page to inspect the "Demo channel (mobile)" context record itself (admin only).'
     tags:
       - name: 'dashboard.widget'
         identifier: 'nrdemo.contexts'
