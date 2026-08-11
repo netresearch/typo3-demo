@@ -1181,6 +1181,45 @@ WHERE deleted = 0
   AND identifier = (SELECT api_key FROM tx_nrllm_provider WHERE uid = 1 LIMIT 1)
   AND (SELECT api_key FROM tx_nrllm_provider WHERE uid = 1 LIMIT 1) <> '';
 
+-- 3c) Give the provisioning group (991) the WRITE tier on that same secret.
+--     Handing ownership to 990 above takes the write access away from the
+--     identity that has to refresh the key: `make provision-llm-key` runs
+--     `vault:store --as-provisioner` as be_user 991, and nr_vault's
+--     AccessControlService::hasTechnicalActorAccess() grants a write on an
+--     EXISTING secret only to an admin, to its owner, or to a member of its
+--     write-tier groups. 991 is none of those once 990 owns the row, so every
+--     deploy after the first died with `Access denied to secret
+--     "openai_api_key": update permission denied` and `make update` never
+--     reached extension:setup, cache:flush or cache:warmup.
+--
+--     The relation lives in the MM table, NOT in tx_nrvault_secret.write_groups:
+--     for an MM-backed TCA group field that column holds the relation COUNT
+--     (RelationHandler::countItems()), so writing a uid into it would grant
+--     nothing and corrupt the count at the same time. It is kept in sync from
+--     the MM table right after.
+--
+--     Ownership deliberately stays with 990: that is what gets the indexing
+--     worker its read access. The write tier is the narrower, additional grant,
+--     and the provisioning group holds nothing beyond it
+--     (tx_nrvault:secret.create, secret.rotate).
+-- sorting_foreign stays 0: the TCA field declares no MM_opposite_field, so the
+-- relation is one-directional and DataHandler only ever fills `sorting`. Writing
+-- anything else here would differ from what a save in the Vault module produces.
+INSERT IGNORE INTO tx_nrvault_secret_writegroups_mm (uid_local, uid_foreign, sorting, sorting_foreign)
+SELECT s.uid, 991, 1, 0
+FROM tx_nrvault_secret s
+WHERE s.deleted = 0
+  AND s.identifier = (SELECT api_key FROM tx_nrllm_provider WHERE uid = 1 LIMIT 1)
+  AND (SELECT api_key FROM tx_nrllm_provider WHERE uid = 1 LIMIT 1) <> '';
+
+UPDATE tx_nrvault_secret s
+SET s.write_groups = (
+    SELECT COUNT(*) FROM tx_nrvault_secret_writegroups_mm mm WHERE mm.uid_local = s.uid
+)
+WHERE s.deleted = 0
+  AND s.identifier = (SELECT api_key FROM tx_nrllm_provider WHERE uid = 1 LIMIT 1)
+  AND (SELECT api_key FROM tx_nrllm_provider WHERE uid = 1 LIMIT 1) <> '';
+
 -- 4) Frontend showcase page under "Extensions" (uid 101) carrying the two
 --    nr_ai_search plugin content elements. Page uid 158 and tt_content uids
 --    602-604 are above the seed maxima (pages 157, tt_content 601). Both plugins
