@@ -1,0 +1,46 @@
+<f:comment>
+    Override of EXT:bootstrap_package Resources/Private/Partials/Page/Navigation/Language.html (16.0.0).
+
+    Upstream gates the link on {item.available}. The core menu sets available=0 for
+    every language whose page has no `pages` translation record, regardless of the
+    site's fallback configuration — see
+    AbstractMenuContentObject::prepareMenuItemsForLanguageMenu(), which maps that case
+    to ITEM_STATE USERDEF1, and LanguageMenuProcessor, which turns USERDEF1 into
+    available=0.
+
+    This site declares DE with fallbackType: fallback (config/sites/default/config.yaml),
+    so every /de/ URL resolves and serves the English source. The demo has no page
+    translations yet, so upstream would render a dead, greyed-out "Deutsch" on every
+    page. Gate on {item.link} instead: the menu generates the link for unavailable
+    items too, and an empty link still degrades to the plain span rather than to an
+    anchor with an empty href.
+
+    No namespace-carrying root element on purpose. The file uses only the built-in
+    f: namespace, which needs no declaration, and upstream's wrapper made SonarCloud
+    read the partial as a standalone page and report a missing doctype, lang and
+    title (three Web:* rules, seen on PR #145).
+</f:comment>
+<f:if condition="{languagenavigation}">
+    <ul id="language_menu" class="language-menu">
+        <f:for each="{languagenavigation}" as="item">
+            <li class="{f:if(condition: item.active, then: 'active')} {f:if(condition: item.link, else: 'inactive')}">
+                <f:if condition="{item.link}">
+                    <f:then>
+                        <f:comment>
+                            No title attribute: LanguageMenuProcessor sets item.title to the
+                            language title and item.navigationTitle to the navigation title,
+                            and this site configures both as "Deutsch" / "English" — the
+                            attribute would only make a screen reader announce the link twice.
+                        </f:comment>
+                        <a href="{item.link}" hreflang="{item.hreflang}" aria-current="{f:if(condition: item.active, then: 'true', else: 'false')}">
+                            <span>{item.navigationTitle}</span>
+                        </a>
+                    </f:then>
+                    <f:else>
+                        <span>{item.navigationTitle}</span>
+                    </f:else>
+                </f:if>
+            </li>
+        </f:for>
+    </ul>
+</f:if>

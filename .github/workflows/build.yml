@@ -103,10 +103,21 @@ jobs:
             exit 1
           }
 
+      # Caddy terminates TLS with its own internal CA, so every check below would
+      # otherwise have to pass `-k` and accept *any* certificate — which keeps a
+      # broken TLS setup invisible. Export that CA once and pin it instead, and
+      # confine both the request and any redirect to https (`githubactions:S6506`
+      # on line 109 was about `-L` silently following a downgrade to http, not
+      # about the certificate).
+      - name: Export Caddy's local CA
+        run: |
+          docker compose cp caddy:/data/caddy/pki/authorities/local/root.crt "$RUNNER_TEMP/caddy-root.crt"
+          test -s "$RUNNER_TEMP/caddy-root.crt"
+
       - name: Verify TYPO3 responds
         run: |
           for i in $(seq 1 30); do
-            if curl -sSfkL https://localhost 2>/dev/null | grep -qi "typo3"; then
+            if curl -sSfL --proto '=https' --proto-redir '=https' --cacert "$RUNNER_TEMP/caddy-root.crt" https://localhost 2>/dev/null | grep -qi "typo3"; then
               echo "TYPO3 is responding."
               exit 0
             fi
@@ -116,6 +127,26 @@ jobs:
           echo "ERROR: TYPO3 did not respond in time."
           docker compose logs web
           exit 1
+
+      # The seed carries no `pages` translation, which is exactly the state in
+      # which the core language menu marks German unavailable and bootstrap_package
+      # would render a dead span. The site runs fallbackType: fallback, so the link
+      # is valid anyway and the site package overrides the partial to emit it. That
+      # override is invisible to every static check, so assert it on a real render.
+      - name: Verify the language switcher renders and links
+        run: |
+          html=$(curl -sSfL --proto '=https' --proto-redir '=https' --cacert "$RUNNER_TEMP/caddy-root.crt" https://localhost)
+          fail() {
+            echo "ERROR: $1"
+            printf '%s' "$html" | grep -c 'footer-section-meta' | sed 's/^/footer-section-meta occurrences: /'
+            printf '%s' "$html" | grep -A8 'class="footer-language"' || echo '(no footer-language block at all)'
+            exit 1
+          }
+          printf '%s' "$html" | grep -q 'id="language_menu"' \
+            || fail 'the language menu is not rendered (page.theme.language.enable?)'
+          printf '%s' "$html" | grep -A8 'class="footer-language"' | grep -q 'href="/de/"' \
+            || fail 'the German entry renders without a link (partial override not in effect?)'
+          echo "Language switcher renders and links to /de/."
 
       - name: Cleanup
         if: always()
