@@ -96,8 +96,17 @@ make export-seed              # dump the current DB back to data/db.sql.gz
 disk stays bounded across repeated deploys.
 
 To change installed extension **versions**, edit the constraints in
-`composer.json` and merge — dependencies resolve at image-build time (there is
-no committed `composer.lock`).
+`composer.json` **and refresh `composer.lock` in the same commit**:
+
+```bash
+composer update <package> --no-install --no-scripts
+```
+
+A partial update leaves every other package at its locked version and does not
+need the private `git.netresearch.de` credential. `composer validate` in the
+`composer-audit` job is the freshness gate and fails the build when the two
+files disagree — the image and the attested SBOM would otherwise describe
+different resolutions.
 
 ## How deployment works
 
@@ -129,6 +138,55 @@ not take the whole instance down — but every AI module reports "API key
 identifier is required for provider OpenAI" until it is set. Rotating the key
 means updating the repository secret and re-running the deploy; nothing has to
 be clicked in the backend, and no reset can lose it again.
+
+## Alternative texts (ai_filemetadata)
+
+`mfd/ai-filemetadata` generates alt texts for FAL images: a generate button next
+to the alt-text field, an automatic run on upload, and `vendor/bin/typo3
+ai:generate-alt-texts` for the existing stock. It ships no backend module.
+
+It cannot use nr-vault. Like autotranslate it reads a plain key from its own
+extension configuration — but unlike DeepL it speaks the OpenAI API directly, so
+the existing `OPENAI_API_KEY` secret covers it and no second secret is needed.
+
+`make update` runs `make persist-env-secret SECRET_NAME=OPENAI_API_KEY` before
+`up`, which writes the value into the host `.env` (so a reboot keeps it); compose
+passes it to `web`; and the entrypoint writes it, together with the four
+behaviour settings, into **`config/system/settings.php`**.
+
+That file, not `additional.php`, is the one that works — and the difference is
+not cosmetic. The extension reads its behaviour settings through
+`ConfigurationService` → `ConfigurationManager::getMergedLocalConfiguration()`,
+which is `getDefaultConfiguration()` merged with `require settings.php`.
+`additional.php` is applied on top of `$GLOBALS` instead and never reaches that
+call, so four of the five keys would silently fall back to the extension's
+catch-defaults — and those fail **open**: `imageResizing = 0` (no downscaling,
+full-resolution images billed by the pixel) and `generateAltTextInFrontend =
+true` (a synchronous OpenAI call while a visitor waits for the page). Only
+`apiKey` would have arrived, because that one is read via
+`ExtensionConfiguration::get()`, which does read `$GLOBALS`.
+
+The key therefore sits in `settings.php` in plaintext, next to
+`MARIADB_PASSWORD`. There is no alternative for this extension: it has no
+nr-vault support, and `typo3 extension:setup` would copy the value there anyway.
+
+Two things that cost a measurement each, so they are written down rather than
+rediscovered:
+
+- **`.env` values are interpolated, and `$$` is the escape.** compose expands
+  `$NAME` in a `.env` value and collapses `$$` back to one literal `$` there,
+  exactly as it does in `compose.yml`. `persist-env-secret` doubles dollars on
+  the way in. **Do not verify this with `docker compose config`** — it
+  re-escapes a literal `$` back to `$$` in its own output, which reads exactly
+  like a failure and is not one. Measure with `printenv` inside a running
+  container; against compose v5.3.1, `V=sk-a$$b` in `.env` arrives as `sk-a$b`.
+- **`imageResizing` is a cost control, not a quality setting.** Images are
+  billed by the pixel and a 50-word alt text does not need full resolution;
+  the demo shrinks to 512.
+
+`generateAltTextInFrontend` is off: a missing alt text must not trigger a
+synchronous API call while a visitor waits for the page. `enableTokenTracking`
+is on, and the three token widgets sit on the Netresearch Widgets dashboard.
 
 ## Verifying the image SBOM
 

@@ -50,6 +50,7 @@
     "netresearch/typo3-demo-site": "@dev",
     "netresearch/nr-repurpose": "^0.4",
     "thieleundklose/autotranslate": "^3.2",
+    "mfd/ai-filemetadata": "^1.6",
     "causal/extractor": "^2.6"
   },
   "repositories": [

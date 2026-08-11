@@ -236,6 +236,96 @@ if [ -f config/system/settings.php ]; then
     ' || echo "WARNING: failed to write nr_ai_search additional.php block" >&2
 fi
 
+# Configure ai_filemetadata (AI-generated alternative texts for FAL images).
+#
+# This one goes into settings.php, NOT additional.php, and that distinction is
+# the whole point. The extension reads its behaviour settings through
+# ConfigurationService -> ConfigurationManager::getMergedLocalConfiguration(),
+# which is getDefaultConfiguration() merged with `require settings.php` — it
+# never looks at additional.php. Only `apiKey` would have arrived that way,
+# because ExtensionConfiguration::get() reads $GLOBALS, which additional.php
+# does populate. The other four would have fallen back to the catch-defaults in
+# ConfigurationService::loadConfiguration(), and those fail OPEN:
+# imageResizing 0 (no downscaling, full-resolution images billed by the pixel)
+# and generateAltTextInFrontend true (a synchronous OpenAI call while a visitor
+# waits for the page). Writing settings.php is what the extension actually reads,
+# and it is the file ExtensionConfiguration::set() writes too.
+#
+# Editing settings.php from here follows the installToolPassword step above:
+# read the array, change the keys we own, write it back with var_export.
+#
+# No sidecar file. settings.php lives in the typo3-config volume, so a boot
+# without OPENAI_API_KEY simply keeps the key already stored there. The key ends
+# up in settings.php in plaintext either way — this extension has no nr-vault
+# support, and `typo3 extension:setup` would copy it there regardless — so it is
+# stored where MARIADB_PASSWORD already lives rather than in a second place.
+if [ -f config/system/settings.php ]; then
+    php -r '
+        $f = "config/system/settings.php";
+        $cfg = include $f;
+        if (!is_array($cfg)) {
+            fwrite(STDERR, "settings.php did not return an array" . PHP_EOL);
+            exit(1);
+        }
+        $ext = $cfg["EXTENSIONS"]["ai_filemetadata"] ?? [];
+        $key = (string) getenv("OPENAI_API_KEY");
+        $origin = "provisioned from OPENAI_API_KEY";
+        if ($key === "") {
+            $key = (string) ($ext["apiKey"] ?? "");
+            $origin = "kept from the previous provisioning";
+        }
+        // Cost control, not a quality setting: images are billed by the pixel and
+        // a 50-word alt text does not need full resolution.
+        $ext["imageResizing"] = "512";
+        $ext["generateAltTextOnFileUpload"] = "1";
+        // A missing alt text must not trigger a synchronous API call while a
+        // visitor waits for the page.
+        $ext["generateAltTextInFrontend"] = "0";
+        $ext["enableTokenTracking"] = "1";
+        if ($key !== "") {
+            $ext["apiKey"] = $key;
+        }
+        $cfg["EXTENSIONS"]["ai_filemetadata"] = $ext;
+
+        // Write to a sibling and rename. file_put_contents() truncates in place,
+        // and settings.php is the one file whose corruption bricks the instance:
+        // a partial write (full volume) leaves a parse error, the
+        // installToolPassword step above then dies under `set -eu` before nginx
+        // starts, and no boot regenerates the file because it still exists.
+        // rename() within the same directory is atomic, so a reader either sees
+        // the old file or the new one - never half of either. That also closes
+        // the window in which a php-fpm request could include a half-written file.
+        $tmp = $f . ".tmp";
+        $payload = "<?php\nreturn " . var_export($cfg, true) . ";\n";
+        $written = @file_put_contents($tmp, $payload);
+        if ($written === false || $written !== strlen($payload)) {
+            @unlink($tmp);
+            fwrite(STDERR, "failed to write " . $tmp . " (wrote " . var_export($written, true)
+                . " of " . strlen($payload) . " bytes) - settings.php left untouched" . PHP_EOL);
+            exit(1);
+        }
+        // Verify the candidate before it replaces anything.
+        $check = include $tmp;
+        if (!is_array($check) || ($check["EXTENSIONS"]["ai_filemetadata"]["imageResizing"] ?? null) !== "512") {
+            @unlink($tmp);
+            fwrite(STDERR, "the new settings.php did not parse back - settings.php left untouched" . PHP_EOL);
+            exit(1);
+        }
+        $perms = @fileperms($f);
+        if ($perms !== false) {
+            @chmod($tmp, $perms & 0777);
+        }
+        if (!@rename($tmp, $f)) {
+            @unlink($tmp);
+            fwrite(STDERR, "failed to rename " . $tmp . " over settings.php - settings.php left untouched" . PHP_EOL);
+            exit(1);
+        }
+        echo "settings.php: ai_filemetadata configured, OpenAI key "
+            . ($key !== "" ? $origin : "NOT set - alt-text generation will fail")
+            . "." . PHP_EOL;
+    ' || echo "WARNING: ai_filemetadata is NOT configured - settings.php was left untouched, so alt-text generation runs on the extension's fail-open defaults (no image downscaling, frontend generation on)" >&2
+fi
+
 # Configure nr_textdb (database-backed frontend translations).
 # textDbPid MUST match the sysfolder seeded in data/seed-extensions.sql (uid
 # 163). With textDbPid = 0 every repository queries pid 0
