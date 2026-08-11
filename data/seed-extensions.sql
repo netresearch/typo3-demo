@@ -3012,6 +3012,237 @@ ON DUPLICATE KEY UPDATE
                 VALUES(bodytext), bodytext);
 
 -- =============================================================================
+-- Browser AI form assistant (nr_browser_ai 0.5) — second plugin, own page
+-- =============================================================================
+-- The page next door, uid 9003, shows the assistant that ANSWERS from a page.
+-- This one shows the plugin that OPERATES one: a sentence goes in, a
+-- parameter-rich form comes out filled, and the query behind it runs.
+--
+-- It gets its own page rather than a section on 9003 because the two plugins
+-- demonstrate different claims and the material for each is substantial. Both
+-- pages sit under Extensions and link to each other.
+--
+-- Public, for the same reason 9003 is: everything except the weather query
+-- itself happens on the visitor's device, and that query goes to Open-Meteo,
+-- which needs no key and meters nothing against this installation.
+--
+-- No fallback content element and no colPos 99 here. The form is the plugin's
+-- content rather than an enhancement of it: a browser without an on-device
+-- model keeps a form that can be filled in and run by hand, so there is nothing
+-- to substitute.
+
+INSERT IGNORE INTO pages (uid, pid, tstamp, crdate, title, slug, doktype, sorting, hidden, deleted)
+VALUES (9004, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'Browser AI Form Assistant', '/extensions/browser-ai-form-assistant', 1, 1450, 0, 0);
+
+INSERT INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
+VALUES (9225, 9004, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', '',
+'<div class="card border-0 mb-4" style="background: #f8f9fa;">
+  <div class="card-body py-4">
+    <h1 class="h3 fw-bold mb-3">Browser AI form assistant</h1>
+    <p class="mb-2" style="max-width: 720px;">Describe what you want in one sentence and watch a form with seventy controls fill itself in, run, and come back with an answer. Nothing about the sentence leaves your device: Chrome&rsquo;s built-in Gemini Nano turns it into the query parameters, and only the finished query goes out &mdash; to Open-Meteo, an open weather service that needs no key.</p>
+    <p class="text-muted mb-0" style="font-size: 1rem; max-width: 720px;">Runtime note: deriving the parameters needs Chrome 148 or newer with the on-device model downloaded. Without it the form below is still a perfectly ordinary form &mdash; fill it in by hand and press <em>Run query</em>. That is deliberate: the form is the content, the assistant is the shortcut.</p>
+  </div>
+</div>', 0, 100, 0, 0)
+ON DUPLICATE KEY UPDATE
+  bodytext = IF(pid = VALUES(pid) AND CType = VALUES(CType) AND header = VALUES(header),
+                VALUES(bodytext), bodytext);
+
+-- Guidance BEFORE the plugin, because a visitor who does not know what to type
+-- learns nothing from an empty input field.
+INSERT INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
+VALUES (9226, 9004, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', '',
+'<div class="mb-4">
+  <h2 class="h4 fw-bold mb-3">Try it</h2>
+  <p style="max-width: 720px;">Type one of these into the form below and press <em>Fill and run</em>. Then look at what happened to the controls, not just at the result &mdash; the point of this demonstration is that the derivation is visible and correctable.</p>
+  <ul style="max-width: 720px;">
+    <li><code>Will the weekend in Leipzig be any good for a barbecue?</code> &mdash; picks a place, a short forecast range, and the daily variables that answer it: maximum temperature, precipitation total, wind.</li>
+    <li><code>How much rain fell in Hamburg over the past two weeks?</code> &mdash; sets past days rather than forecast days, and switches to a precipitation total.</li>
+    <li><code>Snow depth and wind gusts in Innsbruck for the next ten days, in metres per second</code> &mdash; two hourly variables, a range, and a unit group nobody would find by scrolling.</li>
+    <li><code>Is it raining in Tokyo right now?</code> &mdash; uses the current-conditions block instead of a forecast, and the time zone of the place.</li>
+  </ul>
+  <p class="text-muted" style="font-size: 1rem; max-width: 720px;">Then change something by hand and press <em>Run query</em>. The second run needs no model at all: it reads the form as it now stands. Open <em>What this form exposes to an assistant</em> underneath to see the schema the model was constrained to and the exact arguments it returned.</p>
+</div>', 0, 200, 0, 0)
+ON DUPLICATE KEY UPDATE
+  bodytext = IF(pid = VALUES(pid) AND CType = VALUES(CType) AND header = VALUES(header),
+                VALUES(bodytext), bodytext);
+
+-- The plugin. formIdentifier stays at the shipped demonstration form;
+-- showConfiguration is on because the disclosure is half the demonstration.
+INSERT INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, pi_flexform, colPos, sorting, hidden, deleted)
+VALUES (9227, 9004, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'nrbrowserai_formassistant', 'Weather query', '',
+'<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<T3FlexForms>
+    <data>
+        <sheet index="sDEF">
+            <language index="lDEF">
+                <field index="settings.formIdentifier">
+                    <value index="vDEF">weatherQuery</value>
+                </field>
+                <field index="settings.title">
+                    <value index="vDEF">Describe the weather you are asking about</value>
+                </field>
+                <field index="settings.introduction">
+                    <value index="vDEF">One sentence is enough. The form below fills itself with the parameters it implies, runs, and shows what came back.</value>
+                </field>
+                <field index="settings.supplementalInstruction">
+                    <value index="vDEF">Prefer daily variables when the request is about a day as a whole, and hourly ones only when it asks about a time of day.</value>
+                </field>
+                <field index="settings.showConfiguration">
+                    <value index="vDEF">1</value>
+                </field>
+            </language>
+        </sheet>
+    </data>
+</T3FlexForms>', 0, 300, 0, 0)
+ON DUPLICATE KEY UPDATE
+  pi_flexform = IF(pid = VALUES(pid) AND CType = VALUES(CType) AND header = VALUES(header),
+                   VALUES(pi_flexform), pi_flexform);
+
+INSERT INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
+VALUES (9228, 9004, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', '',
+'<div class="mt-5">
+  <h2 class="h4 fw-bold mb-3">How it works</h2>
+  <p style="max-width: 720px;">Four steps, and the third is the one that matters.</p>
+  <ol style="max-width: 720px;">
+    <li><strong>Intent.</strong> The sentence goes to the on-device model together with the form&rsquo;s own JSON Schema. The schema is a constraint rather than a suggestion: the model answers with JSON that fits it.</li>
+    <li><strong>Structured output.</strong> Those arguments are checked against the schema again before anything is touched. A value outside a field&rsquo;s option set, or a field the form does not have, stops the call and changes nothing.</li>
+    <li><strong>Tool call.</strong> The values are written into the visible controls. This is what makes the derivation inspectable: what the model understood is on screen, in the same controls anybody would use by hand, and it can be corrected there.</li>
+    <li><strong>Real action.</strong> The form is read back in full &mdash; the model sets only what the sentence mentioned, everything else comes from the form&rsquo;s own state &mdash; and the query runs.</li>
+  </ol>
+
+  <h3 class="h5 fw-bold mt-4 mb-2">Where the schema comes from</h3>
+  <p style="max-width: 720px;">Nobody wrote that schema. It is generated from the form definition, which already carries what a schema needs: the option values of every select, the bounds of every number, which entries are mandatory, and a sentence per field saying what it means. One source, so the controls on screen and the contract handed to the model cannot describe different forms.</p>
+  <p style="max-width: 720px;">Generating it is also what makes a form this size affordable for a small on-device model. The forty-four hourly variables are one multi-checkbox element, so they become one array property carrying forty-four allowed values &mdash; not forty-four separate properties. That distinction is the difference between a schema a model can hold and one it cannot.</p>
+
+  <h3 class="h5 fw-bold mt-4 mb-2">An agent can call the same thing</h3>
+  <p style="max-width: 720px;">The form is also registered as a tool with the browser&rsquo;s model context, the interface behind WebMCP. An agent running in the browser sees the same name, the same description and the same schema, calls it the same way, and receives the same result as text. The page does not become a special agent interface; it stays a page, and the form it already had is what the agent operates.</p>
+
+  <h2 class="h4 fw-bold mt-5 mb-3">Where else this applies</h2>
+  <p style="max-width: 720px;">Weather is the example, not the point. The pattern fits wherever a form already exists, its definition is machine-readable, and its parameter space is larger than a visitor is willing to explore:</p>
+  <ul style="max-width: 720px;">
+    <li><strong>Faceted product search.</strong> Twenty filters, four of which the customer actually cares about. &ldquo;Waterproof hiking boots, size 43, under 150 euro, in stock&rdquo; sets them and leaves the rest alone.</li>
+    <li><strong>Timetable and route search.</strong> Departure, arrival, transfer time, vehicle classes, accessibility, bicycle carriage &mdash; a form people abandon and phone instead.</li>
+    <li><strong>Statistics and open-data portals.</strong> Region, period, indicator, aggregation. The parameters are exactly what a question implies and nothing a lay visitor can guess.</li>
+    <li><strong>Tariff and configuration calculators.</strong> Insurance, energy, leasing: long forms where a wrong field silently produces a plausible but wrong number.</li>
+    <li><strong>Internal back-office forms.</strong> The unglamorous case with the largest saving, because the same colleagues fill in the same twelve fields several times a day.</li>
+  </ul>
+  <p style="max-width: 720px;">What is needed on your side is a form definition, a data source the browser may call, and a sentence per field explaining what it means. The last one is the part that is usually missing, and it is also the part that makes the form better for people, not only for models.</p>
+
+  <h3 class="h5 fw-bold mt-4 mb-2">What this deliberately does not do</h3>
+  <p style="max-width: 720px;">It does not answer in prose. The numbers in the result are the answer; asking a small on-device model to restate a table would spend the context the form&rsquo;s own schema needs. It does not invent a place either: the name is resolved by the data source&rsquo;s own search, the first match wins, and the resolved name is shown with the result so a wrong match is visible rather than silent.</p>
+  <p style="max-width: 720px;">And without JavaScript the form renders and validates but cannot run, because the query is made from the browser and there is no server-side counterpart for it.</p>
+
+  <p class="mt-4" style="max-width: 720px;">The other plugin in this extension, the one that answers questions from the text of a page, is on the <a href="/extensions/browser-ai">Browser AI page</a>. Source and manual: <a href="https://github.com/netresearch/t3x-nr-browser-ai">netresearch/t3x-nr-browser-ai</a>.</p>
+</div>', 0, 400, 0, 0)
+ON DUPLICATE KEY UPDATE
+  bodytext = IF(pid = VALUES(pid) AND CType = VALUES(CType) AND header = VALUES(header),
+                VALUES(bodytext), bodytext);
+
+-- --- Deutsche Übersetzung ----------------------------------------------------
+INSERT IGNORE INTO pages (uid, pid, tstamp, crdate, sys_language_uid, l10n_parent, l10n_source, title, nav_title, slug, doktype, sorting, hidden, deleted)
+VALUES (9113, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 9004, 9004, 'Browser-KI-Formularassistent', 'Formularassistent', '/erweiterungen/browser-ki-formularassistent', 1, 1450, 0, 0);
+
+INSERT INTO tt_content (uid, pid, tstamp, crdate, sys_language_uid, l18n_parent, l10n_source, CType, header, bodytext, colPos, sorting, hidden, deleted)
+VALUES (9229, 9004, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 9225, 9225, 'html', '',
+'<div class="card border-0 mb-4" style="background: #f8f9fa;">
+  <div class="card-body py-4">
+    <h1 class="h3 fw-bold mb-3">Browser-KI-Formularassistent</h1>
+    <p class="mb-2" style="max-width: 720px;">Beschreiben Sie in einem Satz, was Sie wissen wollen, und sehen Sie zu, wie sich ein Formular mit siebzig Bedienelementen selbst füllt, abfragt und antwortet. Von dem Satz verlässt nichts Ihr Gerät: Das in Chrome eingebaute Gemini Nano macht daraus die Abfrageparameter, und erst die fertige Abfrage geht hinaus &mdash; zu Open-Meteo, einem offenen Wetterdienst ohne Schlüsselpflicht.</p>
+    <p class="text-muted mb-0" style="font-size: 1rem; max-width: 720px;">Hinweis zum Betrieb: Für das Ableiten der Parameter braucht es Chrome 148 oder neuer mit heruntergeladenem Modell. Ohne das bleibt das Formular unten ein ganz gewöhnliches Formular &mdash; von Hand ausfüllen und <em>Abfrage starten</em> drücken. Das ist so gewollt: Das Formular ist der Inhalt, der Assistent die Abkürzung.</p>
+  </div>
+</div>', 0, 100, 0, 0)
+ON DUPLICATE KEY UPDATE
+  bodytext = IF(pid = VALUES(pid) AND CType = VALUES(CType) AND header = VALUES(header),
+                VALUES(bodytext), bodytext);
+
+INSERT INTO tt_content (uid, pid, tstamp, crdate, sys_language_uid, l18n_parent, l10n_source, CType, header, bodytext, colPos, sorting, hidden, deleted)
+VALUES (9230, 9004, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 9226, 9226, 'html', '',
+'<div class="mb-4">
+  <h2 class="h4 fw-bold mb-3">Ausprobieren</h2>
+  <p style="max-width: 720px;">Geben Sie einen dieser Sätze unten ein und drücken Sie <em>Füllen und abfragen</em>. Sehen Sie danach auf die Bedienelemente, nicht nur auf das Ergebnis &mdash; der Sinn dieser Vorführung liegt darin, dass die Ableitung sichtbar und korrigierbar ist.</p>
+  <ul style="max-width: 720px;">
+    <li><code>Taugt das Wochenende in Leipzig zum Grillen?</code> &mdash; wählt Ort, kurzen Vorhersagezeitraum und die täglichen Größen, die das beantworten: Höchsttemperatur, Niederschlagssumme, Wind.</li>
+    <li><code>Wie viel Regen ist in Hamburg in den letzten zwei Wochen gefallen?</code> &mdash; setzt vergangene statt künftiger Tage und wechselt zur Niederschlagssumme.</li>
+    <li><code>Schneehöhe und Windböen in Innsbruck für die nächsten zehn Tage, in Metern pro Sekunde</code> &mdash; zwei stündliche Größen, ein Zeitraum und eine Einheit, die niemand durch Scrollen findet.</li>
+    <li><code>Regnet es gerade in Tokio?</code> &mdash; nimmt die aktuellen Werte statt einer Vorhersage und die Zeitzone des Ortes.</li>
+  </ul>
+  <p class="text-muted" style="font-size: 1rem; max-width: 720px;">Ändern Sie danach etwas von Hand und drücken Sie <em>Abfrage starten</em>. Der zweite Lauf braucht überhaupt kein Modell: Er liest das Formular so, wie es dann dasteht. Klappen Sie darunter <em>Was dieses Formular einem Assistenten anbietet</em> auf, um das Schema zu sehen, auf das das Modell festgelegt war, und die Argumente, die es zurückgegeben hat.</p>
+</div>', 0, 200, 0, 0)
+ON DUPLICATE KEY UPDATE
+  bodytext = IF(pid = VALUES(pid) AND CType = VALUES(CType) AND header = VALUES(header),
+                VALUES(bodytext), bodytext);
+
+INSERT INTO tt_content (uid, pid, tstamp, crdate, sys_language_uid, l18n_parent, l10n_source, CType, header, bodytext, pi_flexform, colPos, sorting, hidden, deleted)
+VALUES (9231, 9004, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 9227, 9227, 'nrbrowserai_formassistant', 'Wetterabfrage', '',
+'<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<T3FlexForms>
+    <data>
+        <sheet index="sDEF">
+            <language index="lDEF">
+                <field index="settings.formIdentifier">
+                    <value index="vDEF">weatherQuery</value>
+                </field>
+                <field index="settings.title">
+                    <value index="vDEF">Beschreiben Sie, wonach Sie fragen</value>
+                </field>
+                <field index="settings.introduction">
+                    <value index="vDEF">Ein Satz genügt. Das Formular unten füllt sich mit den Parametern, die darin stecken, fragt ab und zeigt, was zurückkam.</value>
+                </field>
+                <field index="settings.supplementalInstruction">
+                    <value index="vDEF">Bevorzuge tägliche Größen, wenn die Anfrage den ganzen Tag meint, und stündliche nur, wenn sie nach einer Tageszeit fragt.</value>
+                </field>
+                <field index="settings.showConfiguration">
+                    <value index="vDEF">1</value>
+                </field>
+            </language>
+        </sheet>
+    </data>
+</T3FlexForms>', 0, 300, 0, 0)
+ON DUPLICATE KEY UPDATE
+  pi_flexform = IF(pid = VALUES(pid) AND CType = VALUES(CType) AND header = VALUES(header),
+                   VALUES(pi_flexform), pi_flexform);
+
+INSERT INTO tt_content (uid, pid, tstamp, crdate, sys_language_uid, l18n_parent, l10n_source, CType, header, bodytext, colPos, sorting, hidden, deleted)
+VALUES (9232, 9004, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 9228, 9228, 'html', '',
+'<div class="mt-5">
+  <h2 class="h4 fw-bold mb-3">Wie es funktioniert</h2>
+  <p style="max-width: 720px;">Vier Schritte, und der dritte ist der entscheidende.</p>
+  <ol style="max-width: 720px;">
+    <li><strong>Absicht.</strong> Der Satz geht zusammen mit dem JSON-Schema des Formulars an das Modell auf dem Gerät. Das Schema ist eine Festlegung, kein Vorschlag: Das Modell antwortet mit JSON, das dazu passt.</li>
+    <li><strong>Strukturierte Ausgabe.</strong> Diese Argumente werden vor jedem Zugriff erneut gegen das Schema geprüft. Ein Wert außerhalb der zulässigen Auswahl oder ein Feld, das es nicht gibt, bricht den Aufruf ab und ändert nichts.</li>
+    <li><strong>Werkzeugaufruf.</strong> Die Werte werden in die sichtbaren Bedienelemente geschrieben. Genau das macht die Ableitung nachvollziehbar: Was das Modell verstanden hat, steht auf dem Bildschirm, in denselben Feldern, die auch ein Mensch bedient, und lässt sich dort korrigieren.</li>
+    <li><strong>Echte Aktion.</strong> Das Formular wird vollständig zurückgelesen &mdash; das Modell setzt nur, was der Satz erwähnt hat, alles Übrige kommt aus dem Formular selbst &mdash; und die Abfrage läuft.</li>
+  </ol>
+
+  <h3 class="h5 fw-bold mt-4 mb-2">Woher das Schema kommt</h3>
+  <p style="max-width: 720px;">Dieses Schema hat niemand geschrieben. Es entsteht aus der Formulardefinition, und die trägt bereits alles, was ein Schema braucht: die Auswahlwerte jeder Liste, die Grenzen jeder Zahl, welche Angaben Pflicht sind, und je einen Satz, was ein Feld bedeutet. Eine Quelle &mdash; deshalb können die Bedienelemente auf dem Bildschirm und der Vertrag für das Modell nie verschiedene Formulare beschreiben.</p>
+  <p style="max-width: 720px;">Das Erzeugen ist zugleich der Grund, warum ein Formular dieser Größe für ein kleines Modell auf dem Gerät überhaupt tragbar ist. Die vierundvierzig stündlichen Größen sind ein einziges Mehrfachauswahl-Element und werden damit zu einer Array-Eigenschaft mit vierundvierzig zulässigen Werten &mdash; nicht zu vierundvierzig einzelnen Eigenschaften. In diesem Unterschied liegt, ob ein Modell das Schema fassen kann oder nicht.</p>
+
+  <h3 class="h5 fw-bold mt-4 mb-2">Ein Agent ruft dasselbe auf</h3>
+  <p style="max-width: 720px;">Das Formular meldet sich außerdem als Werkzeug beim Modellkontext des Browsers an, der Schnittstelle hinter WebMCP. Ein Agent im Browser sieht denselben Namen, dieselbe Beschreibung und dasselbe Schema, ruft es genauso auf und bekommt dasselbe Ergebnis als Text. Die Seite wird dadurch keine besondere Agentenschnittstelle; sie bleibt eine Seite, und der Agent bedient das Formular, das ohnehin da war.</p>
+
+  <h2 class="h4 fw-bold mt-5 mb-3">Wo das sonst noch trägt</h2>
+  <p style="max-width: 720px;">Das Wetter ist das Beispiel, nicht der Punkt. Das Muster passt überall dort, wo es ein Formular schon gibt, seine Definition maschinenlesbar ist und sein Parameterraum größer ist, als ein Besucher zu erkunden bereit ist:</p>
+  <ul style="max-width: 720px;">
+    <li><strong>Facettierte Produktsuche.</strong> Zwanzig Filter, von denen die Kundschaft vier wirklich meint. &bdquo;Wasserdichte Wanderschuhe, Größe 43, unter 150 Euro, vorrätig&ldquo; setzt die vier und lässt den Rest in Ruhe.</li>
+    <li><strong>Fahrplan- und Verbindungssuche.</strong> Abfahrt, Ankunft, Umstiegszeit, Verkehrsmittel, Barrierefreiheit, Fahrradmitnahme &mdash; ein Formular, bei dem Menschen aufgeben und stattdessen anrufen.</li>
+    <li><strong>Statistik- und Open-Data-Portale.</strong> Region, Zeitraum, Kennzahl, Aggregation. Genau das, was eine Frage voraussetzt, und nichts, was Laien erraten.</li>
+    <li><strong>Tarif- und Konfigurationsrechner.</strong> Versicherung, Energie, Leasing: lange Formulare, in denen ein falsch gesetztes Feld still eine plausible, aber falsche Zahl erzeugt.</li>
+    <li><strong>Interne Formulare im Betrieb.</strong> Der unspektakuläre Fall mit der größten Ersparnis, weil dieselben Kolleginnen dieselben zwölf Felder mehrmals täglich ausfüllen.</li>
+  </ul>
+  <p style="max-width: 720px;">Nötig sind auf Ihrer Seite eine Formulardefinition, eine Datenquelle, die der Browser aufrufen darf, und je ein Satz pro Feld, was es bedeutet. Der letzte Punkt fehlt meistens &mdash; und er ist zugleich der, der das Formular auch für Menschen besser macht, nicht nur für Modelle.</p>
+
+  <h3 class="h5 fw-bold mt-4 mb-2">Was es bewusst nicht tut</h3>
+  <p style="max-width: 720px;">Es antwortet nicht in Prosa. Die Zahlen im Ergebnis sind die Antwort; ein kleines Modell auf dem Gerät zu bitten, eine Tabelle nachzuerzählen, verbraucht den Kontext, den das Schema des Formulars selbst braucht. Es erfindet auch keinen Ort: Der Name wird von der Suche der Datenquelle aufgelöst, der erste Treffer gewinnt, und der aufgelöste Name steht beim Ergebnis &mdash; ein falscher Treffer ist damit sichtbar statt still.</p>
+  <p style="max-width: 720px;">Und ohne JavaScript wird das Formular zwar ausgegeben und geprüft, kann aber nicht abfragen, weil die Anfrage aus dem Browser heraus gestellt wird und es kein serverseitiges Gegenstück dazu gibt.</p>
+
+  <p class="mt-4" style="max-width: 720px;">Das andere Plugin dieser Erweiterung, das Fragen aus dem Text einer Seite beantwortet, liegt auf der Seite <a href="/de/erweiterungen/browser-ki">Browser-KI</a>. Quellcode und Handbuch: <a href="https://github.com/netresearch/t3x-nr-browser-ai">netresearch/t3x-nr-browser-ai</a>.</p>
+</div>', 0, 400, 0, 0)
+ON DUPLICATE KEY UPDATE
+  bodytext = IF(pid = VALUES(pid) AND CType = VALUES(CType) AND header = VALUES(header),
+                VALUES(bodytext), bodytext);
+
+-- =============================================================================
 -- uid band high-water sentinel — KEEP THIS BLOCK BEFORE THE RE-ASSERT BLOCK
 -- =============================================================================
 -- One placeholder row per table at the very top of the reserved band (uid 9999).
@@ -3309,7 +3540,11 @@ INSERT INTO seed_expected_pages VALUES
   -- Browser AI is public: it runs on the visitor's device and meters nothing,
   -- so the cost exposure that keeps uid 158 hidden does not apply.
   (9003, 101, 0,    0,  1, 0, 1400, 0, '', 0, '/extensions/browser-ai',              'Browser AI',            ''),
-  (9112, 101, 1, 9003,  1, 0, 1400, 0, '', 0, '/erweiterungen/browser-ki',           'Browser-KI',            'Browser-KI');
+  (9112, 101, 1, 9003,  1, 0, 1400, 0, '', 0, '/erweiterungen/browser-ki',           'Browser-KI',            'Browser-KI'),
+  -- The form assistant gets its own page: the two plugins demonstrate
+  -- different claims, and the material for each is substantial.
+  (9004, 101, 0,    0,  1, 0, 1450, 0, '', 0, '/extensions/browser-ai-form-assistant',      'Browser AI Form Assistant',    ''),
+  (9113, 101, 1, 9004,  1, 0, 1450, 0, '', 0, '/erweiterungen/browser-ki-formularassistent', 'Browser-KI-Formularassistent', 'Formularassistent');
 
 DROP TEMPORARY TABLE IF EXISTS seed_expected_content;
 CREATE TEMPORARY TABLE seed_expected_content (
@@ -3396,7 +3631,17 @@ INSERT INTO seed_expected_content VALUES
   (9221, 9003, NULL, 0,    0,  0, 0, 250, 'html',                  ''),
   (9222, 9003, NULL, 1, 9221,  0, 0, 250, 'html',                  ''),
   (9223, 9003, NULL, 0,    0, 99, 0, 400, 'html',                  ''),
-  (9224, 9003, NULL, 1, 9223, 99, 0, 400, 'html',                  '');
+  (9224, 9003, NULL, 1, 9223, 99, 0, 400, 'html',                  ''),
+  -- Browser AI form assistant, public page 9004. No colPos 99 record here:
+  -- the form is the plugin's content, so there is no fallback to substitute.
+  (9225, 9004, NULL, 0,    0,  0, 0, 100, 'html',                      ''),
+  (9226, 9004, NULL, 0,    0,  0, 0, 200, 'html',                      ''),
+  (9227, 9004, NULL, 0,    0,  0, 0, 300, 'nrbrowserai_formassistant', 'Weather query'),
+  (9228, 9004, NULL, 0,    0,  0, 0, 400, 'html',                      ''),
+  (9229, 9004, NULL, 1, 9225,  0, 0, 100, 'html',                      ''),
+  (9230, 9004, NULL, 1, 9226,  0, 0, 200, 'html',                      ''),
+  (9231, 9004, NULL, 1, 9227,  0, 0, 300, 'nrbrowserai_formassistant', 'Wetterabfrage'),
+  (9232, 9004, NULL, 1, 9228,  0, 0, 400, 'html',                      '');
 
 -- --- Historical repair: content left behind on an abandoned pid ---------------
 -- Runs before the generic re-assert, which can only match a row that is already
