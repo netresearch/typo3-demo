@@ -31,6 +31,12 @@ services:
       TYPO3_SITE_BASE: ${TYPO3_SITE_BASE:-/}
       TYPO3_ENCRYPTION_KEY: ${TYPO3_ENCRYPTION_KEY:-}
       TYPO3_INSTALL_TOOL_PASSWORD: ${TYPO3_INSTALL_TOOL_PASSWORD:-joh316}
+      # autotranslate reads its DeepL key from the extension configuration and has
+      # no nr_vault support, so it cannot take the route OPENAI_API_KEY takes. The
+      # entrypoint writes it into config/system/additional.php, which lives in the
+      # typo3-config volume the worker mounts too — so only this service needs the
+      # variable. Empty keeps a previously stored key instead of wiping it.
+      DEEPL_API_KEY: ${DEEPL_API_KEY:-}
     volumes:
       - typo3-fileadmin:/var/www/public/fileadmin
       - typo3-var:/var/www/var

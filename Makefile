@@ -1,4 +1,4 @@
-.PHONY: up down reset update logs shell db-shell seed seed-extensions provision-llm-key export-seed build clean dev dev-down prune help
+.PHONY: up down reset update logs shell db-shell seed seed-extensions provision-llm-key provision-deepl-key export-seed build clean dev dev-down prune help
 
 COMPOSE     := docker compose
 COMPOSE_DEV := docker compose -f compose.yml -f compose.dev.yml
@@ -45,6 +45,8 @@ reset: ## Full reset: purge app data and re-seed (preserves Caddy TLS certs)
 	@echo "App volumes purged (caddy-data preserved). Run 'make up' to re-seed."
 
 update: ## Update code without purging data
+	# Runs before up: the containers read DEEPL_API_KEY from .env at creation time.
+	$(MAKE) provision-deepl-key
 	$(COMPOSE) pull
 	# --remove-orphans: a service deleted from compose.yml otherwise keeps running
 	# forever. The reverted EXT:solr spike kept its container alive for 8 days and
@@ -132,6 +134,38 @@ provision-llm-key: ## Store $OPENAI_API_KEY in the vault and point the OpenAI pr
 		*:0) echo "ERROR: the provider row was not linked to the vault secret." >&2; exit 1 ;; \
 	esac; \
 	echo "OpenAI key provisioned and linked to provider 1."
+
+provision-deepl-key: ## Persist $DEEPL_API_KEY in .env so autotranslate keeps it across reboots
+	@# autotranslate has no nr_vault support (verified against v3.2.2 and upstream
+	@# main): it reads its key from the extension configuration or from the site
+	@# configuration, and nowhere else. The site configuration is public in this
+	@# repository, so the extension configuration is the only usable place — the
+	@# entrypoint writes it into config/system/additional.php from this variable.
+	@#
+	@# That leaves durability. compose passes DEEPL_API_KEY from the environment,
+	@# which during a deploy is the SSH session's; a later `docker compose up`
+	@# after a host reboot has no such session. Writing it into .env once makes
+	@# every subsequent boot carry it, the same file that already holds
+	@# MARIADB_PASSWORD.
+	@#
+	@# The value is never echoed and never passed as an argument; the file is
+	@# rewritten through a temporary file with restrictive permissions.
+	@set -e; \
+	if [ -z "$${DEEPL_API_KEY:-}" ]; then \
+		echo "DEEPL_API_KEY is not set - skipping DeepL key provisioning."; \
+		echo "         A key already stored in config/system/additional.php is kept."; \
+		echo "         Without any key autotranslate reports 'done' and translates"; \
+		echo "         nothing (upstream issues #156/#157)."; \
+		exit 0; \
+	fi; \
+	test -f .env || { echo "ERROR: .env is missing - run 'make up' first." >&2; exit 1; }; \
+	umask 077; \
+	tmp=$$(mktemp .env.XXXXXX); \
+	grep -v '^DEEPL_API_KEY=' .env > "$$tmp" || true; \
+	printf 'DEEPL_API_KEY=%s\n' "$$DEEPL_API_KEY" >> "$$tmp"; \
+	chmod --reference=.env "$$tmp" 2>/dev/null || chmod 600 "$$tmp"; \
+	mv "$$tmp" .env; \
+	echo "DeepL key written to .env (length $${#DEEPL_API_KEY})."
 
 prune: ## Remove dangling images left behind by image pulls (keeps volumes + in-use images)
 	docker image prune -f
