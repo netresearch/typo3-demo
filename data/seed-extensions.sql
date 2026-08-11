@@ -1106,6 +1106,35 @@ UPDATE tx_nrllm_task e
 UPDATE tx_nrllm_model SET cost_input = 125, cost_output = 1000
 WHERE deleted = 0 AND cost_input = 0 AND cost_output = 0;
 
+-- The chat model. uid 1 comes from data/db.sql.gz, so it is corrected here
+-- rather than in the dump: this file runs after the import and therefore also
+-- survives a reset.
+--
+-- 'gpt-5.3-chat-latest' is deprecated. That is not inferred from a release note
+-- but read back from this account's own API, which answers the call with:
+--   404 The model `gpt-5.3-chat-latest` has been deprecated
+-- The whole versioned family went the same way -- gpt-5-chat-latest,
+-- gpt-5.1-chat-latest and gpt-5.2-chat-latest all return the same 404. What
+-- remains is the unversioned alias 'chat-latest', which answers 200. It is the
+-- direct successor: same ChatGPT-tuned chat alias, minus the version pin that
+-- made this row go stale in the first place.
+--
+-- Deliberately NOT a reasoning model. gpt-5, gpt-5.5, o1, o3* and o4-mini all
+-- answer 200 with an EMPTY message when the token budget is small, because they
+-- spend it on reasoning tokens -- which presents as "HTTP 200, no answer", the
+-- exact symptom NEXT-145 was filed for. Verified against the live account on
+-- 2026-08-11; 49 of 72 candidates are callable, and this is the one that
+-- matches the previous configuration's intent.
+--
+-- Guarded on the stale value, so an operator who picks a different model in the
+-- backend keeps it: this migrates the known-dead id, it does not re-assert a
+-- choice on every run.
+UPDATE tx_nrllm_model
+   SET model_id = 'chat-latest',
+       name     = 'OpenAI Chat (latest)',
+       tstamp   = UNIX_TIMESTAMP()
+ WHERE uid = 1 AND deleted = 0 AND model_id = 'gpt-5.3-chat-latest';
+
 -- =============================================================================
 -- AI Search & Chat (nr_ai_search) — RAG embeddings + chat configuration
 -- =============================================================================
@@ -3875,6 +3904,15 @@ SELECT 'SEED-PROBLEM: be_users 990 nr_ai_search_technical missing or foreign' FR
 UNION ALL
 SELECT 'SEED-PROBLEM: tx_nrllm_model 90 text-embedding-3-small missing or foreign' FROM DUAL
  WHERE NOT EXISTS (SELECT 1 FROM tx_nrllm_model WHERE uid = 90 AND identifier = 'text-embedding-3-small' AND deleted = 0)
+UNION ALL
+-- Every versioned '*-chat-latest' alias OpenAI ever served to this account is
+-- deprecated and answers 404, so a chat model still carrying one is a dead
+-- configuration -- every Cowriter, AI-Search and Repurpose call fails against
+-- it. Fail the deploy instead of shipping a demo whose AI silently does
+-- nothing. The unversioned 'chat-latest' does not match this pattern.
+SELECT CONCAT('SEED-PROBLEM: tx_nrllm_model 1 carries deprecated model_id ', model_id)
+  FROM tx_nrllm_model
+ WHERE uid = 1 AND deleted = 0 AND model_id LIKE 'gpt-%-chat-latest'
 UNION ALL
 SELECT CONCAT('SEED-PROBLEM: tx_nrlandingpage_domain_model_template ', t.uid, ' missing or foreign')
   FROM (SELECT 901 AS uid UNION ALL SELECT 902 UNION ALL SELECT 903 UNION ALL SELECT 904) t
