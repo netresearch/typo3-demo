@@ -56,6 +56,26 @@ COPY packages/ packages/
 RUN chmod +x /entrypoint.sh \
     && mkdir -p public/fileadmin public/typo3temp/assets/_processed_ var/log var/cache var/lock var/charset var/labels \
     && chown -R www-data:www-data public/fileadmin public/typo3temp var
+
+# nr-repurpose's HTML -> PNG renderer is a Node script with one dependency of
+# its own, shipped with the extension as package.json/package-lock.json. Nothing
+# installed it, so every schaubild and story slide failed with
+# "Cannot find module 'playwright-core'" while the job still reported progress
+# 100. chromium and nodejs were already here; only this step was missing.
+#
+# npm is build-time only and removed again: it is not needed at runtime and the
+# renderer never installs anything itself.
+#
+# The `require` at the end is a gate, not a comment. A silent no-op install
+# would otherwise ship exactly the state this fixes, and the failure would only
+# reappear on the instance.
+RUN apk add --no-cache --virtual .node-deps npm \
+    && cd vendor/netresearch/nr-repurpose/Resources/Private/NodeRenderer \
+    && PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 npm ci --omit=dev --no-audit --no-fund \
+    && node -e "require('playwright-core'); console.log('playwright-core resolves')" \
+    && cd /var/www \
+    && apk del .node-deps
+
 # nr-repurpose renders HTML -> PNG via the system chromium (no Playwright download)
 ENV CHROMIUM_PATH=/usr/bin/chromium-browser \
     PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
