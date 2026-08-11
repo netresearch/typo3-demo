@@ -1,4 +1,3 @@
-<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" data-namespace-typo3-fluid="true">
 <f:comment>
     Override of EXT:bootstrap_package Resources/Private/Partials/Page/Navigation/Language.html (16.0.0).
 
@@ -14,6 +13,10 @@
     page. Gate on {item.link} instead: the menu generates the link for unavailable
     items too, and an empty link still degrades to the plain span rather than to an
     anchor with an empty href.
+
+    No <html> wrapper on purpose. The file uses only the built-in f: namespace, which
+    needs no declaration, and the wrapper made static analysis read the partial as a
+    standalone HTML page (missing doctype, lang, title).
 </f:comment>
 <f:if condition="{languagenavigation}">
     <ul id="language_menu" class="language-menu">
@@ -33,4 +36,3 @@
         </f:for>
     </ul>
 </f:if>
-</html>
