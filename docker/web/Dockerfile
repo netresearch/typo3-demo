@@ -13,6 +13,13 @@ RUN composer install --no-dev --prefer-dist --no-interaction --ignore-platform-r
 COPY docker/web/patch-lochmueller-index.php /tmp/patch-lochmueller-index.php
 RUN php /tmp/patch-lochmueller-index.php && rm -f /tmp/patch-lochmueller-index.php
 
+# Patch mfd/ai-filemetadata: its listener gates automatic alt texts on upload
+# behind the FRONTEND setting, so switching frontend generation off — which this
+# demo does on purpose — also switches uploads off. The patch enforces that flag
+# only inside an actual frontend request. Idempotent; upstream report pending.
+COPY docker/web/patch-ai-filemetadata.php /tmp/patch-ai-filemetadata.php
+RUN php /tmp/patch-ai-filemetadata.php && rm -f /tmp/patch-ai-filemetadata.php
+
 FROM php:8.5-fpm-alpine@sha256:9dc81f4086ea5402227a6bcc489b04b4baba12394624d9621faa92ed812fb8ee AS runtime
 RUN apk add --no-cache --virtual .build-deps \
         freetype-dev libjpeg-turbo-dev libpng-dev libzip-dev icu-dev linux-headers $PHPIZE_DEPS \
