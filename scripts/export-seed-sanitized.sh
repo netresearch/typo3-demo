@@ -52,12 +52,47 @@ echo "SELECT table_name FROM information_schema.tables
     | while read -r t; do echo "TRUNCATE TABLE \`$t\`;"; done \
     | sql "$SCRATCH"
 
+# Workspace records: never publish them.
+#
+# A record that lives only in a workspace (t3ver_wsid <> 0) has no live
+# counterpart, so RootlineUtility cannot resolve it in workspace 0 and answers
+# "Broken rootline. Could not resolve page with uid <n>." Every consumer of the
+# rootline then fails — including the localization wizard, which is how this was
+# found (NEXT-127: page 119, a sysfolder that existed only in the auto-created
+# "MCP Workspace"). Publishing or discarding a workspace is an editorial
+# decision on the live instance; a seed for a fresh install must carry neither.
+echo "Purging workspace records..."
+echo "SELECT table_name FROM information_schema.columns
+      WHERE table_schema='$SCRATCH' AND column_name='t3ver_wsid';" \
+    | sql -N "$SCRATCH" \
+    | while read -r t; do echo "DELETE FROM \`$t\` WHERE t3ver_wsid <> 0;"; done \
+    | sql "$SCRATCH"
+echo "DELETE FROM sys_refindex WHERE workspace <> 0;
+      TRUNCATE TABLE sys_workspace;
+      TRUNCATE TABLE sys_workspace_stage;" | sql "$SCRATCH"
+
 echo "Verifying sanitization..."
 KEYS=$(echo "SELECT COALESCE(MAX(LENGTH(api_key)), 0) FROM tx_nrllm_provider;" | sql -N "$SCRATCH")
 SECRETS=$(echo "SELECT COUNT(*) FROM tx_nrvault_secret;" | sql -N "$SCRATCH")
 LOGS=$(echo "SELECT COUNT(*) FROM sys_log;" | sql -N "$SCRATCH")
 if [ "$KEYS" != "0" ] || [ "$SECRETS" != "0" ] || [ "$LOGS" != "0" ]; then
     echo "ERROR: sanitization failed (api_key_len=$KEYS vault_rows=$SECRETS sys_log_rows=$LOGS)" >&2
+    exit 1
+fi
+
+# Sum the leftovers across every versioned table, not just pages: one
+# unpublished content element is enough to break the page it sits on.
+WS_TABLES=$(echo "SELECT COUNT(*) FROM information_schema.columns
+                  WHERE table_schema='$SCRATCH' AND column_name='t3ver_wsid';" | sql -N "$SCRATCH")
+WS_ROWS=0
+for t in $(echo "SELECT table_name FROM information_schema.columns
+                 WHERE table_schema='$SCRATCH' AND column_name='t3ver_wsid';" | sql -N "$SCRATCH"); do
+    n=$(echo "SELECT COUNT(*) FROM \`$t\` WHERE t3ver_wsid <> 0;" | sql -N "$SCRATCH")
+    WS_ROWS=$((WS_ROWS + n))
+done
+WORKSPACES=$(echo "SELECT COUNT(*) FROM sys_workspace;" | sql -N "$SCRATCH")
+if [ "$WS_ROWS" != "0" ] || [ "$WORKSPACES" != "0" ]; then
+    echo "ERROR: workspace purge failed (versioned_rows=$WS_ROWS workspaces=$WORKSPACES over $WS_TABLES versioned tables)" >&2
     exit 1
 fi
 
