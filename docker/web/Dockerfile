@@ -13,6 +13,13 @@ RUN composer install --no-dev --prefer-dist --no-interaction --ignore-platform-r
 COPY docker/web/patch-lochmueller-index.php /tmp/patch-lochmueller-index.php
 RUN php /tmp/patch-lochmueller-index.php && rm -f /tmp/patch-lochmueller-index.php
 
+# Patch mfd/ai-filemetadata: its listener gates automatic alt texts on upload
+# behind the FRONTEND setting, so switching frontend generation off — which this
+# demo does on purpose — also switches uploads off. The patch enforces that flag
+# only inside an actual frontend request. Idempotent; upstream report pending.
+COPY docker/web/patch-ai-filemetadata.php /tmp/patch-ai-filemetadata.php
+RUN php /tmp/patch-ai-filemetadata.php && rm -f /tmp/patch-ai-filemetadata.php
+
 FROM php:8.5-fpm-alpine@sha256:9dc81f4086ea5402227a6bcc489b04b4baba12394624d9621faa92ed812fb8ee AS runtime
 RUN apk add --no-cache --virtual .build-deps \
         freetype-dev libjpeg-turbo-dev libpng-dev libzip-dev icu-dev linux-headers $PHPIZE_DEPS \
@@ -53,9 +60,33 @@ COPY --from=composer-builder /app/vendor/ vendor/
 COPY --from=composer-builder /app/public/ public/
 COPY config/ config/
 COPY packages/ packages/
+# Second half of this instruction: nr-repurpose's HTML -> PNG renderer is a Node
+# script with one dependency of its own, shipped with the extension as
+# package.json/package-lock.json. Nothing installed it, so every schaubild and
+# story slide failed with "Cannot find module 'playwright-core'" while the job
+# still reported progress 100. chromium, nodejs and CHROMIUM_PATH were already
+# here; only the install was missing.
+#
+# npm is build-time only and removed again: it is not needed at runtime and the
+# renderer never installs anything itself.
+#
+# --ignore-scripts: no lifecycle script runs during the install. playwright-core
+# does not need one (browser downloads belong to the `playwright` package, which
+# this is not), so nothing is lost and an install-time script cannot execute.
+#
+# The `require` at the end is a gate, not decoration. A silent no-op install
+# would otherwise ship exactly the state this fixes, and the failure would only
+# reappear on the instance.
 RUN chmod +x /entrypoint.sh \
     && mkdir -p public/fileadmin public/typo3temp/assets/_processed_ var/log var/cache var/lock var/charset var/labels \
-    && chown -R www-data:www-data public/fileadmin public/typo3temp var
+    && chown -R www-data:www-data public/fileadmin public/typo3temp var \
+    && apk add --no-cache --virtual .node-deps npm \
+    && cd vendor/netresearch/nr-repurpose/Resources/Private/NodeRenderer \
+    && PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 npm ci --omit=dev --ignore-scripts --no-audit --no-fund \
+    && node -e "require('playwright-core'); console.log('playwright-core resolves')" \
+    && cd /var/www \
+    && apk del .node-deps
+
 # nr-repurpose renders HTML -> PNG via the system chromium (no Playwright download)
 ENV CHROMIUM_PATH=/usr/bin/chromium-browser \
     PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1

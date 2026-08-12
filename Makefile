@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 .PHONY: up down reset update logs shell db-shell seed seed-extensions provision-llm-key provision-deepl-key export-seed build clean dev dev-down prune help
+=======
+.PHONY: up down reset update logs shell db-shell seed seed-extensions provision-llm-key persist-env-secret export-seed build clean dev dev-down prune help
+>>>>>>> origin/main
 
 COMPOSE     := docker compose
 COMPOSE_DEV := docker compose -f compose.yml -f compose.dev.yml
@@ -45,8 +49,14 @@ reset: ## Full reset: purge app data and re-seed (preserves Caddy TLS certs)
 	@echo "App volumes purged (caddy-data preserved). Run 'make up' to re-seed."
 
 update: ## Update code without purging data
+<<<<<<< HEAD
 	# Runs before up: the containers read DEEPL_API_KEY from .env at creation time.
 	$(MAKE) provision-deepl-key
+=======
+	# Runs before `up`: containers read their environment from .env at creation
+	# time, and the deploy session's variables are gone by the next host reboot.
+	$(MAKE) persist-env-secret SECRET_NAME=OPENAI_API_KEY
+>>>>>>> origin/main
 	$(COMPOSE) pull
 	# --remove-orphans: a service deleted from compose.yml otherwise keeps running
 	# forever. The reverted EXT:solr spike kept its container alive for 8 days and
@@ -135,6 +145,7 @@ provision-llm-key: ## Store $OPENAI_API_KEY in the vault and point the OpenAI pr
 	esac; \
 	echo "OpenAI key provisioned and linked to provider 1."
 
+<<<<<<< HEAD
 provision-deepl-key: ## Persist $DEEPL_API_KEY in .env so autotranslate keeps it across reboots
 	@# autotranslate has no nr_vault support (verified against v3.2.2 and upstream
 	@# main): it reads its key from the extension configuration or from the site
@@ -156,16 +167,66 @@ provision-deepl-key: ## Persist $DEEPL_API_KEY in .env so autotranslate keeps it
 		echo "         A key already stored in config/system/additional.php is kept."; \
 		echo "         Without any key autotranslate reports 'done' and translates"; \
 		echo "         nothing (upstream issues #156/#157)."; \
+=======
+persist-env-secret: ## Write $$SECRET_NAME from the environment into .env (usage: make persist-env-secret SECRET_NAME=FOO)
+	@# Some extensions cannot use nr_vault. ai_filemetadata reads a plain OpenAI
+	@# key from its own extension configuration and has no vault support at all,
+	@# so the key has to reach the container as an environment variable, which
+	@# compose reads from .env at container creation time.
+	@#
+	@# The deploy passes it in the SSH session's environment, and that is enough
+	@# for `compose up` during the deploy — but not for a `compose up` after a
+	@# host reboot, which has no such session. Writing it into .env once makes
+	@# every later boot carry it, in the same file that already holds
+	@# MARIADB_PASSWORD.
+	@#
+	@# The value is never echoed and never passed as an argument, and the file is
+	@# rewritten through a temporary file that a trap removes on any failure - it
+	@# holds a full copy of .env, secrets included, until the mv lands.
+	@#
+	@# A literal dollar in the value is doubled on the way into .env. compose
+	@# interpolates .env values, and it collapses a doubled dollar back to a single
+	@# one there exactly as it does in compose.yml. Measured with printenv INSIDE a
+	@# running container, compose v5.3.1.
+	@#
+	@# Do NOT verify this with `docker compose config`: it re-escapes a literal
+	@# dollar in its own output, so a correct value is printed doubled and reads
+	@# exactly like a corrupted one. That artefact already produced one wrong
+	@# "measurement" in this file.
+	@set -e; \
+	test -n "$(SECRET_NAME)" || { echo "ERROR: SECRET_NAME= is required." >&2; exit 1; }; \
+	case "$(SECRET_NAME)" in [A-Z]*) : ;; *) echo "ERROR: SECRET_NAME '$(SECRET_NAME)' must be an uppercase environment variable name." >&2; exit 1 ;; esac; \
+	value=$$(printenv "$(SECRET_NAME)" || true); \
+	if [ -z "$$value" ]; then \
+		echo "$(SECRET_NAME) is not set - leaving .env untouched."; \
+		echo "         A value stored on a previous deploy is kept."; \
+>>>>>>> origin/main
 		exit 0; \
 	fi; \
 	test -f .env || { echo "ERROR: .env is missing - run 'make up' first." >&2; exit 1; }; \
 	umask 077; \
 	tmp=$$(mktemp .env.XXXXXX); \
+<<<<<<< HEAD
 	grep -v '^DEEPL_API_KEY=' .env > "$$tmp" || true; \
 	printf 'DEEPL_API_KEY=%s\n' "$$DEEPL_API_KEY" >> "$$tmp"; \
 	chmod --reference=.env "$$tmp" 2>/dev/null || chmod 600 "$$tmp"; \
 	mv "$$tmp" .env; \
 	echo "DeepL key written to .env (length $${#DEEPL_API_KEY})."
+=======
+	trap 'rm -f "$$tmp"' EXIT INT TERM; \
+	escaped=$$(printf '%s' "$$value" | sed 's/\$$/$$$$/g'); \
+	: 'grep exit 1 means no line matched, which is normal; anything above that'; \
+	: 'is a real failure and must not be swallowed - it would leave a .env'; \
+	: 'holding only the new line. The status is captured directly, because'; \
+	: 'inside an if-not construct the status reads as the negated one.'; \
+	rc=0; grep -v "^$(SECRET_NAME)=" .env > "$$tmp" || rc=$$?; \
+	[ "$$rc" -le 1 ] || { echo "ERROR: grep over .env failed (exit $$rc) - refusing to write a truncated .env" >&2; exit 1; }; \
+	printf '%s=%s\n' "$(SECRET_NAME)" "$$escaped" >> "$$tmp"; \
+	chmod 600 "$$tmp"; \
+	mv "$$tmp" .env; \
+	trap - EXIT INT TERM; \
+	echo "$(SECRET_NAME) written to .env (length $${#value}), file mode 600."
+>>>>>>> origin/main
 
 prune: ## Remove dangling images left behind by image pulls (keeps volumes + in-use images)
 	docker image prune -f

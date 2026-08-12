@@ -216,6 +216,46 @@ if [ -f config/system/settings.php ]; then
             . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"nr_ai_search\"][\"embeddingDimensions\"] = \"1536\";\n"
             . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"nr_ai_search\"][\"technicalBeUserUid\"] = \"990\";\n"
             . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"nr_ai_search\"][\"rateLimitPerMinute\"] = \"10\";\n"
+            // Turn on the specialized services of nr_llm. isAvailable() on all
+            // three (DALL-E, Whisper, TTS) is just "an apiKeyIdentifier is set
+            // and that vault secret exists" - the identifier was empty, so the
+            // podcast and image artifacts of Repurpose failed with "speech
+            // synthesis unavailable" / "image service unavailable". It is the
+            // same secret everything else already uses.
+            // No apostrophes in these comments: the whole block is a php -r
+            // argument inside single quotes, and one would end the shell string.
+            // Switches on the specialized services of nr_llm (DALL-E, Whisper,
+            // TTS). isAvailable() is only "an apiKeyIdentifier is set and that
+            // vault secret exists", and it is the same secret everything else
+            // uses.
+            //
+            // This line was briefly disabled on the theory that it broke the
+            // rendered artifacts. It did not: the cause was the alt-text
+            // listener firing on the CLI, fixed separately. With that fixed the
+            // job produces all ten artifacts, podcast and AI images included.
+            //
+            // Note for anyone reading this after a deploy: extension:setup
+            // persists EXTENSIONS.nr_llm into config/system/settings.php, so on
+            // an instance that has run once the value survives even without this
+            // line. A FRESH install has no such settings.php, which is why the
+            // line has to stay here.
+            //
+            // No apostrophes in these comments: the whole block is a php -r
+            // argument inside single quotes, and one would end the shell string.
+            . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"nr_llm\"][\"providers\"][\"openai\"][\"apiKeyIdentifier\"] = \"openai_api_key\";\n"
+            // nr_llm defaults to dall-e-3, which this account does not serve:
+            //   400 The model dall-e-3 does not exist.
+            // gpt-image-1 answers 200 with an image. Measured, not assumed - the
+            // same class of mistake that made the chat model fail twice.
+            . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"nr_llm\"][\"image\"][\"dalle\"][\"defaultModel\"] = \"gpt-image-1\";\n"
+            // tts-1 is the nr_llm default and answers with real audio here.
+            // Set explicitly so the value is visible rather than implicit.
+            . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"nr_llm\"][\"speech\"][\"tts\"][\"defaultModel\"] = \"tts-1\";\n"
+            // nr_repurpose 0.4.2 runs its generation job as this backend user.
+            // Without it the setting stays 0, the job keeps booting an
+            // unauthenticated CLI user, and nr_vault denies the provider key --
+            // which is the failure the release fixes but does not configure.
+            . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"nr_repurpose\"][\"technicalBeUserUid\"] = \"992\";\n"
             . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"nr_ai_search\"][\"hybridSearchEnabled\"] = \"0\";\n"
             . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"index\"][\"defaultTransportInDevelopmentContext\"] = \"1\";\n"
             . $end;
@@ -232,8 +272,98 @@ if [ -f config/system/settings.php ]; then
         }
         $existing = rtrim($existing, "\n") . "\n\n" . $block . "\n";
         file_put_contents($f, $existing);
-        echo "additional.php: nr_ai_search configured (technicalBeUserUid=990, dims=1536), nr_vault provisioning actor 991, index dev-sync on." . PHP_EOL;
+        echo "additional.php: nr_ai_search configured (technicalBeUserUid=990, dims=1536), nr_vault provisioning actor 991, nr_repurpose actor 992, nr_llm media on (gpt-image-1/tts-1), index dev-sync on." . PHP_EOL;
     ' || echo "WARNING: failed to write nr_ai_search additional.php block" >&2
+fi
+
+# Configure ai_filemetadata (AI-generated alternative texts for FAL images).
+#
+# This one goes into settings.php, NOT additional.php, and that distinction is
+# the whole point. The extension reads its behaviour settings through
+# ConfigurationService -> ConfigurationManager::getMergedLocalConfiguration(),
+# which is getDefaultConfiguration() merged with `require settings.php` — it
+# never looks at additional.php. Only `apiKey` would have arrived that way,
+# because ExtensionConfiguration::get() reads $GLOBALS, which additional.php
+# does populate. The other four would have fallen back to the catch-defaults in
+# ConfigurationService::loadConfiguration(), and those fail OPEN:
+# imageResizing 0 (no downscaling, full-resolution images billed by the pixel)
+# and generateAltTextInFrontend true (a synchronous OpenAI call while a visitor
+# waits for the page). Writing settings.php is what the extension actually reads,
+# and it is the file ExtensionConfiguration::set() writes too.
+#
+# Editing settings.php from here follows the installToolPassword step above:
+# read the array, change the keys we own, write it back with var_export.
+#
+# No sidecar file. settings.php lives in the typo3-config volume, so a boot
+# without OPENAI_API_KEY simply keeps the key already stored there. The key ends
+# up in settings.php in plaintext either way — this extension has no nr-vault
+# support, and `typo3 extension:setup` would copy it there regardless — so it is
+# stored where MARIADB_PASSWORD already lives rather than in a second place.
+if [ -f config/system/settings.php ]; then
+    php -r '
+        $f = "config/system/settings.php";
+        $cfg = include $f;
+        if (!is_array($cfg)) {
+            fwrite(STDERR, "settings.php did not return an array" . PHP_EOL);
+            exit(1);
+        }
+        $ext = $cfg["EXTENSIONS"]["ai_filemetadata"] ?? [];
+        $key = (string) getenv("OPENAI_API_KEY");
+        $origin = "provisioned from OPENAI_API_KEY";
+        if ($key === "") {
+            $key = (string) ($ext["apiKey"] ?? "");
+            $origin = "kept from the previous provisioning";
+        }
+        // Cost control, not a quality setting: images are billed by the pixel and
+        // a 50-word alt text does not need full resolution.
+        $ext["imageResizing"] = "512";
+        $ext["generateAltTextOnFileUpload"] = "1";
+        // A missing alt text must not trigger a synchronous API call while a
+        // visitor waits for the page.
+        $ext["generateAltTextInFrontend"] = "0";
+        $ext["enableTokenTracking"] = "1";
+        if ($key !== "") {
+            $ext["apiKey"] = $key;
+        }
+        $cfg["EXTENSIONS"]["ai_filemetadata"] = $ext;
+
+        // Write to a sibling and rename. file_put_contents() truncates in place,
+        // and settings.php is the one file whose corruption bricks the instance:
+        // a partial write (full volume) leaves a parse error, the
+        // installToolPassword step above then dies under `set -eu` before nginx
+        // starts, and no boot regenerates the file because it still exists.
+        // rename() within the same directory is atomic, so a reader either sees
+        // the old file or the new one - never half of either. That also closes
+        // the window in which a php-fpm request could include a half-written file.
+        $tmp = $f . ".tmp";
+        $payload = "<?php\nreturn " . var_export($cfg, true) . ";\n";
+        $written = @file_put_contents($tmp, $payload);
+        if ($written === false || $written !== strlen($payload)) {
+            @unlink($tmp);
+            fwrite(STDERR, "failed to write " . $tmp . " (wrote " . var_export($written, true)
+                . " of " . strlen($payload) . " bytes) - settings.php left untouched" . PHP_EOL);
+            exit(1);
+        }
+        // Verify the candidate before it replaces anything.
+        $check = include $tmp;
+        if (!is_array($check) || ($check["EXTENSIONS"]["ai_filemetadata"]["imageResizing"] ?? null) !== "512") {
+            @unlink($tmp);
+            fwrite(STDERR, "the new settings.php did not parse back - settings.php left untouched" . PHP_EOL);
+            exit(1);
+        }
+        $perms = @fileperms($f);
+        if ($perms !== false) {
+            @chmod($tmp, $perms & 0777);
+        }
+        if (!@rename($tmp, $f)) {
+            @unlink($tmp);
+            fwrite(STDERR, "failed to rename " . $tmp . " over settings.php - settings.php left untouched" . PHP_EOL);
+            exit(1);
+        }
+        echo "settings.php: ai_filemetadata configured, OpenAI key "
+            . ($key !== "" ? $origin : "NOT set - alt-text generation will fail")
+            . "." . PHP_EOL;
+    ' || echo "WARNING: ai_filemetadata is NOT configured - settings.php was left untouched, so alt-text generation runs on the extension's fail-open defaults (no image downscaling, frontend generation on)" >&2
 fi
 
 # Configure autotranslate (DeepL).

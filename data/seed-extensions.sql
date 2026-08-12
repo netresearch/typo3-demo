@@ -1021,11 +1021,133 @@ SET configuration_uid = (
     is_active = 1
 WHERE uid = 1;
 
+-- 4) The six standard Cowriter tasks.
+--
+--    t3_cowriter's AjaxController::getTasksAction() calls
+--    findByCategory('content') - the category is hard-coded - and renders one
+--    dropdown entry per row. On this instance that query returned exactly one
+--    row ('content-editor', which the block above repoints at the MCP agent's
+--    configuration), so the editor was offered a single unrelated task.
+--
+--    The extension's documentation says these six are "seeded during
+--    installation". They are not: t3_cowriter ships no ext_tables.sql, no
+--    dataset, no upgrade wizard and no setup command, and nothing in nr_llm
+--    creates tasks either. Its own JavaScript concedes it - with an empty list
+--    the dialog shows instructions for creating tasks by hand. So the demo has
+--    to seed them.
+--
+--    Keyed on `identifier`, not on a fixed uid: tx_nrllm_task carries no unique
+--    index on it (deliberately - a soft-deleted row would otherwise block
+--    re-seeding), so the guard is a NOT EXISTS on the identifier instead, which
+--    is also what makes re-running this file a no-op.
+--
+--    configuration_uid points at 'content-assistant' rather than at a model:
+--    the task layer never names a model, and repointing that one configuration
+--    is what switches every task at once.
+--
+--    prompt_template must be non-empty. With an empty template and no typed
+--    instruction the extension rejects the request with a different error, so an
+--    empty template would trade one broken state for another. {{input}} is the
+--    placeholder it substitutes the selected text into.
+INSERT INTO tx_nrllm_task
+    (pid, identifier, name, description, category, configuration_uid, prompt_template,
+     input_type, output_format, is_active, is_system, sorting, tstamp, crdate, deleted, hidden)
+SELECT 0, t.identifier, t.name, t.description, 'content',
+       COALESCE((SELECT uid FROM tx_nrllm_configuration
+                  WHERE identifier = 'content-assistant' AND deleted = 0
+                  ORDER BY uid ASC LIMIT 1), 0),
+       t.prompt_template, 'manual', 'markdown', 1, 0, t.sorting,
+       UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0
+  FROM (
+        SELECT 'improve-text' AS identifier, 'Improve Text' AS name,
+               'Rewrites the selected text for clarity and flow, keeping its meaning and language.' AS description,
+               'Improve the following text: make it clearer and easier to read, keep its meaning, its language and its tone, and do not add facts that are not in it. Return only the improved text.\n\n{{input}}' AS prompt_template,
+               10 AS sorting
+        UNION ALL SELECT 'summarize', 'Summarize',
+               'Condenses the selected text to its essentials.',
+               'Summarize the following text in the same language. Keep every essential point, drop the rest, and return only the summary.\n\n{{input}}', 20
+        UNION ALL SELECT 'extend', 'Extend',
+               'Expands the selected text, staying with what it already says.',
+               'Expand the following text in the same language and tone. Elaborate on what it already says; do not invent facts, figures or sources. Return only the expanded text.\n\n{{input}}', 30
+        UNION ALL SELECT 'fix-grammar', 'Fix Grammar & Spelling',
+               'Corrects grammar, spelling and punctuation without rewriting.',
+               'Correct grammar, spelling and punctuation in the following text. Keep the wording, the language and the tone as they are - correct only what is wrong. Return only the corrected text.\n\n{{input}}', 40
+        UNION ALL SELECT 'translate-en', 'Translate to English',
+               'Translates the selected text into English.',
+               'Translate the following text into English. Keep its tone and formatting, and return only the translation.\n\n{{input}}', 50
+        UNION ALL SELECT 'translate-de', 'Translate to German',
+               'Translates the selected text into German.',
+               'Translate the following text into German. Keep its tone and formatting, and return only the translation.\n\n{{input}}', 60
+       ) AS t
+ WHERE NOT EXISTS (
+       SELECT 1 FROM tx_nrllm_task e
+        WHERE e.identifier = t.identifier AND e.deleted = 0);
+
+-- Re-assert the fields a later correction would need to reach: an instance
+-- seeded by an earlier run keeps its row, and without this an edited prompt or a
+-- repointed configuration would never arrive (the NOT EXISTS above stops
+-- matching once the row is there). Scoped to the six identifiers this file owns.
+UPDATE tx_nrllm_task e
+  JOIN (
+        SELECT 'improve-text' AS identifier UNION ALL SELECT 'summarize'
+        UNION ALL SELECT 'extend' UNION ALL SELECT 'fix-grammar'
+        UNION ALL SELECT 'translate-en' UNION ALL SELECT 'translate-de'
+       ) AS owned ON owned.identifier = e.identifier
+   SET e.category = 'content',
+       e.is_active = 1,
+       e.configuration_uid = COALESCE((SELECT uid FROM tx_nrllm_configuration
+                                        WHERE identifier = 'content-assistant' AND deleted = 0
+                                        ORDER BY uid ASC LIMIT 1), e.configuration_uid)
+ WHERE e.deleted = 0;
+
 -- Give unpriced demo models cost metrics so the LLM cost module + Monthly-Cost
 -- widget show non-zero figures (cents per 1M tokens). Idempotent: the WHERE stops
 -- matching once set, so re-running make seed-extensions is a no-op.
 UPDATE tx_nrllm_model SET cost_input = 125, cost_output = 1000
 WHERE deleted = 0 AND cost_input = 0 AND cost_output = 0;
+
+-- The chat model. uid 1 comes from data/db.sql.gz, so it is corrected here
+-- rather than in the dump: this file runs after the import and therefore also
+-- survives a reset.
+--
+-- 'gpt-5.3-chat-latest' is deprecated. That is not inferred from a release note
+-- but read back from this account's own API, which answers the call with:
+--   404 The model `gpt-5.3-chat-latest` has been deprecated
+-- The whole versioned family went the same way -- gpt-5-chat-latest,
+-- gpt-5.1-chat-latest and gpt-5.2-chat-latest all return the same 404.
+--
+-- The obvious successor is the unversioned alias 'chat-latest', and that was
+-- the first correction here. It was wrong for THIS installation, which only
+-- became visible by running nr-llm's own pipeline instead of a bare API call:
+--   ProviderResponseException: Unsupported value: 'temperature' does not
+--   support 0.7 with this model. Only the default (1) value is supported.
+-- Answering a plain call and serving this installation are different claims.
+--
+-- Three requirements, each measured per model against the live account
+-- (2026-08-11):
+--   1. answers with CONTENT -- gpt-5, gpt-5.5, o1, o3*, o4-mini return 200 with
+--      an EMPTY message on a small budget, because they spend it on reasoning
+--      tokens. That presents as "HTTP 200, no answer" -- the exact symptom
+--      NEXT-145 was filed for, so a reasoning model would have replaced a loud
+--      failure with a silent one.
+--   2. accepts a temperature -- configurations here carry 0.30 and 0.70, and
+--      nr-llm's completeFactual()/completeCreative() presets send their own
+--      values, so a temperature-rigid model breaks paths no config field
+--      reaches. 'chat-latest' and the whole gpt-5.6-* line refuse it.
+--   3. accepts tools -- nr_ai_search.chat selects its model on the `tools`
+--      capability. The gpt-5.6-* line refuses tools as well.
+--
+-- gpt-5.4 is the newest model that satisfies all three. Also verified: 5.4-mini,
+-- 5.2, 5.1, 4.1, 4.1-mini, 4o, 4o-mini.
+--
+-- Guarded on the two known-bad values rather than re-asserted unconditionally,
+-- so an operator who picks their own model in the backend keeps it.
+UPDATE tx_nrllm_model
+   SET model_id = 'gpt-5.4',
+       name     = 'OpenAI GPT-5.4',
+       tstamp   = UNIX_TIMESTAMP()
+ WHERE uid = 1 AND deleted = 0
+   AND model_id IN ('gpt-5.3-chat-latest', 'chat-latest');
 
 -- =============================================================================
 -- AI Search & Chat (nr_ai_search) — RAG embeddings + chat configuration
@@ -1217,6 +1339,99 @@ WHERE s.deleted = 0
 UPDATE tx_nrvault_secret s
 SET s.write_groups = (
     SELECT COUNT(*) FROM tx_nrvault_secret_writegroups_mm mm WHERE mm.uid_local = s.uid
+)
+WHERE s.deleted = 0
+  AND s.identifier = (SELECT api_key FROM tx_nrllm_provider WHERE uid = 1 LIMIT 1)
+  AND (SELECT api_key FROM tx_nrllm_provider WHERE uid = 1 LIMIT 1) <> '';
+
+-- 3c2) Discard the leftover workspace (NEXT-127).
+--
+--      scripts/export-seed-sanitized.sh already strips workspace records from
+--      the dump, and says why it does not act on the live instance:
+--      "Publishing or discarding a workspace is an editorial decision on the
+--      live instance; a seed for a fresh install must carry neither."
+--      That decision has now been made: discard.
+--
+--      What it fixes: page 119 "Daten" is a sysfolder that exists only in
+--      workspace 1 and was never published. Its rootline is NOT structurally
+--      broken -- 119 -> 1 -> 0 resolves -- but the page has no live
+--      counterpart, so RootlineUtility answers "Broken rootline" in workspace
+--      0 and the localization wizard fails on it.
+--
+--      Measured before writing this (2026-08-11): 34 pages, 21 tt_content and
+--      1 sys_workspace row, all created 2026-03-27 between 09:28 and 12:51 by
+--      three users -- Bundesliga club pages and a "Mentions legales", i.e.
+--      material from a demo or training session.
+--
+--      The table list is explicit rather than derived from information_schema:
+--      a static seed file cannot loop, and the three tables above are the ones
+--      that actually carry rows here. sys_refindex, sys_preview and
+--      be_users.workspace_id follow the export script, which documents why each
+--      matters. If another table ever grows workspace rows, the guard at the
+--      end of this file reports it instead of leaving it unnoticed.
+--
+--      Idempotent by construction: a DELETE with this WHERE is a no-op once the
+--      rows are gone.
+DELETE FROM pages       WHERE t3ver_wsid <> 0;
+DELETE FROM tt_content  WHERE t3ver_wsid <> 0;
+DELETE FROM sys_refindex WHERE workspace <> 0;
+DELETE FROM sys_preview;
+UPDATE be_users SET workspace_id = 0 WHERE workspace_id <> 0;
+DELETE FROM sys_workspace_stage WHERE 1;
+DELETE FROM sys_workspace WHERE 1;
+
+-- 3d) Identity for the nr_repurpose generation job (release 0.4.2).
+--
+--     The job runs in a Messenger consumer, where TYPO3 boots an
+--     unauthenticated command-line user. nr_vault then has no actor to
+--     authorise and refuses the provider key, so the job died in 'analyzing'.
+--     0.4.2 wraps the work in TechnicalActorContext::runAs() -- but its
+--     technicalBeUserUid defaults to 0, so the release alone changes nothing
+--     until an identity is configured. entrypoint.sh points it at uid 992.
+--
+--     A separate identity rather than reusing 990: attributing repurpose jobs
+--     to the AI-Search user would mix them into that extension's budget
+--     accounting and its audit trail, which is exactly what a named technical
+--     actor exists to keep apart.
+--
+--     The grant is the READ tier, not ownership. Ownership stays with 990
+--     (step 3b) -- a secret has one owner, and taking it away would break the
+--     indexing worker. AccessControlService resolves READ as
+--     allowed_groups UNION write_groups, so membership of group 992 in
+--     allowed_groups is enough and grants nothing beyond reading this secret.
+--     No custom_options are needed: those carry create/rotate/delete, and this
+--     identity does none of them.
+--
+--     Fixed uids 992 are above the seed maxima (be_groups 991, be_users 991).
+--     The password is a deliberately invalid hash: never logged into.
+INSERT IGNORE INTO be_groups (uid, pid, tstamp, crdate, deleted, hidden, title, description)
+VALUES (992, 0, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0, 'Repurpose vault read',
+     'Read access to the OpenAI provider secret for the nr_repurpose generation job. Carries no vault operation permissions and no interactive members.');
+
+INSERT IGNORE INTO be_users
+    (uid, pid, tstamp, crdate, deleted, disable, admin, username, password, usergroup, realName, description)
+VALUES (992, 0, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0, 0,
+     'nr_repurpose_technical', '!nr_repurpose_technical_no_login', '992',
+     'Repurpose technical user',
+     'Synthetic non-admin identity the asynchronous nr_repurpose job runs as. Not for interactive login.');
+
+-- Re-assert the membership: INSERT IGNORE skips an existing, possibly
+-- hand-edited row entirely (same reason as uid 991 above).
+UPDATE be_users SET usergroup = '992' WHERE uid = 992 AND usergroup <> '992';
+
+-- Read tier on the provider secret. Same MM caveat as step 3c: the
+-- `allowed_groups` column holds the relation COUNT, so the relation goes into
+-- the MM table and the count is synced from it afterwards.
+INSERT IGNORE INTO tx_nrvault_secret_begroups_mm (uid_local, uid_foreign, sorting, sorting_foreign)
+SELECT s.uid, 992, 1, 0
+FROM tx_nrvault_secret s
+WHERE s.deleted = 0
+  AND s.identifier = (SELECT api_key FROM tx_nrllm_provider WHERE uid = 1 LIMIT 1)
+  AND (SELECT api_key FROM tx_nrllm_provider WHERE uid = 1 LIMIT 1) <> '';
+
+UPDATE tx_nrvault_secret s
+SET s.allowed_groups = (
+    SELECT COUNT(*) FROM tx_nrvault_secret_begroups_mm mm WHERE mm.uid_local = s.uid
 )
 WHERE s.deleted = 0
   AND s.identifier = (SELECT api_key FROM tx_nrllm_provider WHERE uid = 1 LIMIT 1)
@@ -3794,8 +4009,42 @@ UNION ALL
 SELECT 'SEED-PROBLEM: be_users 990 nr_ai_search_technical missing or foreign' FROM DUAL
  WHERE NOT EXISTS (SELECT 1 FROM be_users WHERE uid = 990 AND username = 'nr_ai_search_technical' AND deleted = 0)
 UNION ALL
+SELECT 'SEED-PROBLEM: be_users 992 nr_repurpose_technical missing or foreign' FROM DUAL
+ WHERE NOT EXISTS (SELECT 1 FROM be_users WHERE uid = 992 AND username = 'nr_repurpose_technical' AND deleted = 0)
+UNION ALL
 SELECT 'SEED-PROBLEM: tx_nrllm_model 90 text-embedding-3-small missing or foreign' FROM DUAL
  WHERE NOT EXISTS (SELECT 1 FROM tx_nrllm_model WHERE uid = 90 AND identifier = 'text-embedding-3-small' AND deleted = 0)
+UNION ALL
+-- Workspace records survived the purge in step 3c2. Either a table outside the
+-- explicit list above grew them, or something re-created a workspace between
+-- the purge and here. Both mean the "Broken rootline" of NEXT-127 can come
+-- back, so say so rather than let it reappear quietly.
+SELECT CONCAT('SEED-PROBLEM: ', n, ' workspace record(s) survived the purge')
+  FROM (SELECT (SELECT COUNT(*) FROM pages      WHERE t3ver_wsid <> 0)
+             + (SELECT COUNT(*) FROM tt_content WHERE t3ver_wsid <> 0)
+             + (SELECT COUNT(*) FROM sys_workspace) AS n) w
+ WHERE n > 0
+UNION ALL
+-- Every versioned '*-chat-latest' alias OpenAI ever served to this account is
+-- deprecated and answers 404, so a chat model still carrying one is a dead
+-- configuration -- every Cowriter, AI-Search and Repurpose call fails against
+-- it. Fail the deploy instead of shipping a demo whose AI silently does
+-- nothing.
+SELECT CONCAT('SEED-PROBLEM: tx_nrllm_model 1 carries deprecated model_id ', model_id)
+  FROM tx_nrllm_model
+ WHERE uid = 1 AND deleted = 0 AND model_id LIKE 'gpt-%-chat-latest'
+UNION ALL
+-- Separate failure, separate message: these ids are NOT deprecated and answer a
+-- plain call, but they refuse the temperature this installation sends (and the
+-- gpt-5.6-* line refuses tools too), so every nr-llm call fails with
+-- "Unsupported value: 'temperature'". An explicit list will go stale as models
+-- come and go -- when it fires, re-measure rather than trusting it: send one
+-- chat/completions call with temperature 0.7 and one carrying a `tools` array.
+SELECT CONCAT('SEED-PROBLEM: tx_nrllm_model 1 carries ', model_id,
+              ', which refuses a non-default temperature')
+  FROM tx_nrllm_model
+ WHERE uid = 1 AND deleted = 0
+   AND (model_id = 'chat-latest' OR model_id LIKE 'gpt-5.6-%')
 UNION ALL
 SELECT CONCAT('SEED-PROBLEM: tx_nrlandingpage_domain_model_template ', t.uid, ' missing or foreign')
   FROM (SELECT 901 AS uid UNION ALL SELECT 902 UNION ALL SELECT 903 UNION ALL SELECT 904) t
@@ -3811,6 +4060,18 @@ SELECT CONCAT('SEED-PROBLEM: be_dashboards ', d.uid, ' Netresearch Widgets missi
 UNION ALL
 -- Checked per user rather than per uid: these rows carry no fixed uid, because
 -- which users exist comes from the dump and the guard is (user, title).
+SELECT CONCAT('SEED-PROBLEM: Cowriter task ', w.identifier, ' missing, inactive, out of category, or with an empty prompt_template')
+  FROM (
+        SELECT 'improve-text' AS identifier UNION ALL SELECT 'summarize'
+        UNION ALL SELECT 'extend' UNION ALL SELECT 'fix-grammar'
+        UNION ALL SELECT 'translate-en' UNION ALL SELECT 'translate-de'
+       ) AS w
+ WHERE NOT EXISTS (
+       SELECT 1 FROM tx_nrllm_task t
+        WHERE t.identifier = w.identifier AND t.deleted = 0
+          AND t.is_active = 1 AND t.category = 'content'
+          AND t.prompt_template <> '')
+UNION ALL
 SELECT CONCAT('SEED-PROBLEM: be_dashboards Netresearch Demo missing for be_users ', u.uid, ' ', u.username)
   FROM be_users u
  WHERE u.deleted = 0
