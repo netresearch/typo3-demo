@@ -1,10 +1,23 @@
 # syntax=docker/dockerfile:1
 FROM composer:2@sha256:4d71c3c2109c61d5415544264b59ad4087e4c5b7244481723664138fd36d5040 AS composer-builder
 WORKDIR /app
-ARG COMPOSER_AUTH
 COPY composer.json composer.lock* ./
 COPY packages/ packages/
-RUN composer install --no-dev --prefer-dist --no-interaction --ignore-platform-reqs --optimize-autoloader
+# The credential for the private Composer sources arrives as a BuildKit secret,
+# NOT as a build arg. buildx records every build arg in the SLSA provenance it
+# attaches to the pushed image, and this image is public: the previous `ARG
+# COMPOSER_AUTH` published a working git.netresearch.de token in the attestation
+# of all 1461 published versions, readable with a single `imagetools inspect`.
+# The build layers never carried it — the builder stage is not shipped — which is
+# exactly why reading `docker history` said "clean" and was the wrong instrument.
+#
+# A secret mount is visible only inside this RUN and appears in no layer, no arg
+# and no attestation. Missing secret tolerated on purpose: a build without
+# credentials still resolves everything public, which is what a fork's CI and a
+# local `docker compose build` get.
+RUN --mount=type=secret,id=composer_auth \
+    COMPOSER_AUTH="$(cat /run/secrets/composer_auth 2>/dev/null || true)" \
+    composer install --no-dev --prefer-dist --no-interaction --ignore-platform-reqs --optimize-autoloader
 
 # Patch lochmueller/index: it casts a DateTimeImmutable date field to string
 # directly ((string) $item->get('date')), which throws and aborts index:queue —
