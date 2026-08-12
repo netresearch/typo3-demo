@@ -4103,6 +4103,33 @@ VALUES (0, 'update_page_metadata', 1)
 ON DUPLICATE KEY UPDATE
   enabled = VALUES(enabled);
 
+-- =============================================================================
+-- 9. Drop processed files that predate the WebP conversion
+-- =============================================================================
+-- GFX.imageFileConversionFormats decides the target format when an image is
+-- processed. It does NOT convert what was processed earlier: TYPO3 looks a
+-- derivative up by (original, task_type, configurationsha1), finds the old row
+-- and serves the old file. Setting the option therefore changes nothing visible
+-- on an instance that already has a full _processed_ cache -- which is exactly
+-- what happened here: after the deploy all 23 processed images on the home page
+-- were still the same PNG files, byte-identical filenames included.
+--
+-- Deleting the row is enough. With no row TYPO3 processes the image again, and
+-- because the target extension is part of the derivative name, the new file
+-- gets a new name rather than colliding with the old one.
+--
+-- Self-limiting by construction: once everything is webp (or svg, which is
+-- exempt) the WHERE clause matches nothing and this is a no-op on every later
+-- deploy. It is not "delete all processed files on every deploy".
+--
+-- The old files stay on disk as orphans. They are harmless and the Maintenance
+-- workflow prunes disk space when it needs to; deleting them here would mean
+-- touching the filesystem from a SQL seed, which this file deliberately avoids.
+DELETE FROM sys_file_processedfile
+ WHERE LOWER(identifier) NOT LIKE '%.webp'
+   AND LOWER(identifier) NOT LIKE '%.svg'
+   AND identifier <> '';
+
 -- --- Verification -------------------------------------------------------------
 -- One line per record that is absent or whose uid is held by a foreign row —
 -- the two outcomes are indistinguishable from here and need the same response
@@ -4251,6 +4278,16 @@ SELECT 'SEED-PROBLEM: tool group editing is switched off — update_page_metadat
  WHERE EXISTS (
        SELECT 1 FROM tx_nrllm_tool_group_state
         WHERE group_name = 'editing' AND enabled = 0)
+UNION ALL
+-- The conversion from step 9 only takes effect for derivatives created after
+-- it; a leftover row means the frontend still serves the old format.
+SELECT CONCAT('SEED-PROBLEM: ', COUNT(*),
+              ' processed files are neither webp nor svg -- the WebP conversion did not take')
+  FROM sys_file_processedfile
+ WHERE LOWER(identifier) NOT LIKE '%.webp'
+   AND LOWER(identifier) NOT LIKE '%.svg'
+   AND identifier <> ''
+HAVING COUNT(*) > 0
 UNION ALL
 -- The property this whole band exists for, asserted directly rather than
 -- inferred from the sentinel rows: the next uid the database hands out must lie
