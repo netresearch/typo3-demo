@@ -1,5 +1,7 @@
 .PHONY: up down reset update logs shell db-shell seed seed-extensions provision-llm-key persist-env-secret export-seed build clean dev dev-down prune help
 
+.PHONY: up down reset update logs shell db-shell seed seed-extensions provision-llm-key export-seed build clean dev dev-down prune help
+
 COMPOSE     := docker compose
 COMPOSE_DEV := docker compose -f compose.yml -f compose.dev.yml
 # Run the TYPO3 CLI as the php-fpm user: a root exec creates root-owned
@@ -48,6 +50,7 @@ update: ## Update code without purging data
 	# Runs before `up`: containers read their environment from .env at creation
 	# time, and the deploy session's variables are gone by the next host reboot.
 	$(MAKE) persist-env-secret SECRET_NAME=OPENAI_API_KEY
+	$(MAKE) persist-env-secret SECRET_NAME=DEEPL_API_KEY
 	$(COMPOSE) pull
 	# --remove-orphans: a service deleted from compose.yml otherwise keeps running
 	# forever. The reverted EXT:solr spike kept its container alive for 8 days and
@@ -186,7 +189,6 @@ persist-env-secret: ## Write $$SECRET_NAME from the environment into .env (usage
 	mv "$$tmp" .env; \
 	trap - EXIT INT TERM; \
 	echo "$(SECRET_NAME) written to .env (length $${#value}), file mode 600."
-
 prune: ## Remove dangling images left behind by image pulls (keeps volumes + in-use images)
 	docker image prune -f
 

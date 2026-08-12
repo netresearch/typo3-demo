@@ -26,7 +26,7 @@ jobs:
           host: ${{ secrets.HETZNER_SSH_HOST }}
           username: ${{ secrets.HETZNER_SSH_USER }}
           key: ${{ secrets.HETZNER_SSH_KEY }}
-          envs: DHI_USERNAME,DHI_TOKEN,OPENAI_API_KEY
+          envs: DHI_USERNAME,DHI_TOKEN,OPENAI_API_KEY,DEEPL_API_KEY
           script: |
             cd /opt/typo3-demo
 
@@ -67,3 +67,7 @@ jobs:
           # empty, the deploy still succeeds and says the AI modules stay dead —
           # a missing key must not take the whole instance down with it.
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          # Consumed by `make provision-deepl-key` inside `make update`, which
+          # writes it into the host .env so it survives a reboot. Absent or empty,
+          # a key already stored on the host is kept and the deploy still succeeds.
+          DEEPL_API_KEY: ${{ secrets.DEEPL_API_KEY }}

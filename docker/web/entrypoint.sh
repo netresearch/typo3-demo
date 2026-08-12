@@ -366,6 +366,69 @@ if [ -f config/system/settings.php ]; then
     ' || echo "WARNING: ai_filemetadata is NOT configured - settings.php was left untouched, so alt-text generation runs on the extension's fail-open defaults (no image downscaling, frontend generation on)" >&2
 fi
 
+# Configure autotranslate (DeepL).
+#
+# The extension reads its key from the extension configuration or from the site
+# configuration and knows nothing about nr_vault, so the key cannot take the
+# route OPENAI_API_KEY takes. It arrives as DEEPL_API_KEY in the container
+# environment (compose.yml passes it through; `make provision-deepl-key` puts it
+# into the host .env so it survives a reboot).
+#
+# apiKey is only written when the variable is non-empty. An empty variable must
+# not wipe a key that a previous boot stored in this volume — same rule as
+# provision-llm-key: a missing secret degrades the feature, it never breaks what
+# already works.
+#
+# debug = 1 on purpose. autotranslate's LogUtility drops EVERY log line,
+# including errors, while debug is off (upstream issue #157), and its batch
+# runner reports "done" even when nothing was translated (upstream issue #156).
+# On this instance the log is the only place a failed translation shows up.
+if [ -f config/system/settings.php ]; then
+    php -r '
+        $f = "config/system/additional.php";
+        $begin = "// >>> autotranslate (managed by entrypoint, do not edit this block)";
+        $end   = "// <<< autotranslate";
+        // The key is kept in a sidecar file in the same volume rather than parsed
+        // back out of the block on the next boot: additional.php is loaded on
+        // every request, and a half-matched literal there takes the whole site
+        // down. A file read cannot produce a syntax error.
+        $store = "config/system/.deepl-key";
+        $key = (string) getenv("DEEPL_API_KEY");
+        $origin = "provisioned from DEEPL_API_KEY";
+        if ($key === "" && is_file($store)) {
+            $key = trim((string) file_get_contents($store));
+            $origin = "kept from the previous provisioning";
+        }
+        if ($key !== "") {
+            file_put_contents($store, $key);
+            chmod($store, 0600);
+        }
+        $block = $begin . "\n"
+            . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"autotranslate\"][\"debug\"] = \"1\";\n";
+        if ($key !== "") {
+            $block .= "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"autotranslate\"][\"apiKey\"] = "
+                . var_export($key, true) . ";\n";
+        }
+        $block .= $end;
+        $existing = is_file($f) ? (string) file_get_contents($f) : "";
+        if (strpos($existing, "<?php") === false) {
+            $existing = "<?php\n" . ($existing === "" ? "" : $existing . "\n");
+        }
+        $b = strpos($existing, $begin);
+        if ($b !== false) {
+            $e = strpos($existing, $end, $b);
+            $existing = $e !== false
+                ? substr($existing, 0, $b) . substr($existing, $e + strlen($end))
+                : substr($existing, 0, $b);
+        }
+        $existing = rtrim($existing, "\n") . "\n\n" . $block . "\n";
+        file_put_contents($f, $existing);
+        echo "additional.php: autotranslate debug on, DeepL key "
+            . ($key !== "" ? $origin : "NOT set - translations will silently do nothing")
+            . "." . PHP_EOL;
+    ' || echo "WARNING: failed to write autotranslate additional.php block" >&2
+fi
+
 # Configure nr_textdb (database-backed frontend translations).
 # textDbPid MUST match the sysfolder seeded in data/seed-extensions.sql (uid
 # 163). With textDbPid = 0 every repository queries pid 0
