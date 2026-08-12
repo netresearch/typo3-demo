@@ -353,6 +353,38 @@ jobs:
             *) echo "ERROR: expected an h3, got: $title"; exit 1 ;;
           esac
 
+      # A skipped level (h2 straight to h4) leaves anyone navigating by heading
+      # unable to tell whether what follows belongs to the section above it, and
+      # it is invisible to everyone else — the page looks identical. Most of
+      # these headings come from RTE bodytext in the seed, where no static check
+      # sees them at all.
+      - name: Verify no heading level is skipped
+        run: |
+          get() { curl -sSfL --proto '=https' --proto-redir '=https' --cacert "$RUNNER_TEMP/caddy-root.crt" "$1"; }
+          get https://localhost/extensions/browser-ai-form-assistant > /tmp/outline.html
+          get https://localhost > /tmp/outline-home.html
+          python3 - <<'PY'
+          import re, sys
+          failed = False
+          for path in ('/tmp/outline.html', '/tmp/outline-home.html'):
+              html = open(path, encoding='utf-8', errors='replace').read()
+              levels = [(int(m.group(1)), re.sub(r'<[^>]+>', '', m.group(2)).strip()[:40])
+                        for m in re.finditer(r'<h([1-6])[^>]*>(.*?)</h\1>', html, re.S | re.I)]
+              levels = [(n, t) for n, t in levels if t]
+              print(f'{path}: {" ".join("h%d" % n for n, _ in levels)}')
+              prev = None
+              for n, text in levels:
+                  if prev is not None and n > prev + 1:
+                      print(f'::error::{path}: h{prev} jumps to h{n} at "{text}"')
+                      failed = True
+                  prev = n
+              if levels and levels[0][0] != 1:
+                  print(f'::error::{path}: first heading is h{levels[0][0]}, not h1')
+                  failed = True
+          sys.exit(1 if failed else 0)
+          PY
+          echo "Heading outline has no skipped level."
+
       - name: Cleanup
         if: always()
         run: docker compose down -v
