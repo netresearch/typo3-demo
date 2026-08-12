@@ -3030,16 +3030,16 @@
         },
         {
             "name": "netresearch/nr-landingpage",
-            "version": "v0.3.1",
+            "version": "v0.3.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/nr-landingpage.git",
-                "reference": "06946d0f05217ee70e644d9b60817458b1a45f7d"
+                "reference": "ee450e9b01d9e782cf13632e874a45c07d63bff2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/nr-landingpage/zipball/06946d0f05217ee70e644d9b60817458b1a45f7d",
-                "reference": "06946d0f05217ee70e644d9b60817458b1a45f7d",
+                "url": "https://api.github.com/repos/netresearch/nr-landingpage/zipball/ee450e9b01d9e782cf13632e874a45c07d63bff2",
+                "reference": "ee450e9b01d9e782cf13632e874a45c07d63bff2",
                 "shasum": ""
             },
             "require": {
@@ -3079,9 +3079,9 @@
             "description": "TYPO3 Landing Page Generator powered by LLM",
             "support": {
                 "issues": "https://github.com/netresearch/nr-landingpage/issues",
-                "source": "https://github.com/netresearch/nr-landingpage/tree/v0.3.1"
+                "source": "https://github.com/netresearch/nr-landingpage/tree/v0.3.2"
             },
-            "time": "2026-08-10T15:34:54+00:00"
+            "time": "2026-08-12T11:56:22+00:00"
         },
         {
             "name": "netresearch/nr-llm",
@@ -3859,16 +3859,16 @@
         },
         {
             "name": "netresearch/rte-ckeditor-image",
-            "version": "v13.10.1",
+            "version": "v13.10.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/t3x-rte_ckeditor_image.git",
-                "reference": "5d7b55c5756da7423a5eff2abcdbbc9989eeb086"
+                "reference": "d1930e26ff8d5e414558ce603dc7f7cb80fb89d2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/t3x-rte_ckeditor_image/zipball/5d7b55c5756da7423a5eff2abcdbbc9989eeb086",
-                "reference": "5d7b55c5756da7423a5eff2abcdbbc9989eeb086",
+                "url": "https://api.github.com/repos/netresearch/t3x-rte_ckeditor_image/zipball/d1930e26ff8d5e414558ce603dc7f7cb80fb89d2",
+                "reference": "d1930e26ff8d5e414558ce603dc7f7cb80fb89d2",
                 "shasum": ""
             },
             "require": {
@@ -3952,7 +3952,7 @@
                     "@ci:test:php:functional"
                 ],
                 "ci:test:e2e": [
-                    "cd Tests/E2E && docker run --rm --network=ddev_default -v $(pwd):/app -w /app -e BASE_URL=https://v13.rte-ckeditor-image.ddev.site mcr.microsoft.com/playwright:v1.61.0-noble /bin/bash -c 'npm install && npx playwright test'"
+                    "cd Tests/E2E && docker run --rm --network=ddev_default -v $(pwd):/app -w /app -e BASE_URL=https://v13.rte-ckeditor-image.ddev.site mcr.microsoft.com/playwright:v1.62.1-noble /bin/bash -c 'npm install && npx playwright test'"
                 ],
                 "ci:fuzz:image-parser": [
                     ".Build/bin/php-fuzzer fuzz Tests/Fuzz/ImageAttributeParserTarget.php Tests/Fuzz/corpus/image-parser --max-runs 10000"
@@ -4005,10 +4005,10 @@
             "description": "Image support in CKEditor for the TYPO3 ecosystem - by Netresearch",
             "homepage": "https://github.com/netresearch/t3x-rte_ckeditor_image",
             "support": {
-                "source": "https://github.com/netresearch/t3x-rte_ckeditor_image/tree/v13.10.1",
+                "source": "https://github.com/netresearch/t3x-rte_ckeditor_image/tree/v13.10.2",
                 "issues": "https://github.com/netresearch/t3x-rte_ckeditor_image/issues"
             },
-            "time": "2026-06-19T09:48:39+00:00"
+            "time": "2026-08-12T12:12:43+00:00"
         },
         {
             "name": "netresearch/t3-cowriter",
