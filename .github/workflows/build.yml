@@ -404,6 +404,99 @@ jobs:
           PY
           echo "Heading outline has no skipped level."
 
+      # A TypoScript constant nobody defines does not fail — it passes through as
+      # a plain string and lands in the markup. rte_ckeditor_image bridged
+      # {$styles.content.image.lazyLoading}, which only EXT:fluid_styled_content
+      # defines and this installation does not have, so RTE images rendered
+      # loading="{$styles.content.image.lazyLoading}" until 13.10.2. The pattern
+      # is deliberately {$name}, not ${name}: the latter is a JavaScript template
+      # literal and legitimately appears in the page.
+      - name: Verify no unresolved TypoScript constant reaches the markup
+        run: |
+          get() { curl -sSfL --proto '=https' --proto-redir '=https' --cacert "$RUNNER_TEMP/caddy-root.crt" "$1"; }
+          failed=0
+          for path in / /extensions/rte-ckeditor-image; do
+            html=$(get "https://localhost$path") || {
+              echo "::error::$path did not respond — the check cannot say anything about it"
+              failed=1
+              continue
+            }
+            hits=$(printf '%s' "$html" | grep -oE '\{\$[A-Za-z_][A-Za-z0-9_.]*\}' | sort -u || true)
+            if [ -n "$hits" ]; then
+              echo "::error::$path emits unresolved TypoScript constants:"
+              printf '  %s\n' $hits
+              failed=1
+            else
+              echo "$path: no unresolved constant."
+            fi
+          done
+          # Without an image on it the RTE page proves nothing, so assert the
+          # subject of the check is actually present. Held in a variable rather
+          # than piped: `grep -q` closes the pipe on its first match, which makes
+          # curl exit 23 and print a write error into an otherwise green step.
+          rte=$(get https://localhost/extensions/rte-ckeditor-image)
+          printf '%s' "$rte" | grep -q '<img' \
+            || { echo '::error::the RTE demo page renders no <img> — this check would be vacuous'; failed=1; }
+          exit $failed
+
+      # nr_image_optimize picks imagick and falls back to GD, and both need WebP
+      # and AVIF. The image shipped GD without those flags and never built
+      # imagick, so the module reported "Not loaded" and produced nothing. Real
+      # bytes are asserted rather than capability flags: ImageMagick without a
+      # working AVIF delegate writes an EMPTY .avif instead of failing.
+      - name: Verify the image encoders are present
+        run: |
+          docker compose exec -T web php -r '
+          $bad = [];
+
+          if (!extension_loaded("gd")) {
+              $bad[] = "the gd extension is not loaded";
+          }
+          if (!extension_loaded("imagick")) {
+              $bad[] = "the imagick extension is not loaded";
+          } else {
+              $formats = Imagick::queryFormats();
+              foreach (["WEBP", "AVIF"] as $fmt) {
+                  if (!in_array($fmt, $formats, true)) {
+                      $bad[] = "imagick reports no $fmt delegate";
+                  }
+              }
+          }
+          $gd = extension_loaded("gd") ? gd_info() : [];
+          foreach (["WebP", "AVIF"] as $fmt) {
+              if (empty($gd["$fmt Support"])) {
+                  $bad[] = "GD was built without $fmt support";
+              }
+          }
+          if (extension_loaded("gd")) {
+              $img = imagecreatetruecolor(32, 32);
+              imagefilledrectangle($img, 0, 0, 31, 31, imagecolorallocate($img, 200, 80, 40));
+              foreach (["webp", "avif"] as $fmt) {
+                  $fn = "image" . $fmt;
+                  if (!function_exists($fn)) {
+                      $bad[] = "GD does not provide $fn()";
+                      continue;
+                  }
+                  $path = "/tmp/encodercheck." . $fmt;
+                  @unlink($path);
+                  @$fn($img, $path);
+                  $size = is_file($path) ? filesize($path) : 0;
+                  printf("  GD %-4s -> %d bytes\n", $fmt, $size);
+                  if ($size < 24) {
+                      $bad[] = "GD produced no usable $fmt output ($size bytes)";
+                  }
+              }
+          }
+
+          if ($bad !== []) {
+              foreach ($bad as $m) {
+                  fwrite(STDERR, "ERROR: " . $m . "\n");
+              }
+              exit(1);
+          }
+          echo "  imagick and GD both encode WebP and AVIF.\n";
+          '
+
       - name: Cleanup
         if: always()
         run: docker compose down -v
