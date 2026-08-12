@@ -3377,6 +3377,9 @@ VALUES (9227, 9004, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'nrbrowserai_formassista
                 <field index="settings.title">
                     <value index="vDEF">Describe the weather you are asking about</value>
                 </field>
+                <field index="settings.headingLevel">
+                    <value index="vDEF">h3</value>
+                </field>
                 <field index="settings.introduction">
                     <value index="vDEF">One sentence is enough. The form below fills itself with the parameters it implies, runs, and shows what came back.</value>
                 </field>
@@ -3482,6 +3485,9 @@ VALUES (9231, 9004, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 9227, 9227, 'nrbrowse
                 </field>
                 <field index="settings.title">
                     <value index="vDEF">Beschreiben Sie, wonach Sie fragen</value>
+                </field>
+                <field index="settings.headingLevel">
+                    <value index="vDEF">h3</value>
                 </field>
                 <field index="settings.introduction">
                     <value index="vDEF">Ein Satz genügt. Das Formular unten füllt sich mit den Parametern, die darin stecken, fragt ab und zeigt, was zurückkam.</value>
