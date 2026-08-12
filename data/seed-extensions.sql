@@ -3345,10 +3345,27 @@ ON DUPLICATE KEY UPDATE
   bodytext = IF(pid = VALUES(pid) AND CType = VALUES(CType) AND header = VALUES(header),
                 VALUES(bodytext), bodytext);
 
+-- The content-element header used to read "Weather query" and rendered a
+-- frame-header <h2> above the plugin — which then rendered its own <h2>, and
+-- the form inside it a third one also reading "Weather query". Three headings
+-- for one widget, two of them identical. The header goes; the plugin and the
+-- form both title themselves.
+--
+-- This UPDATE runs BEFORE the INSERT below on purpose. The ON DUPLICATE guard
+-- compares `header = VALUES(header)`, so with the old header still in the row
+-- and an empty one proposed, the guard would never match again and pi_flexform
+-- would silently stop being re-asserted. Clearing it first keeps guard and row
+-- in step within a single deploy. Both conditions also make this a no-op once
+-- applied, and leave an editor's own header alone.
+UPDATE tt_content SET header = ''
+ WHERE uid = 9227 AND pid = 9004 AND CType = 'nrbrowserai_formassistant' AND header = 'Weather query';
+UPDATE tt_content SET header = ''
+ WHERE uid = 9231 AND pid = 9004 AND CType = 'nrbrowserai_formassistant' AND header = 'Wetterabfrage';
+
 -- The plugin. formIdentifier stays at the shipped demonstration form;
 -- showConfiguration is on because the disclosure is half the demonstration.
 INSERT INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, pi_flexform, colPos, sorting, hidden, deleted)
-VALUES (9227, 9004, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'nrbrowserai_formassistant', 'Weather query', '',
+VALUES (9227, 9004, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'nrbrowserai_formassistant', '', '',
 '<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <T3FlexForms>
     <data>
@@ -3407,7 +3424,7 @@ VALUES (9228, 9004, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', '',
   </ul>
   <p style="max-width: 720px;">What is needed on your side is a form definition, a data source the browser may call, and a sentence per field explaining what it means. The last one is the part that is usually missing, and it is also the part that makes the form better for people, not only for models.</p>
 
-  <h3 class="h5 fw-bold mt-4 mb-2">What this deliberately does not do</h3>
+  <h2 class="h4 fw-bold mt-5 mb-3">What this deliberately does not do</h2>
   <p style="max-width: 720px;">The sentence above the form is a summary, not the result. It is written by a small on-device model from the query result and kept short, and the tables are what the data source actually returned &mdash; read those when a number matters. When the phrasing call fails, the tables stay and nothing is said rather than something guessed.</p>
   <p style="max-width: 720px;">One request runs at most four queries; beyond that a request has stopped being a question. And it does not invent a place: the name is resolved by the data source&rsquo;s own search, the first match wins, and the resolved name is shown with the result so a wrong match is visible rather than silent.</p>
   <p style="max-width: 720px;">And without JavaScript the form renders and validates but cannot run, because the query is made from the browser and there is no server-side counterpart for it.</p>
@@ -3454,7 +3471,7 @@ ON DUPLICATE KEY UPDATE
                 VALUES(bodytext), bodytext);
 
 INSERT INTO tt_content (uid, pid, tstamp, crdate, sys_language_uid, l18n_parent, l10n_source, CType, header, bodytext, pi_flexform, colPos, sorting, hidden, deleted)
-VALUES (9231, 9004, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 9227, 9227, 'nrbrowserai_formassistant', 'Wetterabfrage', '',
+VALUES (9231, 9004, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 9227, 9227, 'nrbrowserai_formassistant', '', '',
 '<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <T3FlexForms>
     <data>
@@ -3513,7 +3530,7 @@ VALUES (9232, 9004, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 9228, 9228, 'html', '
   </ul>
   <p style="max-width: 720px;">Nötig sind auf Ihrer Seite eine Formulardefinition, eine Datenquelle, die der Browser aufrufen darf, und je ein Satz pro Feld, was es bedeutet. Der letzte Punkt fehlt meistens &mdash; und er ist zugleich der, der das Formular auch für Menschen besser macht, nicht nur für Modelle.</p>
 
-  <h3 class="h5 fw-bold mt-4 mb-2">Was es bewusst nicht tut</h3>
+  <h2 class="h4 fw-bold mt-5 mb-3">Was es bewusst nicht tut</h2>
   <p style="max-width: 720px;">Der Satz über dem Formular ist eine Zusammenfassung, nicht das Ergebnis. Ein kleines Modell auf dem Gerät schreibt ihn aus der Abfrageantwort und hält ihn kurz; was die Datenquelle tatsächlich geliefert hat, steht in den Tabellen &mdash; die sind zu lesen, sobald es auf eine Zahl ankommt. Scheitert der Formulierungsaufruf, bleiben die Tabellen stehen und es wird nichts gesagt statt etwas geraten.</p>
   <p style="max-width: 720px;">Eine Anfrage löst höchstens vier Abfragen aus; darüber hinaus ist es keine Frage mehr. Und es erfindet keinen Ort: Der Name wird von der Suche der Datenquelle aufgelöst, der erste Treffer gewinnt, und der aufgelöste Name steht beim Ergebnis &mdash; ein falscher Treffer ist damit sichtbar statt still.</p>
   <p style="max-width: 720px;">Und ohne JavaScript wird das Formular zwar ausgegeben und geprüft, kann aber nicht abfragen, weil die Anfrage aus dem Browser heraus gestellt wird und es kein serverseitiges Gegenstück dazu gibt.</p>
@@ -3940,11 +3957,11 @@ INSERT INTO seed_expected_content VALUES
   -- the form is the plugin's content, so there is no fallback to substitute.
   (9225, 9004, NULL, 0,    0,  0, 0, 100, 'html',                      ''),
   (9226, 9004, NULL, 0,    0,  0, 0, 200, 'html',                      ''),
-  (9227, 9004, NULL, 0,    0,  0, 0, 300, 'nrbrowserai_formassistant', 'Weather query'),
+  (9227, 9004, NULL, 0,    0,  0, 0, 300, 'nrbrowserai_formassistant', ''),
   (9228, 9004, NULL, 0,    0,  0, 0, 400, 'html',                      ''),
   (9229, 9004, NULL, 1, 9225,  0, 0, 100, 'html',                      ''),
   (9230, 9004, NULL, 1, 9226,  0, 0, 200, 'html',                      ''),
-  (9231, 9004, NULL, 1, 9227,  0, 0, 300, 'nrbrowserai_formassistant', 'Wetterabfrage'),
+  (9231, 9004, NULL, 1, 9227,  0, 0, 300, 'nrbrowserai_formassistant', ''),
   (9232, 9004, NULL, 1, 9228,  0, 0, 400, 'html',                      '');
 
 -- --- Historical repair: content left behind on an abandoned pid ---------------
