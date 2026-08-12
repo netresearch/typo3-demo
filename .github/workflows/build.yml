@@ -122,6 +122,24 @@ jobs:
         env:
           COMPOSER_AUTH: '{"github-oauth": {"github.com": "${{ secrets.GITHUB_TOKEN }}"}, "gitlab-token": {"git.netresearch.de": "${{ secrets.GITLAB_COMPOSER_TOKEN }}"}}'
         run: |
+          # Pre-flight, because this step failed once with "Invalid credentials"
+          # against git.netresearch.de while the `build` job resolved the very
+          # same package from the very same URL in the same run. Structure and
+          # lengths only — never a value.
+          python3 - <<'PY'
+          import json, os, sys
+          raw = os.environ.get('COMPOSER_AUTH', '')
+          print(f'COMPOSER_AUTH present: {bool(raw)}, length {len(raw)}')
+          try:
+              d = json.loads(raw)
+          except Exception as e:
+              print(f'::error::COMPOSER_AUTH is not valid JSON: {e.__class__.__name__}')
+              sys.exit(1)
+          for scheme, hosts in d.items():
+              for host, value in hosts.items():
+                  print(f'  {scheme} / {host}: {len(value)} characters')
+          PY
+
           docker buildx bake --file docker-bake.hcl web \
             --set web.platform=linux/amd64 \
             --set web.cache-to= \
