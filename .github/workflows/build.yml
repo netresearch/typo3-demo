@@ -183,10 +183,20 @@ jobs:
           docker compose cp caddy:/data/caddy/pki/authorities/local/root.crt "$RUNNER_TEMP/caddy-root.crt"
           test -s "$RUNNER_TEMP/caddy-root.crt"
 
+      # `grep -qi typo3` alone accepts the TYPO3 *exception* page, whose title
+      # contains the word — so a site broken badly enough to throw on every
+      # request passed this check and only surfaced later as a healthcheck
+      # timeout with no message. A broken TypoScript meta tag did exactly that.
       - name: Verify TYPO3 responds
         run: |
           for i in $(seq 1 30); do
-            if curl -sSfL --proto '=https' --proto-redir '=https' --cacert "$RUNNER_TEMP/caddy-root.crt" https://localhost 2>/dev/null | grep -qi "typo3"; then
+            body=$(curl -sSfL --proto '=https' --proto-redir '=https' --cacert "$RUNNER_TEMP/caddy-root.crt" https://localhost 2>/dev/null || true)
+            if printf '%s' "$body" | grep -qiE '<title>[^<]*TYPO3 Exception'; then
+              echo "ERROR: TYPO3 answers with an exception page."
+              printf '%s' "$body" | grep -oiE '(exception|message)[^<]{0,200}' | head -5
+              exit 1
+            fi
+            if printf '%s' "$body" | grep -qi "typo3"; then
               echo "TYPO3 is responding."
               exit 0
             fi

@@ -47,7 +47,12 @@ page {
         og:type.attribute = property
         og:site_name.data = site:websiteTitle
         og:site_name.attribute = property
+        # posixFormatted() returns the site's locale verbatim — "en_US.UTF-8" —
+        # and Open Graph wants "en_US". Stripping the charset is a no-op for a
+        # locale that carries none.
         og:locale.data = sitelanguage:locale
+        og:locale.replacement.10.search = .UTF-8
+        og:locale.replacement.10.replace =
         og:locale.attribute = property
 
         # site:base is "/" here (TYPO3_SITE_BASE), so it cannot build the
@@ -58,12 +63,16 @@ page {
         og:image.data = getIndpEnv:TYPO3_SITE_URL
         og:image.noTrimWrap = ||fileadmin/user_upload/images/netresearch-typo3-demo.png|
         og:image.attribute = property
-        og:image:width = 2693
-        og:image:width.attribute = property
-        og:image:height = 851
-        og:image:height.attribute = property
-        og:image:alt = Netresearch TYPO3 Demo
-        og:image:alt.attribute = property
+
+        # No og:image:width/height/alt. They are *sub*-properties of og:image in
+        # OpenGraphMetaTagManager's allow-list, and TypoScript cannot reach a
+        # sub-property: RequestHandler::generateMetaTagHtml() always calls
+        # setMetaTag(..., subProperties: [], ...). Declaring them as top-level
+        # keys makes AbstractMetaTagManager throw UnexpectedValueException
+        # (1524209729) — an uncaught exception during page generation, so every
+        # page becomes the TYPO3 exception page and the container healthcheck
+        # fails. That is exactly what the first version of this commit did.
+        # They can only come from the page's own og_image field via EXT:seo.
 
         # No og:url: the correct value is the canonical URL, which EXT:seo
         # already emits as <link rel="canonical">. TYPO3_REQUEST_URL would
