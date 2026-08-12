@@ -17,9 +17,12 @@
  * The guard is not pointless: AfterFileMetaDataCreatedEvent can fire during a
  * frontend request when a file is indexed on demand, and the listener cannot
  * otherwise tell the contexts apart — so it conservatively refuses everywhere.
- * This patch keeps that protection exactly where it belongs and drops it where
- * it does not: the flag is enforced only IN a frontend request. Backend uploads
- * and CLI runs proceed.
+ * This patch keeps that protection where it belongs and narrows the rest: the
+ * listener runs only in an actual BACKEND request, which is what an upload is.
+ * The first version said "not a frontend request", which also covered the CLI --
+ * and nr_repurpose's job saves rendered PNGs to FAL, so every save called the
+ * vision model. The listener has no try/catch, so one failure took nine of ten
+ * artifacts with it.
  *
  * No visitor-facing request gains a synchronous API call from this, which is
  * the reason the demo sets the flag to 0 in the first place.
@@ -40,19 +43,26 @@ $needle = "        if (!\$this->configurationService->generateAltTextInFrontend(
     . "            return;\n"
     . "        }";
 
-$replacement = "        // Patched at build time (docker/web/patch-ai-filemetadata.php): enforce the\n"
-    . "        // frontend flag only inside a frontend request, so a backend upload or a CLI\n"
-    . "        // run still generates while a visitor's request never triggers an API call.\n"
+$replacement = "        // Patched at build time (docker/web/patch-ai-filemetadata.php): run only in\n"
+    . "        // an actual BACKEND request, which is what a file upload is.\n"
+    . "        //\n"
+    . "        // The first version of this patch asked for \"not a frontend request\", which\n"
+    . "        // also let it run on the CLI. That broke nr_repurpose: its job saves rendered\n"
+    . "        // PNGs to FAL, each save fired this listener, and the listener has no\n"
+    . "        // try/catch at all - so a failed vision call (\"Invalid base64 image_url\")\n"
+    . "        // propagated straight into the artifact generator and killed nine of ten\n"
+    . "        // artifacts. Requiring a backend request keeps the upload feature and takes\n"
+    . "        // the listener back out of every CLI job that touches an image.\n"
     . "        \$request = \$GLOBALS['TYPO3_REQUEST'] ?? null;\n"
-    . "        \$isFrontend = \$request instanceof \\Psr\\Http\\Message\\ServerRequestInterface\n"
-    . "            && \\TYPO3\\CMS\\Core\\Http\\ApplicationType::fromRequest(\$request)->isFrontend();\n"
-    . "        if (\$isFrontend && !\$this->configurationService->generateAltTextInFrontend()) {\n"
+    . "        \$isBackendRequest = \$request instanceof \\Psr\\Http\\Message\\ServerRequestInterface\n"
+    . "            && \\TYPO3\\CMS\\Core\\Http\\ApplicationType::fromRequest(\$request)->isBackend();\n"
+    . "        if (!\$isBackendRequest && !\$this->configurationService->generateAltTextInFrontend()) {\n"
     . "            return;\n"
     . "        }";
 
 if (strpos($source, $needle) !== false) {
     file_put_contents($file, str_replace($needle, $replacement, $source));
-    echo "patch-ai-filemetadata: frontend guard now applies only to frontend requests\n";
+    echo "patch-ai-filemetadata: listener now runs only in a backend request\n";
 } else {
     echo "patch-ai-filemetadata: guard not found (already patched or upstream changed)\n";
 }
