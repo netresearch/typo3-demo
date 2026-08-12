@@ -92,6 +92,29 @@ page {
     # Nav link opacity is now handled via $navbar-light-color SCSS variable in settings.yaml.
     # NOTE: key 99 is used by Bootstrap Package GTM set (has if.isTrue condition), use 199
     headerData {
+        # Structured data. The page carried none at all, so an answer engine had
+        # to infer what this site is from its navigation.
+        #
+        # The dynamic values arrive through `replacement`, NOT through
+        # `insertData`. insertData hands everything between `{` and `}` to
+        # getData() — and JSON is made of braces, so it would shred the block.
+        # `replacement.N.replace` runs through stdWrapValue()
+        # (ContentObjectRenderer::stdWrap_replacement), which is what makes
+        # `replace.data` work here.
+        #
+        # Kept on one line per node on purpose: a line consisting only of `)`
+        # would end the TypoScript value block early.
+        300 = TEXT
+        300.value (
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"###SITE_URL####website","url":"###SITE_URL###","name":"Netresearch TYPO3 Demo","inLanguage":"###LANG###","description":"A live TYPO3 v14 instance demonstrating the Netresearch extension suite. Each extension has its own page with a worked, runnable example.","publisher":{"@id":"https://www.netresearch.de/#organization"}},{"@type":"Organization","@id":"https://www.netresearch.de/#organization","name":"Netresearch DTT GmbH","url":"https://www.netresearch.de/","logo":{"@type":"ImageObject","url":"###SITE_URL###fileadmin/user_upload/images/netresearch-typo3-demo.png","width":2693,"height":851}}]}</script>
+        )
+        300.replacement {
+            10.search = ###SITE_URL###
+            10.replace.data = getIndpEnv:TYPO3_SITE_URL
+            20.search = ###LANG###
+            20.replace.data = sitelanguage:locale:languageCode
+        }
+
         199 = TEXT
         199.value (
             <style>
@@ -204,6 +227,30 @@ config {
             }
             </style>
         )
+    }
+[END]
+
+#
+# Browser AI form assistant (page 9004): describe the plugin and the chain it
+# demonstrates, so an answer engine can state what this is without parsing prose.
+# The four HowTo steps are the four steps the page itself lists under "How it
+# works" — one source, so the page and its structured data cannot drift.
+#
+# Same brace-safe construction as the site-wide block above: placeholders plus
+# `replacement`, never insertData.
+#
+[traverse(page, "uid") == 9004]
+    page.headerData {
+        301 = TEXT
+        301.value (
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"SoftwareApplication","@id":"###SITE_URL###extensions/browser-ai-form-assistant#software","name":"Browser AI form assistant","alternateName":"netresearch/nr-browser-ai","applicationCategory":"BrowserApplication","applicationSubCategory":"TYPO3 extension","operatingSystem":"Chrome 148 or newer with the on-device model available","softwareRequirements":"Chrome built-in AI (Prompt API)","url":"###SITE_URL###extensions/browser-ai-form-assistant","codeRepository":"https://github.com/netresearch/t3x-nr-browser-ai","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"},"author":{"@id":"https://www.netresearch.de/#organization"},"featureList":["Fills a parameter-rich form from a single sentence","Derives the parameters on the visitor's device, with no API key and no server call","Generates its JSON Schema from the form definition rather than by hand","Registers the same form as a tool for an in-browser agent via the model context"],"description":"A TYPO3 plugin that turns one sentence into the parameters of a form with seventy controls, runs it, and shows the result. The sentence never leaves the device: Chrome's built-in model produces JSON constrained by a schema generated from the form definition, and only the finished query goes out."},{"@type":"HowTo","@id":"###SITE_URL###extensions/browser-ai-form-assistant#howto","name":"How a sentence becomes a filled-in form and a real query","inLanguage":"###LANG###","step":[{"@type":"HowToStep","position":1,"name":"Intent","text":"The sentence goes to the on-device model together with the form's own JSON Schema. The schema is a constraint rather than a suggestion: the model answers with JSON that fits it."},{"@type":"HowToStep","position":2,"name":"Structured output","text":"Those arguments are checked against the schema again before anything is touched. A value outside a field's option set, or a field the form does not have, stops the call and changes nothing."},{"@type":"HowToStep","position":3,"name":"Tool call","text":"The values are written into the visible controls, so what the model understood is on screen in the same controls anybody would use by hand, and can be corrected there."},{"@type":"HowToStep","position":4,"name":"Real action","text":"The form is read back in full, the model having set only what the sentence mentioned, and the query runs."}]}]}</script>
+        )
+        301.replacement {
+            10.search = ###SITE_URL###
+            10.replace.data = getIndpEnv:TYPO3_SITE_URL
+            20.search = ###LANG###
+            20.replace.data = sitelanguage:locale:languageCode
+        }
     }
 [END]
 
