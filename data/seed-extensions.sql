@@ -64,6 +64,28 @@ INSERT IGNORE INTO pages (uid, pid, tstamp, crdate, title, slug, doktype, is_sit
 VALUES (101, 1, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'Extensions', '/extensions', 1, 0, '', 525, 0, 0);
 
 -- =============================================================================
+-- Let the home page be indexed
+-- =============================================================================
+-- Removing `page.meta.robots = NOINDEX,NOFOLLOW` from the site set was
+-- necessary and not sufficient. EXT:seo emits the tag from the page record
+-- itself — MetaTagGenerator:136-141 writes `robots` whenever no_index or
+-- no_follow is set — and the Introduction Package ships its root page with
+-- both, so the home page kept declaring noindex,nofollow with no TypoScript
+-- involved.
+--
+-- Measured on data/db.sql.gz: 4 of 110 pages carry the pair, and none of them
+-- has a translation. Only uid 1 is cleared here, because only uid 1 is the
+-- site's rootPageId and therefore the page a search engine reaches first. The
+-- other three — 100 "Tab", 155 "Demo Project", 156 "Home Syncon" — are demo
+-- scaffolding whose exclusion costs findability nothing, so they keep it until
+-- somebody decides otherwise.
+--
+-- Both columns are named in the WHERE clause, which makes this a no-op after it
+-- has run once and leaves an editor's later decision to hide the page alone.
+UPDATE pages SET no_index = 0, no_follow = 0
+ WHERE uid = 1 AND no_index = 1 AND no_follow = 1;
+
+-- =============================================================================
 -- RTE CKEditor Image
 -- =============================================================================
 INSERT IGNORE INTO pages (uid, pid, tstamp, crdate, title, slug, doktype, sorting, hidden, deleted)

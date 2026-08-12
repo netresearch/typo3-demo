@@ -21,10 +21,71 @@ lib.contentBlock {
 }
 
 page {
+    # Everything in here is a FALLBACK, never a policy. EXT:seo fills
+    # description, og:* and twitter:* from the page's own fields and runs
+    # first; TypoScript meta tags default to `replace = 0`, which means they
+    # are used only when nothing was set before (see Feature-81464). So a page
+    # that carries its own description or social image keeps it, and pages that
+    # carry nothing stop being nameless.
     meta {
-        description = Netresearch TYPO3 Demo
-        author = Netresearch DTM GmbH
-        robots = NOINDEX,NOFOLLOW
+        description.data = page:abstract // page:subtitle
+        description.ifEmpty = A live TYPO3 v14 instance demonstrating the Netresearch extension suite — each extension on its own page, with a worked example you can run.
+        author = Netresearch DTT GmbH
+
+        # `robots` is deliberately absent. It used to read NOINDEX,NOFOLLOW,
+        # which made this instance invisible and every other SEO setting inert.
+        # EXT:seo derives the tag from each page's own "no_index"/"no_follow"
+        # fields, so a single page can still be withheld without a site-wide
+        # switch — and the default (index, follow) now applies.
+
+        og:title.data = page:title
+        og:title.attribute = property
+        og:description.data = page:abstract // page:subtitle
+        og:description.ifEmpty = A live TYPO3 v14 instance demonstrating the Netresearch extension suite — each extension on its own page, with a worked example you can run.
+        og:description.attribute = property
+        og:type = website
+        og:type.attribute = property
+        og:site_name.data = site:websiteTitle
+        og:site_name.attribute = property
+        # posixFormatted() returns the site's locale verbatim — "en_US.UTF-8" —
+        # and Open Graph wants "en_US". Stripping the charset is a no-op for a
+        # locale that carries none.
+        og:locale.data = sitelanguage:locale
+        og:locale.replacement.10.search = .UTF-8
+        og:locale.replacement.10.replace =
+        og:locale.attribute = property
+
+        # site:base is "/" here (TYPO3_SITE_BASE), so it cannot build the
+        # absolute URL Open Graph requires; TYPO3_SITE_URL can.
+        # The logo is 2693x851 (3.16:1) where a preview card wants 1.91:1, so
+        # it will be cropped. Good enough as a fallback, and a purpose-made
+        # 1200x630 card should replace it — that is a design task, not config.
+        og:image.data = getIndpEnv:TYPO3_SITE_URL
+        og:image.noTrimWrap = ||fileadmin/user_upload/images/netresearch-typo3-demo.png|
+        og:image.attribute = property
+
+        # No og:image:width/height/alt. They are *sub*-properties of og:image in
+        # OpenGraphMetaTagManager's allow-list, and TypoScript cannot reach a
+        # sub-property: RequestHandler::generateMetaTagHtml() always calls
+        # setMetaTag(..., subProperties: [], ...). Declaring them as top-level
+        # keys makes AbstractMetaTagManager throw UnexpectedValueException
+        # (1524209729) — an uncaught exception during page generation, so every
+        # page becomes the TYPO3 exception page and the container healthcheck
+        # fails. That is exactly what the first version of this commit did.
+        # They can only come from the page's own og_image field via EXT:seo.
+
+        # No og:url: the correct value is the canonical URL, which EXT:seo
+        # already emits as <link rel="canonical">. TYPO3_REQUEST_URL would
+        # carry query parameters and be wrong more often than right.
+
+        twitter:card = summary_large_image
+        twitter:title.data = page:title
+        twitter:description.data = page:abstract // page:subtitle
+        twitter:description.ifEmpty = A live TYPO3 v14 instance demonstrating the Netresearch extension suite — each extension on its own page, with a worked example you can run.
+        twitter:image.data = getIndpEnv:TYPO3_SITE_URL
+        twitter:image.noTrimWrap = ||fileadmin/user_upload/images/netresearch-typo3-demo.png|
+
+        theme-color = #2F99A4
     }
 
     # CSS overrides for BS4→BS5 behavioral changes with no SCSS/settings equivalent.
@@ -102,7 +163,12 @@ config {
     compressCss = 1
     concatenateJs = 1
     concatenateCss = 1
-    cache_period = 86400
+    # One hour, not a day. This instance is redeployed several times a day and
+    # the deploy flushes the TYPO3 cache — it cannot flush the copy already
+    # sitting in a visitor's browser. At 86400 someone who looked yesterday
+    # was shown yesterday's demo; the Cache-Control header measured on the
+    # live site was max-age=86328.
+    cache_period = 3600
     sendCacheHeaders = 1
     contentObjectExceptionHandler = 1
 }
