@@ -500,6 +500,34 @@ jobs:
           echo "  imagick and GD both encode WebP and AVIF.\n";
           '
 
+      # GFX.imageFileConversionFormats decides the target format of every
+      # processed image. It is set in the entrypoint rather than in settings.php,
+      # which is written on first boot only — so nothing in the repository shows
+      # whether the running instance actually got it. Assert the rendered page.
+      - name: Verify processed images are delivered as WebP
+        run: |
+          html=$(curl -sSfL --proto '=https' --proto-redir '=https' --cacert "$RUNNER_TEMP/caddy-root.crt" https://localhost)
+          printf '%s' "$html" > /tmp/webp-check.html
+          python3 - <<'PY'
+          import re, sys
+          html = open('/tmp/webp-check.html', encoding='utf-8', errors='replace').read()
+          urls = {p.strip().split(' ')[0]
+                  for m in re.finditer(r'(?:src|srcset)="([^"]+)"', html)
+                  for p in m.group(1).split(',')}
+          processed = sorted(u for u in urls if '_processed_' in u)
+          # svg is exempt from the conversion on purpose: rasterising a vector
+          # is a downgrade, so those keep their extension.
+          offenders = [u for u in processed if not u.lower().endswith(('.webp', '.svg'))]
+          print(f'processed images on the home page: {len(processed)}')
+          if not processed:
+              print('::error::no processed image on the home page — this check would be vacuous')
+              sys.exit(1)
+          for u in offenders[:10]:
+              print(f'::error::processed image is not webp: {u}')
+          sys.exit(1 if offenders else 0)
+          PY
+          echo "Processed images are WebP."
+
       - name: Cleanup
         if: always()
         run: docker compose down -v
