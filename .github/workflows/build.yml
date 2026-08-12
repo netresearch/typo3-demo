@@ -179,6 +179,48 @@ jobs:
           docker compose logs web
           exit 1
 
+      # The findability settings live in TypoScript and in nginx, and neither is
+      # visible to any static check — a typo in a `page.meta` key or a broken
+      # `location` block produces a page that still renders and quietly says
+      # nothing about itself. Assert them on the real render.
+      - name: Verify the page is indexable and describes itself
+        run: |
+          get() { curl -sSfL --proto '=https' --proto-redir '=https' --cacert "$RUNNER_TEMP/caddy-root.crt" "$1"; }
+          html=$(get https://localhost)
+          fail() { echo "ERROR: $1"; printf '%s' "$html" | grep -oiE '<meta[^>]+(name|property)="(robots|description|og:[a-z:]+|twitter:[a-z]+|theme-color)"[^>]*>' || echo '(no matching meta tags at all)'; exit 1; }
+
+          printf '%s' "$html" | grep -qiE '<meta[^>]+name="robots"[^>]+content="[^"]*noindex' \
+            && fail 'the page still declares itself NOINDEX'
+
+          for tag in 'name="description"' 'property="og:title"' 'property="og:description"' 'property="og:image"' 'property="og:site_name"' 'name="twitter:card"' 'name="theme-color"'; do
+            printf '%s' "$html" | grep -qiE "<meta[^>]+$tag" || fail "missing meta tag: $tag"
+          done
+
+          # A description that is only the site name is what this replaced; it
+          # must not come back through an empty fallback chain.
+          desc=$(printf '%s' "$html" | grep -oiE '<meta[^>]+name="description"[^>]*>' | head -1)
+          case "$desc" in *'content="Netresearch TYPO3 Demo"'*) fail "description fell back to the bare site name: $desc";; esac
+
+          # og:image must be absolute — a relative value is silently useless.
+          printf '%s' "$html" | grep -oiE '<meta[^>]+property="og:image"[^>]*>' | grep -q 'content="https\?://' \
+            || fail 'og:image is not an absolute URL'
+
+          echo "Meta tags present and indexable."
+
+      - name: Verify robots.txt and llms.txt are served
+        run: |
+          for path in robots.txt llms.txt; do
+            body=$(curl -sSfL --proto '=https' --proto-redir '=https' --cacert "$RUNNER_TEMP/caddy-root.crt" "https://localhost/$path") \
+              || { echo "ERROR: /$path did not respond"; exit 1; }
+            ctype=$(curl -sSfLI --proto '=https' --proto-redir '=https' --cacert "$RUNNER_TEMP/caddy-root.crt" "https://localhost/$path" | grep -i '^content-type:')
+            echo "/$path -> $ctype"
+            case "$ctype" in *'text/plain'*) : ;; *) echo "ERROR: /$path is not text/plain"; exit 1;; esac
+            printf '%s' "$body" | grep -q . || { echo "ERROR: /$path is empty"; exit 1; }
+          done
+          curl -sSfL --proto '=https' --proto-redir '=https' --cacert "$RUNNER_TEMP/caddy-root.crt" https://localhost/robots.txt | grep -q '^Sitemap: https://' \
+            || { echo 'ERROR: robots.txt names no sitemap'; exit 1; }
+          echo "robots.txt and llms.txt served."
+
       # The seed carries no `pages` translation, which is exactly the state in
       # which the core language menu marks German unavailable and bootstrap_package
       # would render a dead span. The site runs fallbackType: fallback, so the link
