@@ -1344,6 +1344,42 @@ WHERE s.deleted = 0
   AND s.identifier = (SELECT api_key FROM tx_nrllm_provider WHERE uid = 1 LIMIT 1)
   AND (SELECT api_key FROM tx_nrllm_provider WHERE uid = 1 LIMIT 1) <> '';
 
+-- 3c2) Discard the leftover workspace (NEXT-127).
+--
+--      scripts/export-seed-sanitized.sh already strips workspace records from
+--      the dump, and says why it does not act on the live instance:
+--      "Publishing or discarding a workspace is an editorial decision on the
+--      live instance; a seed for a fresh install must carry neither."
+--      That decision has now been made: discard.
+--
+--      What it fixes: page 119 "Daten" is a sysfolder that exists only in
+--      workspace 1 and was never published. Its rootline is NOT structurally
+--      broken -- 119 -> 1 -> 0 resolves -- but the page has no live
+--      counterpart, so RootlineUtility answers "Broken rootline" in workspace
+--      0 and the localization wizard fails on it.
+--
+--      Measured before writing this (2026-08-11): 34 pages, 21 tt_content and
+--      1 sys_workspace row, all created 2026-03-27 between 09:28 and 12:51 by
+--      three users -- Bundesliga club pages and a "Mentions legales", i.e.
+--      material from a demo or training session.
+--
+--      The table list is explicit rather than derived from information_schema:
+--      a static seed file cannot loop, and the three tables above are the ones
+--      that actually carry rows here. sys_refindex, sys_preview and
+--      be_users.workspace_id follow the export script, which documents why each
+--      matters. If another table ever grows workspace rows, the guard at the
+--      end of this file reports it instead of leaving it unnoticed.
+--
+--      Idempotent by construction: a DELETE with this WHERE is a no-op once the
+--      rows are gone.
+DELETE FROM pages       WHERE t3ver_wsid <> 0;
+DELETE FROM tt_content  WHERE t3ver_wsid <> 0;
+DELETE FROM sys_refindex WHERE workspace <> 0;
+DELETE FROM sys_preview;
+UPDATE be_users SET workspace_id = 0 WHERE workspace_id <> 0;
+DELETE FROM sys_workspace_stage WHERE 1;
+DELETE FROM sys_workspace WHERE 1;
+
 -- 3d) Identity for the nr_repurpose generation job (release 0.4.2).
 --
 --     The job runs in a Messenger consumer, where TYPO3 boots an
@@ -3978,6 +4014,16 @@ SELECT 'SEED-PROBLEM: be_users 992 nr_repurpose_technical missing or foreign' FR
 UNION ALL
 SELECT 'SEED-PROBLEM: tx_nrllm_model 90 text-embedding-3-small missing or foreign' FROM DUAL
  WHERE NOT EXISTS (SELECT 1 FROM tx_nrllm_model WHERE uid = 90 AND identifier = 'text-embedding-3-small' AND deleted = 0)
+UNION ALL
+-- Workspace records survived the purge in step 3c2. Either a table outside the
+-- explicit list above grew them, or something re-created a workspace between
+-- the purge and here. Both mean the "Broken rootline" of NEXT-127 can come
+-- back, so say so rather than let it reappear quietly.
+SELECT CONCAT('SEED-PROBLEM: ', n, ' workspace record(s) survived the purge')
+  FROM (SELECT (SELECT COUNT(*) FROM pages      WHERE t3ver_wsid <> 0)
+             + (SELECT COUNT(*) FROM tt_content WHERE t3ver_wsid <> 0)
+             + (SELECT COUNT(*) FROM sys_workspace) AS n) w
+ WHERE n > 0
 UNION ALL
 -- Every versioned '*-chat-latest' alias OpenAI ever served to this account is
 -- deprecated and answers 404, so a chat model still carrying one is a dead
