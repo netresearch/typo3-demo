@@ -34,15 +34,23 @@ COPY docker/web/patch-ai-filemetadata.php /tmp/patch-ai-filemetadata.php
 RUN php /tmp/patch-ai-filemetadata.php && rm -f /tmp/patch-ai-filemetadata.php
 
 FROM php:8.5-fpm-alpine@sha256:9dc81f4086ea5402227a6bcc489b04b4baba12394624d9621faa92ed812fb8ee AS runtime
+# nr_image_optimize picks its driver in ImageManagerFactory: imagick if loaded,
+# GD otherwise. Both are built with WebP and AVIF here — imagick so the module
+# reports its primary driver, GD so the fallback is not a dead end. AVIF reaches
+# ImageMagick through the HEIF coder, hence imagemagick-heic. Without a working
+# AVIF delegate ImageMagick writes empty .avif files instead of failing.
 RUN apk add --no-cache --virtual .build-deps \
-        freetype-dev libjpeg-turbo-dev libpng-dev libzip-dev icu-dev linux-headers $PHPIZE_DEPS \
+        freetype-dev libjpeg-turbo-dev libpng-dev libzip-dev icu-dev linux-headers \
+        libwebp-dev libavif-dev imagemagick-dev $PHPIZE_DEPS \
     && apk add --no-cache \
-        nginx mariadb-client openssl freetype libjpeg-turbo libpng libzip icu-libs imagemagick \
+        nginx mariadb-client openssl freetype libjpeg-turbo libpng libzip icu-libs \
+        imagemagick imagemagick-webp imagemagick-heic libwebp libavif \
+        optipng gifsicle jpegoptim \
         ffmpeg poppler-utils chromium font-liberation nodejs \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp --with-avif \
     && docker-php-ext-install -j$(nproc) gd intl mysqli pdo_mysql zip exif \
-    && pecl install redis \
-    && docker-php-ext-enable redis \
+    && pecl install redis imagick \
+    && docker-php-ext-enable redis imagick \
     && apk del .build-deps
 RUN { \
     echo 'opcache.memory_consumption=256'; \
