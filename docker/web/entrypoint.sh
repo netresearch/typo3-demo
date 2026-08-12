@@ -187,6 +187,50 @@ if [ -f config/system/settings.php ]; then
     ' || echo "WARNING: failed to write additional.php" >&2
 fi
 
+# Serve processed images as WebP. TYPO3 14 decides the target format of every
+# processed image from GFX.imageFileConversionFormats (Feature 93981); the core
+# default keeps jpg as jpg, png as png and turns everything else into png, which
+# is why this demo delivered no modern format at all.
+#
+# Only svg is exempt, because rasterising a vector is a downgrade. Everything
+# else - jpg, png, pdf previews, backend thumbnails - becomes webp.
+#
+# Measured on a local 14.3.6 with one of this demo images: 94899 bytes as png,
+# 15820 as webp. avif was tried too and came out at 18104 bytes, so it is bigger
+# than webp at the core default quality of 85 and buys nothing here.
+#
+# Not written into the settings.php heredoc above: that one runs only on first
+# boot, so an instance that already exists would never see it.
+#
+# This needs the encoders in the image (see the Dockerfile); without them
+# ImageMagick fails the conversion instead of producing anything.
+if [ -f config/system/settings.php ]; then
+    php -r '
+        $f = "config/system/additional.php";
+        $begin = "// >>> gfx image conversion (managed by entrypoint, do not edit this block)";
+        $end   = "// <<< gfx image conversion";
+        // No apostrophes in these comments: the whole block is a php -r
+        // argument inside single quotes, and one would end the shell string.
+        $block = $begin . "\n"
+            . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"GFX\"][\"imageFileConversionFormats\"] = [\"svg\" => \"svg\", \"default\" => \"webp\"];\n"
+            . $end;
+        $existing = is_file($f) ? (string) file_get_contents($f) : "";
+        if (strpos($existing, "<?php") === false) {
+            $existing = "<?php\n" . ($existing === "" ? "" : $existing . "\n");
+        }
+        $b = strpos($existing, $begin);
+        if ($b !== false) {
+            $e = strpos($existing, $end, $b);
+            $existing = $e !== false
+                ? substr($existing, 0, $b) . substr($existing, $e + strlen($end))
+                : substr($existing, 0, $b);
+        }
+        $existing = rtrim($existing, "\n") . "\n\n" . $block . "\n";
+        file_put_contents($f, $existing);
+        echo "additional.php: processed images are converted to webp." . PHP_EOL;
+    ' || echo "WARNING: failed to write the GFX block to additional.php" >&2
+fi
+
 # Configure nr_ai_search (RAG frontend Search + Chat) and lochmueller/index.
 # Same managed-block approach as nr_mcp_agent above: a single marked block is
 # (re)written each boot; any other additional.php content is preserved.
