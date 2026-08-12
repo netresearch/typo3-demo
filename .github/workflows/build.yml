@@ -239,6 +239,56 @@ jobs:
 
           echo "Meta tags present and indexable."
 
+      # The JSON-LD is assembled in TypoScript, where a stray quote or an
+      # unreplaced placeholder produces a block that still *looks* present and
+      # is silently worthless to every consumer. So parse it, rather than grep
+      # for the script tag.
+      - name: Verify the structured data parses
+        run: |
+          get() { curl -sSfL --proto '=https' --proto-redir '=https' --cacert "$RUNNER_TEMP/caddy-root.crt" "$1"; }
+          get https://localhost > /tmp/home.html
+          get https://localhost/extensions/browser-ai-form-assistant > /tmp/plugin.html
+          python3 - <<'PY'
+          import json, re, sys
+
+          expected = {
+              '/tmp/home.html':   {'WebSite', 'Organization'},
+              '/tmp/plugin.html': {'SoftwareApplication', 'HowTo'},
+          }
+          failed = False
+          for path, want in expected.items():
+              html = open(path, encoding='utf-8', errors='replace').read()
+              blocks = re.findall(
+                  r'<script[^>]+type="application/ld\+json"[^>]*>(.*?)</script>', html, re.S)
+              if not blocks:
+                  print(f'::error::{path}: no JSON-LD block at all'); failed = True; continue
+              seen = set()
+              for i, raw in enumerate(blocks, 1):
+                  if '###' in raw:
+                      print(f'::error::{path} block {i}: an unreplaced ### placeholder survived')
+                      failed = True
+                  try:
+                      data = json.loads(raw)
+                  except Exception as e:
+                      print(f'::error::{path} block {i}: invalid JSON — {e}')
+                      print(raw[:400]); failed = True; continue
+                  nodes = data.get('@graph') or [data]
+                  for n in nodes:
+                      seen.add(n.get('@type'))
+                      for key in ('@id', 'url'):
+                          v = n.get(key)
+                          if isinstance(v, str) and v.startswith('/'):
+                              print(f'::error::{path}: {n.get("@type")}.{key} is relative: {v}')
+                              failed = True
+              missing = want - seen
+              print(f'{path}: {len(blocks)} block(s), types {sorted(t for t in seen if t)}')
+              if missing:
+                  print(f'::error::{path}: missing expected type(s) {sorted(missing)}')
+                  failed = True
+          sys.exit(1 if failed else 0)
+          PY
+          echo "Structured data parses and carries the expected types."
+
       - name: Verify robots.txt and llms.txt are served
         run: |
           for path in robots.txt llms.txt; do
