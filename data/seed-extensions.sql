@@ -113,6 +113,26 @@ UPDATE tt_content
  WHERE uid IN (225, 226) AND CType = 'text' AND bodytext LIKE '%</strong></h4>%';
 
 -- =============================================================================
+-- Home page outline: one h1, and no skipped level under it
+-- =============================================================================
+-- The "Your advantages" card group rendered its own header as an h1 — a second
+-- one on a page that already has the page title — and its cards as h4 directly
+-- underneath, skipping h3. Both levels are data on the same record:
+-- bootstrap_package's CardGroup template emits <h{data.subitems_header_layout}>
+-- for the cards, so no template override is involved.
+--
+-- Only uid 290. Eight other card groups carry subitems_header_layout = 4 on
+-- other pages, where the surrounding outline is different and a blanket change
+-- would be a guess rather than a fix.
+--
+-- The old values are named in the WHERE clauses, so both statements are no-ops
+-- once applied and leave an editor's own choice alone.
+UPDATE tt_content SET header_layout = 2
+ WHERE uid = 290 AND pid = 1 AND CType = 'card_group' AND header_layout = 1;
+UPDATE tt_content SET subitems_header_layout = 3
+ WHERE uid = 290 AND pid = 1 AND CType = 'card_group' AND subitems_header_layout = 4;
+
+-- =============================================================================
 -- RTE CKEditor Image
 -- =============================================================================
 INSERT IGNORE INTO pages (uid, pid, tstamp, crdate, title, slug, doktype, sorting, hidden, deleted)
