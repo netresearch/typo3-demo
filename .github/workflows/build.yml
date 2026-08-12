@@ -237,6 +237,25 @@ jobs:
           grep -oiE '<meta[^>]+property="og:image"[^>]*>' <<<"$html" | grep -q 'content="https\?://' \
             || fail 'og:image is not an absolute URL'
 
+          # …and it must actually exist. An og:image 404 is invisible on the
+          # page and only shows up as a blank card in somebody else's feed, so
+          # the URL is followed rather than trusted. The size is checked too:
+          # a preview wants 1.91:1, and the card is 1200x630.
+          img=$(grep -oiE '<meta[^>]+property="og:image"[^>]*>' <<<"$html" | grep -oE 'content="[^"]+"' | head -1 | cut -d'"' -f2)
+          echo "og:image -> $img"
+          code=$(curl -s -o /tmp/og.bin -w '%{http_code}' --proto '=https' --proto-redir '=https' --cacert "$RUNNER_TEMP/caddy-root.crt" "$img")
+          [ "$code" = "200" ] || fail "og:image answered HTTP $code"
+          python3 - <<'PY'
+          import struct, sys
+          d = open('/tmp/og.bin', 'rb').read()
+          if d[:8] != b'\x89PNG\r\n\x1a\n':
+              print('::error::og:image is not a PNG'); sys.exit(1)
+          w, h = struct.unpack('>II', d[16:24])
+          print(f'og:image is {w}x{h}, ratio {w/h:.3f}')
+          if (w, h) != (1200, 630):
+              print(f'::error::expected 1200x630, got {w}x{h}'); sys.exit(1)
+          PY
+
           echo "Meta tags present and indexable."
 
       # The JSON-LD is assembled in TypoScript, where a stray quote or an
