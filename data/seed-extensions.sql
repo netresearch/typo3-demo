@@ -86,6 +86,33 @@ UPDATE pages SET no_index = 0, no_follow = 0
  WHERE uid = 1 AND no_index = 1 AND no_follow = 1;
 
 -- =============================================================================
+-- Footer headings: stop skipping a level
+-- =============================================================================
+-- The two footer columns wrote their titles as <h4> inside the RTE bodytext,
+-- and the last heading before them is an <h2>. Skipping h3 leaves anyone
+-- navigating by heading unable to tell whether the footer belongs to the
+-- section above it. They are not subsections of the page's last topic — they
+-- are separate blocks in a separate landmark — so h2 is the level, not h3.
+--
+-- The class keeps the appearance identical, which is the whole point of
+-- changing only the semantics. Measured on the live page rather than assumed:
+-- the h4 renders at 20px / weight 300 / margin-bottom 8px, and an h2 carrying
+-- `h4 mb-2` renders at 20px / weight 300 / 8px. <strong> stays inside so the
+-- visible emphasis is unchanged too.
+--
+-- Only these two records. tt_content 175 also holds an <h4>, on the "HTML
+-- elements" demo page, where it is the subject matter and must stay.
+--
+-- Matching on the old markup in the WHERE clause makes this a no-op once
+-- applied and leaves an editor's own rewrite alone.
+UPDATE tt_content
+   SET bodytext = REPLACE(bodytext, '<h4><strong>', '<h2 class="h4 mb-2"><strong>')
+ WHERE uid IN (225, 226) AND CType = 'text' AND bodytext LIKE '<h4><strong>%';
+UPDATE tt_content
+   SET bodytext = REPLACE(bodytext, '</strong></h4>', '</strong></h2>')
+ WHERE uid IN (225, 226) AND CType = 'text' AND bodytext LIKE '%</strong></h4>%';
+
+-- =============================================================================
 -- RTE CKEditor Image
 -- =============================================================================
 INSERT IGNORE INTO pages (uid, pid, tstamp, crdate, title, slug, doktype, sorting, hidden, deleted)
