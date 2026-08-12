@@ -282,6 +282,27 @@ jobs:
             || fail 'the German entry renders without a link (partial override not in effect?)'
           echo "Language switcher renders and links to /de/."
 
+      # The plugin's title sits inside the section "Try it" opens with an h2, so
+      # it has to be an h3 — otherwise the outline says the two are siblings
+      # when one contains the other. It only became settable in nr_browser_ai
+      # 0.7.0, and the value lives in a FlexForm inside the seed, where nothing
+      # else would notice it silently reverting to the h2 default.
+      - name: Verify the form assistant title is nested correctly
+        run: |
+          html=$(curl -sSfL --proto '=https' --proto-redir '=https' --cacert "$RUNNER_TEMP/caddy-root.crt" \
+                 https://localhost/extensions/browser-ai-form-assistant)
+          title=$(grep -oiE '<h[1-6][^>]*class="nr-browser-ai-form__title"[^>]*>' <<<"$html" | head -1)
+          if [ -z "$title" ]; then
+            echo "ERROR: the plugin rendered no title at all."
+            grep -oiE '<h[1-6][^>]*>' <<<"$html" | head -10
+            exit 1
+          fi
+          echo "rendered as: $title"
+          case "$title" in
+            '<h3'*) echo "Form assistant title is an h3, nested under its section." ;;
+            *) echo "ERROR: expected an h3, got: $title"; exit 1 ;;
+          esac
+
       - name: Cleanup
         if: always()
         run: docker compose down -v
