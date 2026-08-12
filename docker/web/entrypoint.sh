@@ -224,17 +224,25 @@ if [ -f config/system/settings.php ]; then
             // same secret everything else already uses.
             // No apostrophes in these comments: the whole block is a php -r
             // argument inside single quotes, and one would end the shell string.
-            // DISABLED again after measuring the effect. Switching this on made
-            // the podcast work (artifact uid 21, a real audio file) but broke all
-            // nine rendered artifacts, seven of which had been producing files:
-            // every schaubild and story slide then failed with an error from
-            // OpenAI, "Invalid base64 image_url."
-            // Image generation itself is fine - a direct gpt-image-1 call returns
-            // 200 with an image. Something downstream passes that image on as an
-            // image_url the API rejects, and it takes the render path with it.
-            // Seven working artifacts for one is a bad trade, so this stays off
-            // until the cause is understood.
-            // . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"nr_llm\"][\"providers\"][\"openai\"][\"apiKeyIdentifier\"] = \"openai_api_key\";\n"
+            // Switches on the specialized services of nr_llm (DALL-E, Whisper,
+            // TTS). isAvailable() is only "an apiKeyIdentifier is set and that
+            // vault secret exists", and it is the same secret everything else
+            // uses.
+            //
+            // This line was briefly disabled on the theory that it broke the
+            // rendered artifacts. It did not: the cause was the alt-text
+            // listener firing on the CLI, fixed separately. With that fixed the
+            // job produces all ten artifacts, podcast and AI images included.
+            //
+            // Note for anyone reading this after a deploy: extension:setup
+            // persists EXTENSIONS.nr_llm into config/system/settings.php, so on
+            // an instance that has run once the value survives even without this
+            // line. A FRESH install has no such settings.php, which is why the
+            // line has to stay here.
+            //
+            // No apostrophes in these comments: the whole block is a php -r
+            // argument inside single quotes, and one would end the shell string.
+            . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"nr_llm\"][\"providers\"][\"openai\"][\"apiKeyIdentifier\"] = \"openai_api_key\";\n"
             // nr_llm defaults to dall-e-3, which this account does not serve:
             //   400 The model dall-e-3 does not exist.
             // gpt-image-1 answers 200 with an image. Measured, not assumed - the
