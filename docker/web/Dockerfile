@@ -81,6 +81,13 @@ COPY --from=composer-builder /app/vendor/ vendor/
 COPY --from=composer-builder /app/public/ public/
 COPY config/ config/
 COPY packages/ packages/
+# The Open Graph card is served from a fixed docroot path rather than from the
+# extension's published /_assets/<hash>/ directory, because a meta tag needs an
+# absolute URL that can be written down. fileadmin was not an option either:
+# entrypoint.sh seeds it only into an EMPTY directory, so a file added to
+# data/fileadmin/ would never reach an instance that already has one.
+# The source of truth stays in the site package next to its HTML source.
+COPY packages/netresearch-demo-site/Resources/Public/Images/og-card.png public/og-card.png
 # Second half of this instruction: nr-repurpose's HTML -> PNG renderer is a Node
 # script with one dependency of its own, shipped with the extension as
 # package.json/package-lock.json. Nothing installed it, so every schaubild and

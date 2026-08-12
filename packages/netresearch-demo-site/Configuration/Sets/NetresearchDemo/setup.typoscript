@@ -57,11 +57,13 @@ page {
 
         # site:base is "/" here (TYPO3_SITE_BASE), so it cannot build the
         # absolute URL Open Graph requires; TYPO3_SITE_URL can.
-        # The logo is 2693x851 (3.16:1) where a preview card wants 1.91:1, so
-        # it will be cropped. Good enough as a fallback, and a purpose-made
-        # 1200x630 card should replace it — that is a design task, not config.
+        #
+        # A purpose-made 1200x630 card, replacing the 2693x851 logo a preview
+        # (1.91:1) used to crop. It is copied to this fixed docroot path by the
+        # Dockerfile; its source of truth and the HTML it is rendered from live
+        # in packages/netresearch-demo-site/Resources/Public/Images/.
         og:image.data = getIndpEnv:TYPO3_SITE_URL
-        og:image.noTrimWrap = ||fileadmin/user_upload/images/netresearch-typo3-demo.png|
+        og:image.noTrimWrap = ||og-card.png|
         og:image.attribute = property
 
         # No og:image:width/height/alt. They are *sub*-properties of og:image in
@@ -83,7 +85,7 @@ page {
         twitter:description.data = page:abstract // page:subtitle
         twitter:description.ifEmpty = A live TYPO3 v14 instance demonstrating the Netresearch extension suite — each extension on its own page, with a worked example you can run.
         twitter:image.data = getIndpEnv:TYPO3_SITE_URL
-        twitter:image.noTrimWrap = ||fileadmin/user_upload/images/netresearch-typo3-demo.png|
+        twitter:image.noTrimWrap = ||og-card.png|
 
         theme-color = #2F99A4
     }

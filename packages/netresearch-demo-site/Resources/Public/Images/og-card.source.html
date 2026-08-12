@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --nr-primary: #2F99A4;
+    --nr-accent:  #FF4D00;
+    --nr-text:    #585961;
+    --nr-border:  #E3E5E6;
+    --nr-bg:      #FFFFFF;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1200px; height: 630px; }
+  body {
+    background: var(--nr-bg);
+    font-family: 'Open Sans', system-ui, sans-serif;
+    color: var(--nr-text);
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    padding: 64px 72px 56px;
+    position: relative;
+    overflow: hidden;
+  }
+  /* Accent is a highlight, never a surface: one hairline rule, nothing more. */
+  body::before {
+    content: ""; position: absolute; left: 0; top: 0;
+    width: 100%; height: 10px; background: var(--nr-primary);
+  }
+  /* A quiet teal wash so the card is not a white rectangle in a white feed. */
+  body::after {
+    content: ""; position: absolute; right: -180px; bottom: -260px;
+    width: 700px; height: 700px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(47,153,164,.10) 0%, rgba(47,153,164,0) 70%);
+  }
+  header { display: flex; align-items: center; gap: 20px; }
+  header img { width: 56px; height: 56px; display: block; }
+  header .wordmark {
+    font-family: 'Raleway', sans-serif; font-weight: 600; font-size: 26px;
+    color: var(--nr-text); letter-spacing: .01em;
+  }
+  main { display: flex; flex-direction: column; justify-content: center; gap: 22px; z-index: 1; }
+  h1 {
+    font-family: 'Raleway', sans-serif; font-weight: 700; font-size: 76px;
+    line-height: 1.06; color: var(--nr-primary); letter-spacing: -.015em;
+  }
+  h1 .plain { color: var(--nr-text); }
+  p.lead { font-size: 29px; line-height: 1.38; max-width: 900px; font-weight: 400; }
+  .rule { width: 88px; height: 5px; background: var(--nr-accent); border-radius: 3px; }
+  footer {
+    display: flex; align-items: center; justify-content: space-between;
+    border-top: 1px solid var(--nr-border); padding-top: 22px;
+    font-size: 21px; z-index: 1;
+  }
+  /* Body-size teal on white is 3.38:1 and fails AA; the brand reference
+     prescribes the darker teal #15585E (8.1:1) for exactly this case. */
+  footer .url { font-family: 'Raleway', sans-serif; font-weight: 600; color: #15585E; }
+  footer .company { font-weight: 400; }
+</style>
+</head>
+<body>
+  <header>
+    <img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZwogICB2aWV3Qm94PSItNzUgLTc1IDQ0MCA0NDAiCiAgIHpvb21BbmRQYW49ImRpc2FibGUiCiAgIHZlcnNpb249IjEuMiIKICAgYmFzZVByb2ZpbGU9InRpbnktcHMiCiAgIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPHRpdGxlPk5ldHJlc2VhcmNoIERUVCBHbWJIPC90aXRsZT4KICA8Zz4KICAgIDxwYXRoCiAgICAgICBmaWxsPSIjMjk5OWE0IgogICAgICAgZD0iTTIwOS42LDBWMzEuNjJoMzIuNzdhMjYuMzgsMjYuMzgsMCwwLDEsMjYuNDQsMjYuNDNWMjQyYTI2LjM4LDI2LjM4LDAsMCwxLTI2LjQ0LDI2LjQ0SDIwOS42VjMwMGg0Ny45M2E0Mi43Nyw0Mi43NywwLDAsMCw0Mi44Ni00Mi44NlY0Mi44OUE0Mi43Niw0Mi43NiwwLDAsMCwyNTcuNTMsMFpNNDMuMjUsMEE0Mi43Niw0Mi43NiwwLDAsMCwuMzksNDIuODlWMjU3LjE4QTQyLjc2LDQyLjc2LDAsMCwwLDQzLjI1LDMwMEg5MS4xOFYyNjguNDZINTguNEEyNi4zOCwyNi4zOCwwLDAsMSwzMiwyNDJ2LTE4NEEyNi4zNywyNi4zNywwLDAsMSw1OC40LDMxLjYySDkxLjE4VjBaIgogICAgICAgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoLTAuMzkgLTAuMDQpIiAvPgogICAgPHBhdGgKICAgICAgIGZpbGw9IiM1OTVhNjIiCiAgICAgICBkPSJNMjIxLjQ0LDEyMC40MWMwLTM0LjQ4LTEzLjk0LTU3LjgyLTQ4LjkzLTU3LjgyLTI2LjYyLDAtNDguNTQsNy43NC02NC4xNywyNi41NmwtLjctMjIuMDYtMjguMzEuMDZWMjMyLjk0aDMxLjU5VjEyNC42OWM3LjE0LTE4LjM4LDMyLjE0LTM0LjgsNTMtMzQuNSwyNy4zOC40LDI1LjIsMjYuMjQsMjYsNDUuODF2OTYuOTRoMzEuNTgiCiAgICAgICB0cmFuc2Zvcm09InRyYW5zbGF0ZSgtMC4zOSAtMC4wNCkiIC8+CiAgPC9nPgo8L3N2Zz4K" alt="Netresearch DTT GmbH">
+    <span class="wordmark">Netresearch</span>
+  </header>
+
+  <main>
+    <div class="rule"></div>
+    <h1>TYPO3 v14<br><span class="plain">extension demo</span></h1>
+    <p class="lead">Every extension on its own page, with a worked example you can run — AI in the backend, passkeys, search, content tooling.</p>
+  </main>
+
+  <footer>
+    <span class="url">typo3-demo.netresearch.de</span>
+    <span class="company">Netresearch DTT GmbH · www.netresearch.de</span>
+  </footer>
+</body>
+</html>
