@@ -216,6 +216,23 @@ if [ -f config/system/settings.php ]; then
             . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"nr_ai_search\"][\"embeddingDimensions\"] = \"1536\";\n"
             . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"nr_ai_search\"][\"technicalBeUserUid\"] = \"990\";\n"
             . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"nr_ai_search\"][\"rateLimitPerMinute\"] = \"10\";\n"
+            // Turn on the specialized services of nr_llm. isAvailable() on all
+            // three (DALL-E, Whisper, TTS) is just "an apiKeyIdentifier is set
+            // and that vault secret exists" - the identifier was empty, so the
+            // podcast and image artifacts of Repurpose failed with "speech
+            // synthesis unavailable" / "image service unavailable". It is the
+            // same secret everything else already uses.
+            // No apostrophes in these comments: the whole block is a php -r
+            // argument inside single quotes, and one would end the shell string.
+            . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"nr_llm\"][\"providers\"][\"openai\"][\"apiKeyIdentifier\"] = \"openai_api_key\";\n"
+            // nr_llm defaults to dall-e-3, which this account does not serve:
+            //   400 The model dall-e-3 does not exist.
+            // gpt-image-1 answers 200 with an image. Measured, not assumed - the
+            // same class of mistake that made the chat model fail twice.
+            . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"nr_llm\"][\"image\"][\"dalle\"][\"defaultModel\"] = \"gpt-image-1\";\n"
+            // tts-1 is the nr_llm default and answers with real audio here.
+            // Set explicitly so the value is visible rather than implicit.
+            . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"nr_llm\"][\"speech\"][\"tts\"][\"defaultModel\"] = \"tts-1\";\n"
             // nr_repurpose 0.4.2 runs its generation job as this backend user.
             // Without it the setting stays 0, the job keeps booting an
             // unauthenticated CLI user, and nr_vault denies the provider key --
@@ -237,7 +254,7 @@ if [ -f config/system/settings.php ]; then
         }
         $existing = rtrim($existing, "\n") . "\n\n" . $block . "\n";
         file_put_contents($f, $existing);
-        echo "additional.php: nr_ai_search configured (technicalBeUserUid=990, dims=1536), nr_vault provisioning actor 991, nr_repurpose actor 992, index dev-sync on." . PHP_EOL;
+        echo "additional.php: nr_ai_search configured (technicalBeUserUid=990, dims=1536), nr_vault provisioning actor 991, nr_repurpose actor 992, nr_llm media on (gpt-image-1/tts-1), index dev-sync on." . PHP_EOL;
     ' || echo "WARNING: failed to write nr_ai_search additional.php block" >&2
 fi
 
