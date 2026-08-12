@@ -139,37 +139,6 @@ identifier is required for provider OpenAI" until it is set. Rotating the key
 means updating the repository secret and re-running the deploy; nothing has to
 be clicked in the backend, and no reset can lose it again.
 
-<<<<<<< HEAD
-## The DeepL key
-
-`thieleundklose/autotranslate` cannot use the route the OpenAI key takes. It
-reads its key from the extension configuration or from the site configuration
-and has no nr-vault support at all, and the site configuration is public in this
-repository — so the extension configuration is the only usable place.
-
-The key therefore travels as the `DEEPL_API_KEY` repository secret:
-`make update` runs `make provision-deepl-key`, which writes it into the host
-`.env` (so a reboot keeps it), compose passes it into the `web` container, and
-the entrypoint writes it into `config/system/additional.php` as a managed block.
-An empty variable keeps whatever key that file already holds; it never wipes it.
-
-Language mapping lives in `config/sites/default/config.yaml` and is not secret:
-`deeplSourceLang: EN` on the English language, `deeplTargetLang: DE` on the
-German one, plus the per-table `autotranslate*` keys. Without `deeplTargetLang`
-the extension skips its whole DeepL block, and the localization then creates the
-German record as a plain copy of the English source.
-
-Two upstream defects make that failure mode hard to see, and both are why this
-instance runs `autotranslate.debug = 1`:
-
-- [#156](https://github.com/thieleundklose/tk-typo3-autotranslate/issues/156) —
-  batch translation reports `done` when nothing was translated.
-- [#157](https://github.com/thieleundklose/tk-typo3-autotranslate/issues/157) —
-  `LogUtility` drops error messages unless `debug` is on.
-
-A green `done` badge is therefore not evidence. Check the frontend, or the
-module's translation-cache counter.
-=======
 ## Alternative texts (ai_filemetadata)
 
 `mfd/ai-filemetadata` generates alt texts for FAL images: a generate button next
@@ -218,7 +187,36 @@ rediscovered:
 `generateAltTextInFrontend` is off: a missing alt text must not trigger a
 synchronous API call while a visitor waits for the page. `enableTokenTracking`
 is on, and the three token widgets sit on the Netresearch Widgets dashboard.
->>>>>>> origin/main
+
+## The DeepL key
+
+`thieleundklose/autotranslate` cannot use the route the OpenAI key takes. It
+reads its key from the extension configuration or from the site configuration
+and has no nr-vault support at all, and the site configuration is public in this
+repository — so the extension configuration is the only usable place.
+
+The key therefore travels as the `DEEPL_API_KEY` repository secret:
+`make update` runs `make provision-deepl-key`, which writes it into the host
+`.env` (so a reboot keeps it), compose passes it into the `web` container, and
+the entrypoint writes it into `config/system/additional.php` as a managed block.
+An empty variable keeps whatever key that file already holds; it never wipes it.
+
+Language mapping lives in `config/sites/default/config.yaml` and is not secret:
+`deeplSourceLang: EN` on the English language, `deeplTargetLang: DE` on the
+German one, plus the per-table `autotranslate*` keys. Without `deeplTargetLang`
+the extension skips its whole DeepL block, and the localization then creates the
+German record as a plain copy of the English source.
+
+Two upstream defects make that failure mode hard to see, and both are why this
+instance runs `autotranslate.debug = 1`:
+
+- [#156](https://github.com/thieleundklose/tk-typo3-autotranslate/issues/156) —
+  batch translation reports `done` when nothing was translated.
+- [#157](https://github.com/thieleundklose/tk-typo3-autotranslate/issues/157) —
+  `LogUtility` drops error messages unless `debug` is on.
+
+A green `done` badge is therefore not evidence. Check the frontend, or the
+module's translation-cache counter.
 
 ## Verifying the image SBOM
 
