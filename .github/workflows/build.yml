@@ -215,22 +215,26 @@ jobs:
         run: |
           get() { curl -sSfL --proto '=https' --proto-redir '=https' --cacert "$RUNNER_TEMP/caddy-root.crt" "$1"; }
           html=$(get https://localhost)
-          fail() { echo "ERROR: $1"; printf '%s' "$html" | grep -oiE '<meta[^>]+(name|property)="(robots|description|og:[a-z:]+|twitter:[a-z]+|theme-color)"[^>]*>' || echo '(no matching meta tags at all)'; exit 1; }
+          fail() { echo "ERROR: $1"; grep -oiE '<meta[^>]+(name|property)="(robots|description|og:[a-z:]+|twitter:[a-z]+|theme-color)"[^>]*>' <<<"$html" || echo '(no matching meta tags at all)'; exit 1; }
 
-          printf '%s' "$html" | grep -qiE '<meta[^>]+name="robots"[^>]+content="[^"]*noindex' \
-            && fail 'the page still declares itself NOINDEX'
+          # `grep … && fail …` would be wrong here: this step runs under bash -e,
+          # and when the page is correct grep exits 1, the && list returns
+          # non-zero, and the step dies at the exact moment it should pass.
+          if grep -qiE '<meta[^>]+name="robots"[^>]+content="[^"]*noindex' <<<"$html"; then
+            fail 'the page still declares itself NOINDEX'
+          fi
 
           for tag in 'name="description"' 'property="og:title"' 'property="og:description"' 'property="og:image"' 'property="og:site_name"' 'name="twitter:card"' 'name="theme-color"'; do
-            printf '%s' "$html" | grep -qiE "<meta[^>]+$tag" || fail "missing meta tag: $tag"
+            grep -qiE "<meta[^>]+$tag" <<<"$html" || fail "missing meta tag: $tag"
           done
 
           # A description that is only the site name is what this replaced; it
           # must not come back through an empty fallback chain.
-          desc=$(printf '%s' "$html" | grep -oiE '<meta[^>]+name="description"[^>]*>' | head -1)
+          desc=$(grep -oiE '<meta[^>]+name="description"[^>]*>' <<<"$html" | head -1)
           case "$desc" in *'content="Netresearch TYPO3 Demo"'*) fail "description fell back to the bare site name: $desc";; esac
 
           # og:image must be absolute — a relative value is silently useless.
-          printf '%s' "$html" | grep -oiE '<meta[^>]+property="og:image"[^>]*>' | grep -q 'content="https\?://' \
+          grep -oiE '<meta[^>]+property="og:image"[^>]*>' <<<"$html" | grep -q 'content="https\?://' \
             || fail 'og:image is not an absolute URL'
 
           echo "Meta tags present and indexable."
