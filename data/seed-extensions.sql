@@ -4024,6 +4024,38 @@ UPDATE tt_content c
        c.sorting          = e.sorting,
        c.deleted          = 0;
 
+-- =============================================================================
+-- 8. Enable the one writing agent tool the demo is meant to show (NEXT-133)
+-- =============================================================================
+-- update_page_metadata is the SEO scenario: the agent proposes a meta
+-- description and writes it to one page. It ships disabled — isEnabledByDefault()
+-- returns false — and a missing row in tx_nrllm_tool_state means exactly that,
+-- so without this INSERT the tool stays invisible to the agent and the scenario
+-- cannot be demonstrated at all.
+--
+-- Why enabling it on a public demo is defensible, given the backend is reachable
+-- at /typo3/ and the username is in the README:
+--   * The tool writes as the acting backend user through the DataHandler and is
+--     checked against that user's own rights (doesUserHaveAccess PAGE_EDIT plus
+--     checkLanguageAccess). It can never exceed what that login already grants.
+--   * Every call stops at a human approval — ToolLoopService scans for write
+--     tools before executing any of them and suspends the run. That pause is not
+--     configurable and there is no auto-approve switch.
+--   * It touches eleven metadata fields on exactly one page, and reads the row
+--     back afterwards to report any field the DataHandler silently dropped.
+-- Anyone who can trigger it can already edit those same fields by hand, without
+-- an approval step and without the field limit. The blast radius does not grow.
+--
+-- set_file_alternative_text is deliberately NOT enabled here: one writing tool
+-- at a time, so a surprise has an unambiguous cause.
+--
+-- ON DUPLICATE KEY UPDATE is safe on this table: tool_name carries a UNIQUE key
+-- (unlike be_users.username, where the same pattern once created a second row).
+INSERT INTO tx_nrllm_tool_state (pid, tool_name, enabled)
+VALUES (0, 'update_page_metadata', 1)
+ON DUPLICATE KEY UPDATE
+  enabled = VALUES(enabled);
+
 -- --- Verification -------------------------------------------------------------
 -- One line per record that is absent or whose uid is held by a foreign row —
 -- the two outcomes are indistinguishable from here and need the same response
@@ -4156,6 +4188,22 @@ SELECT 'SEED-PROBLEM: tt_content 9999 uid band sentinel missing or foreign'
   FROM (SELECT 9999 AS uid) s
   LEFT JOIN tt_content c ON c.uid = s.uid AND c.header = @sentinel_title
  WHERE c.uid IS NULL
+UNION ALL
+-- Both halves of the gate from step 8, because either one alone silences the
+-- tool without an error anywhere: ToolCallPolicy asks the per-tool row AND the
+-- per-group row. A missing tool row means disabled; a missing group row means
+-- enabled, so only an explicit 0 is a problem there.
+SELECT 'SEED-PROBLEM: update_page_metadata is not enabled — the agent cannot write'
+  FROM DUAL
+ WHERE NOT EXISTS (
+       SELECT 1 FROM tx_nrllm_tool_state
+        WHERE tool_name = 'update_page_metadata' AND enabled = 1)
+UNION ALL
+SELECT 'SEED-PROBLEM: tool group editing is switched off — update_page_metadata stays unreachable'
+  FROM DUAL
+ WHERE EXISTS (
+       SELECT 1 FROM tx_nrllm_tool_group_state
+        WHERE group_name = 'editing' AND enabled = 0)
 UNION ALL
 -- The property this whole band exists for, asserted directly rather than
 -- inferred from the sentinel rows: the next uid the database hands out must lie
