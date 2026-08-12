@@ -431,12 +431,15 @@ jobs:
             fi
           done
           # Without an image on it the RTE page proves nothing, so assert the
-          # subject of the check is actually present. Held in a variable rather
-          # than piped: `grep -q` closes the pipe on its first match, which makes
-          # curl exit 23 and print a write error into an otherwise green step.
+          # subject of the check is actually present. Matched with `case` rather
+          # than piped into grep: `grep -q` closes the pipe on its first match,
+          # and whatever feeds it — curl, then printf — dies of EPIPE and prints
+          # a write error into a step that passed.
           rte=$(get https://localhost/extensions/rte-ckeditor-image)
-          printf '%s' "$rte" | grep -q '<img' \
-            || { echo '::error::the RTE demo page renders no <img> — this check would be vacuous'; failed=1; }
+          case "$rte" in
+            *"<img"*) : ;;
+            *) echo '::error::the RTE demo page renders no <img> — this check would be vacuous'; failed=1 ;;
+          esac
           exit $failed
 
       # nr_image_optimize picks imagick and falls back to GD, and both need WebP
