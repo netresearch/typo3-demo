@@ -4428,6 +4428,173 @@ UPDATE tt_content SET bodytext = '<div class="rounded-3 p-4 mt-4" style="backgro
   <p class="mb-3" style="font-size:1rem; max-width:60ch;">This instance runs the extension exactly as it ships. We are happy to walk you through it and discuss what it would take in your setup.</p>
   <a class="btn btn-light fw-semibold" href="https://www.netresearch.de/kontakt/" rel="noopener">Talk to us</a>
 </div>',    hidden = 0, deleted = 0 WHERE uid = 9546 AND pid = 107;
+-- Skills (nr-llm) — two of our own, so the tile shows a capability at work
+-- =============================================================================
+-- The Skills tile read "0 synced, 0 on": a feature the nr-llm README advertises
+-- with nothing behind it. Both skills come from our own public skill repos, so
+-- the demo shows the real mechanism rather than a fixture.
+--
+-- Chosen for what they do to THIS agent, not for being available:
+--   german-technical-writing  the demo's flagship write scenario is the agent
+--                             proposing a meta description; this makes it write
+--                             German that reads like a person wrote it
+--   typo3-typoscript-ref      the agent already has get_typoscript and
+--                             check_typoscript; this makes its answers correct
+--
+-- type = single_file: only that type creates a skill ENABLED (SkillSyncService
+-- line 502). A 'repo' or 'marketplace' source would sync and leave everything
+-- off, which is the empty tile again with more steps.
+--
+-- ref AND pinned_sha carry a full commit SHA, not a branch. A sync then fetches
+-- exactly the body seeded here, finds it unchanged, and leaves the skill on.
+-- Against a moving HEAD the next sync would see a changed body and auto-disable
+-- it (ADR-035) — the tile would silently fall back to "2 synced, 0 on".
+--
+-- body_checksum is sha256 of the body as the parser produces it: everything
+-- after the frontmatter block, left-trimmed. SkillComposer verifies it with
+-- hash_equals before use, so a wrong value does not degrade — it drops the
+-- skill entirely.
+INSERT IGNORE INTO tx_nrllm_skill_source
+    (uid, pid, title, type, url, ref, pinned_sha,
+     github_token, trust_level, sync_status, last_synced, enabled, tstamp, crdate, deleted, hidden)
+VALUES
+    (9401, 0, 'german-technical-writing', 'single_file', 'https://raw.githubusercontent.com/netresearch/german-technical-writing-skill/675a4911dc729b6aadbaeb60b5b28dc069a2a656/skills/german-technical-writing/SKILL.md', '675a4911dc729b6aadbaeb60b5b28dc069a2a656', '675a4911dc729b6aadbaeb60b5b28dc069a2a656',
+     '', 'first_party', 'synced', UNIX_TIMESTAMP(), 1, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0),
+    (9402, 0, 'typo3-typoscript-ref', 'single_file', 'https://raw.githubusercontent.com/netresearch/typo3-typoscript-ref-skill/80e42feaf507fb52b561b571ae25f3d2d5c59f12/skills/typo3-typoscript-ref/SKILL.md', '80e42feaf507fb52b561b571ae25f3d2d5c59f12', '80e42feaf507fb52b561b571ae25f3d2d5c59f12',
+     '', 'first_party', 'synced', UNIX_TIMESTAMP(), 1, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0);
+
+INSERT IGNORE INTO tx_nrllm_skill
+    (uid, pid, source, identifier, name, description,
+     body, body_checksum, source_sha, support_status, trust_level, enabled,
+     tstamp, crdate, deleted, hidden)
+VALUES
+    (9411, 0, 9401, 'skills/german-technical-writing/SKILL.md', 'german-technical-writing', 'Use when writing German-language prose longer than one sentence for Jira tickets, internal German wiki/spec docs, or team-chat to German-speaking colleagues (Slack, Matrix, Teams). Invoke BEFORE composing. Covers anglicism verbs (failt, triggern, returnen), calqued collocations and idioms (blockiert auf, macht Sinn, in 2026), loanword genders (der Commit, die Pipeline), per-artifact register (impersonal for Jira/wiki, ich/du for chat), German typography (Gedankenstrich, Anführungszeichen, Durchkopplung), and AI-typical rhythm (restatement, symmetric paragraphs, summary closers). Skip for commit messages, MR/PR descriptions, release notes (English by team convention), conversational chat replies, or single-line acknowledgments. If you catch yourself thinking \'my German is probably fine here\' for anything longer than a sentence — invoke this skill.',
+     '# German Technical Writing
+
+Natural German technical register for German-audience artifacts — not English-first composition phrase-translated into DeepL-German.
+
+## Process
+
+1. **Compose in German directly**, not by translating. Restart if you catch yourself drafting English first.
+2. **Self-review each sentence** against `references/anti-patterns.md` — verbs, collocations, idioms, Amtsdeutsch.
+3. **Apply the lexicon** — canonical verbs and loanword gender: `references/lexicon.md`.
+4. **Match register per artifact** — impersonal for Jira/wiki, ich/du for chat: `references/register.md`.
+5. **Typography & rhythm** — Gedankenstrich, Durchkopplung; every fact once, varied sentence shapes: `references/typografie-rhythmus.md`.
+6. **No editorializing** — say what changed, not how good the work is: `references/no-editorializing.md`.
+7. **If unsure, ask — don\'t guess.**
+
+## Top anti-patterns
+
+| ❌ | ✅ |
+|---|---|
+| code bricht | schlägt fehl / wirft Exception |
+| gefangen | erkannt / abgefangen |
+| null returnen | null zurückgeben |
+| Test failt | schlägt fehl |
+| Fehler triggern | Fehler auslösen |
+| auf Fehler hitten | auf Fehler stoßen |
+| blockiert auf X | wartet auf X / hängt an X |
+
+Full catalogue in `references/anti-patterns.md`; worked examples in `references/examples.md`.
+
+## Three traps — apply all three disciplines
+
+Over-applying one drives you into another:
+
+1. **Anglicism** (verb-level): English where German is canonical. *Test failt* → *schlägt fehl*. Targeted by the table above and `anti-patterns.md`.
+2. **Calque** (nouns, collocations, idioms): word-by-word translation where the loanword or another German structure is canonical. *Wurzelursache* → *Root Cause*; *blockiert auf X* → *wartet auf X*; *macht Sinn* → *ist sinnvoll*. See `anti-patterns.md` and `lexicon.md`.
+3. **Amtsdeutsch over-polish**: fleeing both traps into stiff officialese and AI-symmetric structure — *Datenbestand*, *Es handelt sich um*, passive chains, facts restated per section. See `anti-patterns.md` and `typografie-rhythmus.md`. Idiomatic dev speech (*ins Gehege kommen*, *läuft voll*, *fliegt auf*) is wanted, not a violation.
+
+Noun rule: if a native German developer would *say* the term verbatim in a review or stand-up, keep it English — a German form that sounds like a textbook title is a calque.
+
+## Scope note
+
+Commit messages, MR/PR descriptions, release notes and internal IT-project tickets (NRS, NRT, SRV\\*, IO\\*, LIC) are English — skip them. This skill governs *how* to write German, not *whether*.
+', '358350ff236dacc6575f4b57efd3217314a1b9199b10b8b9a44129c00b0b6cdf', '675a4911dc729b6aadbaeb60b5b28dc069a2a656', 'full', 'first_party', 1,
+     UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0),
+    (9412, 0, 9402, 'skills/typo3-typoscript-ref/SKILL.md', 'typo3-typoscript-ref', 'Use when writing, editing, reviewing or debugging TypoScript, TSconfig or Fluid templates in TYPO3 projects (v14.3 LTS is the current target). Also use for code reviews of .typoscript, .tsconfig and Fluid .html files, v13->v14 migration (INCLUDE_TYPOSCRIPT->@import, userFunc opt-in #108054, getTSFE() condition removed, updateReferenceIndex toggle removed, site.locale expression), Fluid 4->5 breaking changes, and when suggesting improvements or checking for deprecated patterns.',
+     '# TYPO3 TypoScript, TSconfig and Fluid Reference
+
+Version-aware local lookup with always-on best practices.
+
+## Usage
+
+```bash
+scripts/lookup.sh "stdWrap wrap"              # Reference lookup
+scripts/lookup.sh "PAGEVIEW" --with-fluid     # With Fluid context
+scripts/lookup.sh --recipe page-setup         # Recipe for common tasks
+scripts/lookup.sh "FLUIDTEMPLATE" --review    # Adds deprecation warnings
+scripts/lookup.sh --deprecations              # Deprecation list
+scripts/lookup.sh --checklist typoscript      # Review checklist (typoscript|tsconfig|fluid)
+scripts/lookup.sh --lint-rules                # Project lint rules
+scripts/lookup.sh --debug "The page is not configured"  # Debug error
+scripts/lookup.sh --update                    # Update cache
+scripts/lookup.sh "TEXT" --version 12         # Override version
+```
+
+## Rules
+
+1. ALWAYS run `lookup.sh` before writing or reviewing TypoScript/TSconfig/Fluid code
+2. ALWAYS follow best practice annotations (required/deprecated/recommended/tip)
+3. ALWAYS check project lint rules (`--lint-rules`) before writing TypoScript
+4. When writing NEW code: use the most modern approach for the detected version
+5. When reviewing EXISTING code: flag deprecated patterns, check `--deprecations` for the project\'s version
+6. For combined TypoScript+Fluid tasks: use `--with-fluid` flag
+7. Never generate `config.no_cache = 1` in production setups
+8. Prefer DataProcessors over CONTENT cObject in Fluid-based templates
+
+## Version-Specific Guidance
+
+- **v12**: Use FLUIDTEMPLATE, sys_template static includes, constants.typoscript
+- **v13**: Prefer PAGEVIEW for new page templates, introduce Site Sets, use settings.definitions.yaml
+- **v14**: Site Sets mandatory, PAGEVIEW is the standard for page rendering (FLUIDTEMPLATE is legacy, not officially deprecated), @import mandatory (INCLUDE_TYPOSCRIPT removed), getTSFE() conditions removed, prefer PKG: over EXT: resource paths
+
+When answering version-specific questions, always consult `references/review/deprecations.md` and the relevant migration guide (`migration-v12-to-v13.md` or `migration-v13-to-v14.md`).
+
+## Review Workflow
+
+When reviewing TypoScript/TSconfig/Fluid code:
+
+1. Run `--checklist` for the file type (typoscript, tsconfig, or fluid)
+2. Run `--deprecations` filtered to project version
+3. Cross-reference `references/review/common-mistakes.md` for known pitfalls
+4. Check `references/review/security.md` for Fluid XSS patterns (f:format.raw, f:sanitize.html)
+5. Check `references/review/performance.md` for COA_INT/USER_INT overuse
+6. Use `--review` flag on keyword lookups to append deprecation context
+
+## Reference Index
+
+| Need | Reference |
+|------|-----------|
+| TypoScript patterns, Fluid best practices | `references/patterns.md` |
+| Debugging errors | `references/debugging.md` |
+| Deprecation lists | `references/review/deprecations.md` |
+| Security (XSS, escaping) | `references/review/security.md` |
+| Performance (caching, INT objects) | `references/review/performance.md` |
+| Common mistakes | `references/review/common-mistakes.md` |
+| Migration v12-v13 | `references/review/migration-v12-to-v13.md` |
+| Migration v13-v14 | `references/review/migration-v13-to-v14.md` |
+| Trailing slashes, PageTypeSuffix, duplicate content | `references/recipes/trailing-slash.md` |
+| Topic index (lookup.sh) | `references/topic-index.md` |
+
+## First Run
+
+```bash
+scripts/lookup.sh --update
+```
+', '7ef3a934e73e8a8e4b232e6bff3ebc9cd896538f43b7084ea3eb17570bb47c2e', '80e42feaf507fb52b561b571ae25f3d2d5c59f12', 'full', 'first_party', 1,
+     UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0);
+
+-- Re-assert: INSERT IGNORE never repairs an existing row and skips in silence
+-- when the uid is taken.
+UPDATE tx_nrllm_skill SET enabled = 1, orphaned = 0, hidden = 0, deleted = 0,
+       body_checksum = '358350ff236dacc6575f4b57efd3217314a1b9199b10b8b9a44129c00b0b6cdf' WHERE uid = 9411 AND source = 9401;
+UPDATE tx_nrllm_skill_source SET enabled = 1, hidden = 0, deleted = 0,
+       sync_status = 'synced', pinned_sha = '675a4911dc729b6aadbaeb60b5b28dc069a2a656' WHERE uid = 9401;
+UPDATE tx_nrllm_skill SET enabled = 1, orphaned = 0, hidden = 0, deleted = 0,
+       body_checksum = '7ef3a934e73e8a8e4b232e6bff3ebc9cd896538f43b7084ea3eb17570bb47c2e' WHERE uid = 9412 AND source = 9402;
+UPDATE tx_nrllm_skill_source SET enabled = 1, hidden = 0, deleted = 0,
+       sync_status = 'synced', pinned_sha = '80e42feaf507fb52b561b571ae25f3d2d5c59f12' WHERE uid = 9402;
 
 -- =============================================================================
 -- Re-assert every seeded record, then verify — KEEP THIS BLOCK LAST
