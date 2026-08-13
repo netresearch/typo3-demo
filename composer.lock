@@ -2667,16 +2667,16 @@
         },
         {
             "name": "netresearch/nr-browser-ai",
-            "version": "v0.7.0",
+            "version": "v0.7.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/t3x-nr-browser-ai.git",
-                "reference": "c52d9aaeb4860079925e7d3a06b5d60e94d6fb01"
+                "reference": "a3402de35a519d384510ec6fdcdfaca27e7be068"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/t3x-nr-browser-ai/zipball/c52d9aaeb4860079925e7d3a06b5d60e94d6fb01",
-                "reference": "c52d9aaeb4860079925e7d3a06b5d60e94d6fb01",
+                "url": "https://api.github.com/repos/netresearch/t3x-nr-browser-ai/zipball/a3402de35a519d384510ec6fdcdfaca27e7be068",
+                "reference": "a3402de35a519d384510ec6fdcdfaca27e7be068",
                 "shasum": ""
             },
             "require": {
@@ -2738,7 +2738,7 @@
                 "issues": "https://github.com/netresearch/t3x-nr-browser-ai/issues",
                 "source": "https://github.com/netresearch/t3x-nr-browser-ai"
             },
-            "time": "2026-08-12T11:36:10+00:00"
+            "time": "2026-08-13T16:05:04+00:00"
         },
         {
             "name": "netresearch/nr-image-sitemap",
@@ -2817,16 +2817,16 @@
         },
         {
             "name": "netresearch/nr-landingpage",
-            "version": "v0.3.4",
+            "version": "v0.3.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/nr-landingpage.git",
-                "reference": "9e98ce9c0949a80f4bfef441695decbbdd10b20b"
+                "reference": "0719f3788b19b11a595da5c0268dd74fc2008010"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/nr-landingpage/zipball/9e98ce9c0949a80f4bfef441695decbbdd10b20b",
-                "reference": "9e98ce9c0949a80f4bfef441695decbbdd10b20b",
+                "url": "https://api.github.com/repos/netresearch/nr-landingpage/zipball/0719f3788b19b11a595da5c0268dd74fc2008010",
+                "reference": "0719f3788b19b11a595da5c0268dd74fc2008010",
                 "shasum": ""
             },
             "require": {
@@ -2866,9 +2866,9 @@
             "description": "TYPO3 Landing Page Generator powered by LLM",
             "support": {
                 "issues": "https://github.com/netresearch/nr-landingpage/issues",
-                "source": "https://github.com/netresearch/nr-landingpage/tree/v0.3.4"
+                "source": "https://github.com/netresearch/nr-landingpage/tree/v0.3.5"
             },
-            "time": "2026-08-13T09:07:05+00:00"
+            "time": "2026-08-13T16:04:12+00:00"
         },
         {
             "name": "netresearch/nr-llm",
@@ -2963,16 +2963,16 @@
         },
         {
             "name": "netresearch/nr-mcp-agent",
-            "version": "v0.11.0",
+            "version": "v0.11.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/t3x-nr-mcp-agent.git",
-                "reference": "5c56eba9e1ce807435c03a96ab7ebf6ba9c3c031"
+                "reference": "762139fab276f9a324c744db8a439a77bfb9edd0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/t3x-nr-mcp-agent/zipball/5c56eba9e1ce807435c03a96ab7ebf6ba9c3c031",
-                "reference": "5c56eba9e1ce807435c03a96ab7ebf6ba9c3c031",
+                "url": "https://api.github.com/repos/netresearch/t3x-nr-mcp-agent/zipball/762139fab276f9a324c744db8a439a77bfb9edd0",
+                "reference": "762139fab276f9a324c744db8a439a77bfb9edd0",
                 "shasum": ""
             },
             "require": {
@@ -3033,7 +3033,7 @@
                 "issues": "https://github.com/netresearch/t3x-nr-mcp-agent/issues",
                 "source": "https://github.com/netresearch/t3x-nr-mcp-agent"
             },
-            "time": "2026-08-13T13:44:26+00:00"
+            "time": "2026-08-13T15:54:55+00:00"
         },
         {
             "name": "netresearch/nr-passkeys-be",
