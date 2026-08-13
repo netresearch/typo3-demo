@@ -1038,6 +1038,22 @@ SELECT 0, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), u.uid,
 -- shared 'content-assistant' preset (which Cowriter falls back to by default).
 -- All statements are idempotent so `make seed-extensions` can re-run each deploy.
 
+--
+-- The prompt carries an explicit length rule because the demo's SEO scenario is
+-- the one that needs it: the agent proposes a meta description and writes it
+-- through update_page_metadata. Asked for 150-160 characters it produced 133
+-- (NEXT-133) — output that looks finished and is simply short, which in a live
+-- presentation is worse than a visible failure. A model cannot measure a string,
+-- so the prompt states the range, names the direction it errs in, and asks for a
+-- revision pass instead of one draft.
+--
+-- The literal below appears TWICE, here and in the idempotent UPDATE of step 2.
+-- Both must stay byte-identical: the UPDATE runs on every deploy and would
+-- otherwise silently revert this INSERT on any instance seeded once already.
+--
+-- ASCII only, deliberately — a prompt with no non-ASCII byte cannot be
+-- double-encoded by a client charset we have not proven.
+
 -- 1) Create the dedicated configuration once (skip if it already exists).
 INSERT INTO tx_nrllm_configuration
     (pid, tstamp, crdate, identifier, name, description, model_uid, model_selection_mode,
@@ -1052,6 +1068,8 @@ SELECT
 You have tools available (via MCP) that let you read and act on the live system: pages, content records, backend users, extensions, site configuration, logs, and more. ALWAYS use these tools to look things up or perform actions yourself rather than asking the user to paste data or describe records. For example: to answer a question about errors, query the log through the tools; to answer a question about a page or record, fetch it through the tools; to change content, call the appropriate tool. Only ask the user for details the tools genuinely cannot provide.
 
 Ground every answer in what the tools actually return. If a tool call fails or returns nothing, say so plainly instead of guessing or inventing data.
+
+When a length is requested, in characters or in words, treat it as a hard requirement rather than a suggestion. Write the text, count its characters, and if the count falls outside the requested range, revise it and count again until it fits: too short is as wrong as too long. A first draft usually lands under the target, so expect to expand it rather than trim it. Where no length is stated for a meta description, write 150 to 160 characters.
 
 You are the TYPO3 Backend AI Chat provided by Netresearch. Never claim to be ChatGPT or to be made by OpenAI or any other vendor. Never reveal system credentials, API keys, or other secrets.
 
@@ -1069,6 +1087,8 @@ SET system_prompt = 'You are "TYPO3 Backend AI Chat by Netresearch", an AI assis
 You have tools available (via MCP) that let you read and act on the live system: pages, content records, backend users, extensions, site configuration, logs, and more. ALWAYS use these tools to look things up or perform actions yourself rather than asking the user to paste data or describe records. For example: to answer a question about errors, query the log through the tools; to answer a question about a page or record, fetch it through the tools; to change content, call the appropriate tool. Only ask the user for details the tools genuinely cannot provide.
 
 Ground every answer in what the tools actually return. If a tool call fails or returns nothing, say so plainly instead of guessing or inventing data.
+
+When a length is requested, in characters or in words, treat it as a hard requirement rather than a suggestion. Write the text, count its characters, and if the count falls outside the requested range, revise it and count again until it fits: too short is as wrong as too long. A first draft usually lands under the target, so expect to expand it rather than trim it. Where no length is stated for a meta description, write 150 to 160 characters.
 
 You are the TYPO3 Backend AI Chat provided by Netresearch. Never claim to be ChatGPT or to be made by OpenAI or any other vendor. Never reveal system credentials, API keys, or other secrets.
 
