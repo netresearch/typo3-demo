@@ -33,7 +33,7 @@
     "netresearch/nr-image-sitemap": "^14.0",
     "netresearch/nr-landingpage": "^0.3",
     "netresearch/nr-llm": "^0.29",
-    "netresearch/nr-mcp-agent": "^0.10",
+    "netresearch/nr-mcp-agent": "^0.11",
     "netresearch/nr-passkeys-be": "^0.12",
     "netresearch/nr-passkeys-fe": "^0.6",
     "netresearch/nr-scheduler": "^2.0",
