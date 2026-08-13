@@ -59,4 +59,11 @@ editor:
                 - removeFormat
                 - sourceEditing
                 - '|'
+                # All four components the extension registers. Importing the
+                # module alone is not enough — an explicit toolbar.items list
+                # decides what appears, and this one named only the first, so
+                # vision, translation and tasks stayed invisible on the demo.
                 - cowriter
+                - cowriterVision
+                - cowriterTranslate
+                - cowriterTemplates
