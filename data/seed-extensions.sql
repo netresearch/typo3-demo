@@ -3837,6 +3837,31 @@ VALUES
 UPDATE tx_nrllm_user_budget SET max_cost_per_month = 50.0000, is_active = 1, hidden = 0, deleted = 0 WHERE uid = 9301 AND be_user = 2;
 UPDATE tx_nrllm_user_budget SET max_cost_per_month =  5.0000, is_active = 1, hidden = 0, deleted = 0 WHERE uid = 9302 AND be_user = 4;
 UPDATE tx_nrllm_user_budget SET max_cost_per_month =  1.0000, is_active = 1, hidden = 0, deleted = 0 WHERE uid = 9303 AND be_user = 5;
+-- Content Examples: the Search page fatals on a plugin nobody installed
+-- =============================================================================
+-- /content-examples/form-elements/search answered HTTP 500 on the live site.
+-- tt_content 149 is a `list` element rendering `indexedsearch_pi2`, but
+-- typo3/cms-indexed-search is not in composer.json and never has been — the
+-- element is a leftover from the Introduction Package this demo was built on.
+-- Rendering a plugin whose extension is absent is fatal, so the whole page died.
+--
+-- The plugin is hidden rather than deleted: it is the Introduction Package's
+-- record, and a later import that re-creates it would collide with a gap. A
+-- short note takes its place so the page still says something.
+--
+-- Not fixed by installing the extension: an Indexed Search with an empty index
+-- demonstrates nothing, and this instance's search story is nr_ai_search.
+UPDATE tt_content SET hidden = 1 WHERE uid = 149 AND pid = 35 AND list_type = 'indexedsearch_pi2';
+
+INSERT IGNORE INTO tt_content
+    (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
+VALUES
+    (9561, 35, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', '',
+'<div class="alert alert-secondary" role="note">
+  <p class="mb-0">The Indexed Search plugin that used to sit here is not installed on this instance. Search on this demo is answered by the AI search built on nr_llm, not by the core index.</p>
+</div>', 0, 100, 0, 0);
+
+UPDATE tt_content SET hidden = 0, deleted = 0 WHERE uid = 9561 AND pid = 35;
 
 -- =============================================================================
 -- Re-assert every seeded record, then verify — KEEP THIS BLOCK LAST
