@@ -3764,6 +3764,61 @@ SELECT 0, r.service_type, 'openai', r.configuration_uid, r.model_uid, r.model_id
           AND u.task_uid          = r.task_uid);
 
 -- =============================================================================
+-- Per-user budgets (nr-llm) — so the Analytics column shows a real ceiling
+-- =============================================================================
+-- Without these the "Monthly budget" column reads "no budget set" on every row:
+-- the capability is visible and its effect is not, which is a column that never
+-- does anything in front of a prospect.
+--
+-- Only max_cost_per_month is set. UsageAnalyticsService::budgetConsumption()
+-- renders the bar solely from that field (plus isActive() and > 0), so a daily
+-- or request/token cap would change enforcement without changing anything a
+-- visitor sees — a declaration nobody reads.
+--
+-- The ceilings are chosen against the synthetic usage seeded directly above, so
+-- "a value nobody reaches by accident" is arithmetic rather than a guess. Full
+-- month totals from that block: uid 2 ~1.58 USD, uid 4 ~1.36, uid 5 ~0.79.
+--
+--   uid 2  nr_admin        50.00  -> ~3 %   the account presentations run from;
+--                                           31x the synthetic run rate, so it
+--                                           cannot bind mid-demo. That is the
+--                                           whole reason it gets the loose one.
+--   uid 4  demo             5.00  -> ~27 %  middle bar
+--   uid 5  nasa-redakteur   1.00  -> ~79 %  high bar; non-admin, nobody logs in
+--                                           as it, so its number stays put
+--
+-- Three fill levels on one screen show the column tracks something real and is
+-- per user. One budget would only turn "no budget set" into "3 % of 50".
+--
+-- Deliberately NO budget on uid 990 (nr_ai_search_technical): every anonymous
+-- frontend AI-search call is attributed there, so a ceiling would fail visitor-
+-- facing search rather than a backend module — the one budget here that could
+-- break a demo feature instead of an account.
+--
+-- Verified by running this block twice against MariaDB 12.3.2 (the engine the
+-- demo runs, dhi.io/mariadb:12) under STRICT_TRANS_TABLES: three rows, the
+-- intended values, no duplication on the second pass.
+--
+-- Note when showing it: the bar is month-to-date against a monthly ceiling, so
+-- early in a month all three read near zero. That is the feature working, and
+-- saying so is a good line; no seed value changes it.
+INSERT IGNORE INTO tx_nrllm_user_budget
+    (uid, pid, be_user, max_requests_per_day, max_tokens_per_day, max_cost_per_day,
+     max_requests_per_month, max_tokens_per_month, max_cost_per_month,
+     is_active, tstamp, crdate, deleted, hidden)
+VALUES
+    (9301, 0, 2, 0, 0, 0.0000, 0, 0, 50.0000, 1, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0),
+    (9302, 0, 4, 0, 0, 0.0000, 0, 0,  5.0000, 1, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0),
+    (9303, 0, 5, 0, 0, 0.0000, 0, 0,  1.0000, 1, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0);
+
+-- Re-assert: INSERT IGNORE never repairs an existing row, and it skips in
+-- silence when the uid is taken. Scoped by be_user so a foreign row that ever
+-- occupies one of these uids is left alone rather than overwritten.
+UPDATE tx_nrllm_user_budget SET max_cost_per_month = 50.0000, is_active = 1, hidden = 0, deleted = 0 WHERE uid = 9301 AND be_user = 2;
+UPDATE tx_nrllm_user_budget SET max_cost_per_month =  5.0000, is_active = 1, hidden = 0, deleted = 0 WHERE uid = 9302 AND be_user = 4;
+UPDATE tx_nrllm_user_budget SET max_cost_per_month =  1.0000, is_active = 1, hidden = 0, deleted = 0 WHERE uid = 9303 AND be_user = 5;
+
+-- =============================================================================
 -- Re-assert every seeded record, then verify — KEEP THIS BLOCK LAST
 -- =============================================================================
 -- Two failure modes of INSERT IGNORE cost three deploy cycles (PRs #91/#94/#95):
