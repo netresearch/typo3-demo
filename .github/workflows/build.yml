@@ -422,14 +422,21 @@ jobs:
           # prove almost nothing. Only pages a visitor can actually open:
           # rendered doktype, not deleted or hidden, live workspace, no access
           # group, inside its publication window.
+          # A translated page stores its slug without the language base, so the
+          # German records read /kontakt while the URL is /de/kontakt. Selecting
+          # the raw slug made 24 of them 404 and the sweep skip a quarter of the
+          # site. The base is prefixed per sys_language_uid; extend the CASE when
+          # a language is added, and the floor below catches it if nobody does.
           paths=$(docker compose exec -T db sh -c 'MYSQL_PWD="$MARIADB_PASSWORD" mariadb -N -B -u "$MARIADB_USER" "$MARIADB_DATABASE"' <<'SQL'
-          SELECT slug FROM pages
+          SELECT CONCAT(CASE sys_language_uid WHEN 1 THEN '/de' ELSE '' END, slug) AS url
+            FROM pages
            WHERE deleted = 0 AND hidden = 0 AND doktype = 1 AND t3ver_wsid = 0
+             AND sys_language_uid IN (0, 1)
              AND (fe_group = '' OR fe_group = '0')
              AND (starttime = 0 OR starttime <= UNIX_TIMESTAMP())
              AND (endtime = 0 OR endtime > UNIX_TIMESTAMP())
              AND slug LIKE '/%'
-           ORDER BY slug;
+           ORDER BY url;
           SQL
           )
           count=$(printf '%s\n' "$paths" | grep -c . || true)
