@@ -3862,6 +3862,572 @@ VALUES
 </div>', 0, 100, 0, 0);
 
 UPDATE tt_content SET hidden = 0, deleted = 0 WHERE uid = 9561 AND pid = 35;
+-- Extension pages: one header and one call to action on every page
+-- =============================================================================
+-- The sixteen extension pages had each grown their own shape: no <h1> anywhere,
+-- no extension icon, a link row that carried whatever the author happened to
+-- have at hand, and no closing call to action. A prospect clicking through them
+-- met a different page each time.
+--
+-- These two elements are PREPENDED and APPENDED, never replacing what is there.
+-- Several pages carry working demonstrations — the contexts page switches its
+-- own content on a GET parameter, the browser-ai pages embed real plugins — and
+-- a rewrite would have thrown those away for the sake of a template.
+--
+-- Sorting 10 puts the header first and 9000 puts the call to action last,
+-- leaving the existing elements untouched in between.
+--
+-- The link row shows only what was verified to exist: the TER entry through its
+-- API (version_count > 0, because extensions.typo3.org answers 200 for a
+-- reserved key with nothing published — nr_mcp_agent is exactly that case), the
+-- documentation, the repository as the TER itself names it, and the GitHub
+-- Pages overview where one is published. Three extensions have no TER entry and
+-- six have no documentation; their rows are shorter rather than carrying a link
+-- into a 404.
+--
+-- The icons are the extensions' own, copied into fileadmin so the page is
+-- reproducible from this repository. The screenshots on these pages are not:
+-- they exist only in data/db.sql.gz and on the server.
+INSERT IGNORE INTO tt_content
+    (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
+VALUES
+    (9501, 157, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', '', '<div class="d-flex align-items-start gap-3 mb-3">
+  <img src="/fileadmin/user_upload/images/extension-icons/ai-agent.svg" alt="" width="56" height="56" style="flex:0 0 56px;" loading="lazy">
+  <div>
+    <h1 class="fw-bold mb-1" style="font-size:1.9rem;">AI Chat Agent</h1>
+    <p class="text-muted mb-2" style="font-size:1.05rem; max-width:65ch;">AI chat assistant for the TYPO3 backend using nr-llm and MCP server.</p>
+    <div class="d-flex gap-2 flex-wrap">
+      <a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://github.com/netresearch/t3x-nr-mcp-agent" rel="noopener">GitHub</a>
+      <a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://netresearch.github.io/t3x-nr-mcp-agent/" rel="noopener">Overview</a>
+    </div>
+  </div>
+</div>', 0, 10, 0, 0),
+    (9502, 9003, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', '', '<div class="d-flex align-items-start gap-3 mb-3">
+  <img src="/fileadmin/user_upload/images/extension-icons/browser-ai.svg" alt="" width="56" height="56" style="flex:0 0 56px;" loading="lazy">
+  <div>
+    <h1 class="fw-bold mb-1" style="font-size:1.9rem;">Browser AI</h1>
+    <p class="text-muted mb-2" style="font-size:1.05rem; max-width:65ch;">On-device AI assistant for TYPO3 that answers questions about the current page, powered by Chrome built-in AI - by Netresearch.</p>
+    <div class="d-flex gap-2 flex-wrap">
+      <a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://extensions.typo3.org/extension/nr_browser_ai" rel="noopener">TER 0.7.1</a>
+      <a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://docs.typo3.org/p/netresearch/nr-browser-ai/main/en-us/" rel="noopener">Documentation</a>
+      <a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://github.com/netresearch/t3x-nr-browser-ai" rel="noopener">GitHub</a>
+      <a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://netresearch.github.io/t3x-nr-browser-ai/" rel="noopener">Overview</a>
+    </div>
+  </div>
+</div>', 0, 10, 0, 0),
+    (9503, 9004, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', '', '<div class="d-flex align-items-start gap-3 mb-3">
+  <img src="/fileadmin/user_upload/images/extension-icons/browser-ai-form-assistant.svg" alt="" width="56" height="56" style="flex:0 0 56px;" loading="lazy">
+  <div>
+    <h1 class="fw-bold mb-1" style="font-size:1.9rem;">Browser AI Form Assistant</h1>
+    <p class="text-muted mb-2" style="font-size:1.05rem; max-width:65ch;">On-device AI assistant for TYPO3 that answers questions about the current page, powered by Chrome built-in AI - by Netresearch.</p>
+    <div class="d-flex gap-2 flex-wrap">
+      <a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://extensions.typo3.org/extension/nr_browser_ai" rel="noopener">TER 0.7.1</a>
+      <a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://docs.typo3.org/p/netresearch/nr-browser-ai/main/en-us/" rel="noopener">Documentation</a>
+      <a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://github.com/netresearch/t3x-nr-browser-ai" rel="noopener">GitHub</a>
+      <a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://netresearch.github.io/t3x-nr-browser-ai/" rel="noopener">Overview</a>
+    </div>
+  </div>
+</div>', 0, 10, 0, 0),
+    (9504, 164, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', '', '<div class="d-flex align-items-start gap-3 mb-3">
+  <img src="/fileadmin/user_upload/images/extension-icons/contexts.svg" alt="" width="56" height="56" style="flex:0 0 56px;" loading="lazy">
+  <div>
+    <h1 class="fw-bold mb-1" style="font-size:1.9rem;">Contexts</h1>
+    <p class="text-muted mb-2" style="font-size:1.05rem; max-width:65ch;">Multi-channel content visibility for TYPO3 - by Netresearch.</p>
+    <div class="d-flex gap-2 flex-wrap">
+      <a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://extensions.typo3.org/extension/contexts" rel="noopener">TER 5.0.1</a>
+      <a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://docs.typo3.org/p/netresearch/contexts/main/en-us/" rel="noopener">Documentation</a>
+      <a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://github.com/netresearch/t3x-contexts" rel="noopener">GitHub</a>
+    </div>
+  </div>
+</div>', 0, 10, 0, 0),
+    (9505, 103, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', '', '<div class="d-flex align-items-start gap-3 mb-3">
+  <img src="/fileadmin/user_upload/images/extension-icons/cowriter.svg" alt="" width="56" height="56" style="flex:0 0 56px;" loading="lazy">
+  <div>
+    <h1 class="fw-bold mb-1" style="font-size:1.9rem;">AI Cowriter</h1>
+    <p class="text-muted mb-2" style="font-size:1.05rem; max-width:65ch;">With the help of AI you can now work on a page together with a cowriter - a digital assistant that helps you to write your content.</p>
+    <div class="d-flex gap-2 flex-wrap">
+      <a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://extensions.typo3.org/extension/t3_cowriter" rel="noopener">TER 3.6.2</a>
+      <a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://docs.typo3.org/p/netresearch/t3-cowriter/main/en-us/" rel="noopener">Documentation</a>
+      <a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://github.com/netresearch/t3x-cowriter" rel="noopener">GitHub</a>
+    </div>
+  </div>
+</div>', 0, 10, 0, 0),
+    (9506, 161, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', '', '<div class="d-flex align-items-start gap-3 mb-3">
+  <img src="/fileadmin/user_upload/images/extension-icons/image-sitemap.svg" alt="" width="56" height="56" style="flex:0 0 56px;" loading="lazy">
+  <div>
+    <h1 class="fw-bold mb-1" style="font-size:1.9rem;">Image Sitemap</h1>
+    <p class="text-muted mb-2" style="font-size:1.05rem; max-width:65ch;">Provides a data provider to use with the typo3/cms-seo extension, to create an image sitemap.</p>
+    <div class="d-flex gap-2 flex-wrap">
+      <a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://extensions.typo3.org/extension/nr_image_sitemap" rel="noopener">TER 13.0.6</a>
+      <a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://github.com/netresearch/t3x-nr-image-sitemap/" rel="noopener">GitHub</a>
+    </div>
+  </div>
+</div>', 0, 10, 0, 0),
+    (9507, 105, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', '', '<div class="d-flex align-items-start gap-3 mb-3">
+  <img src="/fileadmin/user_upload/images/extension-icons/landing-page.svg" alt="" width="56" height="56" style="flex:0 0 56px;" loading="lazy">
+  <div>
+    <h1 class="fw-bold mb-1" style="font-size:1.9rem;">Landing Page Generator</h1>
+    <p class="text-muted mb-2" style="font-size:1.05rem; max-width:65ch;">TYPO3 Landing Page Generator powered by LLM.</p>
+    <div class="d-flex gap-2 flex-wrap">
+      <a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://github.com/netresearch/nr-landingpage" rel="noopener">GitHub</a>
+    </div>
+  </div>
+</div>', 0, 10, 0, 0),
+    (9508, 104, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', '', '<div class="d-flex align-items-start gap-3 mb-3">
+  <img src="/fileadmin/user_upload/images/extension-icons/nr-llm.svg" alt="" width="56" height="56" style="flex:0 0 56px;" loading="lazy">
+  <div>
+    <h1 class="fw-bold mb-1" style="font-size:1.9rem;">LLM Foundation</h1>
+    <p class="text-muted mb-2" style="font-size:1.05rem; max-width:65ch;">Shared AI/LLM foundation for TYPO3 — centralized provider management, encrypted API keys, and ready-to-use services for chat, translation, vision, and embeddings.</p>
+    <div class="d-flex gap-2 flex-wrap">
+      <a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://extensions.typo3.org/extension/nr_llm" rel="noopener">TER 0.29.1</a>
+      <a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://docs.typo3.org/p/netresearch/nr-llm/main/en-us/" rel="noopener">Documentation</a>
+      <a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://github.com/netresearch/t3x-nr-llm" rel="noopener">GitHub</a>
+      <a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://netresearch.github.io/t3x-nr-llm/" rel="noopener">Overview</a>
+    </div>
+  </div>
+</div>', 0, 10, 0, 0),
+    (9509, 162, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', '', '<div class="d-flex align-items-start gap-3 mb-3">
+  <img src="/fileadmin/user_upload/images/extension-icons/nr-scheduler.svg" alt="" width="56" height="56" style="flex:0 0 56px;" loading="lazy">
+  <div>
+    <h1 class="fw-bold mb-1" style="font-size:1.9rem;">Scheduler Toolkit</h1>
+    <p class="text-muted mb-2" style="font-size:1.05rem; max-width:65ch;">Extends the TYPO3 scheduler extension with some functions.</p>
+    <div class="d-flex gap-2 flex-wrap">
+      <a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://extensions.typo3.org/extension/nr_scheduler" rel="noopener">TER 2.0.0</a>
+      <a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://github.com/netresearch/t3x-scheduler" rel="noopener">GitHub</a>
+    </div>
+  </div>
+</div>', 0, 10, 0, 0),
+    (9510, 106, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', '', '<div class="d-flex align-items-start gap-3 mb-3">
+  <img src="/fileadmin/user_upload/images/extension-icons/passkeys-be.svg" alt="" width="56" height="56" style="flex:0 0 56px;" loading="lazy">
+  <div>
+    <h1 class="fw-bold mb-1" style="font-size:1.9rem;">Passkeys (Backend)</h1>
+    <p class="text-muted mb-2" style="font-size:1.05rem; max-width:65ch;">Passwordless TYPO3 backend authentication via Passkeys (WebAuthn/FIDO2) - by Netresearch.</p>
+    <div class="d-flex gap-2 flex-wrap">
+      <a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://extensions.typo3.org/extension/nr_passkeys_be" rel="noopener">TER 0.12.1</a>
+      <a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://docs.typo3.org/p/netresearch/nr-passkeys-be/main/en-us/" rel="noopener">Documentation</a>
+      <a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://github.com/netresearch/t3x-nr-passkeys-be" rel="noopener">GitHub</a>
+    </div>
+  </div>
+</div>', 0, 10, 0, 0),
+    (9511, 109, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', '', '<div class="d-flex align-items-start gap-3 mb-3">
+  <img src="/fileadmin/user_upload/images/extension-icons/passkeys-fe.svg" alt="" width="56" height="56" style="flex:0 0 56px;" loading="lazy">
+  <div>
+    <h1 class="fw-bold mb-1" style="font-size:1.9rem;">Passkeys (Frontend)</h1>
+    <p class="text-muted mb-2" style="font-size:1.05rem; max-width:65ch;">Passkey-first TYPO3 frontend authentication for fe_users (WebAuthn/FIDO2). Enables passwordless login with TouchID, FaceID, YubiKey, Windows Hello. By Netresearch.</p>
+    <div class="d-flex gap-2 flex-wrap">
+      <a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://extensions.typo3.org/extension/nr_passkeys_fe" rel="noopener">TER 0.6.0</a>
+      <a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://docs.typo3.org/p/netresearch/nr-passkeys-fe/main/en-us/" rel="noopener">Documentation</a>
+      <a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://github.com/netresearch/t3x-nr-passkeys-fe" rel="noopener">GitHub</a>
+    </div>
+  </div>
+</div>', 0, 10, 0, 0),
+    (9512, 111, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', '', '<div class="d-flex align-items-start gap-3 mb-3">
+  <img src="/fileadmin/user_upload/images/extension-icons/repurpose.svg" alt="" width="56" height="56" style="flex:0 0 56px;" loading="lazy">
+  <div>
+    <h1 class="fw-bold mb-1" style="font-size:1.9rem;">Content Repurpose</h1>
+    <p class="text-muted mb-2" style="font-size:1.05rem; max-width:65ch;">Turn a webpage or PDF into a podcast, a diagram and an Instagram story — by Netresearch, built on netresearch/nr-llm.</p>
+    <div class="d-flex gap-2 flex-wrap">
+      <a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://extensions.typo3.org/extension/nr_repurpose" rel="noopener">TER 0.4.0</a>
+      <a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://github.com/netresearch/t3x-nr-repurpose" rel="noopener">GitHub</a>
+    </div>
+  </div>
+</div>', 0, 10, 0, 0),
+    (9513, 102, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', '', '<div class="d-flex align-items-start gap-3 mb-3">
+  <img src="/fileadmin/user_upload/images/extension-icons/rte-ckeditor-image.svg" alt="" width="56" height="56" style="flex:0 0 56px;" loading="lazy">
+  <div>
+    <h1 class="fw-bold mb-1" style="font-size:1.9rem;">RTE CKEditor Image</h1>
+    <p class="text-muted mb-2" style="font-size:1.05rem; max-width:65ch;">Image support in CKEditor for the TYPO3 ecosystem - by Netresearch.</p>
+    <div class="d-flex gap-2 flex-wrap">
+      <a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://extensions.typo3.org/extension/rte_ckeditor_image" rel="noopener">TER 13.10.2</a>
+      <a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://docs.typo3.org/p/netresearch/rte-ckeditor-image/main/en-us/" rel="noopener">Documentation</a>
+      <a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://github.com/netresearch/t3x-rte_ckeditor_image" rel="noopener">GitHub</a>
+    </div>
+  </div>
+</div>', 0, 10, 0, 0),
+    (9514, 108, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', '', '<div class="d-flex align-items-start gap-3 mb-3">
+  <img src="/fileadmin/user_upload/images/extension-icons/temporal-cache.svg" alt="" width="56" height="56" style="flex:0 0 56px;" loading="lazy">
+  <div>
+    <h1 class="fw-bold mb-1" style="font-size:1.9rem;">Temporal Cache</h1>
+    <p class="text-muted mb-2" style="font-size:1.05rem; max-width:65ch;">Phase 1 Experimental Approach: Addresses TYPO3 Forge #14277 via site-wide cache synchronization. Automatic cache invalidation for time-based content. WARNING: ALL page caches expire on EVERY temporal transition (starttime/endtime). Read Performance Considerations documentation before deployment. Alternative approaches (USER_INT menus) may be more suitable for high-traffic sites.</p>
+    <div class="d-flex gap-2 flex-wrap">
+      <a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://github.com/netresearch/t3x-temporal-cache" rel="noopener">GitHub</a>
+    </div>
+  </div>
+</div>', 0, 10, 0, 0),
+    (9515, 160, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', '', '<div class="d-flex align-items-start gap-3 mb-3">
+  <img src="/fileadmin/user_upload/images/extension-icons/textdb.svg" alt="" width="56" height="56" style="flex:0 0 56px;" loading="lazy">
+  <div>
+    <h1 class="fw-bold mb-1" style="font-size:1.9rem;">TextDB</h1>
+    <p class="text-muted mb-2" style="font-size:1.05rem; max-width:65ch;">Auto-creating TYPO3 translation database - use ViewHelpers, editors translate in backend, instant updates - by Netresearch.</p>
+    <div class="d-flex gap-2 flex-wrap">
+      <a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://extensions.typo3.org/extension/nr_textdb" rel="noopener">TER 4.0.0</a>
+      <a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://docs.typo3.org/p/netresearch/nr-textdb/main/en-us/" rel="noopener">Documentation</a>
+      <a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://github.com/netresearch/t3x-nr-textdb" rel="noopener">GitHub</a>
+    </div>
+  </div>
+</div>', 0, 10, 0, 0),
+    (9516, 107, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', '', '<div class="d-flex align-items-start gap-3 mb-3">
+  <img src="/fileadmin/user_upload/images/extension-icons/vault.svg" alt="" width="56" height="56" style="flex:0 0 56px;" loading="lazy">
+  <div>
+    <h1 class="fw-bold mb-1" style="font-size:1.9rem;">Secrets Vault</h1>
+    <p class="text-muted mb-2" style="font-size:1.05rem; max-width:65ch;">Secure secrets management for TYPO3 with envelope encryption, access control, and audit logging.</p>
+    <div class="d-flex gap-2 flex-wrap">
+      <a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://extensions.typo3.org/extension/nr_vault" rel="noopener">TER 0.15.0</a>
+      <a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://docs.typo3.org/p/netresearch/nr-vault/main/en-us/" rel="noopener">Documentation</a>
+      <a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://github.com/netresearch/t3x-nr-vault" rel="noopener">GitHub</a>
+    </div>
+  </div>
+</div>', 0, 10, 0, 0),
+    (9531, 157, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', '', '<div class="rounded-3 p-4 mt-4" style="background:#2F99A4; color:#fff;">
+  <h2 class="fw-bold mb-2" style="font-size:1.3rem; color:#fff;">Want this in your TYPO3 project?</h2>
+  <p class="mb-3" style="font-size:1rem; max-width:60ch;">This instance runs the extension exactly as it ships. We are happy to walk you through it and discuss what it would take in your setup.</p>
+  <a class="btn btn-light fw-semibold" href="https://www.netresearch.de/kontakt/" rel="noopener">Talk to us</a>
+</div>', 0, 9000, 0, 0),
+    (9532, 9003, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', '', '<div class="rounded-3 p-4 mt-4" style="background:#2F99A4; color:#fff;">
+  <h2 class="fw-bold mb-2" style="font-size:1.3rem; color:#fff;">Want this in your TYPO3 project?</h2>
+  <p class="mb-3" style="font-size:1rem; max-width:60ch;">This instance runs the extension exactly as it ships. We are happy to walk you through it and discuss what it would take in your setup.</p>
+  <a class="btn btn-light fw-semibold" href="https://www.netresearch.de/kontakt/" rel="noopener">Talk to us</a>
+</div>', 0, 9000, 0, 0),
+    (9533, 9004, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', '', '<div class="rounded-3 p-4 mt-4" style="background:#2F99A4; color:#fff;">
+  <h2 class="fw-bold mb-2" style="font-size:1.3rem; color:#fff;">Want this in your TYPO3 project?</h2>
+  <p class="mb-3" style="font-size:1rem; max-width:60ch;">This instance runs the extension exactly as it ships. We are happy to walk you through it and discuss what it would take in your setup.</p>
+  <a class="btn btn-light fw-semibold" href="https://www.netresearch.de/kontakt/" rel="noopener">Talk to us</a>
+</div>', 0, 9000, 0, 0),
+    (9534, 164, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', '', '<div class="rounded-3 p-4 mt-4" style="background:#2F99A4; color:#fff;">
+  <h2 class="fw-bold mb-2" style="font-size:1.3rem; color:#fff;">Want this in your TYPO3 project?</h2>
+  <p class="mb-3" style="font-size:1rem; max-width:60ch;">This instance runs the extension exactly as it ships. We are happy to walk you through it and discuss what it would take in your setup.</p>
+  <a class="btn btn-light fw-semibold" href="https://www.netresearch.de/kontakt/" rel="noopener">Talk to us</a>
+</div>', 0, 9000, 0, 0),
+    (9535, 103, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', '', '<div class="rounded-3 p-4 mt-4" style="background:#2F99A4; color:#fff;">
+  <h2 class="fw-bold mb-2" style="font-size:1.3rem; color:#fff;">Want this in your TYPO3 project?</h2>
+  <p class="mb-3" style="font-size:1rem; max-width:60ch;">This instance runs the extension exactly as it ships. We are happy to walk you through it and discuss what it would take in your setup.</p>
+  <a class="btn btn-light fw-semibold" href="https://www.netresearch.de/kontakt/" rel="noopener">Talk to us</a>
+</div>', 0, 9000, 0, 0),
+    (9536, 161, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', '', '<div class="rounded-3 p-4 mt-4" style="background:#2F99A4; color:#fff;">
+  <h2 class="fw-bold mb-2" style="font-size:1.3rem; color:#fff;">Want this in your TYPO3 project?</h2>
+  <p class="mb-3" style="font-size:1rem; max-width:60ch;">This instance runs the extension exactly as it ships. We are happy to walk you through it and discuss what it would take in your setup.</p>
+  <a class="btn btn-light fw-semibold" href="https://www.netresearch.de/kontakt/" rel="noopener">Talk to us</a>
+</div>', 0, 9000, 0, 0),
+    (9537, 105, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', '', '<div class="rounded-3 p-4 mt-4" style="background:#2F99A4; color:#fff;">
+  <h2 class="fw-bold mb-2" style="font-size:1.3rem; color:#fff;">Want this in your TYPO3 project?</h2>
+  <p class="mb-3" style="font-size:1rem; max-width:60ch;">This instance runs the extension exactly as it ships. We are happy to walk you through it and discuss what it would take in your setup.</p>
+  <a class="btn btn-light fw-semibold" href="https://www.netresearch.de/kontakt/" rel="noopener">Talk to us</a>
+</div>', 0, 9000, 0, 0),
+    (9538, 104, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', '', '<div class="rounded-3 p-4 mt-4" style="background:#2F99A4; color:#fff;">
+  <h2 class="fw-bold mb-2" style="font-size:1.3rem; color:#fff;">Want this in your TYPO3 project?</h2>
+  <p class="mb-3" style="font-size:1rem; max-width:60ch;">This instance runs the extension exactly as it ships. We are happy to walk you through it and discuss what it would take in your setup.</p>
+  <a class="btn btn-light fw-semibold" href="https://www.netresearch.de/kontakt/" rel="noopener">Talk to us</a>
+</div>', 0, 9000, 0, 0),
+    (9539, 162, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', '', '<div class="rounded-3 p-4 mt-4" style="background:#2F99A4; color:#fff;">
+  <h2 class="fw-bold mb-2" style="font-size:1.3rem; color:#fff;">Want this in your TYPO3 project?</h2>
+  <p class="mb-3" style="font-size:1rem; max-width:60ch;">This instance runs the extension exactly as it ships. We are happy to walk you through it and discuss what it would take in your setup.</p>
+  <a class="btn btn-light fw-semibold" href="https://www.netresearch.de/kontakt/" rel="noopener">Talk to us</a>
+</div>', 0, 9000, 0, 0),
+    (9540, 106, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', '', '<div class="rounded-3 p-4 mt-4" style="background:#2F99A4; color:#fff;">
+  <h2 class="fw-bold mb-2" style="font-size:1.3rem; color:#fff;">Want this in your TYPO3 project?</h2>
+  <p class="mb-3" style="font-size:1rem; max-width:60ch;">This instance runs the extension exactly as it ships. We are happy to walk you through it and discuss what it would take in your setup.</p>
+  <a class="btn btn-light fw-semibold" href="https://www.netresearch.de/kontakt/" rel="noopener">Talk to us</a>
+</div>', 0, 9000, 0, 0),
+    (9541, 109, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', '', '<div class="rounded-3 p-4 mt-4" style="background:#2F99A4; color:#fff;">
+  <h2 class="fw-bold mb-2" style="font-size:1.3rem; color:#fff;">Want this in your TYPO3 project?</h2>
+  <p class="mb-3" style="font-size:1rem; max-width:60ch;">This instance runs the extension exactly as it ships. We are happy to walk you through it and discuss what it would take in your setup.</p>
+  <a class="btn btn-light fw-semibold" href="https://www.netresearch.de/kontakt/" rel="noopener">Talk to us</a>
+</div>', 0, 9000, 0, 0),
+    (9542, 111, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', '', '<div class="rounded-3 p-4 mt-4" style="background:#2F99A4; color:#fff;">
+  <h2 class="fw-bold mb-2" style="font-size:1.3rem; color:#fff;">Want this in your TYPO3 project?</h2>
+  <p class="mb-3" style="font-size:1rem; max-width:60ch;">This instance runs the extension exactly as it ships. We are happy to walk you through it and discuss what it would take in your setup.</p>
+  <a class="btn btn-light fw-semibold" href="https://www.netresearch.de/kontakt/" rel="noopener">Talk to us</a>
+</div>', 0, 9000, 0, 0),
+    (9543, 102, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', '', '<div class="rounded-3 p-4 mt-4" style="background:#2F99A4; color:#fff;">
+  <h2 class="fw-bold mb-2" style="font-size:1.3rem; color:#fff;">Want this in your TYPO3 project?</h2>
+  <p class="mb-3" style="font-size:1rem; max-width:60ch;">This instance runs the extension exactly as it ships. We are happy to walk you through it and discuss what it would take in your setup.</p>
+  <a class="btn btn-light fw-semibold" href="https://www.netresearch.de/kontakt/" rel="noopener">Talk to us</a>
+</div>', 0, 9000, 0, 0),
+    (9544, 108, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', '', '<div class="rounded-3 p-4 mt-4" style="background:#2F99A4; color:#fff;">
+  <h2 class="fw-bold mb-2" style="font-size:1.3rem; color:#fff;">Want this in your TYPO3 project?</h2>
+  <p class="mb-3" style="font-size:1rem; max-width:60ch;">This instance runs the extension exactly as it ships. We are happy to walk you through it and discuss what it would take in your setup.</p>
+  <a class="btn btn-light fw-semibold" href="https://www.netresearch.de/kontakt/" rel="noopener">Talk to us</a>
+</div>', 0, 9000, 0, 0),
+    (9545, 160, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', '', '<div class="rounded-3 p-4 mt-4" style="background:#2F99A4; color:#fff;">
+  <h2 class="fw-bold mb-2" style="font-size:1.3rem; color:#fff;">Want this in your TYPO3 project?</h2>
+  <p class="mb-3" style="font-size:1rem; max-width:60ch;">This instance runs the extension exactly as it ships. We are happy to walk you through it and discuss what it would take in your setup.</p>
+  <a class="btn btn-light fw-semibold" href="https://www.netresearch.de/kontakt/" rel="noopener">Talk to us</a>
+</div>', 0, 9000, 0, 0),
+    (9546, 107, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', '', '<div class="rounded-3 p-4 mt-4" style="background:#2F99A4; color:#fff;">
+  <h2 class="fw-bold mb-2" style="font-size:1.3rem; color:#fff;">Want this in your TYPO3 project?</h2>
+  <p class="mb-3" style="font-size:1rem; max-width:60ch;">This instance runs the extension exactly as it ships. We are happy to walk you through it and discuss what it would take in your setup.</p>
+  <a class="btn btn-light fw-semibold" href="https://www.netresearch.de/kontakt/" rel="noopener">Talk to us</a>
+</div>', 0, 9000, 0, 0);
+
+-- Re-assert: INSERT IGNORE never repairs an existing row and skips in silence
+-- when the uid is taken.
+UPDATE tt_content SET bodytext = '<div class="d-flex align-items-start gap-3 mb-3">
+  <img src="/fileadmin/user_upload/images/extension-icons/ai-agent.svg" alt="" width="56" height="56" style="flex:0 0 56px;" loading="lazy">
+  <div>
+    <h1 class="fw-bold mb-1" style="font-size:1.9rem;">AI Chat Agent</h1>
+    <p class="text-muted mb-2" style="font-size:1.05rem; max-width:65ch;">AI chat assistant for the TYPO3 backend using nr-llm and MCP server.</p>
+    <div class="d-flex gap-2 flex-wrap">
+      <a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://github.com/netresearch/t3x-nr-mcp-agent" rel="noopener">GitHub</a>
+      <a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://netresearch.github.io/t3x-nr-mcp-agent/" rel="noopener">Overview</a>
+    </div>
+  </div>
+</div>', hidden = 0, deleted = 0 WHERE uid = 9501 AND pid = 157;
+UPDATE tt_content SET bodytext = '<div class="rounded-3 p-4 mt-4" style="background:#2F99A4; color:#fff;">
+  <h2 class="fw-bold mb-2" style="font-size:1.3rem; color:#fff;">Want this in your TYPO3 project?</h2>
+  <p class="mb-3" style="font-size:1rem; max-width:60ch;">This instance runs the extension exactly as it ships. We are happy to walk you through it and discuss what it would take in your setup.</p>
+  <a class="btn btn-light fw-semibold" href="https://www.netresearch.de/kontakt/" rel="noopener">Talk to us</a>
+</div>',    hidden = 0, deleted = 0 WHERE uid = 9531 AND pid = 157;
+UPDATE tt_content SET bodytext = '<div class="d-flex align-items-start gap-3 mb-3">
+  <img src="/fileadmin/user_upload/images/extension-icons/browser-ai.svg" alt="" width="56" height="56" style="flex:0 0 56px;" loading="lazy">
+  <div>
+    <h1 class="fw-bold mb-1" style="font-size:1.9rem;">Browser AI</h1>
+    <p class="text-muted mb-2" style="font-size:1.05rem; max-width:65ch;">On-device AI assistant for TYPO3 that answers questions about the current page, powered by Chrome built-in AI - by Netresearch.</p>
+    <div class="d-flex gap-2 flex-wrap">
+      <a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://extensions.typo3.org/extension/nr_browser_ai" rel="noopener">TER 0.7.1</a>
+      <a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://docs.typo3.org/p/netresearch/nr-browser-ai/main/en-us/" rel="noopener">Documentation</a>
+      <a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://github.com/netresearch/t3x-nr-browser-ai" rel="noopener">GitHub</a>
+      <a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://netresearch.github.io/t3x-nr-browser-ai/" rel="noopener">Overview</a>
+    </div>
+  </div>
+</div>', hidden = 0, deleted = 0 WHERE uid = 9502 AND pid = 9003;
+UPDATE tt_content SET bodytext = '<div class="rounded-3 p-4 mt-4" style="background:#2F99A4; color:#fff;">
+  <h2 class="fw-bold mb-2" style="font-size:1.3rem; color:#fff;">Want this in your TYPO3 project?</h2>
+  <p class="mb-3" style="font-size:1rem; max-width:60ch;">This instance runs the extension exactly as it ships. We are happy to walk you through it and discuss what it would take in your setup.</p>
+  <a class="btn btn-light fw-semibold" href="https://www.netresearch.de/kontakt/" rel="noopener">Talk to us</a>
+</div>',    hidden = 0, deleted = 0 WHERE uid = 9532 AND pid = 9003;
+UPDATE tt_content SET bodytext = '<div class="d-flex align-items-start gap-3 mb-3">
+  <img src="/fileadmin/user_upload/images/extension-icons/browser-ai-form-assistant.svg" alt="" width="56" height="56" style="flex:0 0 56px;" loading="lazy">
+  <div>
+    <h1 class="fw-bold mb-1" style="font-size:1.9rem;">Browser AI Form Assistant</h1>
+    <p class="text-muted mb-2" style="font-size:1.05rem; max-width:65ch;">On-device AI assistant for TYPO3 that answers questions about the current page, powered by Chrome built-in AI - by Netresearch.</p>
+    <div class="d-flex gap-2 flex-wrap">
+      <a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://extensions.typo3.org/extension/nr_browser_ai" rel="noopener">TER 0.7.1</a>
+      <a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://docs.typo3.org/p/netresearch/nr-browser-ai/main/en-us/" rel="noopener">Documentation</a>
+      <a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://github.com/netresearch/t3x-nr-browser-ai" rel="noopener">GitHub</a>
+      <a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://netresearch.github.io/t3x-nr-browser-ai/" rel="noopener">Overview</a>
+    </div>
+  </div>
+</div>', hidden = 0, deleted = 0 WHERE uid = 9503 AND pid = 9004;
+UPDATE tt_content SET bodytext = '<div class="rounded-3 p-4 mt-4" style="background:#2F99A4; color:#fff;">
+  <h2 class="fw-bold mb-2" style="font-size:1.3rem; color:#fff;">Want this in your TYPO3 project?</h2>
+  <p class="mb-3" style="font-size:1rem; max-width:60ch;">This instance runs the extension exactly as it ships. We are happy to walk you through it and discuss what it would take in your setup.</p>
+  <a class="btn btn-light fw-semibold" href="https://www.netresearch.de/kontakt/" rel="noopener">Talk to us</a>
+</div>',    hidden = 0, deleted = 0 WHERE uid = 9533 AND pid = 9004;
+UPDATE tt_content SET bodytext = '<div class="d-flex align-items-start gap-3 mb-3">
+  <img src="/fileadmin/user_upload/images/extension-icons/contexts.svg" alt="" width="56" height="56" style="flex:0 0 56px;" loading="lazy">
+  <div>
+    <h1 class="fw-bold mb-1" style="font-size:1.9rem;">Contexts</h1>
+    <p class="text-muted mb-2" style="font-size:1.05rem; max-width:65ch;">Multi-channel content visibility for TYPO3 - by Netresearch.</p>
+    <div class="d-flex gap-2 flex-wrap">
+      <a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://extensions.typo3.org/extension/contexts" rel="noopener">TER 5.0.1</a>
+      <a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://docs.typo3.org/p/netresearch/contexts/main/en-us/" rel="noopener">Documentation</a>
+      <a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://github.com/netresearch/t3x-contexts" rel="noopener">GitHub</a>
+    </div>
+  </div>
+</div>', hidden = 0, deleted = 0 WHERE uid = 9504 AND pid = 164;
+UPDATE tt_content SET bodytext = '<div class="rounded-3 p-4 mt-4" style="background:#2F99A4; color:#fff;">
+  <h2 class="fw-bold mb-2" style="font-size:1.3rem; color:#fff;">Want this in your TYPO3 project?</h2>
+  <p class="mb-3" style="font-size:1rem; max-width:60ch;">This instance runs the extension exactly as it ships. We are happy to walk you through it and discuss what it would take in your setup.</p>
+  <a class="btn btn-light fw-semibold" href="https://www.netresearch.de/kontakt/" rel="noopener">Talk to us</a>
+</div>',    hidden = 0, deleted = 0 WHERE uid = 9534 AND pid = 164;
+UPDATE tt_content SET bodytext = '<div class="d-flex align-items-start gap-3 mb-3">
+  <img src="/fileadmin/user_upload/images/extension-icons/cowriter.svg" alt="" width="56" height="56" style="flex:0 0 56px;" loading="lazy">
+  <div>
+    <h1 class="fw-bold mb-1" style="font-size:1.9rem;">AI Cowriter</h1>
+    <p class="text-muted mb-2" style="font-size:1.05rem; max-width:65ch;">With the help of AI you can now work on a page together with a cowriter - a digital assistant that helps you to write your content.</p>
+    <div class="d-flex gap-2 flex-wrap">
+      <a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://extensions.typo3.org/extension/t3_cowriter" rel="noopener">TER 3.6.2</a>
+      <a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://docs.typo3.org/p/netresearch/t3-cowriter/main/en-us/" rel="noopener">Documentation</a>
+      <a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://github.com/netresearch/t3x-cowriter" rel="noopener">GitHub</a>
+    </div>
+  </div>
+</div>', hidden = 0, deleted = 0 WHERE uid = 9505 AND pid = 103;
+UPDATE tt_content SET bodytext = '<div class="rounded-3 p-4 mt-4" style="background:#2F99A4; color:#fff;">
+  <h2 class="fw-bold mb-2" style="font-size:1.3rem; color:#fff;">Want this in your TYPO3 project?</h2>
+  <p class="mb-3" style="font-size:1rem; max-width:60ch;">This instance runs the extension exactly as it ships. We are happy to walk you through it and discuss what it would take in your setup.</p>
+  <a class="btn btn-light fw-semibold" href="https://www.netresearch.de/kontakt/" rel="noopener">Talk to us</a>
+</div>',    hidden = 0, deleted = 0 WHERE uid = 9535 AND pid = 103;
+UPDATE tt_content SET bodytext = '<div class="d-flex align-items-start gap-3 mb-3">
+  <img src="/fileadmin/user_upload/images/extension-icons/image-sitemap.svg" alt="" width="56" height="56" style="flex:0 0 56px;" loading="lazy">
+  <div>
+    <h1 class="fw-bold mb-1" style="font-size:1.9rem;">Image Sitemap</h1>
+    <p class="text-muted mb-2" style="font-size:1.05rem; max-width:65ch;">Provides a data provider to use with the typo3/cms-seo extension, to create an image sitemap.</p>
+    <div class="d-flex gap-2 flex-wrap">
+      <a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://extensions.typo3.org/extension/nr_image_sitemap" rel="noopener">TER 13.0.6</a>
+      <a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://github.com/netresearch/t3x-nr-image-sitemap/" rel="noopener">GitHub</a>
+    </div>
+  </div>
+</div>', hidden = 0, deleted = 0 WHERE uid = 9506 AND pid = 161;
+UPDATE tt_content SET bodytext = '<div class="rounded-3 p-4 mt-4" style="background:#2F99A4; color:#fff;">
+  <h2 class="fw-bold mb-2" style="font-size:1.3rem; color:#fff;">Want this in your TYPO3 project?</h2>
+  <p class="mb-3" style="font-size:1rem; max-width:60ch;">This instance runs the extension exactly as it ships. We are happy to walk you through it and discuss what it would take in your setup.</p>
+  <a class="btn btn-light fw-semibold" href="https://www.netresearch.de/kontakt/" rel="noopener">Talk to us</a>
+</div>',    hidden = 0, deleted = 0 WHERE uid = 9536 AND pid = 161;
+UPDATE tt_content SET bodytext = '<div class="d-flex align-items-start gap-3 mb-3">
+  <img src="/fileadmin/user_upload/images/extension-icons/landing-page.svg" alt="" width="56" height="56" style="flex:0 0 56px;" loading="lazy">
+  <div>
+    <h1 class="fw-bold mb-1" style="font-size:1.9rem;">Landing Page Generator</h1>
+    <p class="text-muted mb-2" style="font-size:1.05rem; max-width:65ch;">TYPO3 Landing Page Generator powered by LLM.</p>
+    <div class="d-flex gap-2 flex-wrap">
+      <a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://github.com/netresearch/nr-landingpage" rel="noopener">GitHub</a>
+    </div>
+  </div>
+</div>', hidden = 0, deleted = 0 WHERE uid = 9507 AND pid = 105;
+UPDATE tt_content SET bodytext = '<div class="rounded-3 p-4 mt-4" style="background:#2F99A4; color:#fff;">
+  <h2 class="fw-bold mb-2" style="font-size:1.3rem; color:#fff;">Want this in your TYPO3 project?</h2>
+  <p class="mb-3" style="font-size:1rem; max-width:60ch;">This instance runs the extension exactly as it ships. We are happy to walk you through it and discuss what it would take in your setup.</p>
+  <a class="btn btn-light fw-semibold" href="https://www.netresearch.de/kontakt/" rel="noopener">Talk to us</a>
+</div>',    hidden = 0, deleted = 0 WHERE uid = 9537 AND pid = 105;
+UPDATE tt_content SET bodytext = '<div class="d-flex align-items-start gap-3 mb-3">
+  <img src="/fileadmin/user_upload/images/extension-icons/nr-llm.svg" alt="" width="56" height="56" style="flex:0 0 56px;" loading="lazy">
+  <div>
+    <h1 class="fw-bold mb-1" style="font-size:1.9rem;">LLM Foundation</h1>
+    <p class="text-muted mb-2" style="font-size:1.05rem; max-width:65ch;">Shared AI/LLM foundation for TYPO3 — centralized provider management, encrypted API keys, and ready-to-use services for chat, translation, vision, and embeddings.</p>
+    <div class="d-flex gap-2 flex-wrap">
+      <a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://extensions.typo3.org/extension/nr_llm" rel="noopener">TER 0.29.1</a>
+      <a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://docs.typo3.org/p/netresearch/nr-llm/main/en-us/" rel="noopener">Documentation</a>
+      <a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://github.com/netresearch/t3x-nr-llm" rel="noopener">GitHub</a>
+      <a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://netresearch.github.io/t3x-nr-llm/" rel="noopener">Overview</a>
+    </div>
+  </div>
+</div>', hidden = 0, deleted = 0 WHERE uid = 9508 AND pid = 104;
+UPDATE tt_content SET bodytext = '<div class="rounded-3 p-4 mt-4" style="background:#2F99A4; color:#fff;">
+  <h2 class="fw-bold mb-2" style="font-size:1.3rem; color:#fff;">Want this in your TYPO3 project?</h2>
+  <p class="mb-3" style="font-size:1rem; max-width:60ch;">This instance runs the extension exactly as it ships. We are happy to walk you through it and discuss what it would take in your setup.</p>
+  <a class="btn btn-light fw-semibold" href="https://www.netresearch.de/kontakt/" rel="noopener">Talk to us</a>
+</div>',    hidden = 0, deleted = 0 WHERE uid = 9538 AND pid = 104;
+UPDATE tt_content SET bodytext = '<div class="d-flex align-items-start gap-3 mb-3">
+  <img src="/fileadmin/user_upload/images/extension-icons/nr-scheduler.svg" alt="" width="56" height="56" style="flex:0 0 56px;" loading="lazy">
+  <div>
+    <h1 class="fw-bold mb-1" style="font-size:1.9rem;">Scheduler Toolkit</h1>
+    <p class="text-muted mb-2" style="font-size:1.05rem; max-width:65ch;">Extends the TYPO3 scheduler extension with some functions.</p>
+    <div class="d-flex gap-2 flex-wrap">
+      <a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://extensions.typo3.org/extension/nr_scheduler" rel="noopener">TER 2.0.0</a>
+      <a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://github.com/netresearch/t3x-scheduler" rel="noopener">GitHub</a>
+    </div>
+  </div>
+</div>', hidden = 0, deleted = 0 WHERE uid = 9509 AND pid = 162;
+UPDATE tt_content SET bodytext = '<div class="rounded-3 p-4 mt-4" style="background:#2F99A4; color:#fff;">
+  <h2 class="fw-bold mb-2" style="font-size:1.3rem; color:#fff;">Want this in your TYPO3 project?</h2>
+  <p class="mb-3" style="font-size:1rem; max-width:60ch;">This instance runs the extension exactly as it ships. We are happy to walk you through it and discuss what it would take in your setup.</p>
+  <a class="btn btn-light fw-semibold" href="https://www.netresearch.de/kontakt/" rel="noopener">Talk to us</a>
+</div>',    hidden = 0, deleted = 0 WHERE uid = 9539 AND pid = 162;
+UPDATE tt_content SET bodytext = '<div class="d-flex align-items-start gap-3 mb-3">
+  <img src="/fileadmin/user_upload/images/extension-icons/passkeys-be.svg" alt="" width="56" height="56" style="flex:0 0 56px;" loading="lazy">
+  <div>
+    <h1 class="fw-bold mb-1" style="font-size:1.9rem;">Passkeys (Backend)</h1>
+    <p class="text-muted mb-2" style="font-size:1.05rem; max-width:65ch;">Passwordless TYPO3 backend authentication via Passkeys (WebAuthn/FIDO2) - by Netresearch.</p>
+    <div class="d-flex gap-2 flex-wrap">
+      <a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://extensions.typo3.org/extension/nr_passkeys_be" rel="noopener">TER 0.12.1</a>
+      <a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://docs.typo3.org/p/netresearch/nr-passkeys-be/main/en-us/" rel="noopener">Documentation</a>
+      <a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://github.com/netresearch/t3x-nr-passkeys-be" rel="noopener">GitHub</a>
+    </div>
+  </div>
+</div>', hidden = 0, deleted = 0 WHERE uid = 9510 AND pid = 106;
+UPDATE tt_content SET bodytext = '<div class="rounded-3 p-4 mt-4" style="background:#2F99A4; color:#fff;">
+  <h2 class="fw-bold mb-2" style="font-size:1.3rem; color:#fff;">Want this in your TYPO3 project?</h2>
+  <p class="mb-3" style="font-size:1rem; max-width:60ch;">This instance runs the extension exactly as it ships. We are happy to walk you through it and discuss what it would take in your setup.</p>
+  <a class="btn btn-light fw-semibold" href="https://www.netresearch.de/kontakt/" rel="noopener">Talk to us</a>
+</div>',    hidden = 0, deleted = 0 WHERE uid = 9540 AND pid = 106;
+UPDATE tt_content SET bodytext = '<div class="d-flex align-items-start gap-3 mb-3">
+  <img src="/fileadmin/user_upload/images/extension-icons/passkeys-fe.svg" alt="" width="56" height="56" style="flex:0 0 56px;" loading="lazy">
+  <div>
+    <h1 class="fw-bold mb-1" style="font-size:1.9rem;">Passkeys (Frontend)</h1>
+    <p class="text-muted mb-2" style="font-size:1.05rem; max-width:65ch;">Passkey-first TYPO3 frontend authentication for fe_users (WebAuthn/FIDO2). Enables passwordless login with TouchID, FaceID, YubiKey, Windows Hello. By Netresearch.</p>
+    <div class="d-flex gap-2 flex-wrap">
+      <a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://extensions.typo3.org/extension/nr_passkeys_fe" rel="noopener">TER 0.6.0</a>
+      <a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://docs.typo3.org/p/netresearch/nr-passkeys-fe/main/en-us/" rel="noopener">Documentation</a>
+      <a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://github.com/netresearch/t3x-nr-passkeys-fe" rel="noopener">GitHub</a>
+    </div>
+  </div>
+</div>', hidden = 0, deleted = 0 WHERE uid = 9511 AND pid = 109;
+UPDATE tt_content SET bodytext = '<div class="rounded-3 p-4 mt-4" style="background:#2F99A4; color:#fff;">
+  <h2 class="fw-bold mb-2" style="font-size:1.3rem; color:#fff;">Want this in your TYPO3 project?</h2>
+  <p class="mb-3" style="font-size:1rem; max-width:60ch;">This instance runs the extension exactly as it ships. We are happy to walk you through it and discuss what it would take in your setup.</p>
+  <a class="btn btn-light fw-semibold" href="https://www.netresearch.de/kontakt/" rel="noopener">Talk to us</a>
+</div>',    hidden = 0, deleted = 0 WHERE uid = 9541 AND pid = 109;
+UPDATE tt_content SET bodytext = '<div class="d-flex align-items-start gap-3 mb-3">
+  <img src="/fileadmin/user_upload/images/extension-icons/repurpose.svg" alt="" width="56" height="56" style="flex:0 0 56px;" loading="lazy">
+  <div>
+    <h1 class="fw-bold mb-1" style="font-size:1.9rem;">Content Repurpose</h1>
+    <p class="text-muted mb-2" style="font-size:1.05rem; max-width:65ch;">Turn a webpage or PDF into a podcast, a diagram and an Instagram story — by Netresearch, built on netresearch/nr-llm.</p>
+    <div class="d-flex gap-2 flex-wrap">
+      <a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://extensions.typo3.org/extension/nr_repurpose" rel="noopener">TER 0.4.0</a>
+      <a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://github.com/netresearch/t3x-nr-repurpose" rel="noopener">GitHub</a>
+    </div>
+  </div>
+</div>', hidden = 0, deleted = 0 WHERE uid = 9512 AND pid = 111;
+UPDATE tt_content SET bodytext = '<div class="rounded-3 p-4 mt-4" style="background:#2F99A4; color:#fff;">
+  <h2 class="fw-bold mb-2" style="font-size:1.3rem; color:#fff;">Want this in your TYPO3 project?</h2>
+  <p class="mb-3" style="font-size:1rem; max-width:60ch;">This instance runs the extension exactly as it ships. We are happy to walk you through it and discuss what it would take in your setup.</p>
+  <a class="btn btn-light fw-semibold" href="https://www.netresearch.de/kontakt/" rel="noopener">Talk to us</a>
+</div>',    hidden = 0, deleted = 0 WHERE uid = 9542 AND pid = 111;
+UPDATE tt_content SET bodytext = '<div class="d-flex align-items-start gap-3 mb-3">
+  <img src="/fileadmin/user_upload/images/extension-icons/rte-ckeditor-image.svg" alt="" width="56" height="56" style="flex:0 0 56px;" loading="lazy">
+  <div>
+    <h1 class="fw-bold mb-1" style="font-size:1.9rem;">RTE CKEditor Image</h1>
+    <p class="text-muted mb-2" style="font-size:1.05rem; max-width:65ch;">Image support in CKEditor for the TYPO3 ecosystem - by Netresearch.</p>
+    <div class="d-flex gap-2 flex-wrap">
+      <a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://extensions.typo3.org/extension/rte_ckeditor_image" rel="noopener">TER 13.10.2</a>
+      <a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://docs.typo3.org/p/netresearch/rte-ckeditor-image/main/en-us/" rel="noopener">Documentation</a>
+      <a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://github.com/netresearch/t3x-rte_ckeditor_image" rel="noopener">GitHub</a>
+    </div>
+  </div>
+</div>', hidden = 0, deleted = 0 WHERE uid = 9513 AND pid = 102;
+UPDATE tt_content SET bodytext = '<div class="rounded-3 p-4 mt-4" style="background:#2F99A4; color:#fff;">
+  <h2 class="fw-bold mb-2" style="font-size:1.3rem; color:#fff;">Want this in your TYPO3 project?</h2>
+  <p class="mb-3" style="font-size:1rem; max-width:60ch;">This instance runs the extension exactly as it ships. We are happy to walk you through it and discuss what it would take in your setup.</p>
+  <a class="btn btn-light fw-semibold" href="https://www.netresearch.de/kontakt/" rel="noopener">Talk to us</a>
+</div>',    hidden = 0, deleted = 0 WHERE uid = 9543 AND pid = 102;
+UPDATE tt_content SET bodytext = '<div class="d-flex align-items-start gap-3 mb-3">
+  <img src="/fileadmin/user_upload/images/extension-icons/temporal-cache.svg" alt="" width="56" height="56" style="flex:0 0 56px;" loading="lazy">
+  <div>
+    <h1 class="fw-bold mb-1" style="font-size:1.9rem;">Temporal Cache</h1>
+    <p class="text-muted mb-2" style="font-size:1.05rem; max-width:65ch;">Phase 1 Experimental Approach: Addresses TYPO3 Forge #14277 via site-wide cache synchronization. Automatic cache invalidation for time-based content. WARNING: ALL page caches expire on EVERY temporal transition (starttime/endtime). Read Performance Considerations documentation before deployment. Alternative approaches (USER_INT menus) may be more suitable for high-traffic sites.</p>
+    <div class="d-flex gap-2 flex-wrap">
+      <a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://github.com/netresearch/t3x-temporal-cache" rel="noopener">GitHub</a>
+    </div>
+  </div>
+</div>', hidden = 0, deleted = 0 WHERE uid = 9514 AND pid = 108;
+UPDATE tt_content SET bodytext = '<div class="rounded-3 p-4 mt-4" style="background:#2F99A4; color:#fff;">
+  <h2 class="fw-bold mb-2" style="font-size:1.3rem; color:#fff;">Want this in your TYPO3 project?</h2>
+  <p class="mb-3" style="font-size:1rem; max-width:60ch;">This instance runs the extension exactly as it ships. We are happy to walk you through it and discuss what it would take in your setup.</p>
+  <a class="btn btn-light fw-semibold" href="https://www.netresearch.de/kontakt/" rel="noopener">Talk to us</a>
+</div>',    hidden = 0, deleted = 0 WHERE uid = 9544 AND pid = 108;
+UPDATE tt_content SET bodytext = '<div class="d-flex align-items-start gap-3 mb-3">
+  <img src="/fileadmin/user_upload/images/extension-icons/textdb.svg" alt="" width="56" height="56" style="flex:0 0 56px;" loading="lazy">
+  <div>
+    <h1 class="fw-bold mb-1" style="font-size:1.9rem;">TextDB</h1>
+    <p class="text-muted mb-2" style="font-size:1.05rem; max-width:65ch;">Auto-creating TYPO3 translation database - use ViewHelpers, editors translate in backend, instant updates - by Netresearch.</p>
+    <div class="d-flex gap-2 flex-wrap">
+      <a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://extensions.typo3.org/extension/nr_textdb" rel="noopener">TER 4.0.0</a>
+      <a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://docs.typo3.org/p/netresearch/nr-textdb/main/en-us/" rel="noopener">Documentation</a>
+      <a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://github.com/netresearch/t3x-nr-textdb" rel="noopener">GitHub</a>
+    </div>
+  </div>
+</div>', hidden = 0, deleted = 0 WHERE uid = 9515 AND pid = 160;
+UPDATE tt_content SET bodytext = '<div class="rounded-3 p-4 mt-4" style="background:#2F99A4; color:#fff;">
+  <h2 class="fw-bold mb-2" style="font-size:1.3rem; color:#fff;">Want this in your TYPO3 project?</h2>
+  <p class="mb-3" style="font-size:1rem; max-width:60ch;">This instance runs the extension exactly as it ships. We are happy to walk you through it and discuss what it would take in your setup.</p>
+  <a class="btn btn-light fw-semibold" href="https://www.netresearch.de/kontakt/" rel="noopener">Talk to us</a>
+</div>',    hidden = 0, deleted = 0 WHERE uid = 9545 AND pid = 160;
+UPDATE tt_content SET bodytext = '<div class="d-flex align-items-start gap-3 mb-3">
+  <img src="/fileadmin/user_upload/images/extension-icons/vault.svg" alt="" width="56" height="56" style="flex:0 0 56px;" loading="lazy">
+  <div>
+    <h1 class="fw-bold mb-1" style="font-size:1.9rem;">Secrets Vault</h1>
+    <p class="text-muted mb-2" style="font-size:1.05rem; max-width:65ch;">Secure secrets management for TYPO3 with envelope encryption, access control, and audit logging.</p>
+    <div class="d-flex gap-2 flex-wrap">
+      <a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://extensions.typo3.org/extension/nr_vault" rel="noopener">TER 0.15.0</a>
+      <a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://docs.typo3.org/p/netresearch/nr-vault/main/en-us/" rel="noopener">Documentation</a>
+      <a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://github.com/netresearch/t3x-nr-vault" rel="noopener">GitHub</a>
+    </div>
+  </div>
+</div>', hidden = 0, deleted = 0 WHERE uid = 9516 AND pid = 107;
+UPDATE tt_content SET bodytext = '<div class="rounded-3 p-4 mt-4" style="background:#2F99A4; color:#fff;">
+  <h2 class="fw-bold mb-2" style="font-size:1.3rem; color:#fff;">Want this in your TYPO3 project?</h2>
+  <p class="mb-3" style="font-size:1rem; max-width:60ch;">This instance runs the extension exactly as it ships. We are happy to walk you through it and discuss what it would take in your setup.</p>
+  <a class="btn btn-light fw-semibold" href="https://www.netresearch.de/kontakt/" rel="noopener">Talk to us</a>
+</div>',    hidden = 0, deleted = 0 WHERE uid = 9546 AND pid = 107;
 
 -- =============================================================================
 -- Re-assert every seeded record, then verify — KEEP THIS BLOCK LAST
