@@ -3795,6 +3795,10 @@ SELECT 0, r.service_type, 'openai', r.configuration_uid, r.model_uid, r.model_id
 -- facing search rather than a backend module — the one budget here that could
 -- break a demo feature instead of an account.
 --
+-- Verified by running this block twice against MariaDB 12.3.2 (the engine the
+-- demo runs, dhi.io/mariadb:12) under STRICT_TRANS_TABLES: three rows, the
+-- intended values, no duplication on the second pass.
+--
 -- Note when showing it: the bar is month-to-date against a monthly ceiling, so
 -- early in a month all three read near zero. That is the feature working, and
 -- saying so is a good line; no seed value changes it.
