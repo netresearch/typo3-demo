@@ -279,27 +279,6 @@ services:
         height: 'medium'
         width: 'small'
 
-  dashboard.widget.nrdemo.imageoptimize:
-    class: 'Netresearch\DemoSite\Widgets\DemoExtensionCardWidget'
-    arguments:
-      $options:
-        description: 'On-demand image optimization for TYPO3: lossless compression on upload, plus lazily generated WebP and AVIF variants and responsive srcset served through the /processed/ URL. A backend module manages and clears the processed-image cache.'
-        howTo:
-          - 'Open Admin Tools > Image Optimize in the module menu.'
-          - 'Review the processed-image statistics, then open "System requirements" to verify the optimizer binaries.'
-          - 'Use "Clear processed images" to purge the /processed/ cache, then reload a page to watch variants regenerate on demand.'
-        moduleRoute: 'nr_image_optimize'
-        buttonLabel: 'Open Image Optimize'
-    tags:
-      - name: 'dashboard.widget'
-        identifier: 'nrdemo.imageoptimize'
-        groupNames: 'netresearch'
-        title: 'NR Image Optimize'
-        description: 'On-demand WebP/AVIF variants and responsive srcset'
-        iconIdentifier: 'module-image-optimize'
-        height: 'medium'
-        width: 'small'
-
   dashboard.widget.nrdemo.contexts:
     class: 'Netresearch\DemoSite\Widgets\DemoExtensionCardWidget'
     arguments:
