@@ -32,7 +32,6 @@ return [
             'nrdemo.vault',
             'nrdemo.temporalcache',
             'nrdemo.aifilemetadata',
-            'nrdemo.imageoptimize',
             'nrdemo.imagesitemap',
             'nrdemo.contexts',
             'nrdemo.textdb',

@@ -442,11 +442,15 @@ jobs:
           esac
           exit $failed
 
-      # nr_image_optimize picks imagick and falls back to GD, and both need WebP
-      # and AVIF. The image shipped GD without those flags and never built
-      # imagick, so the module reported "Not loaded" and produced nothing. Real
+      # Core's own image processing needs WebP and AVIF encoders, which is what
+      # imageFileConversionFormats relies on. The image shipped GD without those
+      # flags and never built imagick, so nothing produced a modern format. Real
       # bytes are asserted rather than capability flags: ImageMagick without a
       # working AVIF delegate writes an EMPTY .avif instead of failing.
+      #
+      # These assertions predate the removal of nr_image_optimize and are kept
+      # deliberately: they are the condition under which the WebP delivery
+      # asserted further down works at all.
       - name: Verify the image encoders are present
         run: |
           docker compose exec -T web php -r '
