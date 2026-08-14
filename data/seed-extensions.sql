@@ -5560,6 +5560,32 @@ DELETE FROM sys_file_processedfile
    AND LOWER(identifier) NOT LIKE '%.svg'
    AND identifier <> '';
 
+-- --- Refreshed extension screenshots -----------------------------------------
+-- The files under data/fileadmin/user_upload/images/extensions/ were re-captured
+-- against a 14.3.5 instance running this very seed. The entrypoint owns that
+-- directory now, so a deploy overwrites the old files; these rows make the FAL
+-- index agree with what is on disk, and drop the derived WebP so it is rebuilt
+-- from the new source instead of being served from the old one.
+--
+-- width/height are not touched: sys_file_metadata carries 0 for every one of
+-- these, and TYPO3 fills them on first access.
+--
+-- The three vault screenshots are deliberately NOT refreshed. A local instance
+-- has no secrets and no audit entries, so a re-capture would replace a populated
+-- list with an empty state, and its Security Readiness panel would report two
+-- findings that belong to the throwaway container rather than to the demo.
+UPDATE sys_file SET sha1 = 'fd25fdf0d36ffa1ec7b02297f1c1e42cb808179b', size = 70235,  tstamp = UNIX_TIMESTAMP(), modification_date = UNIX_TIMESTAMP() WHERE uid = 278 AND name = 'cowriter-CowriterDialog.png';
+UPDATE sys_file SET sha1 = 'c3d23741172d3c68d98b90f7a3947424a3178244', size = 29813,  tstamp = UNIX_TIMESTAMP(), modification_date = UNIX_TIMESTAMP() WHERE uid = 279 AND name = 'cowriter-CowriterToolbarButton.png';
+UPDATE sys_file SET sha1 = '3f56994f0dbb85a373b869e1478c345b79246e10', size = 170609, tstamp = UNIX_TIMESTAMP(), modification_date = UNIX_TIMESTAMP() WHERE uid = 280 AND name = 'landingpage-backend-module-overview.png';
+UPDATE sys_file SET sha1 = 'ff641f771e01c651b99e6de76e413bff34bcfb8b', size = 192631, tstamp = UNIX_TIMESTAMP(), modification_date = UNIX_TIMESTAMP() WHERE uid = 281 AND name = 'landingpage-template-list.png';
+UPDATE sys_file SET sha1 = '091b10a31b4a7c7f07474adfd148f7d4c6648129', size = 251673, tstamp = UNIX_TIMESTAMP(), modification_date = UNIX_TIMESTAMP() WHERE uid = 282 AND name = 'nr-llm-backend-dashboard.png';
+UPDATE sys_file SET sha1 = 'f9879c0fa28aea93666401cb6cb0bbd999a011bf', size = 120945, tstamp = UNIX_TIMESTAMP(), modification_date = UNIX_TIMESTAMP() WHERE uid = 283 AND name = 'nr-llm-backend-providers.png';
+UPDATE sys_file SET sha1 = 'e8a68432f79a8cd702b2047182f0f524ad7033c8', size = 202051, tstamp = UNIX_TIMESTAMP(), modification_date = UNIX_TIMESTAMP() WHERE uid = 284 AND name = 'nr-llm-backend-tasks.png';
+UPDATE sys_file SET sha1 = '8bb546bd5a9389a733fd02f2ad97db0d5df616f2', size = 51377,  tstamp = UNIX_TIMESTAMP(), modification_date = UNIX_TIMESTAMP() WHERE uid = 285 AND name = 'passkeys-be-login-loginpagewithpasskey.png';
+UPDATE sys_file SET sha1 = '5bf6272e03ccb35e61f3cf5ca2765722d9e33e59', size = 169960, tstamp = UNIX_TIMESTAMP(), modification_date = UNIX_TIMESTAMP() WHERE uid = 286 AND name = 'passkeys-be-usersettings-passkeymanagement.png';
+
+DELETE FROM sys_file_processedfile WHERE original IN (278, 279, 280, 281, 282, 283, 284, 285, 286);
+
 -- --- Verification -------------------------------------------------------------
 -- One line per record that is absent or whose uid is held by a foreign row —
 -- the two outcomes are indistinguishable from here and need the same response
@@ -5717,6 +5743,25 @@ SELECT CONCAT('SEED-PROBLEM: ', COUNT(*),
  WHERE LOWER(identifier) NOT LIKE '%.webp'
    AND LOWER(identifier) NOT LIKE '%.svg'
    AND identifier <> ''
+HAVING COUNT(*) > 0
+UNION ALL
+-- The screenshot refresh is keyed on uid AND name, so a renamed or renumbered
+-- record makes its UPDATE a silent no-op and the page keeps serving the old
+-- capture. Count the rows that did not take.
+SELECT CONCAT('SEED-PROBLEM: ', COUNT(*),
+              ' extension screenshots still carry their old checksum -- the refresh did not match')
+  FROM sys_file
+ WHERE uid IN (278, 279, 280, 281, 282, 283, 284, 285, 286)
+   AND sha1 NOT IN (
+       'fd25fdf0d36ffa1ec7b02297f1c1e42cb808179b',
+       'c3d23741172d3c68d98b90f7a3947424a3178244',
+       '3f56994f0dbb85a373b869e1478c345b79246e10',
+       'ff641f771e01c651b99e6de76e413bff34bcfb8b',
+       '091b10a31b4a7c7f07474adfd148f7d4c6648129',
+       'f9879c0fa28aea93666401cb6cb0bbd999a011bf',
+       'e8a68432f79a8cd702b2047182f0f524ad7033c8',
+       '8bb546bd5a9389a733fd02f2ad97db0d5df616f2',
+       '5bf6272e03ccb35e61f3cf5ca2765722d9e33e59')
 HAVING COUNT(*) > 0
 UNION ALL
 -- The property this whole band exists for, asserted directly rather than
