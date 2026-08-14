@@ -46,7 +46,7 @@ if [ -d /seed/fileadmin ]; then
         fi
     done
 
-    for owned in user_upload/images/extension-icons user_upload/repurpose; do
+    for owned in user_upload/images/extension-icons user_upload/images/extensions user_upload/repurpose; do
         if [ -d "/seed/fileadmin/$owned" ]; then
             mkdir -p "public/fileadmin/$owned"
             cp -a "/seed/fileadmin/$owned/." "public/fileadmin/$owned/"

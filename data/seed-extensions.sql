@@ -5560,6 +5560,66 @@ DELETE FROM sys_file_processedfile
    AND LOWER(identifier) NOT LIKE '%.svg'
    AND identifier <> '';
 
+-- --- The overview page had no h1 ----------------------------------------------
+-- Each of the sixteen extension pages opens with exactly one <h1>; their parent
+-- opened with a lead paragraph and nothing above it, so the document started at
+-- <h5>. The heading is inserted before the lead, in the same markup the detail
+-- pages use, for both languages. Keyed on the opening string, so a second run
+-- finds the heading already there and changes nothing.
+UPDATE tt_content
+   SET bodytext = REPLACE(bodytext,
+       '<div class="text-center mb-4">\n  <p class="lead text-muted mx-auto" style="max-width: 600px;">Open-source extensions',
+       '<div class="text-center mb-4">\n  <h1 class="fw-bold mb-1">Netresearch Extensions</h1>\n  <p class="lead text-muted mx-auto" style="max-width: 600px;">Open-source extensions')
+ WHERE uid = 410 AND pid = 101 AND bodytext NOT LIKE '%<h1%';
+
+UPDATE tt_content
+   SET bodytext = REPLACE(bodytext,
+       '<div class="text-center mb-4">\n  <p class="lead text-muted mx-auto" style="max-width: 600px;">Quelloffene Erweiterungen',
+       '<div class="text-center mb-4">\n  <h1 class="fw-bold mb-1">Netresearch-Erweiterungen</h1>\n  <p class="lead text-muted mx-auto" style="max-width: 600px;">Quelloffene Erweiterungen')
+ WHERE uid = 626 AND pid = 101 AND bodytext NOT LIKE '%<h1%';
+
+-- --- Refreshed extension screenshots -----------------------------------------
+-- The files under data/fileadmin/user_upload/images/extensions/ were re-captured
+-- against a 14.3.5 instance running this very seed. The entrypoint owns that
+-- directory now, so a deploy overwrites the old files; these rows make the FAL
+-- index agree with what is on disk, and drop the derived WebP so it is rebuilt
+-- from the new source instead of being served from the old one.
+--
+-- width/height are not touched: sys_file_metadata carries 0 for every one of
+-- these, and TYPO3 fills them on first access.
+--
+-- The timestamp is the capture date, written as a constant rather than
+-- UNIX_TIMESTAMP(): the seed runs on every deploy, and a clock call would make
+-- these rows differ after every one of them for no reason.
+--
+-- Four screenshots are deliberately NOT refreshed, because a capture taken on a
+-- throwaway container must not publish that container's own state:
+--
+--   vault-SecretsList, vault-AuditLog   secrets and audit entries are created at
+--                                       deploy time, so a local capture is an
+--                                       empty state where the page has a list
+--   vault-VaultOverview                 its Security Readiness panel reports two
+--                                       findings that belong to the container
+--                                       ([BE][lockSSL] unset, master key derived
+--                                       from the encryption key)
+--   passkeys-…-passkeymanagement        its configuration note prints the
+--                                       auto-detected host, which locally reads
+--                                       "localhost:<port>"
+--
+-- The nr-llm captures DO show an instance without provider credentials, because
+-- that is what a seed-only build has: the key is provisioned by `make update`
+-- after the seed. That is the seed's own state, not the container's.
+UPDATE sys_file SET sha1 = 'fd25fdf0d36ffa1ec7b02297f1c1e42cb808179b', size = 70235,  tstamp = 1786665600, modification_date = 1786665600 WHERE uid = 278 AND name = 'cowriter-CowriterDialog.png';
+UPDATE sys_file SET sha1 = 'c3d23741172d3c68d98b90f7a3947424a3178244', size = 29813,  tstamp = 1786665600, modification_date = 1786665600 WHERE uid = 279 AND name = 'cowriter-CowriterToolbarButton.png';
+UPDATE sys_file SET sha1 = '3f56994f0dbb85a373b869e1478c345b79246e10', size = 170609, tstamp = 1786665600, modification_date = 1786665600 WHERE uid = 280 AND name = 'landingpage-backend-module-overview.png';
+UPDATE sys_file SET sha1 = 'ff641f771e01c651b99e6de76e413bff34bcfb8b', size = 192631, tstamp = 1786665600, modification_date = 1786665600 WHERE uid = 281 AND name = 'landingpage-template-list.png';
+UPDATE sys_file SET sha1 = '091b10a31b4a7c7f07474adfd148f7d4c6648129', size = 251673, tstamp = 1786665600, modification_date = 1786665600 WHERE uid = 282 AND name = 'nr-llm-backend-dashboard.png';
+UPDATE sys_file SET sha1 = 'f9879c0fa28aea93666401cb6cb0bbd999a011bf', size = 120945, tstamp = 1786665600, modification_date = 1786665600 WHERE uid = 283 AND name = 'nr-llm-backend-providers.png';
+UPDATE sys_file SET sha1 = 'e8a68432f79a8cd702b2047182f0f524ad7033c8', size = 202051, tstamp = 1786665600, modification_date = 1786665600 WHERE uid = 284 AND name = 'nr-llm-backend-tasks.png';
+UPDATE sys_file SET sha1 = 'b58fced6b05e7456036fa72bd55ed0c69fa51982', size = 22214,  tstamp = 1786665600, modification_date = 1786665600 WHERE uid = 285 AND name = 'passkeys-be-login-loginpagewithpasskey.png';
+
+DELETE FROM sys_file_processedfile WHERE original IN (278, 279, 280, 281, 282, 283, 284, 285);
+
 -- --- Verification -------------------------------------------------------------
 -- One line per record that is absent or whose uid is held by a foreign row —
 -- the two outcomes are indistinguishable from here and need the same response
@@ -5717,6 +5777,34 @@ SELECT CONCAT('SEED-PROBLEM: ', COUNT(*),
  WHERE LOWER(identifier) NOT LIKE '%.webp'
    AND LOWER(identifier) NOT LIKE '%.svg'
    AND identifier <> ''
+HAVING COUNT(*) > 0
+UNION ALL
+-- The overview page is the parent of the sixteen; it must carry exactly one h1
+-- in each language, like they do.
+SELECT CONCAT('SEED-PROBLEM: the /extensions overview element ', uid,
+              ' carries ', CAST((LENGTH(bodytext) - LENGTH(REPLACE(bodytext, '<h1', ''))) / 3 AS UNSIGNED),
+              ' h1 elements (expected 1)')
+  FROM tt_content
+ WHERE uid IN (410, 626)
+   AND deleted = 0
+   AND (LENGTH(bodytext) - LENGTH(REPLACE(bodytext, '<h1', ''))) / 3 <> 1
+UNION ALL
+-- The screenshot refresh is keyed on uid AND name, so a renamed or renumbered
+-- record makes its UPDATE a silent no-op and the page keeps serving the old
+-- capture. Count the rows that did not take.
+SELECT CONCAT('SEED-PROBLEM: ', COUNT(*),
+              ' extension screenshots still carry their old checksum -- the refresh did not match')
+  FROM sys_file
+ WHERE uid IN (278, 279, 280, 281, 282, 283, 284, 285)
+   AND sha1 NOT IN (
+       'fd25fdf0d36ffa1ec7b02297f1c1e42cb808179b',
+       'c3d23741172d3c68d98b90f7a3947424a3178244',
+       '3f56994f0dbb85a373b869e1478c345b79246e10',
+       'ff641f771e01c651b99e6de76e413bff34bcfb8b',
+       '091b10a31b4a7c7f07474adfd148f7d4c6648129',
+       'f9879c0fa28aea93666401cb6cb0bbd999a011bf',
+       'e8a68432f79a8cd702b2047182f0f524ad7033c8',
+       'b58fced6b05e7456036fa72bd55ed0c69fa51982')
 HAVING COUNT(*) > 0
 UNION ALL
 -- The property this whole band exists for, asserted directly rather than
