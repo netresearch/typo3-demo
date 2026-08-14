@@ -22,11 +22,39 @@ mkdir -p var/log var/cache var/lock var/charset var/labels \
     public/fileadmin public/typo3temp/assets/_processed_ config/system
 chown -R www-data:www-data var public/fileadmin public/typo3temp
 
-if [ -d /seed/fileadmin ] && [ -z "$(ls -A public/fileadmin 2>/dev/null)" ]; then
-    echo "Seeding fileadmin from image..."
-    cp -a /seed/fileadmin/. public/fileadmin/
+# fileadmin lives in a volume that outlives the image, so a file added to
+# data/fileadmin/ after the first boot never reached the instance: the copy
+# below used to run only while the volume was empty, and it has not been empty
+# since March. Sixteen extension icons and a demo source file shipped as 404s
+# before this was noticed — the pages referenced them and nobody fetched one.
+#
+# Two passes, because the volume holds two kinds of file:
+#   1. -n adds what the image carries and the volume lacks, and never clobbers
+#      anything uploaded through the backend.
+#   2. Directories the repository owns outright are refreshed, so a corrected
+#      asset actually arrives instead of being pinned by pass 1.
+if [ -d /seed/fileadmin ]; then
+    echo "Syncing fileadmin from image..."
+    # Copied file by file, not with `cp -n`. BusyBox cp — which is what this
+    # alpine image has — treats `cp -a -n src/. dst/` as "destination exists,
+    # skip", and copies NOTHING: measured 0 of 227 files. GNU cp does the
+    # obvious thing, which is why a test on the build host says it works.
+    (cd /seed/fileadmin && find . -type f) | while IFS= read -r f; do
+        if [ ! -e "public/fileadmin/$f" ]; then
+            mkdir -p "public/fileadmin/$(dirname "$f")"
+            cp -a "/seed/fileadmin/$f" "public/fileadmin/$f"
+        fi
+    done
+
+    for owned in user_upload/images/extension-icons user_upload/repurpose; do
+        if [ -d "/seed/fileadmin/$owned" ]; then
+            mkdir -p "public/fileadmin/$owned"
+            cp -a "/seed/fileadmin/$owned/." "public/fileadmin/$owned/"
+        fi
+    done
+
     chown -R www-data:www-data public/fileadmin
-    echo "Fileadmin seeded."
+    echo "Fileadmin synced."
 fi
 
 if [ ! -f config/system/settings.php ]; then
