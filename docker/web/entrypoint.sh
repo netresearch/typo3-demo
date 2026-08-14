@@ -35,7 +35,16 @@ chown -R www-data:www-data var public/fileadmin public/typo3temp
 #      asset actually arrives instead of being pinned by pass 1.
 if [ -d /seed/fileadmin ]; then
     echo "Syncing fileadmin from image..."
-    cp -a -n /seed/fileadmin/. public/fileadmin/ 2>/dev/null || true
+    # Copied file by file, not with `cp -n`. BusyBox cp — which is what this
+    # alpine image has — treats `cp -a -n src/. dst/` as "destination exists,
+    # skip", and copies NOTHING: measured 0 of 227 files. GNU cp does the
+    # obvious thing, which is why a test on the build host says it works.
+    (cd /seed/fileadmin && find . -type f) | while IFS= read -r f; do
+        if [ ! -e "public/fileadmin/$f" ]; then
+            mkdir -p "public/fileadmin/$(dirname "$f")"
+            cp -a "/seed/fileadmin/$f" "public/fileadmin/$f"
+        fi
+    done
 
     for owned in user_upload/images/extension-icons user_upload/repurpose; do
         if [ -d "/seed/fileadmin/$owned" ]; then
