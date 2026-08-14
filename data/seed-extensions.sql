@@ -5560,6 +5560,24 @@ DELETE FROM sys_file_processedfile
    AND LOWER(identifier) NOT LIKE '%.svg'
    AND identifier <> '';
 
+-- --- The overview page had no h1 ----------------------------------------------
+-- Each of the sixteen extension pages opens with exactly one <h1>; their parent
+-- opened with a lead paragraph and nothing above it, so the document started at
+-- <h5>. The heading is inserted before the lead, in the same markup the detail
+-- pages use, for both languages. Keyed on the opening string, so a second run
+-- finds the heading already there and changes nothing.
+UPDATE tt_content
+   SET bodytext = REPLACE(bodytext,
+       '<div class="text-center mb-4">\n  <p class="lead text-muted mx-auto" style="max-width: 600px;">Open-source extensions',
+       '<div class="text-center mb-4">\n  <h1 class="fw-bold mb-1">Netresearch Extensions</h1>\n  <p class="lead text-muted mx-auto" style="max-width: 600px;">Open-source extensions')
+ WHERE uid = 410 AND pid = 101 AND bodytext NOT LIKE '%<h1%';
+
+UPDATE tt_content
+   SET bodytext = REPLACE(bodytext,
+       '<div class="text-center mb-4">\n  <p class="lead text-muted mx-auto" style="max-width: 600px;">Quelloffene Erweiterungen',
+       '<div class="text-center mb-4">\n  <h1 class="fw-bold mb-1">Netresearch-Erweiterungen</h1>\n  <p class="lead text-muted mx-auto" style="max-width: 600px;">Quelloffene Erweiterungen')
+ WHERE uid = 626 AND pid = 101 AND bodytext NOT LIKE '%<h1%';
+
 -- --- Refreshed extension screenshots -----------------------------------------
 -- The files under data/fileadmin/user_upload/images/extensions/ were re-captured
 -- against a 14.3.5 instance running this very seed. The entrypoint owns that
@@ -5748,6 +5766,16 @@ SELECT CONCAT('SEED-PROBLEM: ', COUNT(*),
    AND LOWER(identifier) NOT LIKE '%.svg'
    AND identifier <> ''
 HAVING COUNT(*) > 0
+UNION ALL
+-- The overview page is the parent of the sixteen; it must carry exactly one h1
+-- in each language, like they do.
+SELECT CONCAT('SEED-PROBLEM: the /extensions overview element ', uid,
+              ' carries ', CAST((LENGTH(bodytext) - LENGTH(REPLACE(bodytext, '<h1', ''))) / 3 AS UNSIGNED),
+              ' h1 elements (expected 1)')
+  FROM tt_content
+ WHERE uid IN (410, 626)
+   AND deleted = 0
+   AND (LENGTH(bodytext) - LENGTH(REPLACE(bodytext, '<h1', ''))) / 3 <> 1
 UNION ALL
 -- The screenshot refresh is keyed on uid AND name, so a renamed or renumbered
 -- record makes its UPDATE a silent no-op and the page keeps serving the old
