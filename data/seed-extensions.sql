@@ -4597,6 +4597,603 @@ UPDATE tx_nrllm_skill_source SET enabled = 1, hidden = 0, deleted = 0,
        sync_status = 'synced', pinned_sha = '80e42feaf507fb52b561b571ae25f3d2d5c59f12' WHERE uid = 9402;
 
 -- =============================================================================
+-- One header per extension page, not two
+-- =============================================================================
+-- The header added earlier was prepended above each page's existing hero box,
+-- so every page opened with two headings, two descriptions and two link rows
+-- saying nearly the same thing. That is what looking at a rendered page shows
+-- and what checking for "an h1 exists" does not.
+--
+-- The hero is removed from the page's own element with an exact REPLACE of the
+-- block, and everything worth keeping from it — the badges, the headline as a
+-- tagline, and its lead, which is better written than a composer description —
+-- moves into the one header. Its Packagist link joins the verified row.
+--
+-- Expressed as UPDATEs rather than by editing the INSERTs above: the bodies are
+-- hand-written HTML in SQL string literals, and cutting them by offset removed
+-- 832 lines when it was meant to remove 28 blocks. A REPLACE of an exact string
+-- either matches or does nothing, and the result is checkable in the database.
+UPDATE tt_content SET bodytext = REPLACE(bodytext, '<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(47,153,164,0.06), rgba(47,153,164,0.02));">
+  <div class="d-flex align-items-center gap-2 mb-2">
+    <span class="badge rounded-pill text-white" style="background: #2F99A4; font-size: 0.7rem;">CKEditor</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">TYPO3 v14</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">Open Source</span>
+  </div>
+  <h2 class="fw-bold mb-2" style="font-size: 1.6rem;">Advanced Image Handling for CKEditor 5</h2>
+  <p class="text-muted mb-3" style="font-size: 1rem; max-width: 650px;">Block images, inline images, click-to-enlarge, and linked images — all directly in the TYPO3 rich text editor. No content elements needed.</p>
+  <div class="d-flex gap-2 flex-wrap">
+    <a href="https://github.com/netresearch/t3x-rte_ckeditor_image" target="_blank" rel="noopener" class="btn btn-sm text-white" style="background: #2F99A4;">GitHub</a>
+    <a href="https://extensions.typo3.org/extension/rte_ckeditor_image" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">TER</a>
+    <a href="https://packagist.org/packages/netresearch/rte-ckeditor-image" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">Packagist</a>
+  </div>
+</div>', '') WHERE uid = 400 AND pid = 102;
+UPDATE tt_content SET bodytext = REPLACE(bodytext, '<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(47,153,164,0.06), rgba(47,153,164,0.02));">
+  <div class="d-flex align-items-center gap-2 mb-2">
+    <span class="badge rounded-pill text-white" style="background: #2F99A4; font-size: 0.7rem;">AI</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">CKEditor Plugin</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">TYPO3 v14</span>
+  </div>
+  <h2 class="fw-bold mb-2" style="font-size: 1.6rem;">AI-Powered Content Assistant</h2>
+  <p class="text-muted mb-3" style="font-size: 1rem; max-width: 650px;">Select text in CKEditor and let AI rewrite, summarize, translate, or fix grammar. Configurable tasks with custom prompts.</p>
+  <div class="d-flex gap-2 flex-wrap">
+    <a href="https://github.com/netresearch/t3x-cowriter" target="_blank" rel="noopener" class="btn btn-sm text-white" style="background: #2F99A4;">GitHub</a>
+    <a href="https://packagist.org/packages/netresearch/t3-cowriter" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">Packagist</a>
+  </div>
+</div>', '') WHERE uid = 401 AND pid = 103;
+UPDATE tt_content SET bodytext = REPLACE(bodytext, '<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(88,89,97,0.06), rgba(88,89,97,0.02));">
+  <div class="d-flex align-items-center gap-2 mb-2">
+    <span class="badge rounded-pill text-white" style="background: #585961; font-size: 0.7rem;">Core</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">Foundation</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">TYPO3 v14</span>
+  </div>
+  <h2 class="fw-bold mb-2" style="font-size: 1.6rem;">One LLM Setup for Every Extension</h2>
+  <p class="text-muted mb-3" style="font-size: 1rem; max-width: 650px;">The shared AI foundation for TYPO3. Configure providers, models, and task templates once — every AI extension on your site uses them.</p>
+  <div class="d-flex gap-2 flex-wrap">
+    <a href="https://github.com/netresearch/t3x-nr-llm" target="_blank" rel="noopener" class="btn btn-sm text-white" style="background: #585961;">GitHub</a>
+    <a href="https://packagist.org/packages/netresearch/nr-llm" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">Packagist</a>
+  </div>
+</div>', '') WHERE uid = 402 AND pid = 104;
+UPDATE tt_content SET bodytext = REPLACE(bodytext, '<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(47,153,164,0.06), rgba(47,153,164,0.02));">
+  <div class="d-flex align-items-center gap-2 mb-2">
+    <span class="badge rounded-pill text-white" style="background: #2F99A4; font-size: 0.7rem;">AI</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">Backend Wizard</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">TYPO3 v14</span>
+  </div>
+  <h2 class="fw-bold mb-2" style="font-size: 1.6rem;">Generate Landing Pages with AI</h2>
+  <p class="text-muted mb-3" style="font-size: 1rem; max-width: 650px;">Describe your goal and let AI create a complete, structured TYPO3 page with hero, features, content sections, and call-to-action.</p>
+  <div class="d-flex gap-2 flex-wrap">
+    <a href="https://github.com/netresearch/nr-landingpage" target="_blank" rel="noopener" class="btn btn-sm text-white" style="background: #2F99A4;">GitHub</a>
+    <a href="https://packagist.org/packages/netresearch/nr-landingpage" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">Packagist</a>
+  </div>
+</div>', '') WHERE uid = 403 AND pid = 105;
+UPDATE tt_content SET bodytext = REPLACE(bodytext, '<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(255,77,0,0.04), rgba(255,77,0,0.01));">
+  <div class="d-flex align-items-center gap-2 mb-2">
+    <span class="badge rounded-pill text-white" style="background: #FF4D00; font-size: 0.7rem;">Security</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">WebAuthn</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">TYPO3 v14</span>
+  </div>
+  <h2 class="fw-bold mb-2" style="font-size: 1.6rem;">Passwordless Backend Login</h2>
+  <p class="text-muted mb-3" style="font-size: 1rem; max-width: 650px;">WebAuthn/FIDO2 passkey authentication for TYPO3 backend users. Replace passwords with fingerprint, face recognition, or security keys.</p>
+  <div class="d-flex gap-2 flex-wrap">
+    <a href="https://github.com/netresearch/t3x-nr-passkeys-be" target="_blank" rel="noopener" class="btn btn-sm text-white" style="background: #FF4D00;">GitHub</a>
+    <a href="https://packagist.org/packages/netresearch/nr-passkeys-be" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">Packagist</a>
+  </div>
+</div>', '') WHERE uid = 404 AND pid = 106;
+UPDATE tt_content SET bodytext = REPLACE(bodytext, '<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(255,77,0,0.04), rgba(255,77,0,0.01));">
+  <div class="d-flex align-items-center gap-2 mb-2">
+    <span class="badge rounded-pill text-white" style="background: #FF4D00; font-size: 0.7rem;">Security</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">Enterprise</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">TYPO3 v14</span>
+  </div>
+  <h2 class="fw-bold mb-2" style="font-size: 1.6rem;">Enterprise Secrets Management</h2>
+  <p class="text-muted mb-3" style="font-size: 1rem; max-width: 650px;">Envelope encryption, access control, audit logging, and key rotation for TYPO3. Stop storing API keys in plain text.</p>
+  <div class="d-flex gap-2 flex-wrap">
+    <a href="https://github.com/netresearch/t3x-nr-vault" target="_blank" rel="noopener" class="btn btn-sm text-white" style="background: #FF4D00;">GitHub</a>
+    <a href="https://packagist.org/packages/netresearch/nr-vault" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">Packagist</a>
+  </div>
+</div>', '') WHERE uid = 405 AND pid = 107;
+UPDATE tt_content SET bodytext = REPLACE(bodytext, '<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(88,89,97,0.06), rgba(88,89,97,0.02));">
+  <div class="d-flex align-items-center gap-2 mb-2">
+    <span class="badge rounded-pill text-white" style="background: #585961; font-size: 0.7rem;">Cache</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">Performance</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">TYPO3 v14</span>
+  </div>
+  <h2 class="fw-bold mb-2" style="font-size: 1.6rem;">Timed Content, Automatic Cache</h2>
+  <p class="text-muted mb-3" style="font-size: 1rem; max-width: 650px;">Solves <a href="https://forge.typo3.org/issues/14277" target="_blank" rel="noopener" style="color: #2F99A4;">TYPO3 Forge #14277</a>: content with start/end times stays cached beyond its visibility window. This extension fixes that — automatically.</p>
+  <div class="d-flex gap-2 flex-wrap">
+    <a href="https://github.com/netresearch/t3x-nr-temporal-cache" target="_blank" rel="noopener" class="btn btn-sm text-white" style="background: #585961;">GitHub</a>
+    <a href="https://packagist.org/packages/netresearch/nr-temporal-cache" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">Packagist</a>
+  </div>
+</div>', '') WHERE uid = 406 AND pid = 108;
+UPDATE tt_content SET bodytext = REPLACE(bodytext, '<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(255,77,0,0.04), rgba(255,77,0,0.01));">
+  <div class="d-flex align-items-center gap-2 mb-2">
+    <span class="badge rounded-pill text-white" style="background: #FF4D00; font-size: 0.7rem;">Security</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">WebAuthn</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">TYPO3 v14</span>
+  </div>
+  <h2 class="fw-bold mb-2" style="font-size: 1.6rem;">Passkey-First Frontend Authentication</h2>
+  <p class="text-muted mb-3" style="font-size: 1rem; max-width: 650px;">WebAuthn/FIDO2 passkey login for TYPO3 frontend users. Replace passwords with biometrics — fingerprint, face recognition, or security keys.</p>
+  <div class="d-flex gap-2 flex-wrap">
+    <a href="/login" class="btn btn-sm text-white" style="background: #FF4D00;">Try Live Demo</a>
+    <a href="https://github.com/netresearch/t3x-nr-passkeys-fe" target="_blank" rel="noopener" class="btn btn-sm text-white" style="background: #2F99A4;">GitHub</a>
+    <a href="https://packagist.org/packages/netresearch/nr-passkeys-fe" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">Packagist</a>
+  </div>
+</div>', '') WHERE uid = 407 AND pid = 109;
+UPDATE tt_content SET bodytext = REPLACE(bodytext, '<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(47,153,164,0.06), rgba(47,153,164,0.02));">
+  <div class="d-flex align-items-center gap-2 mb-2">
+    <span class="badge rounded-pill text-white" style="background: #2F99A4; font-size: 0.7rem;">AI</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">Content</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">TYPO3 v14</span>
+  </div>
+  <h2 class="fw-bold mb-2" style="font-size: 1.6rem;">One Page, Many Channels</h2>
+  <p class="text-muted mb-3" style="font-size: 1rem; max-width: 650px;">Turn pages you already have into social posts, summaries, and channel-ready variants. Repurpose existing TYPO3 content with AI instead of writing every format from scratch.</p>
+  <div class="d-flex gap-2 flex-wrap">
+    <a href="https://github.com/netresearch/t3x-nr-repurpose" target="_blank" rel="noopener" class="btn btn-sm text-white" style="background: #2F99A4;">GitHub</a>
+    <a href="https://packagist.org/packages/netresearch/nr-repurpose" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">Packagist</a>
+  </div>
+</div>', '') WHERE uid = 409 AND pid = 111;
+UPDATE tt_content SET bodytext = REPLACE(bodytext, '<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(47,153,164,0.06), rgba(47,153,164,0.02));">
+  <div class="d-flex align-items-center gap-2 mb-2">
+    <span class="badge rounded-pill text-white" style="background: #2F99A4; font-size: 0.7rem;">AI</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">MCP</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">TYPO3 v14</span>
+  </div>
+  <h2 class="fw-bold mb-2" style="font-size: 1.6rem;">Chat With Your TYPO3 Install</h2>
+  <p class="text-muted mb-3" style="font-size: 1rem; max-width: 650px;">An AI assistant embedded in the TYPO3 backend. Ask about pages, content, users, logs, and site configuration — the agent reads and acts on the live system through MCP tools.</p>
+  <div class="d-flex gap-2 flex-wrap">
+    <a href="https://github.com/netresearch/t3x-nr-mcp-agent" target="_blank" rel="noopener" class="btn btn-sm text-white" style="background: #2F99A4;">GitHub</a>
+    <a href="https://packagist.org/packages/netresearch/nr-mcp-agent" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">Packagist</a>
+  </div>
+</div>', '') WHERE uid = 522 AND pid = 157;
+UPDATE tt_content SET bodytext = REPLACE(bodytext, '<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(47,153,164,0.06), rgba(47,153,164,0.02));">
+  <div class="d-flex align-items-center gap-2 mb-2">
+    <span class="badge rounded-pill text-white" style="background: #2F99A4; font-size: 0.7rem;">Visibility</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">TYPO3 v14</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">Open Source</span>
+  </div>
+  <h2 class="fw-bold mb-2" style="font-size: 1.6rem;">Multi-Channel Content Visibility</h2>
+  <p class="text-muted mb-3" style="font-size: 1rem; max-width: 650px;">Define contexts &mdash; domain, GET parameter, IP range, HTTP header, session value, or a logical combination &mdash; and switch pages, menu entries, and single content elements on or off per context. One page tree, many channels.</p>
+  <div class="d-flex gap-2 flex-wrap">
+    <a href="https://github.com/netresearch/t3x-contexts" target="_blank" rel="noopener" class="btn btn-sm text-white" style="background: #2F99A4;">GitHub</a>
+    <a href="https://extensions.typo3.org/extension/contexts" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">TER</a>
+    <a href="https://packagist.org/packages/netresearch/contexts" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">Packagist</a>
+  </div>
+</div>', '') WHERE uid = 605 AND pid = 164;
+UPDATE tt_content SET bodytext = REPLACE(bodytext, '<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(47,153,164,0.06), rgba(47,153,164,0.02));">
+  <div class="d-flex align-items-center gap-2 mb-2">
+    <span class="badge rounded-pill text-white" style="background: #2F99A4; font-size: 0.7rem;">Translation</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">XLIFF</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">TYPO3 v14</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">Open Source</span>
+  </div>
+  <h2 class="fw-bold mb-2" style="font-size: 1.6rem;">Translations Editors Can Actually Edit</h2>
+  <p class="text-muted mb-3" style="font-size: 1rem; max-width: 650px;">Moves frontend system strings &mdash; form labels, buttons, confirmation messages &mdash; out of XLIFF files in the repository and into the database, where editors change the wording themselves. No deployment for a typo.</p>
+  <div class="d-flex gap-2 flex-wrap">
+    <a href="https://github.com/netresearch/t3x-nr-textdb" target="_blank" rel="noopener" class="btn btn-sm text-white" style="background: #2F99A4;">GitHub</a>
+    <a href="https://extensions.typo3.org/extension/nr_textdb" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">TER</a>
+    <a href="https://packagist.org/packages/netresearch/nr-textdb" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">Packagist</a>
+  </div>
+</div>', '') WHERE uid = 608 AND pid = 160;
+UPDATE tt_content SET bodytext = REPLACE(bodytext, '<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(47,153,164,0.06), rgba(47,153,164,0.02));">
+  <div class="d-flex align-items-center gap-2 mb-2">
+    <span class="badge rounded-pill text-white" style="background: #2F99A4; font-size: 0.7rem;">SEO</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">Sitemap</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">TYPO3 v14</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">Open Source</span>
+  </div>
+  <h2 class="fw-bold mb-2" style="font-size: 1.6rem;">An Image Sitemap For EXT:seo</h2>
+  <p class="text-muted mb-3" style="font-size: 1rem; max-width: 650px;">A second sitemap type that lists every image referenced from pages and content elements, with its title and caption, in the Google image-sitemap schema. It plugs into EXT:seo as an additional XmlSitemapDataProvider &mdash; no scheduler, no extra database tables.</p>
+  <div class="d-flex gap-2 flex-wrap">
+    <a href="https://github.com/netresearch/t3x-nr-image-sitemap" target="_blank" rel="noopener" class="btn btn-sm text-white" style="background: #2F99A4;">GitHub</a>
+    <a href="https://packagist.org/packages/netresearch/nr-image-sitemap" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">Packagist</a>
+  </div>
+</div>', '') WHERE uid = 609 AND pid = 161;
+UPDATE tt_content SET bodytext = REPLACE(bodytext, '<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(47,153,164,0.06), rgba(47,153,164,0.02));">
+  <div class="d-flex align-items-center gap-2 mb-2">
+    <span class="badge rounded-pill text-white" style="background: #2F99A4; font-size: 0.7rem;">Scheduler</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">Developer Toolkit</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">TYPO3 v14</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">Open Source</span>
+  </div>
+  <h2 class="fw-bold mb-2" style="font-size: 1.6rem;">Failure Reporting And Context Gating For Scheduler Tasks</h2>
+  <p class="text-muted mb-3" style="font-size: 1rem; max-width: 650px;">Base classes for the TYPO3 Scheduler: any task built on them gains e-mail failure reports and per-application-context execution gating, and declares its configuration form through a typed field builder instead of hand-written HTML.</p>
+  <div class="d-flex gap-2 flex-wrap">
+    <a href="https://github.com/netresearch/t3x-scheduler" target="_blank" rel="noopener" class="btn btn-sm text-white" style="background: #2F99A4;">GitHub</a>
+    <a href="https://packagist.org/packages/netresearch/nr-scheduler" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">Packagist</a>
+  </div>
+</div>', '') WHERE uid = 610 AND pid = 162;
+UPDATE tt_content SET bodytext = REPLACE(bodytext, '<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(47,153,164,0.06), rgba(47,153,164,0.02));">
+  <div class="d-flex align-items-center gap-2 mb-2">
+    <span class="badge rounded-pill text-white" style="background: #2F99A4; font-size: 0.7rem;">Sichtbarkeit</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">TYPO3 v14</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">Open Source</span>
+  </div>
+  <h2 class="fw-bold mb-2" style="font-size: 1.6rem;">Inhalte kanalabhängig ausspielen</h2>
+  <p class="text-muted mb-3" style="font-size: 1rem; max-width: 650px;">Kontexte lassen sich aus Domain, GET-Parameter, IP-Bereich, HTTP-Header, Session-Wert oder einer logischen Verknüpfung davon bilden. Seiten, Menüeinträge und einzelne Inhaltselemente werden je Kontext ein- oder ausgeblendet &mdash; ein Seitenbaum für alle Kanäle.</p>
+  <div class="d-flex gap-2 flex-wrap">
+    <a href="https://github.com/netresearch/t3x-contexts" target="_blank" rel="noopener" class="btn btn-sm text-white" style="background: #2F99A4;">GitHub</a>
+    <a href="https://extensions.typo3.org/extension/contexts" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">TER</a>
+    <a href="https://packagist.org/packages/netresearch/contexts" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">Packagist</a>
+  </div>
+</div>', '') WHERE uid = 620 AND pid = 164;
+UPDATE tt_content SET bodytext = REPLACE(bodytext, '<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(47,153,164,0.06), rgba(47,153,164,0.02));">
+  <div class="d-flex align-items-center gap-2 mb-2">
+    <span class="badge rounded-pill text-white" style="background: #2F99A4; font-size: 0.7rem;">Übersetzung</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">XLIFF</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">TYPO3 v14</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">Open Source</span>
+  </div>
+  <h2 class="fw-bold mb-2" style="font-size: 1.6rem;">Übersetzungen, die die Redaktion selbst pflegt</h2>
+  <p class="text-muted mb-3" style="font-size: 1rem; max-width: 650px;">Systemtexte des Frontends &mdash; Formularbeschriftungen, Schaltflächen, Bestätigungsmeldungen &mdash; wandern aus den XLIFF-Dateien im Repository in die Datenbank. Die Redaktion ändert den Wortlaut selbst; für einen Tippfehler braucht es kein Deployment mehr.</p>
+  <div class="d-flex gap-2 flex-wrap">
+    <a href="https://github.com/netresearch/t3x-nr-textdb" target="_blank" rel="noopener" class="btn btn-sm text-white" style="background: #2F99A4;">GitHub</a>
+    <a href="https://extensions.typo3.org/extension/nr_textdb" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">TER</a>
+    <a href="https://packagist.org/packages/netresearch/nr-textdb" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">Packagist</a>
+  </div>
+</div>', '') WHERE uid = 623 AND pid = 160;
+UPDATE tt_content SET bodytext = REPLACE(bodytext, '<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(47,153,164,0.06), rgba(47,153,164,0.02));">
+  <div class="d-flex align-items-center gap-2 mb-2">
+    <span class="badge rounded-pill text-white" style="background: #2F99A4; font-size: 0.7rem;">SEO</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">Sitemap</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">TYPO3 v14</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">Open Source</span>
+  </div>
+  <h2 class="fw-bold mb-2" style="font-size: 1.6rem;">Eine Bilder-Sitemap für EXT:seo</h2>
+  <p class="text-muted mb-3" style="font-size: 1rem; max-width: 650px;">Ein zweiter Sitemap-Typ, der jedes von Seiten und Inhaltselementen referenzierte Bild mit Titel und Bildunterschrift auflistet &mdash; im Google-Schema für Bilder-Sitemaps. Die Erweiterung klinkt sich als zusätzlicher XmlSitemapDataProvider in EXT:seo ein: kein Scheduler, keine zusätzlichen Tabellen.</p>
+  <div class="d-flex gap-2 flex-wrap">
+    <a href="https://github.com/netresearch/t3x-nr-image-sitemap" target="_blank" rel="noopener" class="btn btn-sm text-white" style="background: #2F99A4;">GitHub</a>
+    <a href="https://packagist.org/packages/netresearch/nr-image-sitemap" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">Packagist</a>
+  </div>
+</div>', '') WHERE uid = 624 AND pid = 161;
+UPDATE tt_content SET bodytext = REPLACE(bodytext, '<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(47,153,164,0.06), rgba(47,153,164,0.02));">
+  <div class="d-flex align-items-center gap-2 mb-2">
+    <span class="badge rounded-pill text-white" style="background: #2F99A4; font-size: 0.7rem;">Scheduler</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">Entwickler-Toolkit</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">TYPO3 v14</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">Open Source</span>
+  </div>
+  <h2 class="fw-bold mb-2" style="font-size: 1.6rem;">Fehlermeldungen und Kontextsteuerung für Scheduler-Aufgaben</h2>
+  <p class="text-muted mb-3" style="font-size: 1rem; max-width: 650px;">Basisklassen für den TYPO3-Scheduler: Aufgaben, die darauf aufbauen, verschicken bei einem Fehlschlag eine E-Mail und lassen sich an den Application Context binden. Ihr Konfigurationsformular beschreiben sie über typisierte Feldobjekte statt über handgeschriebenes HTML.</p>
+  <div class="d-flex gap-2 flex-wrap">
+    <a href="https://github.com/netresearch/t3x-scheduler" target="_blank" rel="noopener" class="btn btn-sm text-white" style="background: #2F99A4;">GitHub</a>
+    <a href="https://packagist.org/packages/netresearch/nr-scheduler" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">Packagist</a>
+  </div>
+</div>', '') WHERE uid = 625 AND pid = 162;
+UPDATE tt_content SET bodytext = REPLACE(bodytext, '<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(47,153,164,0.06), rgba(47,153,164,0.02));">
+  <div class="d-flex align-items-center gap-2 mb-2">
+    <span class="badge rounded-pill text-white" style="background: #2F99A4; font-size: 0.7rem;">CKEditor</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">TYPO3 v14</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">Open Source</span>
+  </div>
+  <h2 class="fw-bold mb-2" style="font-size: 1.6rem;">Bilder im CKEditor 5, ohne Umwege</h2>
+  <p class="text-muted mb-3" style="font-size: 1rem; max-width: 650px;">Block-Bilder, Inline-Bilder, Klick zum Vergrößern und verlinkte Bilder — alles direkt im Rich Text Editor von TYPO3, ohne eigenes Inhaltselement.</p>
+  <div class="d-flex gap-2 flex-wrap">
+    <a href="https://github.com/netresearch/t3x-rte_ckeditor_image" target="_blank" rel="noopener" class="btn btn-sm text-white" style="background: #2F99A4;">GitHub</a>
+    <a href="https://extensions.typo3.org/extension/rte_ckeditor_image" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">TER</a>
+    <a href="https://packagist.org/packages/netresearch/rte-ckeditor-image" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">Packagist</a>
+  </div>
+</div>', '') WHERE uid = 9201 AND pid = 102;
+UPDATE tt_content SET bodytext = REPLACE(bodytext, '<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(47,153,164,0.06), rgba(47,153,164,0.02));">
+  <div class="d-flex align-items-center gap-2 mb-2">
+    <span class="badge rounded-pill text-white" style="background: #2F99A4; font-size: 0.7rem;">KI</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">CKEditor-Plugin</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">TYPO3 v14</span>
+  </div>
+  <h2 class="fw-bold mb-2" style="font-size: 1.6rem;">Der Schreibassistent sitzt im Editor</h2>
+  <p class="text-muted mb-3" style="font-size: 1rem; max-width: 650px;">Text im CKEditor markieren und umschreiben, zusammenfassen, übersetzen oder die Grammatik korrigieren lassen. Die Aufgaben sind konfigurierbar, eigene Prompts inklusive.</p>
+  <div class="d-flex gap-2 flex-wrap">
+    <a href="https://github.com/netresearch/t3x-cowriter" target="_blank" rel="noopener" class="btn btn-sm text-white" style="background: #2F99A4;">GitHub</a>
+    <a href="https://packagist.org/packages/netresearch/t3-cowriter" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">Packagist</a>
+  </div>
+</div>', '') WHERE uid = 9203 AND pid = 103;
+UPDATE tt_content SET bodytext = REPLACE(bodytext, '<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(88,89,97,0.06), rgba(88,89,97,0.02));">
+  <div class="d-flex align-items-center gap-2 mb-2">
+    <span class="badge rounded-pill text-white" style="background: #585961; font-size: 0.7rem;">Core</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">Grundlage</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">TYPO3 v14</span>
+  </div>
+  <h2 class="fw-bold mb-2" style="font-size: 1.6rem;">Ein LLM-Setup für alle Erweiterungen</h2>
+  <p class="text-muted mb-3" style="font-size: 1rem; max-width: 650px;">Die gemeinsame KI-Grundlage für TYPO3. Anbieter, Modelle und Aufgabenvorlagen einmal einrichten — jede KI-Erweiterung der Installation greift darauf zu.</p>
+  <div class="d-flex gap-2 flex-wrap">
+    <a href="https://github.com/netresearch/t3x-nr-llm" target="_blank" rel="noopener" class="btn btn-sm text-white" style="background: #585961;">GitHub</a>
+    <a href="https://packagist.org/packages/netresearch/nr-llm" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">Packagist</a>
+  </div>
+</div>', '') WHERE uid = 9204 AND pid = 104;
+UPDATE tt_content SET bodytext = REPLACE(bodytext, '<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(47,153,164,0.06), rgba(47,153,164,0.02));">
+  <div class="d-flex align-items-center gap-2 mb-2">
+    <span class="badge rounded-pill text-white" style="background: #2F99A4; font-size: 0.7rem;">KI</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">Backend-Assistent</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">TYPO3 v14</span>
+  </div>
+  <h2 class="fw-bold mb-2" style="font-size: 1.6rem;">Landingpages per KI erzeugen</h2>
+  <p class="text-muted mb-3" style="font-size: 1rem; max-width: 650px;">Sie beschreiben das Ziel, die KI baut daraus eine vollständige, strukturierte TYPO3-Seite: Hero, Feature-Bereich, Textabschnitte und Call-to-Action.</p>
+  <div class="d-flex gap-2 flex-wrap">
+    <a href="https://github.com/netresearch/nr-landingpage" target="_blank" rel="noopener" class="btn btn-sm text-white" style="background: #2F99A4;">GitHub</a>
+    <a href="https://packagist.org/packages/netresearch/nr-landingpage" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">Packagist</a>
+  </div>
+</div>', '') WHERE uid = 9205 AND pid = 105;
+UPDATE tt_content SET bodytext = REPLACE(bodytext, '<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(255,77,0,0.04), rgba(255,77,0,0.01));">
+  <div class="d-flex align-items-center gap-2 mb-2">
+    <span class="badge rounded-pill text-white" style="background: #FF4D00; font-size: 0.7rem;">Sicherheit</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">WebAuthn</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">TYPO3 v14</span>
+  </div>
+  <h2 class="fw-bold mb-2" style="font-size: 1.6rem;">Passwortlose Anmeldung im Backend</h2>
+  <p class="text-muted mb-3" style="font-size: 1rem; max-width: 650px;">Passkey-Anmeldung nach WebAuthn/FIDO2 für TYPO3-Backend-Benutzer. Statt eines Passworts genügen Fingerabdruck, Gesichtserkennung oder ein Security Key.</p>
+  <div class="d-flex gap-2 flex-wrap">
+    <a href="https://github.com/netresearch/t3x-nr-passkeys-be" target="_blank" rel="noopener" class="btn btn-sm text-white" style="background: #FF4D00;">GitHub</a>
+    <a href="https://packagist.org/packages/netresearch/nr-passkeys-be" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">Packagist</a>
+  </div>
+</div>', '') WHERE uid = 9206 AND pid = 106;
+UPDATE tt_content SET bodytext = REPLACE(bodytext, '<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(255,77,0,0.04), rgba(255,77,0,0.01));">
+  <div class="d-flex align-items-center gap-2 mb-2">
+    <span class="badge rounded-pill text-white" style="background: #FF4D00; font-size: 0.7rem;">Sicherheit</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">Enterprise</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">TYPO3 v14</span>
+  </div>
+  <h2 class="fw-bold mb-2" style="font-size: 1.6rem;">Secrets-Verwaltung für den Enterprise-Einsatz</h2>
+  <p class="text-muted mb-3" style="font-size: 1rem; max-width: 650px;">Envelope-Verschlüsselung, Zugriffssteuerung, Audit-Log und Schlüsselrotation für TYPO3. API-Keys liegen nicht länger im Klartext.</p>
+  <div class="d-flex gap-2 flex-wrap">
+    <a href="https://github.com/netresearch/t3x-nr-vault" target="_blank" rel="noopener" class="btn btn-sm text-white" style="background: #FF4D00;">GitHub</a>
+    <a href="https://packagist.org/packages/netresearch/nr-vault" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">Packagist</a>
+  </div>
+</div>', '') WHERE uid = 9207 AND pid = 107;
+UPDATE tt_content SET bodytext = REPLACE(bodytext, '<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(88,89,97,0.06), rgba(88,89,97,0.02));">
+  <div class="d-flex align-items-center gap-2 mb-2">
+    <span class="badge rounded-pill text-white" style="background: #585961; font-size: 0.7rem;">Cache</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">Performance</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">TYPO3 v14</span>
+  </div>
+  <h2 class="fw-bold mb-2" style="font-size: 1.6rem;">Zeitgesteuerte Inhalte, automatischer Cache</h2>
+  <p class="text-muted mb-3" style="font-size: 1rem; max-width: 650px;">Behebt <a href="https://forge.typo3.org/issues/14277" target="_blank" rel="noopener" style="color: #2F99A4;">TYPO3 Forge #14277</a>: Inhalte mit starttime und endtime bleiben im Cache, obwohl ihr Sichtbarkeitszeitraum längst vorbei ist. Diese Erweiterung räumt automatisch auf.</p>
+  <div class="d-flex gap-2 flex-wrap">
+    <a href="https://github.com/netresearch/t3x-nr-temporal-cache" target="_blank" rel="noopener" class="btn btn-sm text-white" style="background: #585961;">GitHub</a>
+    <a href="https://packagist.org/packages/netresearch/nr-temporal-cache" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">Packagist</a>
+  </div>
+</div>', '') WHERE uid = 9208 AND pid = 108;
+UPDATE tt_content SET bodytext = REPLACE(bodytext, '<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(255,77,0,0.04), rgba(255,77,0,0.01));">
+  <div class="d-flex align-items-center gap-2 mb-2">
+    <span class="badge rounded-pill text-white" style="background: #FF4D00; font-size: 0.7rem;">Sicherheit</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">WebAuthn</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">TYPO3 v14</span>
+  </div>
+  <h2 class="fw-bold mb-2" style="font-size: 1.6rem;">Passwortlose Anmeldung im Frontend</h2>
+  <p class="text-muted mb-3" style="font-size: 1rem; max-width: 650px;">Anmeldung per Passkey nach WebAuthn/FIDO2 für Frontend-Benutzer in TYPO3. Statt eines Passworts genügen Fingerabdruck, Gesichtserkennung oder ein Security-Key.</p>
+  <div class="d-flex gap-2 flex-wrap">
+    <a href="/de/anmelden" class="btn btn-sm text-white" style="background: #FF4D00;">Live-Demo öffnen</a>
+    <a href="https://github.com/netresearch/t3x-nr-passkeys-fe" target="_blank" rel="noopener" class="btn btn-sm text-white" style="background: #2F99A4;">GitHub</a>
+    <a href="https://packagist.org/packages/netresearch/nr-passkeys-fe" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">Packagist</a>
+  </div>
+</div>', '') WHERE uid = 9209 AND pid = 109;
+UPDATE tt_content SET bodytext = REPLACE(bodytext, '<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(47,153,164,0.06), rgba(47,153,164,0.02));">
+  <div class="d-flex align-items-center gap-2 mb-2">
+    <span class="badge rounded-pill text-white" style="background: #2F99A4; font-size: 0.7rem;">KI</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">Inhalte</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">TYPO3 v14</span>
+  </div>
+  <h2 class="fw-bold mb-2" style="font-size: 1.6rem;">Eine Seite, viele Kanäle</h2>
+  <p class="text-muted mb-3" style="font-size: 1rem; max-width: 650px;">Aus Seiten, die ohnehin schon da sind, entstehen Social-Posts, Zusammenfassungen und Varianten für einzelne Kanäle. Die KI arbeitet mit dem Inhalt, der bereits im TYPO3 steht, statt jedes Format von Hand neu zu schreiben.</p>
+  <div class="d-flex gap-2 flex-wrap">
+    <a href="https://github.com/netresearch/t3x-nr-repurpose" target="_blank" rel="noopener" class="btn btn-sm text-white" style="background: #2F99A4;">GitHub</a>
+    <a href="https://packagist.org/packages/netresearch/nr-repurpose" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">Packagist</a>
+  </div>
+</div>', '') WHERE uid = 9210 AND pid = 111;
+UPDATE tt_content SET bodytext = REPLACE(bodytext, '<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(47,153,164,0.06), rgba(47,153,164,0.02));">
+  <div class="d-flex align-items-center gap-2 mb-2">
+    <span class="badge rounded-pill text-white" style="background: #2F99A4; font-size: 0.7rem;">KI</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">MCP</span>
+    <span class="badge rounded-pill border" style="font-size: 0.68rem; color: #585961;">TYPO3 v14</span>
+  </div>
+  <h2 class="fw-bold mb-2" style="font-size: 1.6rem;">Im Dialog mit der eigenen TYPO3-Installation</h2>
+  <p class="text-muted mb-3" style="font-size: 1rem; max-width: 650px;">Ein KI-Assistent direkt im TYPO3-Backend. Fragen zu Seiten, Inhalten, Benutzern, Logs und Site-Konfiguration beantwortet der Agent, indem er über MCP-Tools auf das laufende System zugreift — lesend wie schreibend.</p>
+  <div class="d-flex gap-2 flex-wrap">
+    <a href="https://github.com/netresearch/t3x-nr-mcp-agent" target="_blank" rel="noopener" class="btn btn-sm text-white" style="background: #2F99A4;">GitHub</a>
+    <a href="https://packagist.org/packages/netresearch/nr-mcp-agent" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">Packagist</a>
+  </div>
+</div>', '') WHERE uid = 9211 AND pid = 157;
+
+UPDATE tt_content SET bodytext = '<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(88,89,97,0.06), rgba(88,89,97,0.02));">
+  <div class="d-flex align-items-start gap-3">
+    <img src="/fileadmin/user_upload/images/extension-icons/ai-agent.svg" alt="" width="56" height="56" style="flex:0 0 56px;" loading="lazy">
+    <div>
+      <div class="mb-2"><span class="badge rounded-pill border me-1" style="font-size:0.68rem; color:#585961;">AI</span><span class="badge rounded-pill border me-1" style="font-size:0.68rem; color:#585961;">MCP</span><span class="badge rounded-pill border me-1" style="font-size:0.68rem; color:#585961;">TYPO3 v14</span></div>
+      <h1 class="fw-bold mb-1" style="font-size:1.9rem;">AI Chat Agent</h1>
+      <p class="fw-semibold mb-2" style="font-size:1.15rem;">Chat With Your TYPO3 Install</p>
+      <p class="text-muted mb-3" style="font-size:1rem; max-width:65ch;">An AI assistant embedded in the TYPO3 backend. Ask about pages, content, users, logs, and site configuration — the agent reads and acts on the live system through MCP tools.</p>
+      <div class="d-flex gap-2 flex-wrap"><a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://github.com/netresearch/t3x-nr-mcp-agent" rel="noopener">GitHub</a><a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://netresearch.github.io/t3x-nr-mcp-agent/" rel="noopener">Overview</a><a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://packagist.org/packages/netresearch/nr-mcp-agent" rel="noopener">Packagist</a></div>
+    </div>
+  </div>
+</div>', hidden = 0, deleted = 0 WHERE uid = 9501 AND pid = 157;
+UPDATE tt_content SET bodytext = '<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(88,89,97,0.06), rgba(88,89,97,0.02));">
+  <div class="d-flex align-items-start gap-3">
+    <img src="/fileadmin/user_upload/images/extension-icons/browser-ai.svg" alt="" width="56" height="56" style="flex:0 0 56px;" loading="lazy">
+    <div>
+      <div class="mb-2"></div>
+      <h1 class="fw-bold mb-1" style="font-size:1.9rem;">Browser AI</h1>
+      <p class="text-muted mb-3" style="font-size:1rem; max-width:65ch;">On-device AI assistant for TYPO3 that answers questions about the current page, powered by Chrome built-in AI - by Netresearch.</p>
+      <div class="d-flex gap-2 flex-wrap"><a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://extensions.typo3.org/extension/nr_browser_ai" rel="noopener">TER 0.7.1</a><a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://docs.typo3.org/p/netresearch/nr-browser-ai/main/en-us/" rel="noopener">Documentation</a><a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://github.com/netresearch/t3x-nr-browser-ai" rel="noopener">GitHub</a><a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://netresearch.github.io/t3x-nr-browser-ai/" rel="noopener">Overview</a></div>
+    </div>
+  </div>
+</div>', hidden = 0, deleted = 0 WHERE uid = 9502 AND pid = 9003;
+UPDATE tt_content SET bodytext = '<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(88,89,97,0.06), rgba(88,89,97,0.02));">
+  <div class="d-flex align-items-start gap-3">
+    <img src="/fileadmin/user_upload/images/extension-icons/browser-ai-form-assistant.svg" alt="" width="56" height="56" style="flex:0 0 56px;" loading="lazy">
+    <div>
+      <div class="mb-2"></div>
+      <h1 class="fw-bold mb-1" style="font-size:1.9rem;">Browser AI Form Assistant</h1>
+      <p class="text-muted mb-3" style="font-size:1rem; max-width:65ch;">On-device AI assistant for TYPO3 that answers questions about the current page, powered by Chrome built-in AI - by Netresearch.</p>
+      <div class="d-flex gap-2 flex-wrap"><a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://extensions.typo3.org/extension/nr_browser_ai" rel="noopener">TER 0.7.1</a><a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://docs.typo3.org/p/netresearch/nr-browser-ai/main/en-us/" rel="noopener">Documentation</a><a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://github.com/netresearch/t3x-nr-browser-ai" rel="noopener">GitHub</a><a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://netresearch.github.io/t3x-nr-browser-ai/" rel="noopener">Overview</a></div>
+    </div>
+  </div>
+</div>', hidden = 0, deleted = 0 WHERE uid = 9503 AND pid = 9004;
+UPDATE tt_content SET bodytext = '<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(88,89,97,0.06), rgba(88,89,97,0.02));">
+  <div class="d-flex align-items-start gap-3">
+    <img src="/fileadmin/user_upload/images/extension-icons/contexts.svg" alt="" width="56" height="56" style="flex:0 0 56px;" loading="lazy">
+    <div>
+      <div class="mb-2"><span class="badge rounded-pill border me-1" style="font-size:0.68rem; color:#585961;">Visibility</span><span class="badge rounded-pill border me-1" style="font-size:0.68rem; color:#585961;">TYPO3 v14</span><span class="badge rounded-pill border me-1" style="font-size:0.68rem; color:#585961;">Open Source</span></div>
+      <h1 class="fw-bold mb-1" style="font-size:1.9rem;">Contexts</h1>
+      <p class="fw-semibold mb-2" style="font-size:1.15rem;">Multi-Channel Content Visibility</p>
+      <p class="text-muted mb-3" style="font-size:1rem; max-width:65ch;">Define contexts &amp;mdash; domain, GET parameter, IP range, HTTP header, session value, or a logical combination &amp;mdash; and switch pages, menu entries, and single content elements on or off per context. One page tree, many channels.</p>
+      <div class="d-flex gap-2 flex-wrap"><a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://extensions.typo3.org/extension/contexts" rel="noopener">TER 5.0.1</a><a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://docs.typo3.org/p/netresearch/contexts/main/en-us/" rel="noopener">Documentation</a><a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://github.com/netresearch/t3x-contexts" rel="noopener">GitHub</a><a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://packagist.org/packages/netresearch/contexts" rel="noopener">Packagist</a></div>
+    </div>
+  </div>
+</div>', hidden = 0, deleted = 0 WHERE uid = 9504 AND pid = 164;
+UPDATE tt_content SET bodytext = '<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(88,89,97,0.06), rgba(88,89,97,0.02));">
+  <div class="d-flex align-items-start gap-3">
+    <img src="/fileadmin/user_upload/images/extension-icons/cowriter.svg" alt="" width="56" height="56" style="flex:0 0 56px;" loading="lazy">
+    <div>
+      <div class="mb-2"><span class="badge rounded-pill border me-1" style="font-size:0.68rem; color:#585961;">AI</span><span class="badge rounded-pill border me-1" style="font-size:0.68rem; color:#585961;">CKEditor Plugin</span><span class="badge rounded-pill border me-1" style="font-size:0.68rem; color:#585961;">TYPO3 v14</span></div>
+      <h1 class="fw-bold mb-1" style="font-size:1.9rem;">AI Cowriter</h1>
+      <p class="fw-semibold mb-2" style="font-size:1.15rem;">AI-Powered Content Assistant</p>
+      <p class="text-muted mb-3" style="font-size:1rem; max-width:65ch;">Select text in CKEditor and let AI rewrite, summarize, translate, or fix grammar. Configurable tasks with custom prompts.</p>
+      <div class="d-flex gap-2 flex-wrap"><a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://extensions.typo3.org/extension/t3_cowriter" rel="noopener">TER 3.6.2</a><a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://docs.typo3.org/p/netresearch/t3-cowriter/main/en-us/" rel="noopener">Documentation</a><a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://github.com/netresearch/t3x-cowriter" rel="noopener">GitHub</a><a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://packagist.org/packages/netresearch/t3-cowriter" rel="noopener">Packagist</a></div>
+    </div>
+  </div>
+</div>', hidden = 0, deleted = 0 WHERE uid = 9505 AND pid = 103;
+UPDATE tt_content SET bodytext = '<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(88,89,97,0.06), rgba(88,89,97,0.02));">
+  <div class="d-flex align-items-start gap-3">
+    <img src="/fileadmin/user_upload/images/extension-icons/image-sitemap.svg" alt="" width="56" height="56" style="flex:0 0 56px;" loading="lazy">
+    <div>
+      <div class="mb-2"><span class="badge rounded-pill border me-1" style="font-size:0.68rem; color:#585961;">SEO</span><span class="badge rounded-pill border me-1" style="font-size:0.68rem; color:#585961;">Sitemap</span><span class="badge rounded-pill border me-1" style="font-size:0.68rem; color:#585961;">TYPO3 v14</span><span class="badge rounded-pill border me-1" style="font-size:0.68rem; color:#585961;">Open Source</span></div>
+      <h1 class="fw-bold mb-1" style="font-size:1.9rem;">Image Sitemap</h1>
+      <p class="fw-semibold mb-2" style="font-size:1.15rem;">An Image Sitemap For EXT:seo</p>
+      <p class="text-muted mb-3" style="font-size:1rem; max-width:65ch;">A second sitemap type that lists every image referenced from pages and content elements, with its title and caption, in the Google image-sitemap schema. It plugs into EXT:seo as an additional XmlSitemapDataProvider &amp;mdash; no scheduler, no extra database tables.</p>
+      <div class="d-flex gap-2 flex-wrap"><a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://extensions.typo3.org/extension/nr_image_sitemap" rel="noopener">TER 13.0.6</a><a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://github.com/netresearch/t3x-nr-image-sitemap/" rel="noopener">GitHub</a><a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://packagist.org/packages/netresearch/nr-image-sitemap" rel="noopener">Packagist</a></div>
+    </div>
+  </div>
+</div>', hidden = 0, deleted = 0 WHERE uid = 9506 AND pid = 161;
+UPDATE tt_content SET bodytext = '<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(88,89,97,0.06), rgba(88,89,97,0.02));">
+  <div class="d-flex align-items-start gap-3">
+    <img src="/fileadmin/user_upload/images/extension-icons/landing-page.svg" alt="" width="56" height="56" style="flex:0 0 56px;" loading="lazy">
+    <div>
+      <div class="mb-2"><span class="badge rounded-pill border me-1" style="font-size:0.68rem; color:#585961;">AI</span><span class="badge rounded-pill border me-1" style="font-size:0.68rem; color:#585961;">Backend Wizard</span><span class="badge rounded-pill border me-1" style="font-size:0.68rem; color:#585961;">TYPO3 v14</span></div>
+      <h1 class="fw-bold mb-1" style="font-size:1.9rem;">Landing Page Generator</h1>
+      <p class="fw-semibold mb-2" style="font-size:1.15rem;">Generate Landing Pages with AI</p>
+      <p class="text-muted mb-3" style="font-size:1rem; max-width:65ch;">Describe your goal and let AI create a complete, structured TYPO3 page with hero, features, content sections, and call-to-action.</p>
+      <div class="d-flex gap-2 flex-wrap"><a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://github.com/netresearch/nr-landingpage" rel="noopener">GitHub</a><a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://packagist.org/packages/netresearch/nr-landingpage" rel="noopener">Packagist</a></div>
+    </div>
+  </div>
+</div>', hidden = 0, deleted = 0 WHERE uid = 9507 AND pid = 105;
+UPDATE tt_content SET bodytext = '<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(88,89,97,0.06), rgba(88,89,97,0.02));">
+  <div class="d-flex align-items-start gap-3">
+    <img src="/fileadmin/user_upload/images/extension-icons/nr-llm.svg" alt="" width="56" height="56" style="flex:0 0 56px;" loading="lazy">
+    <div>
+      <div class="mb-2"><span class="badge rounded-pill border me-1" style="font-size:0.68rem; color:#585961;">Core</span><span class="badge rounded-pill border me-1" style="font-size:0.68rem; color:#585961;">Foundation</span><span class="badge rounded-pill border me-1" style="font-size:0.68rem; color:#585961;">TYPO3 v14</span></div>
+      <h1 class="fw-bold mb-1" style="font-size:1.9rem;">LLM Foundation</h1>
+      <p class="fw-semibold mb-2" style="font-size:1.15rem;">One LLM Setup for Every Extension</p>
+      <p class="text-muted mb-3" style="font-size:1rem; max-width:65ch;">The shared AI foundation for TYPO3. Configure providers, models, and task templates once — every AI extension on your site uses them.</p>
+      <div class="d-flex gap-2 flex-wrap"><a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://extensions.typo3.org/extension/nr_llm" rel="noopener">TER 0.29.1</a><a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://docs.typo3.org/p/netresearch/nr-llm/main/en-us/" rel="noopener">Documentation</a><a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://github.com/netresearch/t3x-nr-llm" rel="noopener">GitHub</a><a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://netresearch.github.io/t3x-nr-llm/" rel="noopener">Overview</a><a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://packagist.org/packages/netresearch/nr-llm" rel="noopener">Packagist</a></div>
+    </div>
+  </div>
+</div>', hidden = 0, deleted = 0 WHERE uid = 9508 AND pid = 104;
+UPDATE tt_content SET bodytext = '<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(88,89,97,0.06), rgba(88,89,97,0.02));">
+  <div class="d-flex align-items-start gap-3">
+    <img src="/fileadmin/user_upload/images/extension-icons/nr-scheduler.svg" alt="" width="56" height="56" style="flex:0 0 56px;" loading="lazy">
+    <div>
+      <div class="mb-2"><span class="badge rounded-pill border me-1" style="font-size:0.68rem; color:#585961;">Scheduler</span><span class="badge rounded-pill border me-1" style="font-size:0.68rem; color:#585961;">Developer Toolkit</span><span class="badge rounded-pill border me-1" style="font-size:0.68rem; color:#585961;">TYPO3 v14</span><span class="badge rounded-pill border me-1" style="font-size:0.68rem; color:#585961;">Open Source</span></div>
+      <h1 class="fw-bold mb-1" style="font-size:1.9rem;">Scheduler Toolkit</h1>
+      <p class="fw-semibold mb-2" style="font-size:1.15rem;">Failure Reporting And Context Gating For Scheduler Tasks</p>
+      <p class="text-muted mb-3" style="font-size:1rem; max-width:65ch;">Base classes for the TYPO3 Scheduler: any task built on them gains e-mail failure reports and per-application-context execution gating, and declares its configuration form through a typed field builder instead of hand-written HTML.</p>
+      <div class="d-flex gap-2 flex-wrap"><a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://extensions.typo3.org/extension/nr_scheduler" rel="noopener">TER 2.0.0</a><a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://github.com/netresearch/t3x-scheduler" rel="noopener">GitHub</a><a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://packagist.org/packages/netresearch/nr-scheduler" rel="noopener">Packagist</a></div>
+    </div>
+  </div>
+</div>', hidden = 0, deleted = 0 WHERE uid = 9509 AND pid = 162;
+UPDATE tt_content SET bodytext = '<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(88,89,97,0.06), rgba(88,89,97,0.02));">
+  <div class="d-flex align-items-start gap-3">
+    <img src="/fileadmin/user_upload/images/extension-icons/passkeys-be.svg" alt="" width="56" height="56" style="flex:0 0 56px;" loading="lazy">
+    <div>
+      <div class="mb-2"><span class="badge rounded-pill border me-1" style="font-size:0.68rem; color:#585961;">Security</span><span class="badge rounded-pill border me-1" style="font-size:0.68rem; color:#585961;">WebAuthn</span><span class="badge rounded-pill border me-1" style="font-size:0.68rem; color:#585961;">TYPO3 v14</span></div>
+      <h1 class="fw-bold mb-1" style="font-size:1.9rem;">Passkeys (Backend)</h1>
+      <p class="fw-semibold mb-2" style="font-size:1.15rem;">Passwordless Backend Login</p>
+      <p class="text-muted mb-3" style="font-size:1rem; max-width:65ch;">WebAuthn/FIDO2 passkey authentication for TYPO3 backend users. Replace passwords with fingerprint, face recognition, or security keys.</p>
+      <div class="d-flex gap-2 flex-wrap"><a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://extensions.typo3.org/extension/nr_passkeys_be" rel="noopener">TER 0.12.1</a><a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://docs.typo3.org/p/netresearch/nr-passkeys-be/main/en-us/" rel="noopener">Documentation</a><a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://github.com/netresearch/t3x-nr-passkeys-be" rel="noopener">GitHub</a><a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://packagist.org/packages/netresearch/nr-passkeys-be" rel="noopener">Packagist</a></div>
+    </div>
+  </div>
+</div>', hidden = 0, deleted = 0 WHERE uid = 9510 AND pid = 106;
+UPDATE tt_content SET bodytext = '<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(88,89,97,0.06), rgba(88,89,97,0.02));">
+  <div class="d-flex align-items-start gap-3">
+    <img src="/fileadmin/user_upload/images/extension-icons/passkeys-fe.svg" alt="" width="56" height="56" style="flex:0 0 56px;" loading="lazy">
+    <div>
+      <div class="mb-2"><span class="badge rounded-pill border me-1" style="font-size:0.68rem; color:#585961;">Security</span><span class="badge rounded-pill border me-1" style="font-size:0.68rem; color:#585961;">WebAuthn</span><span class="badge rounded-pill border me-1" style="font-size:0.68rem; color:#585961;">TYPO3 v14</span></div>
+      <h1 class="fw-bold mb-1" style="font-size:1.9rem;">Passkeys (Frontend)</h1>
+      <p class="fw-semibold mb-2" style="font-size:1.15rem;">Passkey-First Frontend Authentication</p>
+      <p class="text-muted mb-3" style="font-size:1rem; max-width:65ch;">WebAuthn/FIDO2 passkey login for TYPO3 frontend users. Replace passwords with biometrics — fingerprint, face recognition, or security keys.</p>
+      <div class="d-flex gap-2 flex-wrap"><a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://extensions.typo3.org/extension/nr_passkeys_fe" rel="noopener">TER 0.6.0</a><a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://docs.typo3.org/p/netresearch/nr-passkeys-fe/main/en-us/" rel="noopener">Documentation</a><a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://github.com/netresearch/t3x-nr-passkeys-fe" rel="noopener">GitHub</a><a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://packagist.org/packages/netresearch/nr-passkeys-fe" rel="noopener">Packagist</a></div>
+    </div>
+  </div>
+</div>', hidden = 0, deleted = 0 WHERE uid = 9511 AND pid = 109;
+UPDATE tt_content SET bodytext = '<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(88,89,97,0.06), rgba(88,89,97,0.02));">
+  <div class="d-flex align-items-start gap-3">
+    <img src="/fileadmin/user_upload/images/extension-icons/repurpose.svg" alt="" width="56" height="56" style="flex:0 0 56px;" loading="lazy">
+    <div>
+      <div class="mb-2"><span class="badge rounded-pill border me-1" style="font-size:0.68rem; color:#585961;">AI</span><span class="badge rounded-pill border me-1" style="font-size:0.68rem; color:#585961;">Content</span><span class="badge rounded-pill border me-1" style="font-size:0.68rem; color:#585961;">TYPO3 v14</span></div>
+      <h1 class="fw-bold mb-1" style="font-size:1.9rem;">Content Repurpose</h1>
+      <p class="fw-semibold mb-2" style="font-size:1.15rem;">One Page, Many Channels</p>
+      <p class="text-muted mb-3" style="font-size:1rem; max-width:65ch;">Turn pages you already have into social posts, summaries, and channel-ready variants. Repurpose existing TYPO3 content with AI instead of writing every format from scratch.</p>
+      <div class="d-flex gap-2 flex-wrap"><a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://extensions.typo3.org/extension/nr_repurpose" rel="noopener">TER 0.4.0</a><a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://github.com/netresearch/t3x-nr-repurpose" rel="noopener">GitHub</a><a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://packagist.org/packages/netresearch/nr-repurpose" rel="noopener">Packagist</a></div>
+    </div>
+  </div>
+</div>', hidden = 0, deleted = 0 WHERE uid = 9512 AND pid = 111;
+UPDATE tt_content SET bodytext = '<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(88,89,97,0.06), rgba(88,89,97,0.02));">
+  <div class="d-flex align-items-start gap-3">
+    <img src="/fileadmin/user_upload/images/extension-icons/rte-ckeditor-image.svg" alt="" width="56" height="56" style="flex:0 0 56px;" loading="lazy">
+    <div>
+      <div class="mb-2"><span class="badge rounded-pill border me-1" style="font-size:0.68rem; color:#585961;">CKEditor</span><span class="badge rounded-pill border me-1" style="font-size:0.68rem; color:#585961;">TYPO3 v14</span><span class="badge rounded-pill border me-1" style="font-size:0.68rem; color:#585961;">Open Source</span></div>
+      <h1 class="fw-bold mb-1" style="font-size:1.9rem;">RTE CKEditor Image</h1>
+      <p class="fw-semibold mb-2" style="font-size:1.15rem;">Advanced Image Handling for CKEditor 5</p>
+      <p class="text-muted mb-3" style="font-size:1rem; max-width:65ch;">Block images, inline images, click-to-enlarge, and linked images — all directly in the TYPO3 rich text editor. No content elements needed.</p>
+      <div class="d-flex gap-2 flex-wrap"><a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://extensions.typo3.org/extension/rte_ckeditor_image" rel="noopener">TER 13.10.2</a><a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://docs.typo3.org/p/netresearch/rte-ckeditor-image/main/en-us/" rel="noopener">Documentation</a><a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://github.com/netresearch/t3x-rte_ckeditor_image" rel="noopener">GitHub</a><a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://packagist.org/packages/netresearch/rte-ckeditor-image" rel="noopener">Packagist</a></div>
+    </div>
+  </div>
+</div>', hidden = 0, deleted = 0 WHERE uid = 9513 AND pid = 102;
+UPDATE tt_content SET bodytext = '<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(88,89,97,0.06), rgba(88,89,97,0.02));">
+  <div class="d-flex align-items-start gap-3">
+    <img src="/fileadmin/user_upload/images/extension-icons/temporal-cache.svg" alt="" width="56" height="56" style="flex:0 0 56px;" loading="lazy">
+    <div>
+      <div class="mb-2"><span class="badge rounded-pill border me-1" style="font-size:0.68rem; color:#585961;">Cache</span><span class="badge rounded-pill border me-1" style="font-size:0.68rem; color:#585961;">Performance</span><span class="badge rounded-pill border me-1" style="font-size:0.68rem; color:#585961;">TYPO3 v14</span></div>
+      <h1 class="fw-bold mb-1" style="font-size:1.9rem;">Temporal Cache</h1>
+      <p class="fw-semibold mb-2" style="font-size:1.15rem;">Timed Content, Automatic Cache</p>
+      <p class="text-muted mb-3" style="font-size:1rem; max-width:65ch;">Solves TYPO3 Forge #14277: content with start/end times stays cached beyond its visibility window. This extension fixes that — automatically.</p>
+      <div class="d-flex gap-2 flex-wrap"><a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://github.com/netresearch/t3x-temporal-cache" rel="noopener">GitHub</a><a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://packagist.org/packages/netresearch/nr-temporal-cache" rel="noopener">Packagist</a></div>
+    </div>
+  </div>
+</div>', hidden = 0, deleted = 0 WHERE uid = 9514 AND pid = 108;
+UPDATE tt_content SET bodytext = '<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(88,89,97,0.06), rgba(88,89,97,0.02));">
+  <div class="d-flex align-items-start gap-3">
+    <img src="/fileadmin/user_upload/images/extension-icons/textdb.svg" alt="" width="56" height="56" style="flex:0 0 56px;" loading="lazy">
+    <div>
+      <div class="mb-2"><span class="badge rounded-pill border me-1" style="font-size:0.68rem; color:#585961;">Translation</span><span class="badge rounded-pill border me-1" style="font-size:0.68rem; color:#585961;">XLIFF</span><span class="badge rounded-pill border me-1" style="font-size:0.68rem; color:#585961;">TYPO3 v14</span><span class="badge rounded-pill border me-1" style="font-size:0.68rem; color:#585961;">Open Source</span></div>
+      <h1 class="fw-bold mb-1" style="font-size:1.9rem;">TextDB</h1>
+      <p class="fw-semibold mb-2" style="font-size:1.15rem;">Translations Editors Can Actually Edit</p>
+      <p class="text-muted mb-3" style="font-size:1rem; max-width:65ch;">Moves frontend system strings &amp;mdash; form labels, buttons, confirmation messages &amp;mdash; out of XLIFF files in the repository and into the database, where editors change the wording themselves. No deployment for a typo.</p>
+      <div class="d-flex gap-2 flex-wrap"><a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://extensions.typo3.org/extension/nr_textdb" rel="noopener">TER 4.0.0</a><a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://docs.typo3.org/p/netresearch/nr-textdb/main/en-us/" rel="noopener">Documentation</a><a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://github.com/netresearch/t3x-nr-textdb" rel="noopener">GitHub</a><a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://packagist.org/packages/netresearch/nr-textdb" rel="noopener">Packagist</a></div>
+    </div>
+  </div>
+</div>', hidden = 0, deleted = 0 WHERE uid = 9515 AND pid = 160;
+UPDATE tt_content SET bodytext = '<div class="rounded-3 p-4 mb-4" style="background: linear-gradient(135deg, rgba(88,89,97,0.06), rgba(88,89,97,0.02));">
+  <div class="d-flex align-items-start gap-3">
+    <img src="/fileadmin/user_upload/images/extension-icons/vault.svg" alt="" width="56" height="56" style="flex:0 0 56px;" loading="lazy">
+    <div>
+      <div class="mb-2"><span class="badge rounded-pill border me-1" style="font-size:0.68rem; color:#585961;">Security</span><span class="badge rounded-pill border me-1" style="font-size:0.68rem; color:#585961;">Enterprise</span><span class="badge rounded-pill border me-1" style="font-size:0.68rem; color:#585961;">TYPO3 v14</span></div>
+      <h1 class="fw-bold mb-1" style="font-size:1.9rem;">Secrets Vault</h1>
+      <p class="fw-semibold mb-2" style="font-size:1.15rem;">Enterprise Secrets Management</p>
+      <p class="text-muted mb-3" style="font-size:1rem; max-width:65ch;">Envelope encryption, access control, audit logging, and key rotation for TYPO3. Stop storing API keys in plain text.</p>
+      <div class="d-flex gap-2 flex-wrap"><a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://extensions.typo3.org/extension/nr_vault" rel="noopener">TER 0.15.0</a><a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://docs.typo3.org/p/netresearch/nr-vault/main/en-us/" rel="noopener">Documentation</a><a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://github.com/netresearch/t3x-nr-vault" rel="noopener">GitHub</a><a class="btn btn-sm btn-outline-secondary" style="font-size:0.85rem;" href="https://packagist.org/packages/netresearch/nr-vault" rel="noopener">Packagist</a></div>
+    </div>
+  </div>
+</div>', hidden = 0, deleted = 0 WHERE uid = 9516 AND pid = 107;
+
+
+-- The two browser-ai plugin blocks carry their own <h1>, which was correct
+-- while they were the top of their page. The header above them now holds it,
+-- so they become the section heading they actually are. Styling is unchanged:
+-- the class already pinned the visual size at h3.
+UPDATE tt_content SET bodytext = REPLACE(REPLACE(bodytext,
+       '<h1 class="h3 fw-bold mb-3">', '<h2 class="h3 fw-bold mb-3">'),
+       '</h1>', '</h2>')
+ WHERE uid IN (9215, 9218, 9225, 9229) AND bodytext LIKE '%<h1 class="h3 fw-bold mb-3">%';
+
+-- =============================================================================
 -- Re-assert every seeded record, then verify — KEEP THIS BLOCK LAST
 -- =============================================================================
 -- Two failure modes of INSERT IGNORE cost three deploy cycles (PRs #91/#94/#95):
