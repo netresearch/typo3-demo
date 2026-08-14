@@ -5616,7 +5616,7 @@ UPDATE sys_file SET sha1 = 'ff641f771e01c651b99e6de76e413bff34bcfb8b', size = 19
 UPDATE sys_file SET sha1 = '091b10a31b4a7c7f07474adfd148f7d4c6648129', size = 251673, tstamp = 1786665600, modification_date = 1786665600 WHERE uid = 282 AND name = 'nr-llm-backend-dashboard.png';
 UPDATE sys_file SET sha1 = 'f9879c0fa28aea93666401cb6cb0bbd999a011bf', size = 120945, tstamp = 1786665600, modification_date = 1786665600 WHERE uid = 283 AND name = 'nr-llm-backend-providers.png';
 UPDATE sys_file SET sha1 = 'e8a68432f79a8cd702b2047182f0f524ad7033c8', size = 202051, tstamp = 1786665600, modification_date = 1786665600 WHERE uid = 284 AND name = 'nr-llm-backend-tasks.png';
-UPDATE sys_file SET sha1 = '8bb546bd5a9389a733fd02f2ad97db0d5df616f2', size = 51377,  tstamp = 1786665600, modification_date = 1786665600 WHERE uid = 285 AND name = 'passkeys-be-login-loginpagewithpasskey.png';
+UPDATE sys_file SET sha1 = 'b58fced6b05e7456036fa72bd55ed0c69fa51982', size = 22214,  tstamp = 1786665600, modification_date = 1786665600 WHERE uid = 285 AND name = 'passkeys-be-login-loginpagewithpasskey.png';
 
 DELETE FROM sys_file_processedfile WHERE original IN (278, 279, 280, 281, 282, 283, 284, 285);
 
@@ -5804,7 +5804,7 @@ SELECT CONCAT('SEED-PROBLEM: ', COUNT(*),
        '091b10a31b4a7c7f07474adfd148f7d4c6648129',
        'f9879c0fa28aea93666401cb6cb0bbd999a011bf',
        'e8a68432f79a8cd702b2047182f0f524ad7033c8',
-       '8bb546bd5a9389a733fd02f2ad97db0d5df616f2')
+       'b58fced6b05e7456036fa72bd55ed0c69fa51982')
 HAVING COUNT(*) > 0
 UNION ALL
 -- The property this whole band exists for, asserted directly rather than
