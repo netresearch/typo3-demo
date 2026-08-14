@@ -5570,19 +5570,23 @@ DELETE FROM sys_file_processedfile
 -- width/height are not touched: sys_file_metadata carries 0 for every one of
 -- these, and TYPO3 fills them on first access.
 --
+-- The timestamp is the capture date, written as a constant rather than
+-- UNIX_TIMESTAMP(): the seed runs on every deploy, and a clock call would make
+-- these rows differ after every one of them for no reason.
+--
 -- The three vault screenshots are deliberately NOT refreshed. A local instance
 -- has no secrets and no audit entries, so a re-capture would replace a populated
 -- list with an empty state, and its Security Readiness panel would report two
 -- findings that belong to the throwaway container rather than to the demo.
-UPDATE sys_file SET sha1 = 'fd25fdf0d36ffa1ec7b02297f1c1e42cb808179b', size = 70235,  tstamp = UNIX_TIMESTAMP(), modification_date = UNIX_TIMESTAMP() WHERE uid = 278 AND name = 'cowriter-CowriterDialog.png';
-UPDATE sys_file SET sha1 = 'c3d23741172d3c68d98b90f7a3947424a3178244', size = 29813,  tstamp = UNIX_TIMESTAMP(), modification_date = UNIX_TIMESTAMP() WHERE uid = 279 AND name = 'cowriter-CowriterToolbarButton.png';
-UPDATE sys_file SET sha1 = '3f56994f0dbb85a373b869e1478c345b79246e10', size = 170609, tstamp = UNIX_TIMESTAMP(), modification_date = UNIX_TIMESTAMP() WHERE uid = 280 AND name = 'landingpage-backend-module-overview.png';
-UPDATE sys_file SET sha1 = 'ff641f771e01c651b99e6de76e413bff34bcfb8b', size = 192631, tstamp = UNIX_TIMESTAMP(), modification_date = UNIX_TIMESTAMP() WHERE uid = 281 AND name = 'landingpage-template-list.png';
-UPDATE sys_file SET sha1 = '091b10a31b4a7c7f07474adfd148f7d4c6648129', size = 251673, tstamp = UNIX_TIMESTAMP(), modification_date = UNIX_TIMESTAMP() WHERE uid = 282 AND name = 'nr-llm-backend-dashboard.png';
-UPDATE sys_file SET sha1 = 'f9879c0fa28aea93666401cb6cb0bbd999a011bf', size = 120945, tstamp = UNIX_TIMESTAMP(), modification_date = UNIX_TIMESTAMP() WHERE uid = 283 AND name = 'nr-llm-backend-providers.png';
-UPDATE sys_file SET sha1 = 'e8a68432f79a8cd702b2047182f0f524ad7033c8', size = 202051, tstamp = UNIX_TIMESTAMP(), modification_date = UNIX_TIMESTAMP() WHERE uid = 284 AND name = 'nr-llm-backend-tasks.png';
-UPDATE sys_file SET sha1 = '8bb546bd5a9389a733fd02f2ad97db0d5df616f2', size = 51377,  tstamp = UNIX_TIMESTAMP(), modification_date = UNIX_TIMESTAMP() WHERE uid = 285 AND name = 'passkeys-be-login-loginpagewithpasskey.png';
-UPDATE sys_file SET sha1 = '5bf6272e03ccb35e61f3cf5ca2765722d9e33e59', size = 169960, tstamp = UNIX_TIMESTAMP(), modification_date = UNIX_TIMESTAMP() WHERE uid = 286 AND name = 'passkeys-be-usersettings-passkeymanagement.png';
+UPDATE sys_file SET sha1 = 'fd25fdf0d36ffa1ec7b02297f1c1e42cb808179b', size = 70235,  tstamp = 1786665600, modification_date = 1786665600 WHERE uid = 278 AND name = 'cowriter-CowriterDialog.png';
+UPDATE sys_file SET sha1 = 'c3d23741172d3c68d98b90f7a3947424a3178244', size = 29813,  tstamp = 1786665600, modification_date = 1786665600 WHERE uid = 279 AND name = 'cowriter-CowriterToolbarButton.png';
+UPDATE sys_file SET sha1 = '3f56994f0dbb85a373b869e1478c345b79246e10', size = 170609, tstamp = 1786665600, modification_date = 1786665600 WHERE uid = 280 AND name = 'landingpage-backend-module-overview.png';
+UPDATE sys_file SET sha1 = 'ff641f771e01c651b99e6de76e413bff34bcfb8b', size = 192631, tstamp = 1786665600, modification_date = 1786665600 WHERE uid = 281 AND name = 'landingpage-template-list.png';
+UPDATE sys_file SET sha1 = '091b10a31b4a7c7f07474adfd148f7d4c6648129', size = 251673, tstamp = 1786665600, modification_date = 1786665600 WHERE uid = 282 AND name = 'nr-llm-backend-dashboard.png';
+UPDATE sys_file SET sha1 = 'f9879c0fa28aea93666401cb6cb0bbd999a011bf', size = 120945, tstamp = 1786665600, modification_date = 1786665600 WHERE uid = 283 AND name = 'nr-llm-backend-providers.png';
+UPDATE sys_file SET sha1 = 'e8a68432f79a8cd702b2047182f0f524ad7033c8', size = 202051, tstamp = 1786665600, modification_date = 1786665600 WHERE uid = 284 AND name = 'nr-llm-backend-tasks.png';
+UPDATE sys_file SET sha1 = '8bb546bd5a9389a733fd02f2ad97db0d5df616f2', size = 51377,  tstamp = 1786665600, modification_date = 1786665600 WHERE uid = 285 AND name = 'passkeys-be-login-loginpagewithpasskey.png';
+UPDATE sys_file SET sha1 = '5bf6272e03ccb35e61f3cf5ca2765722d9e33e59', size = 169960, tstamp = 1786665600, modification_date = 1786665600 WHERE uid = 286 AND name = 'passkeys-be-usersettings-passkeymanagement.png';
 
 DELETE FROM sys_file_processedfile WHERE original IN (278, 279, 280, 281, 282, 283, 284, 285, 286);
 
