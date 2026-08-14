@@ -415,26 +415,82 @@ jobs:
         run: |
           get() { curl -sSfL --proto '=https' --proto-redir '=https' --cacert "$RUNNER_TEMP/caddy-root.crt" "$1"; }
           failed=0
-          for path in / /extensions/rte-ckeditor-image; do
-            html=$(get "https://localhost$path") || {
-              echo "::error::$path did not respond — the check cannot say anything about it"
-              failed=1
-              continue
-            }
+
+          # The page list comes from the running stack, not from this file. A
+          # demo page added tomorrow is then covered without anyone remembering
+          # to edit the workflow — which is how the two-URL version came to
+          # prove almost nothing. Only pages a visitor can actually open:
+          # rendered doktype, not deleted or hidden, live workspace, no access
+          # group, inside its publication window.
+          # A translated page stores its slug without the language base, so the
+          # German records read /kontakt while the URL is /de/kontakt. Selecting
+          # the raw slug made 24 of them 404 and the sweep skip a quarter of the
+          # site. The base is prefixed per sys_language_uid; extend the CASE when
+          # a language is added, and the floor below catches it if nobody does.
+          paths=$(docker compose exec -T db sh -c 'MYSQL_PWD="$MARIADB_PASSWORD" mariadb -N -B -u "$MARIADB_USER" "$MARIADB_DATABASE"' <<'SQL'
+          SELECT CONCAT(CASE sys_language_uid WHEN 1 THEN '/de' ELSE '' END, slug) AS url
+            FROM pages
+           WHERE deleted = 0 AND hidden = 0 AND doktype = 1 AND t3ver_wsid = 0
+             AND sys_language_uid IN (0, 1)
+             AND (fe_group = '' OR fe_group = '0')
+             AND (starttime = 0 OR starttime <= UNIX_TIMESTAMP())
+             AND (endtime = 0 OR endtime > UNIX_TIMESTAMP())
+             AND slug LIKE '/%'
+           ORDER BY url;
+          SQL
+          )
+          count=$(printf '%s\n' "$paths" | grep -c . || true)
+          if [ "${count:-0}" -lt 20 ]; then
+            echo "::error::only $count page(s) came back — the query or the stack is wrong, and a near-empty sweep would pass by default"
+            exit 1
+          fi
+          echo "Checking $count page(s) for unresolved constants."
+
+          # Slugs come from our own seed, but the loop never lets one reach a
+          # shell: read splits on newlines only, and the value is passed to
+          # curl as a single argument.
+          #
+          # A 404 is not a failure here. Some pages in the tree are not
+          # standalone — /blog/detail renders a single post and answers 404
+          # without one — and that is a content fact, not a leaked constant.
+          # They are reported so the number stays honest. Anything else,
+          # including a 5xx or no answer at all, still fails: a page that
+          # cannot be fetched is a page this check says nothing about.
+          skipped=0
+          while IFS= read -r path; do
+            [ -n "$path" ] || continue
+            status=$(curl -so "$RUNNER_TEMP/page.html" -w '%{http_code}' \
+              --proto '=https' --proto-redir '=https' \
+              --cacert "$RUNNER_TEMP/caddy-root.crt" "https://localhost$path") || status=000
+            case "$status" in
+              2*) html=$(cat "$RUNNER_TEMP/page.html") ;;
+              404) skipped=$((skipped + 1)); echo "$path: 404, not a standalone page — skipped"; continue ;;
+              *)  echo "::error::$path answered $status — the check cannot say anything about it"
+                  failed=1
+                  continue ;;
+            esac
             hits=$(printf '%s' "$html" | grep -oE '\{\$[A-Za-z_][A-Za-z0-9_.]*\}' | sort -u || true)
             if [ -n "$hits" ]; then
               echo "::error::$path emits unresolved TypoScript constants:"
+              # shellcheck disable=SC2086  # unquoted on purpose: one printf argument per hit
               printf '  %s\n' $hits
               failed=1
-            else
-              echo "$path: no unresolved constant."
             fi
-          done
+          done <<EOF
+          $paths
+          EOF
+
           # Without an image on it the RTE page proves nothing, so assert the
           # subject of the check is actually present. Matched with `case` rather
           # than piped into grep: `grep -q` closes the pipe on its first match,
           # and whatever feeds it — curl, then printf — dies of EPIPE and prints
           # a write error into a step that passed.
+          echo "Checked $((count - skipped)) page(s); $skipped skipped as non-standalone."
+          if [ "$skipped" -gt $((count / 4)) ]; then
+            echo "::error::$skipped of $count pages did not render — that is too many to call this a sweep"
+            failed=1
+          fi
+
           rte=$(get https://localhost/extensions/rte-ckeditor-image)
           case "$rte" in
             *"<img"*) : ;;
