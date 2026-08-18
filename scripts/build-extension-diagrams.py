@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import html
 from pathlib import Path
+from typing import Callable
 
 W, H = 1200, 520
 FONT = "'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif"
@@ -33,6 +34,258 @@ SOFT = "#F5F5F5"
 
 def esc(s: str) -> str:
     return html.escape(s, quote=True)
+
+
+# Every visible string passes through t() inside the drawing primitives, before
+# wrap() runs -- so the German text is wrapped for German rather than inheriting
+# the English line breaks. Layout coordinates are shared: a translation that
+# overflows its box is a translation to shorten, not a second layout to maintain.
+LANG = "en"
+TR: dict[str, dict[str, str]] = {}
+
+# Keyed on the exact English source string, so an edit upstream fails loudly
+# in t() instead of silently shipping the English wording in a German file.
+TR["de"] = {
+    'Every answer is grounded in what the tools returned':
+        'Jede Antwort stützt sich auf das, was die Werkzeuge geliefert haben',
+    'Question in the backend':
+        'Frage im Backend',
+    '„Which pages changed today?“':
+        '„Welche Seiten haben sich heute geändert?“',
+    'AI Chat Agent':
+        'KI-Chat-Agent',
+    'built on NR LLM':
+        'auf Basis von NR LLM',
+    'calls':
+        'ruft auf',
+    'MCP tools':
+        'MCP-Werkzeuge',
+    'read and act':
+        'lesen und handeln',
+    'TYPO3 install':
+        'TYPO3-Installation',
+    'pages · content · records · backend users · logs · site configuration':
+        'Seiten · Inhalte · Datensätze · Backend-Benutzer · Logs · Site-Konfiguration',
+    'what the tools actually returned':
+        'was die Werkzeuge tatsächlich lieferten',
+    'Answer':
+        'Antwort',
+    'no invented facts':
+        'keine erfundenen Fakten',
+    'A tool call can also change content — the agent reads and acts.':
+        'Ein Werkzeugaufruf kann Inhalte auch ändern — der Agent liest und handelt.',
+    'Nothing about the page or the question leaves the device':
+        'Nichts von Seite oder Frage verlässt das Gerät',
+    'the visitor’s device':
+        'das Gerät des Besuchers',
+    'This page':
+        'Diese Seite',
+    'its rendered text':
+        'ihr gerenderter Text',
+    'Chrome built-in model':
+        'In Chrome eingebautes Modell',
+    'Gemini Nano, on device':
+        'Gemini Nano, auf dem Gerät',
+    'Answer in the page':
+        'Antwort in der Seite',
+    'Any server':
+        'Irgendein Server',
+    'TYPO3 · Netresearch · Google':
+        'TYPO3 · Netresearch · Google',
+    'never':
+        'nie',
+    'No server endpoint, no telemetry, no cookie, no stored dialogue.':
+        'Kein Server-Endpunkt, keine Telemetrie, kein Cookie, kein gespeicherter Dialog.',
+    'Needs Chrome 148 or newer and the downloaded model; without it the':
+        'Braucht Chrome 148 oder neuer und das geladene Modell; ohne das zeigt das',
+    'plugin shows the fallback the editor configured.':
+        'Plugin den vom Redakteur konfigurierten Ersatz.',
+    'The form definition is the tool contract':
+        'Die Formulardefinition ist der Werkzeugvertrag',
+    'One sentence':
+        'Ein Satz',
+    '„Wind gusts in Innsbruck for ten days“':
+        '„Windböen in Innsbruck für zehn Tage“',
+    'Schema from the form':
+        'Schema aus dem Formular',
+    'validators · options · labels':
+        'Validatoren · Optionen · Beschriftungen',
+    'On-device model':
+        'Modell auf dem Gerät',
+    'produces arguments':
+        'erzeugt Argumente',
+    'Validated':
+        'Geprüft',
+    'enum members checked':
+        'Enum-Werte kontrolliert',
+    'The form fills itself in, and runs':
+        'Das Formular füllt sich selbst aus und läuft',
+    'seventy controls · one MultiCheckbox is one array property':
+        'siebzig Felder · eine MultiCheckbox ist eine Array-Eigenschaft',
+    'result':
+        'Ergebnis',
+    'Answer with the data':
+        'Antwort mit den Daten',
+    'rendered as text nodes':
+        'als Textknoten gerendert',
+    'No server endpoint: the query runs from the page itself.':
+        'Kein Server-Endpunkt: die Abfrage läuft aus der Seite selbst.',
+    'One page tree instead of one tree per channel':
+        'Ein Seitenbaum statt eines Baums je Kanal',
+    'One page tree':
+        'Ein Seitenbaum',
+    'pages · menu entries · single content elements':
+        'Seiten · Menüeinträge · einzelne Inhaltselemente',
+    'Context matches?':
+        'Kontext trifft zu?',
+    'domain · GET parameter · IP range · HTTP header · session value, or an AND / OR / XOR combination of them':
+        'Domain · GET-Parameter · IP-Bereich · HTTP-Header · Session-Wert, oder eine UND- / ODER- / XOR-Verknüpfung davon',
+    'yes':
+        'ja',
+    'no':
+        'nein',
+    'Shown in this channel':
+        'In diesem Kanal sichtbar',
+    'Hidden in this channel':
+        'In diesem Kanal verborgen',
+    'Editors mark where something appears — no parallel tree to keep in sync.':
+        'Redakteure markieren, wo etwas erscheint — kein Parallelbaum, der abgeglichen werden muss.',
+    'No backend module, no extra table — the output is the sitemap':
+        'Kein Backend-Modul, keine Zusatztabelle — die Ausgabe ist die Sitemap',
+    'Pages and content elements':
+        'Seiten und Inhaltselemente',
+    'the images already referenced':
+        'die bereits referenzierten Bilder',
+    'Title and caption':
+        'Titel und Bildunterschrift',
+    'what editors entered on the image':
+        'was Redakteure am Bild erfasst haben',
+    'XmlSitemapDataProvider':
+        'XmlSitemapDataProvider',
+    'registered with EXT:seo':
+        'bei EXT:seo registriert',
+    'image sitemap XML':
+        'Bilder-Sitemap-XML',
+    'the Google image-sitemap schema, beside the core sitemap':
+        'das Google-Bilder-Sitemap-Schema, neben der Core-Sitemap',
+    'Nothing else to maintain':
+        'Nichts weiter zu pflegen',
+    'no scheduler run, no separate database table, no editor step':
+        'kein Scheduler-Lauf, keine eigene Datenbanktabelle, kein Redaktionsschritt',
+    'Its demo is the XML itself.':
+        'Seine Demo ist das XML selbst.',
+    'Same configuration everywhere, execution only where it belongs':
+        'Überall dieselbe Konfiguration, Ausführung nur dort, wo sie hingehört',
+    'Scheduler task':
+        'Scheduler-Aufgabe',
+    'built on the base classes':
+        'auf den Basisklassen aufgebaut',
+    'In this context?':
+        'In diesem Kontext?',
+    'Production / Staging / …':
+        'Production / Staging / …',
+    'Runs':
+        'Läuft',
+    'on failure':
+        'bei Fehlschlag',
+    'E-mail to the configured recipients':
+        'E-Mail an die konfigurierten Empfänger',
+    'own subject and message — not just a red row in the module':
+        'eigener Betreff und Text — nicht nur eine rote Zeile im Modul',
+    'Skipped, and says so':
+        'Übersprungen, und sagt es',
+    'Deployed unchanged':
+        'Unverändert ausgerollt',
+    'one configuration in the repository, gated per application context instead of edited per environment':
+        'eine Konfiguration im Repository, je Anwendungskontext geschaltet statt je Umgebung bearbeitet',
+    'Start from a page that already exists':
+        'Ausgangspunkt ist eine Seite, die es schon gibt',
+    'An existing page':
+        'Eine vorhandene Seite',
+    'the content you already published':
+        'die bereits veröffentlichten Inhalte',
+    'Repurpose':
+        'Repurpose',
+    'Social posts':
+        'Social-Posts',
+    'short copy per channel':
+        'kurzer Text je Kanal',
+    'Summaries':
+        'Zusammenfassungen',
+    'the gist, at length':
+        'der Kern, in mehreren Längen',
+    'Alternative phrasings':
+        'Alternative Formulierungen',
+    'tuned per audience':
+        'auf die Zielgruppe abgestimmt',
+    'Nothing is re-typed: the source is the page, not a fresh brief.':
+        'Nichts wird neu getippt: Quelle ist die Seite, kein neues Briefing.',
+    'TYPO3 Forge #14277: timed content stayed cached past its window':
+        'TYPO3 Forge #14277: zeitgesteuerte Inhalte blieben über ihr Fenster hinaus im Cache',
+    'content is visible':
+        'Inhalt ist sichtbar',
+    'starttime':
+        'starttime',
+    'endtime':
+        'endtime',
+    'cache cleared':
+        'Cache geleert',
+    'not yet shown':
+        'noch nicht sichtbar',
+    'no longer shown':
+        'nicht mehr sichtbar',
+    'Scoping':
+        'Geltungsbereich',
+    'a single page, a page tree, or every page':
+        'eine Seite, ein Seitenbaum oder alle Seiten',
+    'When':
+        'Wann',
+    'on demand, or on a Scheduler run':
+        'auf Anforderung oder im Scheduler-Lauf',
+    'Works with any content type that uses starttime and endtime.':
+        'Funktioniert mit jedem Inhaltstyp, der starttime und endtime nutzt.',
+    'How the AI Chat Agent answers':
+        'Wie der KI-Chat-Agent antwortet',
+    'A question typed in the TYPO3 backend goes to the chat agent, which calls MCP tools against pages, records, backend users, logs and site configuration, and answers from what those tools returned.':
+        'Eine im TYPO3-Backend gestellte Frage geht an den Chat-Agenten. Der ruft MCP-Werkzeuge gegen Seiten, Datensätze, Backend-Benutzer, Logs und Site-Konfiguration auf und antwortet aus dem, was diese Werkzeuge geliefert haben.',
+    'Where the answer is computed':
+        'Wo die Antwort berechnet wird',
+    "The page text and the question are handed to Chrome's built-in model on the visitor's own device. Nothing about the page or the dialogue is sent to a server.":
+        'Seitentext und Frage gehen an das in Chrome eingebaute Modell auf dem Gerät des Besuchers. Nichts über die Seite oder den Dialog wird an einen Server gesendet.',
+    'One sentence fills a seventy-control form':
+        'Ein Satz füllt ein Formular mit siebzig Feldern',
+    'The form definition itself becomes the tool contract: its validators, options and descriptions are turned into a schema, the on-device model produces arguments against it, and the filled form runs.':
+        'Die Formulardefinition selbst wird zum Werkzeugvertrag: ihre Validatoren, Optionen und Beschreibungen werden zu einem Schema, das Modell auf dem Gerät erzeugt dazu passende Argumente, und das ausgefüllte Formular läuft.',
+    'One page tree, many channels':
+        'Ein Seitenbaum, viele Kanäle',
+    'A context is defined by domain, GET parameter, IP range, HTTP header, session value or a combination of those. Pages, menu entries and single content elements are switched on or off per context.':
+        'Ein Kontext wird über Domain, GET-Parameter, IP-Bereich, HTTP-Header, Session-Wert oder eine Kombination davon definiert. Seiten, Menüeinträge und einzelne Inhaltselemente werden je Kontext ein- oder ausgeschaltet.',
+    'A second sitemap type for images':
+        'Ein zweiter Sitemap-Typ für Bilder',
+    'Every image referenced from a page or a content element is listed with its title and caption in the Google image-sitemap schema, provided to EXT:seo as an additional XmlSitemapDataProvider.':
+        'Jedes Bild, das von einer Seite oder einem Inhaltselement referenziert wird, erscheint mit Titel und Bildunterschrift im Google-Bilder-Sitemap-Schema — bereitgestellt für EXT:seo als zusätzlicher XmlSitemapDataProvider.',
+    'What a task gains from the base classes':
+        'Was eine Aufgabe durch die Basisklassen gewinnt',
+    "A Scheduler task built on the toolkit's base classes is bound to application contexts and reports its failures by e-mail, so the same configuration can be deployed everywhere while executing only where it should.":
+        'Eine Scheduler-Aufgabe auf Basis der Toolkit-Basisklassen ist an Anwendungskontexte gebunden und meldet ihre Fehlschläge per E-Mail. So lässt sich dieselbe Konfiguration überall ausrollen und läuft doch nur dort, wo sie soll.',
+    'One page, many channels':
+        'Eine Seite, viele Kanäle',
+    'An existing page is the source: the extension derives social copy, summaries and alternative phrasings from it through NR LLM, without re-entering the content by hand.':
+        'Eine vorhandene Seite ist die Quelle: die Erweiterung leitet daraus über NR LLM Social-Texte, Zusammenfassungen und alternative Formulierungen ab, ohne den Inhalt neu zu erfassen.',
+    'Cache that follows starttime and endtime':
+        'Cache, der starttime und endtime folgt',
+    'Content with a visibility window stayed cached beyond it (TYPO3 Forge #14277). The cache is now invalidated exactly when content becomes visible and again when it expires.':
+        'Inhalte mit Sichtbarkeitsfenster blieben darüber hinaus im Cache (TYPO3 Forge #14277). Der Cache wird jetzt genau dann verworfen, wenn Inhalt sichtbar wird — und erneut, wenn er abläuft.',
+}
+
+
+def t(s: str) -> str:
+    if LANG == "en" or not s:
+        return s
+    table = TR.get(LANG, {})
+    if s not in table:
+        raise KeyError(f"no {LANG} translation for: {s!r}")
+    return table[s]
 
 
 def wrap(text: str, width: int) -> list[str]:
@@ -52,6 +305,7 @@ def wrap(text: str, width: int) -> list[str]:
 
 def box(x, y, w, h, title, body="", *, fill="#FFFFFF", stroke=BORDER,
         title_fill=TEXT, body_fill=TEXT, title_size=19, dashed=False):
+    title, body = t(title), t(body)
     out = [
         f'<rect x="{x}" y="{y}" width="{w}" height="{h}" rx="10" fill="{fill}" '
         f'stroke="{stroke}" stroke-width="1.5"'
@@ -83,6 +337,7 @@ def arrow(x1, y1, x2, y2, label="", *, colour=TEXT, dashed=False, above=True):
     # An arrow whose colour has no marker renders without a head -- silently in a
     # browser, and as a crash in cairosvg. Fail here instead.
     assert colour in MARKER_COLOURS, f"no arrow head defined for {colour}"
+    label = t(label)
     out = [
         f'<line x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}" stroke="{colour}" '
         f'stroke-width="2" marker-end="url(#head-{colour.lstrip("#")})"'
@@ -100,6 +355,7 @@ def arrow(x1, y1, x2, y2, label="", *, colour=TEXT, dashed=False, above=True):
 
 
 def note(x, y, text, *, size=15, anchor="start", weight="400", colour=TEXT):
+    text = t(text)
     return (
         f'<text x="{x}" y="{y}" font-family="{FONT}" font-size="{size}" '
         f'font-weight="{weight}" fill="{colour}" text-anchor="{anchor}">{esc(text)}</text>'
@@ -107,6 +363,8 @@ def note(x, y, text, *, size=15, anchor="start", weight="400", colour=TEXT):
 
 
 def frame(x, y, w, h, label):
+    # No t() here: the label goes through note(), which translates it. Doing it
+    # twice would look up an already-German string and raise.
     return (
         f'<rect x="{x}" y="{y}" width="{w}" height="{h}" rx="14" fill="none" '
         f'stroke="{PRIMARY}" stroke-width="2" stroke-dasharray="8 6" />\n'
@@ -115,6 +373,7 @@ def frame(x, y, w, h, label):
 
 
 def svg(title: str, desc: str, body: str) -> str:
+    title, desc = t(title), t(desc)
     heads = "\n".join(
         f'<marker id="head-{c.lstrip("#")}" viewBox="0 0 10 10" refX="9" refY="5" '
         f'markerWidth="7" markerHeight="7" orient="auto-start-reverse">'
@@ -138,7 +397,7 @@ def teal(x, y, w, h, title, body=""):
                title_fill="#FFFFFF", body_fill="#FFFFFF", title_size=20)
 
 
-D: dict[str, tuple[str, str, str]] = {}
+D: dict[str, tuple[str, str, "Callable[[], str]"]] = {}
 
 # ---------------------------------------------------------------- ai-agent
 D["ai-agent"] = (
@@ -146,7 +405,9 @@ D["ai-agent"] = (
     "A question typed in the TYPO3 backend goes to the chat agent, which calls MCP "
     "tools against pages, records, backend users, logs and site configuration, and "
     "answers from what those tools returned.",
-    "\n".join([
+    # A thunk, not a string: the body has to be rendered per language, and
+    # rendering it at import time would freeze the English wording into D.
+    lambda: "\n".join([
         note(60, 60, "Every answer is grounded in what the tools returned", size=17, weight="700"),
         box(60, 100, 250, 110, "Question in the backend", "„Which pages changed today?“"),
         arrow(320, 155, 400, 155),
@@ -168,7 +429,9 @@ D["browser-ai"] = (
     "Where the answer is computed",
     "The page text and the question are handed to Chrome's built-in model on the "
     "visitor's own device. Nothing about the page or the dialogue is sent to a server.",
-    "\n".join([
+    # A thunk, not a string: the body has to be rendered per language, and
+    # rendering it at import time would freeze the English wording into D.
+    lambda: "\n".join([
         note(60, 58, "Nothing about the page or the question leaves the device", size=17, weight="700"),
         frame(40, 80, 720, 300, "the visitor’s device"),
         box(75, 130, 220, 110, "This page", "its rendered text"),
@@ -193,7 +456,9 @@ D["browser-ai-form-assistant"] = (
     "The form definition itself becomes the tool contract: its validators, options "
     "and descriptions are turned into a schema, the on-device model produces "
     "arguments against it, and the filled form runs.",
-    "\n".join([
+    # A thunk, not a string: the body has to be rendered per language, and
+    # rendering it at import time would freeze the English wording into D.
+    lambda: "\n".join([
         note(60, 58, "The form definition is the tool contract", size=17, weight="700"),
         box(50, 100, 240, 120, "One sentence",
             "„Wind gusts in Innsbruck for ten days“"),
@@ -219,7 +484,9 @@ D["contexts"] = (
     "A context is defined by domain, GET parameter, IP range, HTTP header, session "
     "value or a combination of those. Pages, menu entries and single content "
     "elements are switched on or off per context.",
-    "\n".join([
+    # A thunk, not a string: the body has to be rendered per language, and
+    # rendering it at import time would freeze the English wording into D.
+    lambda: "\n".join([
         note(60, 58, "One page tree instead of one tree per channel", size=17, weight="700"),
         box(50, 100, 300, 330, "One page tree",
             "pages · menu entries · single content elements"),
@@ -242,7 +509,9 @@ D["image-sitemap"] = (
     "Every image referenced from a page or a content element is listed with its "
     "title and caption in the Google image-sitemap schema, provided to EXT:seo as "
     "an additional XmlSitemapDataProvider.",
-    "\n".join([
+    # A thunk, not a string: the body has to be rendered per language, and
+    # rendering it at import time would freeze the English wording into D.
+    lambda: "\n".join([
         note(60, 58, "No backend module, no extra table — the output is the sitemap",
              size=17, weight="700"),
         box(50, 110, 270, 130, "Pages and content elements",
@@ -267,7 +536,9 @@ D["nr-scheduler"] = (
     "A Scheduler task built on the toolkit's base classes is bound to application "
     "contexts and reports its failures by e-mail, so the same configuration can be "
     "deployed everywhere while executing only where it should.",
-    "\n".join([
+    # A thunk, not a string: the body has to be rendered per language, and
+    # rendering it at import time would freeze the English wording into D.
+    lambda: "\n".join([
         note(60, 58, "Same configuration everywhere, execution only where it belongs",
              size=17, weight="700"),
         box(50, 130, 250, 120, "Scheduler task", "built on the base classes"),
@@ -292,7 +563,9 @@ D["repurpose"] = (
     "An existing page is the source: the extension derives social copy, summaries "
     "and alternative phrasings from it through NR LLM, without re-entering the "
     "content by hand.",
-    "\n".join([
+    # A thunk, not a string: the body has to be rendered per language, and
+    # rendering it at import time would freeze the English wording into D.
+    lambda: "\n".join([
         note(60, 58, "Start from a page that already exists", size=17, weight="700"),
         box(50, 170, 260, 150, "An existing page",
             "the content you already published"),
@@ -315,7 +588,9 @@ D["temporal-cache"] = (
     "Content with a visibility window stayed cached beyond it (TYPO3 Forge #14277). "
     "The cache is now invalidated exactly when content becomes visible and again "
     "when it expires.",
-    "\n".join([
+    # A thunk, not a string: the body has to be rendered per language, and
+    # rendering it at import time would freeze the English wording into D.
+    lambda: "\n".join([
         note(60, 58, "TYPO3 Forge #14277: timed content stayed cached past its window",
              size=17, weight="700"),
         f'<line x1="80" y1="250" x2="1120" y2="250" stroke="{BORDER}" stroke-width="3" />',
@@ -339,12 +614,19 @@ D["temporal-cache"] = (
 
 
 def main() -> None:
-    out = Path(__file__).resolve().parent.parent / "data/fileadmin/user_upload/images/extension-diagrams"
-    out.mkdir(parents=True, exist_ok=True)
-    for name, (title, desc, body) in D.items():
-        path = out / f"{name}.svg"
-        path.write_text(svg(title, desc, body), encoding="utf-8")
-        print(f"{path.name:34} {path.stat().st_size:6} bytes")
+    global LANG
+    root = Path(__file__).resolve().parent.parent / "data/fileadmin/user_upload/images/extension-diagrams"
+    # English keeps the flat path the seed already references; each further
+    # language gets a subdirectory, so adding one never moves an existing file.
+    for lang in ("en", *sorted(TR)):
+        LANG = lang
+        out = root if lang == "en" else root / lang
+        out.mkdir(parents=True, exist_ok=True)
+        for name, (title, desc, body) in D.items():
+            path = out / f"{name}.svg"
+            path.write_text(svg(title, desc, body()), encoding="utf-8")
+            print(f"{lang}  {path.name:34} {path.stat().st_size:6} bytes")
+    LANG = "en"
 
 
 if __name__ == "__main__":
