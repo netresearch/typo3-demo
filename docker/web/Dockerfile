@@ -3,6 +3,9 @@ FROM composer:2@sha256:4d71c3c2109c61d5415544264b59ad4087e4c5b7244481723664138fd
 WORKDIR /app
 COPY composer.json composer.lock* ./
 COPY packages/ packages/
+# composer-patches applies patches/ during install; without the files in the
+# build context it falls back to a remote download with a null host and dies.
+COPY patches/ patches/
 # The credential for the private Composer sources arrives as a BuildKit secret,
 # NOT as a build arg. buildx records every build arg in the SLSA provenance it
 # attaches to the pushed image, and this image is public: the previous `ARG
