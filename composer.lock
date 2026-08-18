@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ac7c9d5fa2ec789dfff886f6611945c2",
+    "content-hash": "7fff97aa144ac9453c29c3ba7d9ea842",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -10088,6 +10088,70 @@
                 }
             ],
             "time": "2026-07-21T15:13:06+00:00"
+        },
+        {
+            "name": "t3g/analytics",
+            "version": "1.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/TYPO3GmbH/analytics.git",
+                "reference": "1d5ed9fbf54af3c57a22c794f097898e1b1cec79"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/TYPO3GmbH/analytics/zipball/1d5ed9fbf54af3c57a22c794f097898e1b1cec79",
+                "reference": "1d5ed9fbf54af3c57a22c794f097898e1b1cec79",
+                "shasum": ""
+            },
+            "require": {
+                "ext-sodium": "*",
+                "php": "^8.2",
+                "typo3/cms-backend": "^13.4 || ^14.0",
+                "typo3/cms-core": "^13.4 || ^14.0",
+                "typo3/cms-dashboard": "^13.4 || ^14.0"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^3.64",
+                "phpstan/phpstan": "^2.1",
+                "phpunit/phpunit": "^11.0",
+                "rector/rector": "^2.4",
+                "saschaegerer/phpstan-typo3": "^3.0",
+                "ssch/typo3-rector": "^3.13",
+                "typo3/testing-framework": "^8.0 || ^9.0"
+            },
+            "type": "typo3-cms-extension",
+            "extra": {
+                "typo3/cms": {
+                    "Package": {
+                        "providesPackages": []
+                    },
+                    "extension-key": "analytics"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "T3G\\Analytics\\": "Classes/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "TYPO3 GmbH",
+                    "email": "support@typo3.com",
+                    "homepage": "https://typo3.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "TYPO3 Analytics Extension",
+            "support": {
+                "docs": "https://docs.typo3.org/permalink/t3g-analytics:start",
+                "issues": "https://github.com/TYPO3GmbH/analytics/issues",
+                "source": "https://github.com/TYPO3GmbH/analytics"
+            },
+            "time": "2026-08-03T09:03:39+00:00"
         },
         {
             "name": "thieleundklose/autotranslate",
