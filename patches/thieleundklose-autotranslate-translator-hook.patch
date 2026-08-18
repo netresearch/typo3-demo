@@ -1,0 +1,55 @@
+--- a/Classes/Utility/DeeplApiHelper.php
++++ b/Classes/Utility/DeeplApiHelper.php
+@@ -23,10 +23,35 @@
+ 
+     public static function createTranslator(string $apiKey): Translator
+     {
++        $translatorClass = self::configuredTranslatorClass();
++        if ($translatorClass !== null) {
++            $translator = GeneralUtility::getContainer()->get($translatorClass);
++            if ($translator instanceof Translator) {
++                return $translator;
++            }
++        }
++
+         return new Translator($apiKey, self::translatorOptions());
+     }
+ 
+     /**
++     * Local hook (composer patch): a container-resolvable \DeepL\Translator
++     * subclass configured in
++     * $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['autotranslate']['translatorClass']
++     * replaces the DeepL client, and the API-key check is skipped - the
++     * replacement manages its own provider access.
++     */
++    private static function configuredTranslatorClass(): ?string
++    {
++        $translatorClass = $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['autotranslate']['translatorClass'] ?? null;
++        if (is_string($translatorClass) && is_a($translatorClass, Translator::class, true)) {
++            return $translatorClass;
++        }
++
++        return null;
++    }
++
++    /**
+      * Prüft, ob der DeepL API-Key gültig ist und gibt optional die Usage zurück.
+      *
+      * @param ?string $apiKey
+@@ -34,6 +59,16 @@
+      */
+     public static function checkApiKey(?string $apiKey): array
+     {
++        if (self::configuredTranslatorClass() !== null) {
++            return [
++                'isValid' => true,
++                'usage' => null,
++                'charactersLeft' => null,
++                'error' => null,
++                'warning' => null,
++            ];
++        }
++
+         if (!$apiKey) {
+             return [
+                 'isValid' => false,

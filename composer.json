@@ -6,6 +6,7 @@
   "require": {
     "bk2k/bootstrap-package": "^16.0",
     "causal/extractor": "^2.6",
+    "cweagans/composer-patches": "^1.7",
     "friendsoftypo3/content-blocks": "^2.0",
     "georgringer/news": "^14.0",
     "hn/typo3-mcp-server": "^0.5",
@@ -16,7 +17,8 @@
     "netresearch/nr-browser-ai": "^0.7",
     "netresearch/nr-image-sitemap": "^14.0",
     "netresearch/nr-landingpage": "^0.3",
-    "netresearch/nr-llm": "^0.29",
+    "netresearch/nr-llm": "v0.30.0 as v0.29.99",
+    "netresearch/nr-llm-compat": "^0.1",
     "netresearch/nr-mcp-agent": "^0.11",
     "netresearch/nr-passkeys-be": "^0.12",
     "netresearch/nr-passkeys-fe": "^0.6",
@@ -55,6 +57,11 @@
   },
   "repositories": [
     {
+      "name": "nr-llm-compat",
+      "type": "vcs",
+      "url": "https://github.com/netresearch/t3x-nr-llm-compat.git"
+    },
+    {
       "type": "path",
       "url": "packages/*",
       "options": {
@@ -82,7 +89,8 @@
     ],
     "allow-plugins": {
       "typo3/class-alias-loader": true,
-      "typo3/cms-composer-installers": true
+      "typo3/cms-composer-installers": true,
+      "cweagans/composer-patches": true
     },
     "platform": {
       "php": "8.5"
@@ -92,7 +100,13 @@
   "extra": {
     "typo3/cms": {
       "web-dir": "public"
-    }
+    },
+    "patches": {
+      "thieleundklose/autotranslate": {
+        "Local translator hook: route translations through a container-resolved \\DeepL\\Translator subclass (nr-llm bridge) instead of the DeepL client": "patches/thieleundklose-autotranslate-translator-hook.patch"
+      }
+    },
+    "enable-patching": true
   },
   "minimum-stability": "stable",
   "prefer-stable": true

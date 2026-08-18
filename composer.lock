@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7fff97aa144ac9453c29c3ba7d9ea842",
+    "content-hash": "c6abe277074add29f0f8f0d1d0fa57d6",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -639,6 +639,54 @@
                 }
             ],
             "time": "2025-08-20T19:15:30+00:00"
+        },
+        {
+            "name": "cweagans/composer-patches",
+            "version": "1.7.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/cweagans/composer-patches.git",
+                "reference": "e190d4466fe2b103a55467dfa83fc2fecfcaf2db"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/cweagans/composer-patches/zipball/e190d4466fe2b103a55467dfa83fc2fecfcaf2db",
+                "reference": "e190d4466fe2b103a55467dfa83fc2fecfcaf2db",
+                "shasum": ""
+            },
+            "require": {
+                "composer-plugin-api": "^1.0 || ^2.0",
+                "php": ">=5.3.0"
+            },
+            "require-dev": {
+                "composer/composer": "~1.0 || ~2.0",
+                "phpunit/phpunit": "~4.6"
+            },
+            "type": "composer-plugin",
+            "extra": {
+                "class": "cweagans\\Composer\\Patches"
+            },
+            "autoload": {
+                "psr-4": {
+                    "cweagans\\Composer\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Cameron Eagans",
+                    "email": "me@cweagans.net"
+                }
+            ],
+            "description": "Provides a way to patch Composer packages.",
+            "support": {
+                "issues": "https://github.com/cweagans/composer-patches/issues",
+                "source": "https://github.com/cweagans/composer-patches/tree/1.7.3"
+            },
+            "time": "2022-12-20T22:53:13+00:00"
         },
         {
             "name": "dasprid/enum",
@@ -2338,24 +2386,24 @@
         },
         {
             "name": "masterminds/html5",
-            "version": "2.10.1",
+            "version": "2.11.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Masterminds/html5-php.git",
-                "reference": "fd5018f6815fff903946d0564977b44ce8010e29"
+                "reference": "a1e7a2f88ee13635d86fc61cfbdf2306a76ddfc7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Masterminds/html5-php/zipball/fd5018f6815fff903946d0564977b44ce8010e29",
-                "reference": "fd5018f6815fff903946d0564977b44ce8010e29",
+                "url": "https://api.github.com/repos/Masterminds/html5-php/zipball/a1e7a2f88ee13635d86fc61cfbdf2306a76ddfc7",
+                "reference": "a1e7a2f88ee13635d86fc61cfbdf2306a76ddfc7",
                 "shasum": ""
             },
             "require": {
                 "ext-dom": "*",
-                "php": ">=5.3.0"
+                "php": ">=7.4"
             },
             "require-dev": {
-                "phpunit/phpunit": "^4.8.35 || ^5.7.21 || ^6 || ^7 || ^8 || ^9 || ^10"
+                "phpunit/phpunit": "^6 || ^7 || ^8 || ^9 || ^10"
             },
             "type": "library",
             "extra": {
@@ -2399,9 +2447,9 @@
             ],
             "support": {
                 "issues": "https://github.com/Masterminds/html5-php/issues",
-                "source": "https://github.com/Masterminds/html5-php/tree/2.10.1"
+                "source": "https://github.com/Masterminds/html5-php/tree/2.11.0"
             },
-            "time": "2026-06-23T18:43:15+00:00"
+            "time": "2026-08-18T06:18:41+00:00"
         },
         {
             "name": "mfd/ai-filemetadata",
@@ -2872,16 +2920,16 @@
         },
         {
             "name": "netresearch/nr-llm",
-            "version": "v0.29.1",
+            "version": "v0.30.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/t3x-nr-llm.git",
-                "reference": "2d804b31861f6c32279ce5f1ff4fee0de94d12f2"
+                "reference": "fcaa6af8a03898de5f070e9ab225d22af52a7d3f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/t3x-nr-llm/zipball/2d804b31861f6c32279ce5f1ff4fee0de94d12f2",
-                "reference": "2d804b31861f6c32279ce5f1ff4fee0de94d12f2",
+                "url": "https://api.github.com/repos/netresearch/t3x-nr-llm/zipball/fcaa6af8a03898de5f070e9ab225d22af52a7d3f",
+                "reference": "fcaa6af8a03898de5f070e9ab225d22af52a7d3f",
                 "shasum": ""
             },
             "require": {
@@ -2914,7 +2962,7 @@
                     "Package": {
                         "providesPackages": []
                     },
-                    "version": "0.29.1",
+                    "version": "0.30.0",
                     "web-dir": ".Build/Web",
                     "extension-key": "nr_llm"
                 },
@@ -2959,7 +3007,152 @@
                 "issues": "https://github.com/netresearch/t3x-nr-llm/issues",
                 "source": "https://github.com/netresearch/t3x-nr-llm"
             },
-            "time": "2026-08-13T06:55:05+00:00"
+            "time": "2026-08-18T21:36:52+00:00"
+        },
+        {
+            "name": "netresearch/nr-llm-compat",
+            "version": "v0.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/netresearch/t3x-nr-llm-compat.git",
+                "reference": "132c7b87f392a50e7bcaff73ac7fc97280a088e3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/netresearch/t3x-nr-llm-compat/zipball/132c7b87f392a50e7bcaff73ac7fc97280a088e3",
+                "reference": "132c7b87f392a50e7bcaff73ac7fc97280a088e3",
+                "shasum": ""
+            },
+            "require": {
+                "composer-runtime-api": "^2.2",
+                "composer/semver": "^3.4",
+                "netresearch/nr-llm": "^0.30",
+                "php": "^8.2",
+                "symfony/console": "^6.4 || ^7.0 || ^8.0",
+                "symfony/dependency-injection": "^6.4 || ^7.0 || ^8.0",
+                "typo3/cms-core": "^13.4 || ^14.3"
+            },
+            "require-dev": {
+                "in2code/texter": "^3.0",
+                "mfd/ai-filemetadata": "^1.6",
+                "netresearch/typo3-ci-workflows": "^1.4",
+                "nitsan/ns-t3ai": "^14.0",
+                "passionweb/ai-seo-helper": "^0.7.2",
+                "typo3/cms-dashboard": "^13.4 || ^14.3",
+                "typo3/cms-filemetadata": "^13.4 || ^14.3",
+                "typo3/cms-install": "^13.4 || ^14.3",
+                "typo3/cms-seo": "^13.4 || ^14.3"
+            },
+            "suggest": {
+                "eliashaeussler/typo3-solver": "The exception solver's completions are routed through nr-llm via its official provider setting when the integration is enabled",
+                "in2code/texter": "Texter's LLM calls are routed through nr-llm via its official llmRepositoryClass hook when the integration is enabled",
+                "mfd/ai-filemetadata": "AI File Metadata's alt-text vision calls are routed through nr-llm when the integration is enabled",
+                "nitsan/ns-t3ai": "T3AI's OpenAI calls are routed through nr-llm when the integration is enabled",
+                "passionweb/ai-seo-helper": "AI SEO Helper's OpenAI calls are routed through nr-llm when the integration is enabled"
+            },
+            "type": "typo3-cms-extension",
+            "extra": {
+                "typo3/cms": {
+                    "extension-key": "nr_llm_compat",
+                    "version": "0.1.0",
+                    "web-dir": ".Build/Web"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Netresearch\\NrLlmCompat\\": "Classes/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "Netresearch\\NrLlmCompat\\Tests\\": "Tests/"
+                }
+            },
+            "archive": {
+                "exclude": [
+                    "/.Build",
+                    "/Tests/SolverEnvironment",
+                    "/typo3temp",
+                    "/var"
+                ]
+            },
+            "scripts": {
+                "ci": [
+                    "@ci:test:php:lint",
+                    "@ci:test:php:cgl",
+                    "@ci:test:php:phpstan",
+                    "@ci:test:php:unit"
+                ],
+                "ci:cgl": [
+                    "php-cs-fixer fix"
+                ],
+                "ci:full": [
+                    "@ci",
+                    "@ci:test:php:functional"
+                ],
+                "ci:test:php:cgl": [
+                    "php-cs-fixer fix --dry-run --diff"
+                ],
+                "ci:test:php:functional": [
+                    "phpunit -c Build/FunctionalTests.xml"
+                ],
+                "ci:test:php:lint": [
+                    "sh -c 'find Classes Configuration Tests -name \"*.php\" -print0 | xargs -0 -n1 -P$(nproc 2>/dev/null || echo 4) php -l >/dev/null'"
+                ],
+                "ci:test:php:phpstan": [
+                    "sh -c 'if [ -d .Build/vendor/passionweb/ai-seo-helper ]; then phpstan analyse -c Build/phpstan/phpstan.neon \"$@\"; else phpstan analyse -c Build/phpstan/phpstan-no-typo3-13-only.neon \"$@\"; fi' --"
+                ],
+                "ci:test:php:rector": [
+                    "rector process --config Build/rector/rector.php --dry-run"
+                ],
+                "ci:test:php:unit": [
+                    "phpunit -c Build/phpunit.xml --testsuite unit"
+                ],
+                "ci:test:repo": [
+                    "@ci:test:solver"
+                ],
+                "ci:test:solver": [
+                    "sh -c 'cd Tests/SolverEnvironment && composer update --no-interaction --no-progress && composer test'"
+                ],
+                "cs:fix": [
+                    "@ci:cgl"
+                ],
+                "phpstan": [
+                    "@ci:test:php:phpstan"
+                ],
+                "rector": [
+                    "rector process --config Build/rector/rector.php"
+                ],
+                "test": [
+                    "phpunit -c Build/phpunit.xml"
+                ]
+            },
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "Netresearch DTT GmbH",
+                    "homepage": "https://www.netresearch.de/",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Runtime LLM compatibility layer for third-party TYPO3 AI extensions — routes their provider calls through nr-llm without modifying them",
+            "homepage": "https://github.com/netresearch/t3x-nr-llm-compat",
+            "keywords": [
+                "AI",
+                "LLM",
+                "TYPO3",
+                "compatibility",
+                "extension",
+                "interception",
+                "provider-abstraction"
+            ],
+            "support": {
+                "issues": "https://github.com/netresearch/t3x-nr-llm-compat/issues",
+                "source": "https://github.com/netresearch/t3x-nr-llm-compat"
+            },
+            "time": "2026-08-18T22:22:25+00:00"
         },
         {
             "name": "netresearch/nr-mcp-agent",
@@ -12589,7 +12782,14 @@
         }
     ],
     "packages-dev": [],
-    "aliases": [],
+    "aliases": [
+        {
+            "package": "netresearch/nr-llm",
+            "version": "0.30.0.0",
+            "alias": "v0.29.99",
+            "alias_normalized": "0.29.99.0"
+        }
+    ],
     "minimum-stability": "stable",
     "stability-flags": {
         "netresearch/nr-ai-search": 20,
