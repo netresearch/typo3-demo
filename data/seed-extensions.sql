@@ -5621,6 +5621,32 @@ INSERT IGNORE INTO `sys_file_reference` (`uid`, `pid`, `tstamp`, `crdate`, `crus
 INSERT IGNORE INTO `sys_file_reference` (`uid`, `pid`, `tstamp`, `crdate`, `cruser_id`, `deleted`, `hidden`, `sys_language_uid`, `l10n_parent`, `l10n_state`, `l10n_diffsource`, `t3ver_oid`, `t3ver_wsid`, `t3ver_state`, `t3ver_stage`, `uid_local`, `uid_foreign`, `tablenames`, `fieldname`, `sorting_foreign`, `table_local`, `title`, `description`, `alternative`, `link`, `crop`, `autoplay`, `showinpreview`) VALUES (303,107,1773843860,1773843860,0,0,0,0,0,NULL,NULL,0,0,0,0,288,431,'tt_content','image',2,'sys_file','Secrets List',NULL,'Secrets List','',NULL,0,0);
 INSERT IGNORE INTO `sys_file_reference` (`uid`, `pid`, `tstamp`, `crdate`, `cruser_id`, `deleted`, `hidden`, `sys_language_uid`, `l10n_parent`, `l10n_state`, `l10n_diffsource`, `t3ver_oid`, `t3ver_wsid`, `t3ver_state`, `t3ver_stage`, `uid_local`, `uid_foreign`, `tablenames`, `fieldname`, `sorting_foreign`, `table_local`, `title`, `description`, `alternative`, `link`, `crop`, `autoplay`, `showinpreview`) VALUES (304,107,1773843860,1773843860,0,0,0,0,0,NULL,NULL,0,0,0,0,287,431,'tt_content','image',3,'sys_file','Audit Log',NULL,'Audit Log','',NULL,0,0);
 
+-- --- Imagery for two pages that had none (#206) ------------------------------
+-- Ten of the sixteen extension pages carry no imagery. Two of them have a
+-- backend module with real data in this seed and can therefore be shown; the
+-- rest render empty states (Repurpose: "No jobs yet", Scheduler: "No tasks
+-- found", Temporal Cache: all zeros) and need a diagram instead, which is the
+-- open half of #206.
+--
+-- uids come from the reserved band this file already guards for pages and
+-- content (9000-9998), extended to the FAL tables for the same reason: the
+-- next uid the database hands out must not land on one of ours. sys_file's
+-- own AUTO_INCREMENT was 877 at the time of writing, so 9001/9002 sit far
+-- above it.
+--
+-- The image elements follow the ones already on the other pages: CType image,
+-- colPos 0, sys_language_uid 0 and no translation, exactly like uids 427-431.
+
+INSERT IGNORE INTO `sys_file` (`uid`, `pid`, `tstamp`, `last_indexed`, `missing`, `storage`, `type`, `metadata`, `identifier`, `identifier_hash`, `folder_hash`, `extension`, `mime_type`, `name`, `sha1`, `size`, `creation_date`, `modification_date`) VALUES (9001,0,1787040000,1787040000,0,1,2,0,'/user_upload/images/extensions/textdb-backend-module.png','dfa35439409799bb78c88905413487a6e45b409a','7cff8900b976da2cf97fd1572ca0aa22e018ccaf','png','image/png','textdb-backend-module.png','1482059604a860b0a5ffb2852a12b54a15ab1139',123442,1787040000,1787040000);
+INSERT IGNORE INTO `sys_file_metadata` (`uid`, `pid`, `tstamp`, `crdate`, `sys_language_uid`, `l10n_parent`, `file`, `title`, `width`, `height`, `alternative`) VALUES (9001,0,1787040000,1787040000,0,0,9001,'TextDb backend module',0,0,'The TextDb module listing label records with their component, type, placeholder and value');
+INSERT IGNORE INTO `tt_content` (`uid`, `pid`, `tstamp`, `crdate`, `deleted`, `hidden`, `sorting`, `CType`, `colPos`, `sys_language_uid`, `l18n_parent`, `header`, `header_layout`, `image`, `imageorient`, `imagecols`) VALUES (9601,160,1787040000,1787040000,0,0,150,'image',0,0,0,'',100,1,0,1);
+INSERT IGNORE INTO `sys_file_reference` (`uid`, `pid`, `tstamp`, `crdate`, `deleted`, `hidden`, `uid_local`, `uid_foreign`, `tablenames`, `fieldname`, `sorting_foreign`, `table_local`, `title`, `alternative`) VALUES (9001,160,1787040000,1787040000,0,0,9001,9601,'tt_content','image',1,'sys_file','TextDb backend module','The TextDb module listing label records with their component, type, placeholder and value');
+
+INSERT IGNORE INTO `sys_file` (`uid`, `pid`, `tstamp`, `last_indexed`, `missing`, `storage`, `type`, `metadata`, `identifier`, `identifier_hash`, `folder_hash`, `extension`, `mime_type`, `name`, `sha1`, `size`, `creation_date`, `modification_date`) VALUES (9002,0,1787040000,1787040000,0,1,2,0,'/user_upload/images/extensions/passkeys-fe-adoption-dashboard.png','83e8749a99ed11fe43c35995e7cdc42ec2c1d3ba','7cff8900b976da2cf97fd1572ca0aa22e018ccaf','png','image/png','passkeys-fe-adoption-dashboard.png','7b64b5ca3dd92dcdf3510a40bdae7644a715ba91',114694,1787040000,1787040000);
+INSERT IGNORE INTO `sys_file_metadata` (`uid`, `pid`, `tstamp`, `crdate`, `sys_language_uid`, `l10n_parent`, `file`, `title`, `width`, `height`, `alternative`) VALUES (9002,0,1787040000,1787040000,0,0,9002,'Frontend passkey adoption',0,0,'The FE Passkeys dashboard showing adoption per frontend user group');
+INSERT IGNORE INTO `tt_content` (`uid`, `pid`, `tstamp`, `crdate`, `deleted`, `hidden`, `sorting`, `CType`, `colPos`, `sys_language_uid`, `l18n_parent`, `header`, `header_layout`, `image`, `imageorient`, `imagecols`) VALUES (9602,109,1787040000,1787040000,0,0,150,'image',0,0,0,'',100,1,0,1);
+INSERT IGNORE INTO `sys_file_reference` (`uid`, `pid`, `tstamp`, `crdate`, `deleted`, `hidden`, `uid_local`, `uid_foreign`, `tablenames`, `fieldname`, `sorting_foreign`, `table_local`, `title`, `alternative`) VALUES (9002,109,1787040000,1787040000,0,0,9002,9602,'tt_content','image',1,'sys_file','Frontend passkey adoption','The FE Passkeys dashboard showing adoption per frontend user group');
+
 -- --- The overview page had no h1 ----------------------------------------------
 -- Each of the sixteen extension pages opens with exactly one <h1>; their parent
 -- opened with a lead paragraph and nothing above it, so the document started at
@@ -5864,6 +5890,19 @@ SELECT CONCAT('SEED-PROBLEM: ', COUNT(*),
        SELECT 1 FROM sys_file_reference r
         WHERE r.uid_local = f.uid AND r.deleted = 0)
 HAVING COUNT(*) > 0
+UNION ALL
+-- The two pages that gained imagery in #206 must have it: a file row, and a
+-- reference from a content element on that very page. INSERT IGNORE reports
+-- neither a uid held by a foreign row nor a reference that never landed.
+SELECT CONCAT('SEED-PROBLEM: page ', x.pid,
+              ' has no rendered image -- the #206 imagery did not land')
+  FROM (SELECT 160 AS pid, 9001 AS f UNION ALL SELECT 109, 9002) x
+ WHERE NOT EXISTS (
+       SELECT 1
+         FROM sys_file_reference r
+         JOIN tt_content c ON c.uid = r.uid_foreign AND c.deleted = 0 AND c.pid = x.pid
+         JOIN sys_file sf  ON sf.uid = r.uid_local  AND sf.uid = x.f
+        WHERE r.deleted = 0 AND r.tablenames = 'tt_content' AND r.fieldname = 'image')
 UNION ALL
 -- The overview page is the parent of the sixteen; it must carry exactly one h1
 -- in each language, like they do.
