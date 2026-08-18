@@ -215,6 +215,36 @@ if [ -f config/system/settings.php ]; then
     ' || echo "WARNING: failed to write additional.php" >&2
 fi
 
+# Route EXT:autotranslate through nr-llm. autotranslate has no provider hook;
+# a local composer patch (patches/thieleundklose-autotranslate-translator-hook.patch)
+# teaches its DeeplApiHelper to resolve the class configured here from the
+# container - the demo-site bridge translates via nr-llm, and autotranslate
+# needs no DeepL key of its own. Same managed-block mechanics as above.
+if [ -f config/system/settings.php ]; then
+    php -r '
+        $f = "config/system/additional.php";
+        $begin = "// >>> autotranslate via nr-llm (managed by entrypoint, do not edit this block)";
+        $end   = "// <<< autotranslate via nr-llm";
+        $block = $begin . "\n"
+            . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"autotranslate\"][\"translatorClass\"] = \"Netresearch\\\\DemoSite\\\\Translation\\\\NrLlmDeeplTranslator\";\n"
+            . $end;
+        $existing = is_file($f) ? (string) file_get_contents($f) : "";
+        if (strpos($existing, "<?php") === false) {
+            $existing = "<?php\n" . ($existing === "" ? "" : $existing . "\n");
+        }
+        $b = strpos($existing, $begin);
+        if ($b !== false) {
+            $e = strpos($existing, $end, $b);
+            $existing = $e !== false
+                ? substr($existing, 0, $b) . substr($existing, $e + strlen($end))
+                : substr($existing, 0, $b);
+        }
+        $existing = rtrim($existing, "\n") . "\n\n" . $block . "\n";
+        file_put_contents($f, $existing);
+        echo "additional.php: autotranslate routed through nr-llm." . PHP_EOL;
+    ' || echo "WARNING: failed to write additional.php" >&2
+fi
+
 # Serve processed images as WebP. TYPO3 14 decides the target format of every
 # processed image from GFX.imageFileConversionFormats (Feature 93981); the core
 # default keeps jpg as jpg, png as png and turns everything else into png, which

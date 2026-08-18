@@ -6,6 +6,7 @@
   "require": {
     "bk2k/bootstrap-package": "^16.0",
     "causal/extractor": "^2.6",
+    "cweagans/composer-patches": "^1.7",
     "friendsoftypo3/content-blocks": "^2.0",
     "georgringer/news": "^14.0",
     "hn/typo3-mcp-server": "^0.5",
@@ -82,7 +83,8 @@
     ],
     "allow-plugins": {
       "typo3/class-alias-loader": true,
-      "typo3/cms-composer-installers": true
+      "typo3/cms-composer-installers": true,
+      "cweagans/composer-patches": true
     },
     "platform": {
       "php": "8.5"
@@ -92,7 +94,13 @@
   "extra": {
     "typo3/cms": {
       "web-dir": "public"
-    }
+    },
+    "patches": {
+      "thieleundklose/autotranslate": {
+        "Local translator hook: route translations through a container-resolved \\DeepL\\Translator subclass (nr-llm bridge) instead of the DeepL client": "patches/thieleundklose-autotranslate-translator-hook.patch"
+      }
+    },
+    "enable-patching": true
   },
   "minimum-stability": "stable",
   "prefer-stable": true
