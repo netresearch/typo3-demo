@@ -7,6 +7,12 @@ services:
   Netresearch\DemoSite\:
     resource: '../Classes/*'
 
+  # The autotranslate composer patch resolves this class through the public
+  # container (GeneralUtility::getContainer()->get()), so it cannot stay a
+  # private service.
+  Netresearch\DemoSite\Translation\NrLlmDeeplTranslator:
+    public: true
+
   # ---------------------------------------------------------------------------
   # Dashboard cards — one per Netresearch demo extension.
   # All share the DemoExtensionCardWidget class; content is options-driven.
