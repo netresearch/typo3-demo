@@ -5647,6 +5647,60 @@ INSERT IGNORE INTO `sys_file_metadata` (`uid`, `pid`, `tstamp`, `crdate`, `sys_l
 INSERT IGNORE INTO `tt_content` (`uid`, `pid`, `tstamp`, `crdate`, `deleted`, `hidden`, `sorting`, `CType`, `colPos`, `sys_language_uid`, `l18n_parent`, `header`, `header_layout`, `image`, `imageorient`, `imagecols`) VALUES (9602,109,1787040000,1787040000,0,0,150,'image',0,0,0,'',100,1,0,1);
 INSERT IGNORE INTO `sys_file_reference` (`uid`, `pid`, `tstamp`, `crdate`, `deleted`, `hidden`, `uid_local`, `uid_foreign`, `tablenames`, `fieldname`, `sorting_foreign`, `table_local`, `title`, `alternative`) VALUES (9002,109,1787040000,1787040000,0,0,9002,9602,'tt_content','image',1,'sys_file','Frontend passkey adoption','The FE Passkeys dashboard showing adoption per frontend user group');
 
+-- --- The passkeys-be capture, retaken and renamed (#211) ---------------------
+-- File 286 was the one screenshot #198 could not retake. The Passkey Adoption
+-- Dashboard prints the auto-detected Relying Party ID, which on a throwaway
+-- container is that container's own hostname -- the one thing the capture rule
+-- forbids outright.
+--
+-- The value is not a property of the container, though: it is the request's own
+-- Host header (ExtensionConfigurationService::getEffectiveRpId() falls back to
+-- getNormalizedParams()->getHttpHost() when no rpId is configured, and this
+-- repository configures none). So the capture was taken against a local
+-- container reached through a proxy that sets Host to the demo's own name, and
+-- the note reads what the live site's note reads. That the live value is
+-- typo3-demo.netresearch.de was read off the public backend login page, which
+-- carries the effective rpId in its markup -- not assumed.
+--
+-- Renamed while replacing it: the old name says "usersettings", and the image
+-- is the adoption dashboard. The new name mirrors its frontend sibling. uid 286
+-- is kept, so the content element and its reference need no repointing.
+--
+-- These are UPDATEs rather than INSERT IGNOREs: all four rows exist in
+-- data/db.sql.gz already, so an INSERT would be ignored and change nothing.
+
+UPDATE sys_file
+   SET identifier        = '/user_upload/images/extensions/passkeys-be-adoption-dashboard.png',
+       -- SHA-1 of the identifier, and of the folder path -- both verified
+       -- against this row's own previous values before it was changed.
+       identifier_hash   = '205e54d7f2073c327bcee66900dcfdcc92cf82f1',
+       name              = 'passkeys-be-adoption-dashboard.png',
+       sha1              = '34d022e355ae36a27087c7d088c4c8b725a64c1f',
+       size              = 243593,
+       tstamp            = 1787040000,
+       last_indexed      = 1787040000,
+       modification_date = 1787040000
+ WHERE uid = 286
+   AND storage = 1
+   AND identifier <> '/user_upload/images/extensions/passkeys-be-adoption-dashboard.png';
+
+-- The dimensions were 0/0 while the file was unindexed. Leaving them at 0 would
+-- work, but a stale non-zero pair from the old image would not, and an UPDATE
+-- cannot tell the two apart -- so they are set to what the new file measures.
+UPDATE sys_file_metadata
+   SET title       = 'Passkey adoption in the TYPO3 backend',
+       alternative = 'The Passkey Adoption Dashboard: eight active users, two with passkeys, a 25 percent adoption rate, and per-group enforcement settings',
+       width       = 1600,
+       height      = 1440,
+       tstamp      = 1787040000
+ WHERE uid = 286 AND file = 286;
+
+UPDATE sys_file_reference
+   SET title       = 'Passkey adoption in the TYPO3 backend',
+       alternative = 'The Passkey Adoption Dashboard: eight active users, two with passkeys, a 25 percent adoption rate, and per-group enforcement settings',
+       tstamp      = 1787040000
+ WHERE uid = 301 AND pid = 106 AND uid_local = 286 AND uid_foreign = 430;
+
 -- --- Diagrams for the eight pages that cannot carry a screenshot (#206) ------
 -- Their modules render empty states -- Repurpose "No jobs yet", Scheduler "No
 -- tasks found", Temporal Cache all zeros -- or have no screen at all, so a
@@ -5944,6 +5998,23 @@ SELECT CONCAT('SEED-PROBLEM: page ', x.pid,
          JOIN tt_content c ON c.uid = r.uid_foreign AND c.deleted = 0 AND c.pid = x.pid
          JOIN sys_file sf  ON sf.uid = r.uid_local  AND sf.uid = x.f
         WHERE r.deleted = 0 AND r.tablenames = 'tt_content' AND r.fieldname = 'image')
+UNION ALL
+-- The passkeys-be capture was renamed while being replaced (#211). An UPDATE
+-- that matched nothing is silent, and the visible result is the old image with
+-- the old hostname still on the page -- exactly the state the issue describes.
+SELECT CONCAT('SEED-PROBLEM: sys_file 286 still carries ', f.name,
+              ' -- the #211 rename did not land')
+  FROM sys_file f
+ WHERE f.uid = 286
+   AND f.name <> 'passkeys-be-adoption-dashboard.png'
+UNION ALL
+-- And the checksum has to be the new file's, or the row describes an image that
+-- is no longer there.
+SELECT CONCAT('SEED-PROBLEM: sys_file 286 has checksum ', f.sha1,
+              ' -- it should hold the retaken capture')
+  FROM sys_file f
+ WHERE f.uid = 286
+   AND f.sha1 <> '34d022e355ae36a27087c7d088c4c8b725a64c1f'
 UNION ALL
 -- Eight pages carry a diagram instead of a screenshot (#206). A missing element
 -- means a page with no imagery again, which is what the issue was about.
