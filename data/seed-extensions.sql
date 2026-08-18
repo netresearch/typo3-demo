@@ -5587,9 +5587,9 @@ INSERT IGNORE INTO `sys_file` (`uid`, `pid`, `tstamp`, `last_indexed`, `missing`
 INSERT IGNORE INTO `sys_file` (`uid`, `pid`, `tstamp`, `last_indexed`, `missing`, `storage`, `type`, `metadata`, `identifier`, `identifier_hash`, `folder_hash`, `extension`, `mime_type`, `name`, `sha1`, `size`, `creation_date`, `modification_date`) VALUES (284,0,1786665600,1773843860,0,1,2,0,'/user_upload/images/extensions/nr-llm-backend-tasks.png','65aaa2be9e0e502a335136dcdc1838eb69358c9a','7cff8900b976da2cf97fd1572ca0aa22e018ccaf','png','image/png','nr-llm-backend-tasks.png','e8a68432f79a8cd702b2047182f0f524ad7033c8',202051,1773843860,1786665600);
 INSERT IGNORE INTO `sys_file` (`uid`, `pid`, `tstamp`, `last_indexed`, `missing`, `storage`, `type`, `metadata`, `identifier`, `identifier_hash`, `folder_hash`, `extension`, `mime_type`, `name`, `sha1`, `size`, `creation_date`, `modification_date`) VALUES (285,0,1786665600,1773843860,0,1,2,0,'/user_upload/images/extensions/passkeys-be-login-loginpagewithpasskey.png','49e2d3d70c99749835b501da906a908455496685','7cff8900b976da2cf97fd1572ca0aa22e018ccaf','png','image/png','passkeys-be-login-loginpagewithpasskey.png','b58fced6b05e7456036fa72bd55ed0c69fa51982',22214,1773843860,1786665600); -- gitleaks:allow  SHA-1 checksums of publicly served PNGs; the rule fires on 'passkey'/'Secrets' next to hex.
 INSERT IGNORE INTO `sys_file` (`uid`, `pid`, `tstamp`, `last_indexed`, `missing`, `storage`, `type`, `metadata`, `identifier`, `identifier_hash`, `folder_hash`, `extension`, `mime_type`, `name`, `sha1`, `size`, `creation_date`, `modification_date`) VALUES (286,0,1773843860,1773843860,0,1,2,0,'/user_upload/images/extensions/passkeys-be-usersettings-passkeymanagement.png','abb9b2a0eff12fb28a8b13350f3393c394a3f42f','7cff8900b976da2cf97fd1572ca0aa22e018ccaf','png','image/png','passkeys-be-usersettings-passkeymanagement.png','80db66cceb261daaa1c361ed3608cdf0637b3083',77711,1773843860,1773843860); -- gitleaks:allow  SHA-1 checksums of publicly served PNGs; the rule fires on 'passkey'/'Secrets' next to hex.
-INSERT IGNORE INTO `sys_file` (`uid`, `pid`, `tstamp`, `last_indexed`, `missing`, `storage`, `type`, `metadata`, `identifier`, `identifier_hash`, `folder_hash`, `extension`, `mime_type`, `name`, `sha1`, `size`, `creation_date`, `modification_date`) VALUES (287,0,1773843860,1773843860,0,1,2,0,'/user_upload/images/extensions/vault-AuditLog.png','1eb625fb2ea44e4d6ab043aac42eca091340e34d','7cff8900b976da2cf97fd1572ca0aa22e018ccaf','png','image/png','vault-AuditLog.png','f518a32466dddd78ba75f0804efe4f82c09497ac',112598,1773843860,1773843860);
-INSERT IGNORE INTO `sys_file` (`uid`, `pid`, `tstamp`, `last_indexed`, `missing`, `storage`, `type`, `metadata`, `identifier`, `identifier_hash`, `folder_hash`, `extension`, `mime_type`, `name`, `sha1`, `size`, `creation_date`, `modification_date`) VALUES (288,0,1773843860,1773843860,0,1,2,0,'/user_upload/images/extensions/vault-SecretsList.png','d990df5e7a636b4b9743225a356562dd5cead105','7cff8900b976da2cf97fd1572ca0aa22e018ccaf','png','image/png','vault-SecretsList.png','f7aa50ef2bb290dc8cc38dfc6b232bb44b6c4ea4',108005,1773843860,1773843860); -- gitleaks:allow  SHA-1 checksums of publicly served PNGs; the rule fires on 'passkey'/'Secrets' next to hex.
-INSERT IGNORE INTO `sys_file` (`uid`, `pid`, `tstamp`, `last_indexed`, `missing`, `storage`, `type`, `metadata`, `identifier`, `identifier_hash`, `folder_hash`, `extension`, `mime_type`, `name`, `sha1`, `size`, `creation_date`, `modification_date`) VALUES (289,0,1773843860,1773843860,0,1,2,0,'/user_upload/images/extensions/vault-VaultOverview.png','984fbc01f06def74d1691a360257be44af46cb56','7cff8900b976da2cf97fd1572ca0aa22e018ccaf','png','image/png','vault-VaultOverview.png','0d3d2cec9042524f567a11e325590acfb468db49',191705,1773843860,1773843860);
+INSERT IGNORE INTO `sys_file` (`uid`, `pid`, `tstamp`, `last_indexed`, `missing`, `storage`, `type`, `metadata`, `identifier`, `identifier_hash`, `folder_hash`, `extension`, `mime_type`, `name`, `sha1`, `size`, `creation_date`, `modification_date`) VALUES (287,0,1773843860,1773843860,0,1,2,0,'/user_upload/images/extensions/vault-AuditLog.png','1eb625fb2ea44e4d6ab043aac42eca091340e34d','7cff8900b976da2cf97fd1572ca0aa22e018ccaf','png','image/png','vault-AuditLog.png','570c24da07d8dd301be229ef66da8b580d336b9f',283325,1773843860,1773843860);
+INSERT IGNORE INTO `sys_file` (`uid`, `pid`, `tstamp`, `last_indexed`, `missing`, `storage`, `type`, `metadata`, `identifier`, `identifier_hash`, `folder_hash`, `extension`, `mime_type`, `name`, `sha1`, `size`, `creation_date`, `modification_date`) VALUES (288,0,1773843860,1773843860,0,1,2,0,'/user_upload/images/extensions/vault-SecretsList.png','d990df5e7a636b4b9743225a356562dd5cead105','7cff8900b976da2cf97fd1572ca0aa22e018ccaf','png','image/png','vault-SecretsList.png','5ef9bb0f7e881495e92a2ded9279d798712ca7a5',230999,1773843860,1773843860); -- gitleaks:allow  SHA-1 checksums of publicly served PNGs; the rule fires on 'passkey'/'Secrets' next to hex.
+INSERT IGNORE INTO `sys_file` (`uid`, `pid`, `tstamp`, `last_indexed`, `missing`, `storage`, `type`, `metadata`, `identifier`, `identifier_hash`, `folder_hash`, `extension`, `mime_type`, `name`, `sha1`, `size`, `creation_date`, `modification_date`) VALUES (289,0,1773843860,1773843860,0,1,2,0,'/user_upload/images/extensions/vault-VaultOverview.png','984fbc01f06def74d1691a360257be44af46cb56','7cff8900b976da2cf97fd1572ca0aa22e018ccaf','png','image/png','vault-VaultOverview.png','cd14e00a432e9d758291714ec99071d96a99996b',198302,1773843860,1773843860);
 INSERT IGNORE INTO `sys_file_metadata` (`uid`, `pid`, `tstamp`, `crdate`, `cruser_id`, `sys_language_uid`, `l10n_parent`, `l10n_state`, `t3_origuid`, `l10n_diffsource`, `t3ver_oid`, `t3ver_wsid`, `t3ver_state`, `t3ver_stage`, `file`, `title`, `width`, `height`, `description`, `alternative`, `categories`, `visible`, `status`, `keywords`, `caption`, `creator_tool`, `download_name`, `creator`, `publisher`, `source`, `copyright`, `location_country`, `location_region`, `location_city`, `latitude`, `longitude`, `ranking`, `content_creation_date`, `content_modification_date`, `note`, `unit`, `duration`, `color_space`, `pages`, `language`, `fe_groups`) VALUES (278,0,1773843860,1773843860,0,0,0,NULL,0,NULL,0,0,0,0,278,NULL,0,0,NULL,NULL,0,1,'',NULL,NULL,'','','','','',NULL,'','','',0.00000000000000,0.00000000000000,0,0,0,NULL,'',0,'',0,'',NULL);
 INSERT IGNORE INTO `sys_file_metadata` (`uid`, `pid`, `tstamp`, `crdate`, `cruser_id`, `sys_language_uid`, `l10n_parent`, `l10n_state`, `t3_origuid`, `l10n_diffsource`, `t3ver_oid`, `t3ver_wsid`, `t3ver_state`, `t3ver_stage`, `file`, `title`, `width`, `height`, `description`, `alternative`, `categories`, `visible`, `status`, `keywords`, `caption`, `creator_tool`, `download_name`, `creator`, `publisher`, `source`, `copyright`, `location_country`, `location_region`, `location_city`, `latitude`, `longitude`, `ranking`, `content_creation_date`, `content_modification_date`, `note`, `unit`, `duration`, `color_space`, `pages`, `language`, `fe_groups`) VALUES (279,0,1773843860,1773843860,0,0,0,NULL,0,NULL,0,0,0,0,279,NULL,0,0,NULL,NULL,0,1,'',NULL,NULL,'','','','','',NULL,'','','',0.00000000000000,0.00000000000000,0,0,0,NULL,'',0,'',0,'',NULL);
 INSERT IGNORE INTO `sys_file_metadata` (`uid`, `pid`, `tstamp`, `crdate`, `cruser_id`, `sys_language_uid`, `l10n_parent`, `l10n_state`, `t3_origuid`, `l10n_diffsource`, `t3ver_oid`, `t3ver_wsid`, `t3ver_state`, `t3ver_stage`, `file`, `title`, `width`, `height`, `description`, `alternative`, `categories`, `visible`, `status`, `keywords`, `caption`, `creator_tool`, `download_name`, `creator`, `publisher`, `source`, `copyright`, `location_country`, `location_region`, `location_city`, `latitude`, `longitude`, `ranking`, `content_creation_date`, `content_modification_date`, `note`, `unit`, `duration`, `color_space`, `pages`, `language`, `fe_groups`) VALUES (280,0,1773843860,1773843860,0,0,0,NULL,0,NULL,0,0,0,0,280,NULL,0,0,NULL,NULL,0,1,'',NULL,NULL,'','','','','',NULL,'','','',0.00000000000000,0.00000000000000,0,0,0,NULL,'',0,'',0,'',NULL);
@@ -5663,10 +5663,17 @@ UPDATE tt_content
 -- The two Security Readiness findings ([BE][lockSSL] unset, master key derived
 -- from the encryption key) are not container artefacts: neither is configured
 -- anywhere in this repository or in the built image, so the live instance
--- reports them too. And the empty lists were an artefact of the capture, not of
--- the demo -- the deploy provisions a vault secret via `make provision-llm-key`,
--- which the local run now does as well, through the same command and the same
--- provisioning identity.
+-- reports them too.
+--
+-- They are nr_vault's OWN documentation screenshots, as they have always been:
+-- the files these replace were byte-identical to that repository's, and showed
+-- 111 leftover E2E test records (`e2e_cross_...`, owner `testadmin`) on TYPO3
+-- 14.0.1. They were never a photograph of this instance's vault. The
+-- replacements come from `vault:seed-demo`, the demo dataset nr_vault ships for
+-- exactly this: 16 secrets across payment, mail and integration contexts, and
+-- an audit log spanning thirteen days. That command refuses to run in the
+-- Production context this instance deploys under, which is why the data is not
+-- here and the pictures are the extension's rather than ours.
 --
 -- The nr-llm captures DO show an instance without provider credentials, because
 -- that is what a seed-only build has: the key is provisioned by `make update`
@@ -5679,9 +5686,9 @@ UPDATE sys_file SET sha1 = '091b10a31b4a7c7f07474adfd148f7d4c6648129', size = 25
 UPDATE sys_file SET sha1 = '96ada023d75e2edb5ab0154f0c2ff070f9ae1f03', size = 120880, tstamp = 1786665600, modification_date = 1786665600 WHERE uid = 283 AND name = 'nr-llm-backend-providers.png';
 UPDATE sys_file SET sha1 = 'e8a68432f79a8cd702b2047182f0f524ad7033c8', size = 202051, tstamp = 1786665600, modification_date = 1786665600 WHERE uid = 284 AND name = 'nr-llm-backend-tasks.png';
 UPDATE sys_file SET sha1 = 'b58fced6b05e7456036fa72bd55ed0c69fa51982', size = 22214,  tstamp = 1786665600, modification_date = 1786665600 WHERE uid = 285 AND name = 'passkeys-be-login-loginpagewithpasskey.png';
-UPDATE sys_file SET sha1 = 'f518a32466dddd78ba75f0804efe4f82c09497ac', size = 112598, tstamp = 1787040000, modification_date = 1787040000 WHERE uid = 287 AND name = 'vault-AuditLog.png';
-UPDATE sys_file SET sha1 = 'f7aa50ef2bb290dc8cc38dfc6b232bb44b6c4ea4', size = 108005, tstamp = 1787040000, modification_date = 1787040000 WHERE uid = 288 AND name = 'vault-SecretsList.png';
-UPDATE sys_file SET sha1 = '0d3d2cec9042524f567a11e325590acfb468db49', size = 191705, tstamp = 1787040000, modification_date = 1787040000 WHERE uid = 289 AND name = 'vault-VaultOverview.png';
+UPDATE sys_file SET sha1 = '570c24da07d8dd301be229ef66da8b580d336b9f', size = 283325, tstamp = 1787040000, modification_date = 1787040000 WHERE uid = 287 AND name = 'vault-AuditLog.png';
+UPDATE sys_file SET sha1 = '5ef9bb0f7e881495e92a2ded9279d798712ca7a5', size = 230999, tstamp = 1787040000, modification_date = 1787040000 WHERE uid = 288 AND name = 'vault-SecretsList.png';
+UPDATE sys_file SET sha1 = 'cd14e00a432e9d758291714ec99071d96a99996b', size = 198302, tstamp = 1787040000, modification_date = 1787040000 WHERE uid = 289 AND name = 'vault-VaultOverview.png';
 
 DELETE FROM sys_file_processedfile WHERE original IN (278, 279, 280, 281, 282, 283, 284, 285, 287, 288, 289);
 
@@ -5895,9 +5902,9 @@ SELECT CONCAT('SEED-PROBLEM: ', COUNT(*),
        '96ada023d75e2edb5ab0154f0c2ff070f9ae1f03',
        'e8a68432f79a8cd702b2047182f0f524ad7033c8',
        'b58fced6b05e7456036fa72bd55ed0c69fa51982',
-       'f518a32466dddd78ba75f0804efe4f82c09497ac',
-       'f7aa50ef2bb290dc8cc38dfc6b232bb44b6c4ea4',
-       '0d3d2cec9042524f567a11e325590acfb468db49')
+       '570c24da07d8dd301be229ef66da8b580d336b9f',
+       '5ef9bb0f7e881495e92a2ded9279d798712ca7a5',
+       'cd14e00a432e9d758291714ec99071d96a99996b')
 HAVING COUNT(*) > 0
 UNION ALL
 -- The property this whole band exists for, asserted directly rather than
