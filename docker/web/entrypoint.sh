@@ -245,6 +245,35 @@ if [ -f config/system/settings.php ]; then
     ' || echo "WARNING: failed to write additional.php" >&2
 fi
 
+# Enable the nr-llm-compat interception for EXT:ai_filemetadata (the one
+# compat-supported third-party AI extension this demo installs). Opt-in by
+# design: without this flag the compat extension intercepts nothing. Same
+# managed-block mechanics as above.
+if [ -f config/system/settings.php ]; then
+    php -r '
+        $f = "config/system/additional.php";
+        $begin = "// >>> nr_llm_compat (managed by entrypoint, do not edit this block)";
+        $end   = "// <<< nr_llm_compat";
+        $block = $begin . "\n"
+            . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"nr_llm_compat\"][\"integrations\"][\"ai_filemetadata\"] = \"1\";\n"
+            . $end;
+        $existing = is_file($f) ? (string) file_get_contents($f) : "";
+        if (strpos($existing, "<?php") === false) {
+            $existing = "<?php\n" . ($existing === "" ? "" : $existing . "\n");
+        }
+        $b = strpos($existing, $begin);
+        if ($b !== false) {
+            $e = strpos($existing, $end, $b);
+            $existing = $e !== false
+                ? substr($existing, 0, $b) . substr($existing, $e + strlen($end))
+                : substr($existing, 0, $b);
+        }
+        $existing = rtrim($existing, "\n") . "\n\n" . $block . "\n";
+        file_put_contents($f, $existing);
+        echo "additional.php: nr_llm_compat integration ai_filemetadata enabled." . PHP_EOL;
+    ' || echo "WARNING: failed to write additional.php" >&2
+fi
+
 # Serve processed images as WebP. TYPO3 14 decides the target format of every
 # processed image from GFX.imageFileConversionFormats (Feature 93981); the core
 # default keeps jpg as jpg, png as png and turns everything else into png, which

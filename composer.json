@@ -17,7 +17,8 @@
     "netresearch/nr-browser-ai": "^0.7",
     "netresearch/nr-image-sitemap": "^14.0",
     "netresearch/nr-landingpage": "^0.3",
-    "netresearch/nr-llm": "^0.29",
+    "netresearch/nr-llm": "v0.30.0 as v0.29.99",
+    "netresearch/nr-llm-compat": "^0.1",
     "netresearch/nr-mcp-agent": "^0.11",
     "netresearch/nr-passkeys-be": "^0.12",
     "netresearch/nr-passkeys-fe": "^0.6",
@@ -55,6 +56,11 @@
     "typo3/cms-tstemplate": "^14.3"
   },
   "repositories": [
+    {
+      "name": "nr-llm-compat",
+      "type": "vcs",
+      "url": "https://github.com/netresearch/t3x-nr-llm-compat.git"
+    },
     {
       "type": "path",
       "url": "packages/*",
