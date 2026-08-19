@@ -57,11 +57,6 @@
   },
   "repositories": [
     {
-      "name": "nr-llm-compat",
-      "type": "vcs",
-      "url": "https://github.com/netresearch/t3x-nr-llm-compat.git"
-    },
-    {
       "type": "path",
       "url": "packages/*",
       "options": {

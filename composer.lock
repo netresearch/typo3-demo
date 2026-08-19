@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c6abe277074add29f0f8f0d1d0fa57d6",
+    "content-hash": "2f6e13f66677fdf7d4651554f736504c",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -3053,9 +3053,9 @@
             "type": "typo3-cms-extension",
             "extra": {
                 "typo3/cms": {
-                    "extension-key": "nr_llm_compat",
                     "version": "0.1.0",
-                    "web-dir": ".Build/Web"
+                    "web-dir": ".Build/Web",
+                    "extension-key": "nr_llm_compat"
                 }
             },
             "autoload": {
@@ -3063,70 +3063,7 @@
                     "Netresearch\\NrLlmCompat\\": "Classes/"
                 }
             },
-            "autoload-dev": {
-                "psr-4": {
-                    "Netresearch\\NrLlmCompat\\Tests\\": "Tests/"
-                }
-            },
-            "archive": {
-                "exclude": [
-                    "/.Build",
-                    "/Tests/SolverEnvironment",
-                    "/typo3temp",
-                    "/var"
-                ]
-            },
-            "scripts": {
-                "ci": [
-                    "@ci:test:php:lint",
-                    "@ci:test:php:cgl",
-                    "@ci:test:php:phpstan",
-                    "@ci:test:php:unit"
-                ],
-                "ci:cgl": [
-                    "php-cs-fixer fix"
-                ],
-                "ci:full": [
-                    "@ci",
-                    "@ci:test:php:functional"
-                ],
-                "ci:test:php:cgl": [
-                    "php-cs-fixer fix --dry-run --diff"
-                ],
-                "ci:test:php:functional": [
-                    "phpunit -c Build/FunctionalTests.xml"
-                ],
-                "ci:test:php:lint": [
-                    "sh -c 'find Classes Configuration Tests -name \"*.php\" -print0 | xargs -0 -n1 -P$(nproc 2>/dev/null || echo 4) php -l >/dev/null'"
-                ],
-                "ci:test:php:phpstan": [
-                    "sh -c 'if [ -d .Build/vendor/passionweb/ai-seo-helper ]; then phpstan analyse -c Build/phpstan/phpstan.neon \"$@\"; else phpstan analyse -c Build/phpstan/phpstan-no-typo3-13-only.neon \"$@\"; fi' --"
-                ],
-                "ci:test:php:rector": [
-                    "rector process --config Build/rector/rector.php --dry-run"
-                ],
-                "ci:test:php:unit": [
-                    "phpunit -c Build/phpunit.xml --testsuite unit"
-                ],
-                "ci:test:repo": [
-                    "@ci:test:solver"
-                ],
-                "ci:test:solver": [
-                    "sh -c 'cd Tests/SolverEnvironment && composer update --no-interaction --no-progress && composer test'"
-                ],
-                "cs:fix": [
-                    "@ci:cgl"
-                ],
-                "phpstan": [
-                    "@ci:test:php:phpstan"
-                ],
-                "rector": [
-                    "rector process --config Build/rector/rector.php"
-                ],
-                "test": [
-                    "phpunit -c Build/phpunit.xml"
-                ]
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "GPL-2.0-or-later"
             ],
@@ -3140,13 +3077,13 @@
             "description": "Runtime LLM compatibility layer for third-party TYPO3 AI extensions — routes their provider calls through nr-llm without modifying them",
             "homepage": "https://github.com/netresearch/t3x-nr-llm-compat",
             "keywords": [
-                "AI",
-                "LLM",
-                "TYPO3",
+                "ai",
                 "compatibility",
                 "extension",
                 "interception",
-                "provider-abstraction"
+                "llm",
+                "provider-abstraction",
+                "typo3"
             ],
             "support": {
                 "issues": "https://github.com/netresearch/t3x-nr-llm-compat/issues",
