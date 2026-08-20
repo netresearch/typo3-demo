@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f9b6a2cc714f4c62198bd24204c18afb",
+    "content-hash": "c1b41a7f631e9b998e3ff436a1853459",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -2923,16 +2923,16 @@
         },
         {
             "name": "netresearch/nr-llm",
-            "version": "v0.30.0",
+            "version": "v0.31.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/t3x-nr-llm.git",
-                "reference": "fcaa6af8a03898de5f070e9ab225d22af52a7d3f"
+                "reference": "a5e3b380b825af44850c311dd5cdbc7fcccf6e63"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/t3x-nr-llm/zipball/fcaa6af8a03898de5f070e9ab225d22af52a7d3f",
-                "reference": "fcaa6af8a03898de5f070e9ab225d22af52a7d3f",
+                "url": "https://api.github.com/repos/netresearch/t3x-nr-llm/zipball/a5e3b380b825af44850c311dd5cdbc7fcccf6e63",
+                "reference": "a5e3b380b825af44850c311dd5cdbc7fcccf6e63",
                 "shasum": ""
             },
             "require": {
@@ -2965,7 +2965,7 @@
                     "Package": {
                         "providesPackages": []
                     },
-                    "version": "0.30.0",
+                    "version": "0.31.0",
                     "web-dir": ".Build/Web",
                     "extension-key": "nr_llm"
                 },
@@ -3010,7 +3010,7 @@
                 "issues": "https://github.com/netresearch/t3x-nr-llm/issues",
                 "source": "https://github.com/netresearch/t3x-nr-llm"
             },
-            "time": "2026-08-18T21:36:52+00:00"
+            "time": "2026-08-20T11:50:23+00:00"
         },
         {
             "name": "netresearch/nr-llm-compat",
@@ -12722,7 +12722,14 @@
         }
     ],
     "packages-dev": [],
-    "aliases": [],
+    "aliases": [
+        {
+            "package": "netresearch/nr-llm",
+            "version": "0.31.0.0",
+            "alias": "v0.30.99",
+            "alias_normalized": "0.30.99.0"
+        }
+    ],
     "minimum-stability": "stable",
     "stability-flags": {
         "netresearch/nr-ai-search": 20,
