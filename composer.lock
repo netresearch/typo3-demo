@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1992f228ff63e8c723615d90d5786c39",
+    "content-hash": "8b8da2690c2ab33f01bce3bccba789f0",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -2994,16 +2994,16 @@
         },
         {
             "name": "netresearch/nr-mcp-agent",
-            "version": "v0.11.3",
+            "version": "v0.12.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/t3x-nr-mcp-agent.git",
-                "reference": "009c7f7fa766498808291d3e5967aa9ee1e4bb96"
+                "reference": "6d64d56b14ff78359a20744307393252b479f6da"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/t3x-nr-mcp-agent/zipball/009c7f7fa766498808291d3e5967aa9ee1e4bb96",
-                "reference": "009c7f7fa766498808291d3e5967aa9ee1e4bb96",
+                "url": "https://api.github.com/repos/netresearch/t3x-nr-mcp-agent/zipball/6d64d56b14ff78359a20744307393252b479f6da",
+                "reference": "6d64d56b14ff78359a20744307393252b479f6da",
                 "shasum": ""
             },
             "require": {
@@ -3019,7 +3019,6 @@
                 "phpunit/phpunit": "^10.5 || ^11.0"
             },
             "suggest": {
-                "hn/typo3-mcp-server": "For TYPO3 content management tools (^1.0)",
                 "netresearch/nr-vault": "For secure API key storage (^0.14)",
                 "phpoffice/phpspreadsheet": "^3.0 — Required for XLSX upload support"
             },
@@ -3064,7 +3063,7 @@
                 "issues": "https://github.com/netresearch/t3x-nr-mcp-agent/issues",
                 "source": "https://github.com/netresearch/t3x-nr-mcp-agent"
             },
-            "time": "2026-08-20T13:30:20+00:00"
+            "time": "2026-08-20T16:19:07+00:00"
         },
         {
             "name": "netresearch/nr-passkeys-be",
