@@ -5590,6 +5590,18 @@ SELECT 0, 'deepwiki', 'DeepWiki',
   FROM DUAL
  WHERE NOT EXISTS (SELECT 1 FROM tx_nrllm_mcp_server WHERE identifier = 'deepwiki');
 
+-- The import (nr-llm 0.31.1, run once on 2026-08-20) brought two tools in:
+-- read_wiki_structure and read_wiki_contents; ask_question was skipped by the
+-- schema normaliser (anyOf parameter, nr-llm #841). Imported tools start
+-- disabled like every other tool, and a backend toggle does not survive a
+-- re-seed the way a row does, so the seed switches both on. Inert until the
+-- import has created the tools — a state row for an unknown name is never read.
+INSERT INTO tx_nrllm_tool_state (pid, tool_name, enabled)
+VALUES (0, 'mcp_deepwiki_read_wiki_structure', 1),
+       (0, 'mcp_deepwiki_read_wiki_contents', 1)
+ON DUPLICATE KEY UPDATE
+  enabled = VALUES(enabled);
+
 -- =============================================================================
 -- 9. Drop processed files that predate the WebP conversion
 -- =============================================================================
@@ -6050,6 +6062,11 @@ SELECT 'SEED-PROBLEM: the DeepWiki MCP server row is missing or disabled'
  WHERE NOT EXISTS (
        SELECT 1 FROM tx_nrllm_mcp_server
         WHERE identifier = 'deepwiki' AND enabled = 1 AND deleted = 0)
+UNION ALL
+SELECT 'SEED-PROBLEM: the two imported DeepWiki tools are not switched on'
+  FROM DUAL
+ WHERE (SELECT COUNT(*) FROM tx_nrllm_tool_state
+         WHERE tool_name IN ('mcp_deepwiki_read_wiki_structure', 'mcp_deepwiki_read_wiki_contents') AND enabled = 1) < 2
 UNION ALL
 -- The conversion from step 9 only takes effect for derivatives created after
 -- it; a leftover row means the frontend still serves the old format.
