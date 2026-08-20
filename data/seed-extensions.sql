@@ -5533,6 +5533,63 @@ VALUES (0, 'update_page_metadata', 1)
 ON DUPLICATE KEY UPDATE
   enabled = VALUES(enabled);
 
+-- 8b. The two creating tools the assistant needs to build demo pages (NEXT-153)
+--
+-- create_page_draft (nr-llm 0.31, ADR-180) creates ONE standard page under a
+-- parent, always hidden; create_content_element_draft (nr-llm 0.29, ADR-146)
+-- creates ONE prose element on a page, always hidden. Together they are how
+-- the backend assistant builds "a subpage with an introduction": two calls,
+-- two approvals, each card showing one record. Same defence as above: both
+-- write as the acting user through the DataHandler, both stop at a human
+-- approval, both read the row back and delete a page or element that came out
+-- visible. Anyone who can trigger them can create the same records by hand.
+--
+-- The rows are harmless on an instance whose nr-llm predates the tool: a state
+-- row for a name the registry does not know is simply never read.
+INSERT INTO tx_nrllm_tool_state (pid, tool_name, enabled)
+VALUES (0, 'create_page_draft', 1),
+       (0, 'create_content_element_draft', 1)
+ON DUPLICATE KEY UPDATE
+  enabled = VALUES(enabled);
+
+-- =============================================================================
+-- 8c. A public MCP server, so the MCP Servers module has something to show
+-- =============================================================================
+-- nr-llm's MCP client (ADR-116) imports the tool catalogue of an external
+-- Streamable-HTTP server and offers the tools in the same registry and agent
+-- loop as the builtins — admin-only, approval per the server's declaration.
+-- DeepWiki (https://mcp.deepwiki.com/mcp) answers questions about public GitHub
+-- repositories (read_wiki_structure, read_wiki_contents, ask_question): no
+-- credential, read-only, and relevant to a TYPO3 audience ("what does
+-- netresearch/t3x-nr-llm say about …"). Talking to it needs nr-llm >= 0.31
+-- (ADR-181: the client now offers text/event-stream, which every public
+-- server requires); on an older nr-llm the row sits there and the connection
+-- test says 406.
+--
+-- requires_approval = 0 is a deliberate operator decision, taken here because
+-- the seed IS the operator of this instance: nr-llm ships the flag ON for a
+-- server nobody has judged, and its documentation says to switch it off per
+-- server once you know what its tools do. DeepWiki's three tools read public
+-- documentation and nothing else; pausing the run before each of them would
+-- demonstrate the approval gate a fourth time and the server not at all. The
+-- admin-only rule for remote tools is nr-llm's own and is not touched.
+--
+-- What the seed cannot do: import the catalogue. That is one HTTP round trip
+-- the MCP Servers module performs on "Import catalogue" (admin) — once, after
+-- the first deploy with nr-llm >= 0.31; the imported tool rows survive every
+-- later re-seed. A CLI command for the import is requested upstream
+-- (netresearch/t3x-nr-llm#836, "nrllm:mcp:import"); until then the click is a
+-- documented post-deploy step, not a missing row.
+INSERT INTO tx_nrllm_mcp_server
+  (pid, identifier, name, description, url, auth_credential, auth_placement,
+   auth_header_name, data_class, requires_approval, enabled, tstamp, crdate)
+SELECT 0, 'deepwiki', 'DeepWiki',
+       'Public documentation of GitHub repositories (read-only). Ask about a repository, read its wiki structure or pages.',
+       'https://mcp.deepwiki.com/mcp', '', 'bearer', '', 'publicContent', 0, 1,
+       UNIX_TIMESTAMP(), UNIX_TIMESTAMP()
+  FROM DUAL
+ WHERE NOT EXISTS (SELECT 1 FROM tx_nrllm_mcp_server WHERE identifier = 'deepwiki');
+
 -- =============================================================================
 -- 9. Drop processed files that predate the WebP conversion
 -- =============================================================================
@@ -5982,6 +6039,17 @@ SELECT 'SEED-PROBLEM: tool group editing is switched off — update_page_metadat
  WHERE EXISTS (
        SELECT 1 FROM tx_nrllm_tool_group_state
         WHERE group_name = 'editing' AND enabled = 0)
+UNION ALL
+SELECT 'SEED-PROBLEM: create_page_draft or create_content_element_draft is not enabled — the assistant cannot build a page'
+  FROM DUAL
+ WHERE (SELECT COUNT(*) FROM tx_nrllm_tool_state
+         WHERE tool_name IN ('create_page_draft', 'create_content_element_draft') AND enabled = 1) < 2
+UNION ALL
+SELECT 'SEED-PROBLEM: the DeepWiki MCP server row is missing or disabled'
+  FROM DUAL
+ WHERE NOT EXISTS (
+       SELECT 1 FROM tx_nrllm_mcp_server
+        WHERE identifier = 'deepwiki' AND enabled = 1 AND deleted = 0)
 UNION ALL
 -- The conversion from step 9 only takes effect for derivatives created after
 -- it; a leftover row means the frontend still serves the old format.
