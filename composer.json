@@ -9,7 +9,6 @@
     "cweagans/composer-patches": "^1.7",
     "friendsoftypo3/content-blocks": "^2.0",
     "georgringer/news": "^14.0",
-    "hn/typo3-mcp-server": "^0.5",
     "lochmueller/index": "^2.2",
     "mfd/ai-filemetadata": "^1.6",
     "netresearch/contexts": "^5.0.1",
@@ -53,7 +52,8 @@
     "typo3/cms-scheduler": "^14.3",
     "typo3/cms-seo": "^14.3",
     "typo3/cms-setup": "^14.3",
-    "typo3/cms-tstemplate": "^14.3"
+    "typo3/cms-tstemplate": "^14.3",
+    "typo3/cms-workspaces": "^14.3"
   },
   "repositories": [
     {
