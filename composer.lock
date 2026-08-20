@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c1b41a7f631e9b998e3ff436a1853459",
+    "content-hash": "aa316e6202133e687a9dd9fc33c69f38",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -2923,16 +2923,16 @@
         },
         {
             "name": "netresearch/nr-llm",
-            "version": "v0.31.0",
+            "version": "v0.31.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/t3x-nr-llm.git",
-                "reference": "a5e3b380b825af44850c311dd5cdbc7fcccf6e63"
+                "reference": "40cffc5fb46f2847992b7be9ab183220fb5a4b18"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/t3x-nr-llm/zipball/a5e3b380b825af44850c311dd5cdbc7fcccf6e63",
-                "reference": "a5e3b380b825af44850c311dd5cdbc7fcccf6e63",
+                "url": "https://api.github.com/repos/netresearch/t3x-nr-llm/zipball/40cffc5fb46f2847992b7be9ab183220fb5a4b18",
+                "reference": "40cffc5fb46f2847992b7be9ab183220fb5a4b18",
                 "shasum": ""
             },
             "require": {
@@ -2965,7 +2965,7 @@
                     "Package": {
                         "providesPackages": []
                     },
-                    "version": "0.31.0",
+                    "version": "0.31.1",
                     "web-dir": ".Build/Web",
                     "extension-key": "nr_llm"
                 },
@@ -3010,7 +3010,7 @@
                 "issues": "https://github.com/netresearch/t3x-nr-llm/issues",
                 "source": "https://github.com/netresearch/t3x-nr-llm"
             },
-            "time": "2026-08-20T11:50:23+00:00"
+            "time": "2026-08-20T12:57:17+00:00"
         },
         {
             "name": "netresearch/nr-llm-compat",
@@ -12725,7 +12725,7 @@
     "aliases": [
         {
             "package": "netresearch/nr-llm",
-            "version": "0.31.0.0",
+            "version": "0.31.1.0",
             "alias": "v0.30.99",
             "alias_normalized": "0.30.99.0"
         }
