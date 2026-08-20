@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4f295279cf450fcae4d0137f34f587c5",
+    "content-hash": "1992f228ff63e8c723615d90d5786c39",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -1880,63 +1880,6 @@
             "time": "2026-07-16T22:23:49+00:00"
         },
         {
-            "name": "hn/typo3-mcp-server",
-            "version": "v0.5.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/hauptsacheNet/typo3-mcp-server.git",
-                "reference": "077c424f80c022dee427909da9055d529234045a"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/hauptsacheNet/typo3-mcp-server/zipball/077c424f80c022dee427909da9055d529234045a",
-                "reference": "077c424f80c022dee427909da9055d529234045a",
-                "shasum": ""
-            },
-            "require": {
-                "logiscape/mcp-sdk-php": "^1.2",
-                "php": ">=8.2",
-                "typo3/cms-backend": "^13.4 || ^14.3",
-                "typo3/cms-core": "^13.4 || ^14.3",
-                "typo3/cms-workspaces": "^13.4 || ^14.3"
-            },
-            "require-dev": {
-                "b13/container": "^4.0",
-                "brianium/paratest": "^7.4",
-                "georgringer/news": "^14.0",
-                "typo3/cms-install": "^13.4 || ^14.3",
-                "typo3/testing-framework": "^8.2 || ^9.2"
-            },
-            "type": "typo3-cms-extension",
-            "extra": {
-                "typo3/cms": {
-                    "extension-key": "mcp_server"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Hn\\McpServer\\": "Classes/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "GPL-2.0-or-later"
-            ],
-            "authors": [
-                {
-                    "name": "Marco Pfeiffer",
-                    "email": "marco@hauptsache.net"
-                }
-            ],
-            "description": "TYPO3 extension that provides a Model Context Protocol (MCP) server for interacting with TYPO3 pages and records",
-            "homepage": "https://github.com/hauptsacheNet/typo3-mcp-server",
-            "support": {
-                "issues": "https://github.com/hauptsacheNet/typo3-mcp-server/issues",
-                "source": "https://github.com/hauptsacheNet/typo3-mcp-server/tree/v0.5.0"
-            },
-            "time": "2026-07-28T11:37:44+00:00"
-        },
-        {
             "name": "james-heinrich/getid3",
             "version": "v1.9.25",
             "source": {
@@ -2273,51 +2216,6 @@
                 }
             ],
             "time": "2026-07-10T08:20:49+00:00"
-        },
-        {
-            "name": "logiscape/mcp-sdk-php",
-            "version": "v1.7.5",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/logiscape/mcp-sdk-php.git",
-                "reference": "8a54f753360c7319e06a412928f48ef9990cb8f5"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/logiscape/mcp-sdk-php/zipball/8a54f753360c7319e06a412928f48ef9990cb8f5",
-                "reference": "8a54f753360c7319e06a412928f48ef9990cb8f5",
-                "shasum": ""
-            },
-            "require": {
-                "ext-curl": "*",
-                "ext-json": "*",
-                "php": ">=8.1",
-                "psr/log": "^2.0 ||^3.0"
-            },
-            "require-dev": {
-                "phpstan/phpstan": "^1.10",
-                "phpunit/phpunit": "^10.0"
-            },
-            "suggest": {
-                "ext-pcntl": "For better process handling in CLI environments",
-                "monolog/monolog": "^3.0 - For debugging and logging capabilities"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Mcp\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "description": "Model Context Protocol SDK for PHP",
-            "support": {
-                "issues": "https://github.com/logiscape/mcp-sdk-php/issues",
-                "source": "https://github.com/logiscape/mcp-sdk-php/tree/v1.7.5"
-            },
-            "time": "2026-07-28T03:32:24+00:00"
         },
         {
             "name": "lolli42/finediff",
