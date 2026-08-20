@@ -5552,6 +5552,15 @@ VALUES (0, 'create_page_draft', 1),
 ON DUPLICATE KEY UPDATE
   enabled = VALUES(enabled);
 
+-- 8b2. The dead MCP-server table of nr_mcp_agent (< 0.12) goes
+--
+-- nr_mcp_agent 0.12 removed its own MCP client and the TCA for
+-- tx_nrmcpagent_mcp_server (netresearch/t3x-nr-mcp-agent#132); the table and
+-- its seeded "TYPO3 MCP Server" row belong to nothing now. Dropping it here is
+-- safe only because no installed extension declares it any more — a DB compare
+-- would otherwise recreate it. IF EXISTS keeps the statement idempotent.
+DROP TABLE IF EXISTS tx_nrmcpagent_mcp_server;
+
 -- =============================================================================
 -- 8c. A public MCP server, so the MCP Servers module has something to show
 -- =============================================================================
