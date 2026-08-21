@@ -345,7 +345,12 @@ if [ -f config/system/settings.php ]; then
             . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"nr_ai_search\"][\"chatConfiguration\"] = \"nr_ai_search.chat\";\n"
             . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"nr_ai_search\"][\"embeddingDimensions\"] = \"1536\";\n"
             . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"nr_ai_search\"][\"technicalBeUserUid\"] = \"990\";\n"
-            . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"nr_ai_search\"][\"rateLimitPerMinute\"] = \"10\";\n"
+            // 120, not the shipped default of 10: the limiter counts per visitor
+            // IP per minute and keeps a separate bucket per widget, so everyone
+            // watching a demo from one office NAT shares one allowance. Ten is
+            // reached within a few clicks and answers "Zu viele Anfragen", which
+            // reads like a provider quota and is not one.
+            . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"nr_ai_search\"][\"rateLimitPerMinute\"] = \"120\";\n"
             // Turn on the specialized services of nr_llm. isAvailable() on all
             // three (DALL-E, Whisper, TTS) is just "an apiKeyIdentifier is set
             // and that vault secret exists" - the identifier was empty, so the
@@ -751,11 +756,22 @@ INSERT INTO tx_index_domain_model_configuration
      skip_no_search_pages, levels, languages, configuration, partial_indexing,
      file_mounts, file_types, content_processors)
 SELECT 1, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0, 'Demo content (nr_ai_search)',
-     'database', 1, 0, 30, '0', '{}', '', '', '', ''
+     'database', 1, 0, 30, '0', '{}', 'datamap,cmdmap,clearcache', '', '', ''
 FROM DUAL
 WHERE NOT EXISTS (
     SELECT 1 FROM tx_index_domain_model_configuration WHERE pid = 1 AND deleted = 0
 );
+-- partial_indexing is what makes lochmueller/index react to an editor saving a
+-- record: DataHandlerUpdateHook returns immediately unless the trigger it fired
+-- with is listed here, and an empty column is an empty list. It was empty, so
+-- nothing indexed after the first bulk run and new content stayed invisible to
+-- AI Search until somebody ran `index:queue` by hand -- which nothing on this
+-- host does. The INSERT above is guarded by NOT EXISTS and would never repair an
+-- existing row, so fill it here too; this self-heals the same way the chunk-count
+-- gate below does.
+UPDATE tx_index_domain_model_configuration
+   SET partial_indexing = 'datamap,cmdmap,clearcache', tstamp = UNIX_TIMESTAMP()
+ WHERE deleted = 0 AND (partial_indexing IS NULL OR partial_indexing = '');
 SQL
 
     # Drop any empty/partial vektor store so a stale (zero-vector) index structure
