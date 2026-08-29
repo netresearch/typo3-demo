@@ -28,7 +28,7 @@ curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/doc
 chmod a+r /etc/apt/keyrings/docker.asc
 echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "$VERSION_CODENAME") stable" > /etc/apt/sources.list.d/docker.list
 apt-get update -qq
-apt-get install -y -qq docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin git git-lfs make ufw fail2ban
+apt-get install -y -qq docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin git make ufw fail2ban
 
 echo "=== Enabling Docker ==="
 systemctl enable --now docker
@@ -68,9 +68,6 @@ apt-get install -y -qq unattended-upgrades
 echo 'Unattended-Upgrade::Automatic-Reboot "false";' > /etc/apt/apt.conf.d/51auto-upgrades
 dpkg-reconfigure -f noninteractive unattended-upgrades
 
-echo "=== Installing Git LFS ==="
-git lfs install --system
-
 echo "=== Cloning repository ==="
 if [ -d "$DEPLOY_DIR/.git" ]; then
     echo "Repository already exists, pulling latest..."
@@ -80,7 +77,6 @@ else
     git clone "$REPO" "$DEPLOY_DIR"
     cd "$DEPLOY_DIR"
 fi
-git lfs pull
 chown -R deploy:deploy "$DEPLOY_DIR"
 
 SERVER_IP=$(curl -s4 ifconfig.me || echo '<this-server-ip>')

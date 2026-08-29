@@ -30,7 +30,6 @@ jobs:
           script: |
             cd /opt/typo3-demo
             git pull --ff-only
-            git lfs pull
             printf '%s\n' \
               "COMPOSE_PROJECT_NAME=typo3-demo" \
               "TYPO3_DOMAIN=${TYPO3_DOMAIN}" \

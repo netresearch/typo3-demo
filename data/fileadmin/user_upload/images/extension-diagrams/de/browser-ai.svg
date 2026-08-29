@@ -1,3 +1,35 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:5b4254e57a070e484f3771794526b7dac6bf33b782674c5323a556bea453802d
-size 5055
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 520" role="img" aria-labelledby="t d">
+<title id="t">Wo die Antwort berechnet wird</title>
+<desc id="d">Seitentext und Frage gehen an das in Chrome eingebaute Modell auf dem Gerät des Besuchers. Nichts über die Seite oder den Dialog wird an einen Server gesendet.</desc>
+<defs>
+<marker id="head-585961" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#585961" /></marker>
+<marker id="head-2F99A4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2F99A4" /></marker>
+<marker id="head-FF4D00" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#FF4D00" /></marker>
+</defs>
+<rect width="1200" height="520" fill="#FFFFFF" />
+<text x="60" y="58" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="17" font-weight="700" fill="#585961" text-anchor="start">Nichts von Seite oder Frage verlässt das Gerät</text>
+<rect x="40" y="80" width="720" height="300" rx="14" fill="none" stroke="#2F99A4" stroke-width="2" stroke-dasharray="8 6" />
+<text x="56" y="106" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="15" font-weight="700" fill="#15585E" text-anchor="start">das Gerät des Besuchers</text>
+<rect x="75" y="130" width="220" height="110" rx="10" fill="#FFFFFF" stroke="#CCCDCC" stroke-width="1.5" />
+<text x="185.0" y="164" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="19" font-weight="700" fill="#585961" text-anchor="middle">Diese Seite</text>
+<text x="185.0" y="196" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="15" fill="#585961" text-anchor="middle">ihr gerenderter Text</text>
+<line x1="305" y1="185" x2="385" y2="185" stroke="#585961" stroke-width="2" marker-end="url(#head-585961)" />
+<rect x="395" y="130" width="230" height="110" rx="10" fill="#2F99A4" stroke="#2F99A4" stroke-width="1.5" />
+<text x="510.0" y="164" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="20" font-weight="700" fill="#FFFFFF" text-anchor="middle">In Chrome</text>
+<text x="510.0" y="189" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="20" font-weight="700" fill="#FFFFFF" text-anchor="middle">eingebautes</text>
+<text x="510.0" y="214" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="20" font-weight="700" fill="#FFFFFF" text-anchor="middle">Modell</text>
+<text x="510.0" y="247" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="15" fill="#FFFFFF" text-anchor="middle">Gemini Nano, auf dem</text>
+<text x="510.0" y="268" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="15" fill="#FFFFFF" text-anchor="middle">Gerät</text>
+<line x1="510" y1="250" x2="510" y2="300" stroke="#585961" stroke-width="2" marker-end="url(#head-585961)" />
+<rect x="340" y="310" width="340" height="55" rx="10" fill="#FFFFFF" stroke="#CCCDCC" stroke-width="1.5" />
+<text x="510.0" y="344.5" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="19" font-weight="700" fill="#585961" text-anchor="middle">Antwort in der Seite</text>
+<rect x="830" y="130" width="320" height="110" rx="10" fill="#FFFFFF" stroke="#CCCDCC" stroke-width="1.5" stroke-dasharray="6 5" />
+<text x="990.0" y="164" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="19" font-weight="700" fill="#585961" text-anchor="middle">Irgendein Server</text>
+<text x="990.0" y="196" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="15" fill="#585961" text-anchor="middle">TYPO3 · Netresearch · Google</text>
+<line x1="640" y1="185" x2="820" y2="185" stroke="#FF4D00" stroke-width="2" marker-end="url(#head-FF4D00)" stroke-dasharray="6 5" />
+<line x1="762" y1="166" x2="790" y2="204" stroke="#FF4D00" stroke-width="3" />
+<text x="700" y="172" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="15" font-weight="700" fill="#FF4D00" text-anchor="middle">nie</text>
+<text x="60" y="430" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="16" font-weight="700" fill="#585961" text-anchor="start">Kein Server-Endpunkt, keine Telemetrie, kein Cookie, kein gespeicherter Dialog.</text>
+<text x="60" y="460" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="15" font-weight="400" fill="#585961" text-anchor="start">Braucht Chrome 148 oder neuer und das geladene Modell; ohne das zeigt das</text>
+<text x="60" y="484" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="15" font-weight="400" fill="#585961" text-anchor="start">Plugin den vom Redakteur konfigurierten Ersatz.</text>
+</svg>

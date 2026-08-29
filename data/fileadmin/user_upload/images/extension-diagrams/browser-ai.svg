@@ -1,3 +1,33 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:57157298d31a5535281239fde67f2cae01320566c15e5545ae8a31f132ebd27d
-size 4696
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 520" role="img" aria-labelledby="t d">
+<title id="t">Where the answer is computed</title>
+<desc id="d">The page text and the question are handed to Chrome&#x27;s built-in model on the visitor&#x27;s own device. Nothing about the page or the dialogue is sent to a server.</desc>
+<defs>
+<marker id="head-585961" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#585961" /></marker>
+<marker id="head-2F99A4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2F99A4" /></marker>
+<marker id="head-FF4D00" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#FF4D00" /></marker>
+</defs>
+<rect width="1200" height="520" fill="#FFFFFF" />
+<text x="60" y="58" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="17" font-weight="700" fill="#585961" text-anchor="start">Nothing about the page or the question leaves the device</text>
+<rect x="40" y="80" width="720" height="300" rx="14" fill="none" stroke="#2F99A4" stroke-width="2" stroke-dasharray="8 6" />
+<text x="56" y="106" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="15" font-weight="700" fill="#15585E" text-anchor="start">the visitor’s device</text>
+<rect x="75" y="130" width="220" height="110" rx="10" fill="#FFFFFF" stroke="#CCCDCC" stroke-width="1.5" />
+<text x="185.0" y="164" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="19" font-weight="700" fill="#585961" text-anchor="middle">This page</text>
+<text x="185.0" y="196" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="15" fill="#585961" text-anchor="middle">its rendered text</text>
+<line x1="305" y1="185" x2="385" y2="185" stroke="#585961" stroke-width="2" marker-end="url(#head-585961)" />
+<rect x="395" y="130" width="230" height="110" rx="10" fill="#2F99A4" stroke="#2F99A4" stroke-width="1.5" />
+<text x="510.0" y="164" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="20" font-weight="700" fill="#FFFFFF" text-anchor="middle">Chrome built-in</text>
+<text x="510.0" y="189" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="20" font-weight="700" fill="#FFFFFF" text-anchor="middle">model</text>
+<text x="510.0" y="222" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="15" fill="#FFFFFF" text-anchor="middle">Gemini Nano, on device</text>
+<line x1="510" y1="250" x2="510" y2="300" stroke="#585961" stroke-width="2" marker-end="url(#head-585961)" />
+<rect x="340" y="310" width="340" height="55" rx="10" fill="#FFFFFF" stroke="#CCCDCC" stroke-width="1.5" />
+<text x="510.0" y="344.5" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="19" font-weight="700" fill="#585961" text-anchor="middle">Answer in the page</text>
+<rect x="830" y="130" width="320" height="110" rx="10" fill="#FFFFFF" stroke="#CCCDCC" stroke-width="1.5" stroke-dasharray="6 5" />
+<text x="990.0" y="164" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="19" font-weight="700" fill="#585961" text-anchor="middle">Any server</text>
+<text x="990.0" y="196" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="15" fill="#585961" text-anchor="middle">TYPO3 · Netresearch · Google</text>
+<line x1="640" y1="185" x2="820" y2="185" stroke="#FF4D00" stroke-width="2" marker-end="url(#head-FF4D00)" stroke-dasharray="6 5" />
+<line x1="762" y1="166" x2="790" y2="204" stroke="#FF4D00" stroke-width="3" />
+<text x="700" y="172" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="15" font-weight="700" fill="#FF4D00" text-anchor="middle">never</text>
+<text x="60" y="430" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="16" font-weight="700" fill="#585961" text-anchor="start">No server endpoint, no telemetry, no cookie, no stored dialogue.</text>
+<text x="60" y="460" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="15" font-weight="400" fill="#585961" text-anchor="start">Needs Chrome 148 or newer and the downloaded model; without it the</text>
+<text x="60" y="484" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="15" font-weight="400" fill="#585961" text-anchor="start">plugin shows the fallback the editor configured.</text>
+</svg>

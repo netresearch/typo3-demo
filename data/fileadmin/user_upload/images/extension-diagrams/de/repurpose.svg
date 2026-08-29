@@ -1,3 +1,33 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:f4d7141e7c35fe3e78dd3ebb0d79faad93474c0ed2342be510784eadf5eb1547
-size 4576
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 520" role="img" aria-labelledby="t d">
+<title id="t">Eine Seite, viele Kanäle</title>
+<desc id="d">Eine vorhandene Seite ist die Quelle: die Erweiterung leitet daraus über NR LLM Social-Texte, Zusammenfassungen und alternative Formulierungen ab, ohne den Inhalt neu zu erfassen.</desc>
+<defs>
+<marker id="head-585961" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#585961" /></marker>
+<marker id="head-2F99A4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2F99A4" /></marker>
+<marker id="head-FF4D00" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#FF4D00" /></marker>
+</defs>
+<rect width="1200" height="520" fill="#FFFFFF" />
+<text x="60" y="58" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="17" font-weight="700" fill="#585961" text-anchor="start">Ausgangspunkt ist eine Seite, die es schon gibt</text>
+<rect x="50" y="170" width="260" height="150" rx="10" fill="#FFFFFF" stroke="#CCCDCC" stroke-width="1.5" />
+<text x="180.0" y="204" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="19" font-weight="700" fill="#585961" text-anchor="middle">Eine vorhandene</text>
+<text x="180.0" y="228" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="19" font-weight="700" fill="#585961" text-anchor="middle">Seite</text>
+<text x="180.0" y="260" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="15" fill="#585961" text-anchor="middle">die bereits veröffentlichten</text>
+<text x="180.0" y="281" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="15" fill="#585961" text-anchor="middle">Inhalte</text>
+<line x1="320" y1="245" x2="400" y2="245" stroke="#585961" stroke-width="2" marker-end="url(#head-585961)" />
+<rect x="410" y="170" width="250" height="150" rx="10" fill="#2F99A4" stroke="#2F99A4" stroke-width="1.5" />
+<text x="535.0" y="204" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="20" font-weight="700" fill="#FFFFFF" text-anchor="middle">Repurpose</text>
+<text x="535.0" y="237" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="15" fill="#FFFFFF" text-anchor="middle">auf Basis von NR LLM</text>
+<line x1="670" y1="200" x2="750" y2="145" stroke="#2F99A4" stroke-width="2" marker-end="url(#head-2F99A4)" />
+<line x1="670" y1="245" x2="750" y2="245" stroke="#2F99A4" stroke-width="2" marker-end="url(#head-2F99A4)" />
+<line x1="670" y1="290" x2="750" y2="345" stroke="#2F99A4" stroke-width="2" marker-end="url(#head-2F99A4)" />
+<rect x="760" y="100" width="390" height="90" rx="10" fill="#FFFFFF" stroke="#CCCDCC" stroke-width="1.5" />
+<text x="955.0" y="134" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="19" font-weight="700" fill="#585961" text-anchor="middle">Social-Posts</text>
+<text x="955.0" y="166" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="15" fill="#585961" text-anchor="middle">kurzer Text je Kanal</text>
+<rect x="760" y="200" width="390" height="90" rx="10" fill="#FFFFFF" stroke="#CCCDCC" stroke-width="1.5" />
+<text x="955.0" y="234" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="19" font-weight="700" fill="#585961" text-anchor="middle">Zusammenfassungen</text>
+<text x="955.0" y="266" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="15" fill="#585961" text-anchor="middle">der Kern, in mehreren Längen</text>
+<rect x="760" y="300" width="390" height="90" rx="10" fill="#FFFFFF" stroke="#CCCDCC" stroke-width="1.5" />
+<text x="955.0" y="334" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="19" font-weight="700" fill="#585961" text-anchor="middle">Alternative Formulierungen</text>
+<text x="955.0" y="366" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="15" fill="#585961" text-anchor="middle">auf die Zielgruppe abgestimmt</text>
+<text x="50" y="430" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="15" font-weight="400" fill="#FF4D00" text-anchor="start">Nichts wird neu getippt: Quelle ist die Seite, kein neues Briefing.</text>
+</svg>

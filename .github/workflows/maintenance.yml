@@ -98,7 +98,6 @@ jobs:
               echo "===== make update"
               cd /opt/typo3-demo
               git pull --ff-only
-              git lfs pull
               make update
               echo "===== df AFTER update"
               df -h /

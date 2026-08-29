@@ -247,7 +247,7 @@ Run these from the repo's **Actions** tab:
 ```
 compose.yml / compose.dev.yml   # production stack / dev overrides
 docker/                         # web + db images, entrypoint
-data/                           # db.sql.gz (LFS seed), seed-extensions.sql, fileadmin
+data/                           # db.sql.gz (DB seed), seed-extensions.sql, fileadmin
 packages/netresearch-demo-site  # site package: TypoScript, RTE preset, dashboard widgets/presets
 config/                         # TYPO3 site + system config
 deploy/                         # host provisioning

@@ -1,3 +1,8 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:23c2ad93d79a510f9b5424d2c336f8f6da0b65dc66902b583a8375c89710b1fd
-size 364
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+  <path fill="#CCC" d="M2 2h12v12H2z"></path>
+  <path fill="#999" d="M13 3v10H3V3h10m1-1H2v12h12V2z"></path>
+  <path fill="#FFF" d="M1 5h14v6H1z"></path>
+  <path fill="#666" d="M14 6v4H2V6m13-1H1v6h14V5z"></path>
+  <path fill="#CCC" d="M4 7h8v2H4z"></path>
+</svg>
