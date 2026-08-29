@@ -1,3 +1,36 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:f4b44c3724725c2cff52563a30225dea77f38ee5a174238b514bb37ea9872642
-size 5098
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 520" role="img" aria-labelledby="t d">
+<title id="t">How the AI Chat Agent answers</title>
+<desc id="d">A question typed in the TYPO3 backend goes to the chat agent, which calls MCP tools against pages, records, backend users, logs and site configuration, and answers from what those tools returned.</desc>
+<defs>
+<marker id="head-585961" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#585961" /></marker>
+<marker id="head-2F99A4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2F99A4" /></marker>
+<marker id="head-FF4D00" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#FF4D00" /></marker>
+</defs>
+<rect width="1200" height="520" fill="#FFFFFF" />
+<text x="60" y="60" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="17" font-weight="700" fill="#585961" text-anchor="start">Every answer is grounded in what the tools returned</text>
+<rect x="60" y="100" width="250" height="110" rx="10" fill="#FFFFFF" stroke="#CCCDCC" stroke-width="1.5" />
+<text x="185.0" y="134" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="19" font-weight="700" fill="#585961" text-anchor="middle">Question in the</text>
+<text x="185.0" y="158" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="19" font-weight="700" fill="#585961" text-anchor="middle">backend</text>
+<text x="185.0" y="190" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="15" fill="#585961" text-anchor="middle">„Which pages changed</text>
+<text x="185.0" y="211" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="15" fill="#585961" text-anchor="middle">today?“</text>
+<line x1="320" y1="155" x2="400" y2="155" stroke="#585961" stroke-width="2" marker-end="url(#head-585961)" />
+<rect x="410" y="100" width="220" height="110" rx="10" fill="#2F99A4" stroke="#2F99A4" stroke-width="1.5" />
+<text x="520.0" y="134" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="20" font-weight="700" fill="#FFFFFF" text-anchor="middle">AI Chat Agent</text>
+<text x="520.0" y="167" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="15" fill="#FFFFFF" text-anchor="middle">built on NR LLM</text>
+<line x1="640" y1="155" x2="720" y2="155" stroke="#585961" stroke-width="2" marker-end="url(#head-585961)" />
+<text x="680.0" y="143.0" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="14" fill="#585961" text-anchor="middle">calls</text>
+<rect x="730" y="100" width="230" height="110" rx="10" fill="#FFFFFF" stroke="#CCCDCC" stroke-width="1.5" />
+<text x="845.0" y="134" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="19" font-weight="700" fill="#585961" text-anchor="middle">MCP tools</text>
+<text x="845.0" y="166" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="15" fill="#585961" text-anchor="middle">read and act</text>
+<line x1="845" y1="220" x2="845" y2="290" stroke="#585961" stroke-width="2" marker-end="url(#head-585961)" />
+<rect x="620" y="300" width="460" height="160" rx="10" fill="#FFFFFF" stroke="#CCCDCC" stroke-width="1.5" />
+<text x="850.0" y="334" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="19" font-weight="700" fill="#585961" text-anchor="middle">TYPO3 install</text>
+<text x="850.0" y="366" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="15" fill="#585961" text-anchor="middle">pages · content · records · backend users · logs ·</text>
+<text x="850.0" y="387" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="15" fill="#585961" text-anchor="middle">site configuration</text>
+<line x1="620" y1="380" x2="350" y2="380" stroke="#2F99A4" stroke-width="2" marker-end="url(#head-2F99A4)" />
+<text x="485.0" y="368.0" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="14" fill="#2F99A4" text-anchor="middle">what the tools actually returned</text>
+<rect x="60" y="320" width="270" height="120" rx="10" fill="#FFFFFF" stroke="#2F99A4" stroke-width="1.5" />
+<text x="195.0" y="354" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="19" font-weight="700" fill="#585961" text-anchor="middle">Answer</text>
+<text x="195.0" y="386" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="15" fill="#585961" text-anchor="middle">no invented facts</text>
+<text x="60" y="490" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="15" font-weight="400" fill="#FF4D00" text-anchor="start">A tool call can also change content — the agent reads and acts.</text>
+</svg>

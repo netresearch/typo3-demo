@@ -1,3 +1,37 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:11844892d2a99ef317e6848011866fec70e4b33c6031a37635da61aa9bf9bee6
-size 5274
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 520" role="img" aria-labelledby="t d">
+<title id="t">What a task gains from the base classes</title>
+<desc id="d">A Scheduler task built on the toolkit&#x27;s base classes is bound to application contexts and reports its failures by e-mail, so the same configuration can be deployed everywhere while executing only where it should.</desc>
+<defs>
+<marker id="head-585961" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#585961" /></marker>
+<marker id="head-2F99A4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2F99A4" /></marker>
+<marker id="head-FF4D00" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#FF4D00" /></marker>
+</defs>
+<rect width="1200" height="520" fill="#FFFFFF" />
+<text x="60" y="58" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="17" font-weight="700" fill="#585961" text-anchor="start">Same configuration everywhere, execution only where it belongs</text>
+<rect x="50" y="130" width="250" height="120" rx="10" fill="#FFFFFF" stroke="#CCCDCC" stroke-width="1.5" />
+<text x="175.0" y="164" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="19" font-weight="700" fill="#585961" text-anchor="middle">Scheduler task</text>
+<text x="175.0" y="196" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="15" fill="#585961" text-anchor="middle">built on the base classes</text>
+<line x1="310" y1="190" x2="370" y2="190" stroke="#585961" stroke-width="2" marker-end="url(#head-585961)" />
+<rect x="380" y="130" width="260" height="120" rx="10" fill="#2F99A4" stroke="#2F99A4" stroke-width="1.5" />
+<text x="510.0" y="164" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="20" font-weight="700" fill="#FFFFFF" text-anchor="middle">In this context?</text>
+<text x="510.0" y="197" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="15" fill="#FFFFFF" text-anchor="middle">Production / Staging / …</text>
+<line x1="650" y1="165" x2="720" y2="135" stroke="#2F99A4" stroke-width="2" marker-end="url(#head-2F99A4)" />
+<text x="685.0" y="138.0" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="14" fill="#2F99A4" text-anchor="middle">yes</text>
+<line x1="650" y1="220" x2="720" y2="385" stroke="#585961" stroke-width="2" marker-end="url(#head-585961)" />
+<text x="685.0" y="326.5" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="14" fill="#585961" text-anchor="middle">no</text>
+<rect x="730" y="90" width="420" height="85" rx="10" fill="#FFFFFF" stroke="#2F99A4" stroke-width="1.5" />
+<text x="940.0" y="139.5" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="19" font-weight="700" fill="#585961" text-anchor="middle">Runs</text>
+<line x1="940" y1="185" x2="940" y2="235" stroke="#FF4D00" stroke-width="2" marker-end="url(#head-FF4D00)" />
+<text x="940.0" y="198.0" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="14" fill="#FF4D00" text-anchor="middle">on failure</text>
+<rect x="730" y="245" width="420" height="110" rx="10" fill="#FFFFFF" stroke="#CCCDCC" stroke-width="1.5" />
+<text x="940.0" y="279" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="19" font-weight="700" fill="#585961" text-anchor="middle">E-mail to the configured</text>
+<text x="940.0" y="303" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="19" font-weight="700" fill="#585961" text-anchor="middle">recipients</text>
+<text x="940.0" y="335" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="15" fill="#585961" text-anchor="middle">own subject and message — not just a red row in</text>
+<text x="940.0" y="356" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="15" fill="#585961" text-anchor="middle">the module</text>
+<rect x="730" y="370" width="420" height="85" rx="10" fill="#FFFFFF" stroke="#CCCDCC" stroke-width="1.5" />
+<text x="940.0" y="419.5" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="19" font-weight="700" fill="#585961" text-anchor="middle">Skipped, and says so</text>
+<rect x="50" y="300" width="620" height="155" rx="10" fill="#FFFFFF" stroke="#CCCDCC" stroke-width="1.5" />
+<text x="360.0" y="334" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="19" font-weight="700" fill="#585961" text-anchor="middle">Deployed unchanged</text>
+<text x="360.0" y="366" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="15" fill="#585961" text-anchor="middle">one configuration in the repository, gated per application context</text>
+<text x="360.0" y="387" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="15" fill="#585961" text-anchor="middle">instead of edited per environment</text>
+</svg>

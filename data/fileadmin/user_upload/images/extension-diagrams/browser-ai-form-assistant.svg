@@ -1,3 +1,41 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:8071b0e758022f17b77d3faecfc0f35cfe4df04cf89da6da1c2620dee7503ac1
-size 5855
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 520" role="img" aria-labelledby="t d">
+<title id="t">One sentence fills a seventy-control form</title>
+<desc id="d">The form definition itself becomes the tool contract: its validators, options and descriptions are turned into a schema, the on-device model produces arguments against it, and the filled form runs.</desc>
+<defs>
+<marker id="head-585961" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#585961" /></marker>
+<marker id="head-2F99A4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2F99A4" /></marker>
+<marker id="head-FF4D00" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#FF4D00" /></marker>
+</defs>
+<rect width="1200" height="520" fill="#FFFFFF" />
+<text x="60" y="58" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="17" font-weight="700" fill="#585961" text-anchor="start">The form definition is the tool contract</text>
+<rect x="50" y="100" width="240" height="120" rx="10" fill="#FFFFFF" stroke="#CCCDCC" stroke-width="1.5" />
+<text x="170.0" y="134" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="19" font-weight="700" fill="#585961" text-anchor="middle">One sentence</text>
+<text x="170.0" y="166" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="15" fill="#585961" text-anchor="middle">„Wind gusts in Innsbruck</text>
+<text x="170.0" y="187" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="15" fill="#585961" text-anchor="middle">for ten days“</text>
+<line x1="300" y1="160" x2="360" y2="160" stroke="#585961" stroke-width="2" marker-end="url(#head-585961)" />
+<rect x="370" y="100" width="250" height="120" rx="10" fill="#FFFFFF" stroke="#CCCDCC" stroke-width="1.5" />
+<text x="495.0" y="134" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="19" font-weight="700" fill="#585961" text-anchor="middle">Schema from the</text>
+<text x="495.0" y="158" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="19" font-weight="700" fill="#585961" text-anchor="middle">form</text>
+<text x="495.0" y="190" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="15" fill="#585961" text-anchor="middle">validators · options ·</text>
+<text x="495.0" y="211" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="15" fill="#585961" text-anchor="middle">labels</text>
+<line x1="630" y1="160" x2="690" y2="160" stroke="#585961" stroke-width="2" marker-end="url(#head-585961)" />
+<rect x="700" y="100" width="230" height="120" rx="10" fill="#2F99A4" stroke="#2F99A4" stroke-width="1.5" />
+<text x="815.0" y="134" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="20" font-weight="700" fill="#FFFFFF" text-anchor="middle">On-device model</text>
+<text x="815.0" y="167" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="15" fill="#FFFFFF" text-anchor="middle">produces arguments</text>
+<line x1="940" y1="160" x2="1000" y2="160" stroke="#585961" stroke-width="2" marker-end="url(#head-585961)" />
+<rect x="1010" y="100" width="140" height="120" rx="10" fill="#FFFFFF" stroke="#CCCDCC" stroke-width="1.5" />
+<text x="1080.0" y="134" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="19" font-weight="700" fill="#585961" text-anchor="middle">Validated</text>
+<text x="1080.0" y="166" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="15" fill="#585961" text-anchor="middle">enum members</text>
+<text x="1080.0" y="187" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="15" fill="#585961" text-anchor="middle">checked</text>
+<line x1="1080" y1="230" x2="1080" y2="290" stroke="#585961" stroke-width="2" marker-end="url(#head-585961)" />
+<rect x="700" y="300" width="450" height="110" rx="10" fill="#FFFFFF" stroke="#CCCDCC" stroke-width="1.5" />
+<text x="925.0" y="334" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="19" font-weight="700" fill="#585961" text-anchor="middle">The form fills itself in, and runs</text>
+<text x="925.0" y="366" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="15" fill="#585961" text-anchor="middle">seventy controls · one MultiCheckbox is one array</text>
+<text x="925.0" y="387" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="15" fill="#585961" text-anchor="middle">property</text>
+<line x1="690" y1="355" x2="500" y2="355" stroke="#2F99A4" stroke-width="2" marker-end="url(#head-2F99A4)" />
+<text x="595.0" y="343.0" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="14" fill="#2F99A4" text-anchor="middle">result</text>
+<rect x="150" y="300" width="330" height="110" rx="10" fill="#FFFFFF" stroke="#CCCDCC" stroke-width="1.5" />
+<text x="315.0" y="334" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="19" font-weight="700" fill="#585961" text-anchor="middle">Answer with the data</text>
+<text x="315.0" y="366" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="15" fill="#585961" text-anchor="middle">rendered as text nodes</text>
+<text x="50" y="470" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="15" font-weight="400" fill="#FF4D00" text-anchor="start">No server endpoint: the query runs from the page itself.</text>
+</svg>

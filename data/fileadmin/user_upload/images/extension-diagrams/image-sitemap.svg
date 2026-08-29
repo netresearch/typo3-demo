@@ -1,3 +1,33 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:b97d37238799cb9f6a2ca99c16bb449cdc1acfad6f62029b809e3d5cff37087b
-size 4701
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 520" role="img" aria-labelledby="t d">
+<title id="t">A second sitemap type for images</title>
+<desc id="d">Every image referenced from a page or a content element is listed with its title and caption in the Google image-sitemap schema, provided to EXT:seo as an additional XmlSitemapDataProvider.</desc>
+<defs>
+<marker id="head-585961" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#585961" /></marker>
+<marker id="head-2F99A4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2F99A4" /></marker>
+<marker id="head-FF4D00" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#FF4D00" /></marker>
+</defs>
+<rect width="1200" height="520" fill="#FFFFFF" />
+<text x="60" y="58" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="17" font-weight="700" fill="#585961" text-anchor="start">No backend module, no extra table — the output is the sitemap</text>
+<rect x="50" y="110" width="270" height="130" rx="10" fill="#FFFFFF" stroke="#CCCDCC" stroke-width="1.5" />
+<text x="185.0" y="144" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="19" font-weight="700" fill="#585961" text-anchor="middle">Pages and content</text>
+<text x="185.0" y="168" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="19" font-weight="700" fill="#585961" text-anchor="middle">elements</text>
+<text x="185.0" y="200" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="15" fill="#585961" text-anchor="middle">the images already referenced</text>
+<line x1="330" y1="175" x2="390" y2="175" stroke="#585961" stroke-width="2" marker-end="url(#head-585961)" />
+<rect x="400" y="110" width="250" height="130" rx="10" fill="#FFFFFF" stroke="#CCCDCC" stroke-width="1.5" />
+<text x="525.0" y="144" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="19" font-weight="700" fill="#585961" text-anchor="middle">Title and caption</text>
+<text x="525.0" y="176" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="15" fill="#585961" text-anchor="middle">what editors entered on</text>
+<text x="525.0" y="197" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="15" fill="#585961" text-anchor="middle">the image</text>
+<line x1="660" y1="175" x2="720" y2="175" stroke="#585961" stroke-width="2" marker-end="url(#head-585961)" />
+<rect x="730" y="110" width="300" height="130" rx="10" fill="#2F99A4" stroke="#2F99A4" stroke-width="1.5" />
+<text x="880.0" y="144" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="20" font-weight="700" fill="#FFFFFF" text-anchor="middle">XmlSitemapDataProvider</text>
+<text x="880.0" y="177" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="15" fill="#FFFFFF" text-anchor="middle">registered with EXT:seo</text>
+<line x1="880" y1="250" x2="880" y2="310" stroke="#585961" stroke-width="2" marker-end="url(#head-585961)" />
+<rect x="620" y="320" width="520" height="120" rx="10" fill="#FFFFFF" stroke="#CCCDCC" stroke-width="1.5" />
+<text x="880.0" y="354" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="19" font-weight="700" fill="#585961" text-anchor="middle">image sitemap XML</text>
+<text x="880.0" y="386" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="15" fill="#585961" text-anchor="middle">the Google image-sitemap schema, beside the core sitemap</text>
+<rect x="50" y="320" width="500" height="120" rx="10" fill="#FFFFFF" stroke="#CCCDCC" stroke-width="1.5" />
+<text x="300.0" y="354" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="19" font-weight="700" fill="#585961" text-anchor="middle">Nothing else to maintain</text>
+<text x="300.0" y="386" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="15" fill="#585961" text-anchor="middle">no scheduler run, no separate database table, no editor</text>
+<text x="300.0" y="407" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="15" fill="#585961" text-anchor="middle">step</text>
+<text x="50" y="480" font-family="'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif" font-size="15" font-weight="400" fill="#FF4D00" text-anchor="start">Its demo is the XML itself.</text>
+</svg>

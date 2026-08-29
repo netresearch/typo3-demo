@@ -26,11 +26,10 @@ jobs:
       security-events: write
       id-token: write
     with:
-      # Build the local LFS checkout (docker-bake.hcl target "web" has
+      # Build the local checkout (docker-bake.hcl target "web" has
       # context "."); push only on main. GIT_SHA feeds the HCL sha tag.
       # Trivy scan stays off to match the previous inline build.
       bake-source: .
-      lfs: true
       # workflow_dispatch exists to rebuild and republish the image — without
       # push the manual rebuild produced an image that never left the runner.
       push: ${{ (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main' }}
@@ -88,8 +87,6 @@ jobs:
       && github.event.pull_request.head.repo.full_name == github.repository)
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          lfs: true
 
       # The db service runs the MariaDB Docker Hardened Image; dhi.io serves no
       # anonymous pulls, so the stack cannot come up without this.

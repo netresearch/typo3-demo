@@ -58,7 +58,6 @@ jobs:
             fi
 
             git pull --ff-only
-            git lfs pull
             make update
         env:
           DHI_USERNAME: ${{ secrets.DHI_USERNAME }}
