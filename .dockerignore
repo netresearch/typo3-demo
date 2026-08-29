@@ -20,4 +20,3 @@ Makefile
 docker-bake.hcl
 LICENSE
 .editorconfig
-.gitattributes
