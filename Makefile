@@ -92,11 +92,19 @@ install-usecase-packs: ## Install the nr-llm use-case packs this instance demons
 	@# no-op that reports what was already there. That is what makes it safe
 	@# here, where it runs on every deploy.
 	@#
-	@# Failures are reported and do not stop the deploy. The installer refuses
-	@# when no active model satisfies the pack's configuration — which is the
-	@# state this instance is in whenever OPENAI_API_KEY is absent — and a
-	@# missing pack must not take the whole instance down, for the same reason
-	@# provision-llm-key does not.
+	@# Failures are reported and do not stop the deploy, for the same reason
+	@# provision-llm-key does not: a missing pack must not take the whole
+	@# instance down.
+	@#
+	@# What decides it is NOT the API key. UseCasePackInstaller imports the
+	@# pack's configuration preset when the record is absent, and that import
+	@# preflights the preset's CRITERIA against the active models —
+	@# EligibilityEvaluator::matchesCapabilities() requires every one of them.
+	@# nr_repurpose_text asks for chat AND json_mode, and the only model seeded
+	@# here, gpt-5.3-chat-latest, declares 'chat,vision,tools,streaming'. So
+	@# this step reports a refusal until an active model declares json_mode —
+	@# see #236. The step is correct and idempotent meanwhile; it installs
+	@# nothing.
 	@set -e; \
 	for pack in content-repurpose-starter; do \
 		echo "Installing use-case pack $$pack..."; \
