@@ -77,9 +77,34 @@ update: ## Update code without purging data
 	$(MAKE) provision-llm-key
 	$(MAKE) seed-extensions
 	$(TYPO3) extension:setup || true
+	$(MAKE) install-usecase-packs
 	$(TYPO3) cache:flush
 	$(TYPO3) cache:warmup
 	$(MAKE) prune
+
+install-usecase-packs: ## Install the nr-llm use-case packs this instance demonstrates
+	@# The Repurpose job form's five selectors — audience, tone of voice,
+	@# persona, layout, style — read nr-llm prompt snippets by tag. A seeded
+	@# instance has none, so every one of them reads "(none)" and the steering
+	@# the form advertises is invisible. Somebody used to fix that by hand in
+	@# the Snippets module, which no reset survived and nothing reproduced.
+	@#
+	@# nrllm:usecasepack:install writes through the same installer the Use Case
+	@# Packs module uses: it creates only what is missing, so a second run is a
+	@# no-op that reports what was already there. That is what makes it safe
+	@# here, where it runs on every deploy.
+	@#
+	@# Failures are reported and do not stop the deploy. The installer refuses
+	@# when no active model satisfies the pack's configuration — which is the
+	@# state this instance is in whenever OPENAI_API_KEY is absent — and a
+	@# missing pack must not take the whole instance down, for the same reason
+	@# provision-llm-key does not.
+	@set -e; \
+	for pack in content-repurpose-starter; do \
+		echo "Installing use-case pack $$pack..."; \
+		$(TYPO3) nrllm:usecasepack:install "$$pack" || \
+			echo "         Pack $$pack was not installed. The modules keep working; its records are absent."; \
+	done
 
 provision-llm-key: ## Store $OPENAI_API_KEY in the vault and point the OpenAI provider at it
 	@# Without this the demo has no LLM at all: the sanitized dump ships
