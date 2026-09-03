@@ -1,6 +1,4 @@
-.PHONY: up down reset update logs shell db-shell seed seed-extensions provision-llm-key persist-env-secret export-seed build clean dev dev-down prune help
-
-.PHONY: up down reset update logs shell db-shell seed seed-extensions provision-llm-key export-seed build clean dev dev-down prune help
+.PHONY: up down reset update logs shell db-shell seed seed-extensions provision-llm-key install-usecase-packs persist-env-secret export-seed build clean dev dev-down prune help
 
 COMPOSE     := docker compose
 COMPOSE_DEV := docker compose -f compose.yml -f compose.dev.yml
