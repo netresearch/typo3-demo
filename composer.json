@@ -6,7 +6,7 @@
     "require": {
         "bk2k/bootstrap-package": "^16.0",
         "causal/extractor": "^2.6",
-        "cweagans/composer-patches": "^1.7",
+        "cweagans/composer-patches": "^2.0",
         "friendsoftypo3/content-blocks": "^2.0",
         "georgringer/news": "^14.0",
         "lochmueller/index": "^2.2",
