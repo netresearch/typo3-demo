@@ -25,7 +25,7 @@
         "netresearch/nr-scheduler": "^2.0",
         "netresearch/nr-temporal-cache": "@dev",
         "netresearch/nr-textdb": "^4.0",
-        "netresearch/nr-vault": "^0.15",
+        "netresearch/nr-vault": "^0.16",
         "netresearch/rte-ckeditor-image": "^13.10",
         "netresearch/t3-cowriter": "^3.2",
         "netresearch/typo3-demo-site": "@dev",
