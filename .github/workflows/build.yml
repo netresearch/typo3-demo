@@ -101,7 +101,7 @@ jobs:
       # the whole TYPO3 tree on every pull request.
       - name: Set up Docker Buildx
         if: github.event_name == 'pull_request'
-        uses: docker/setup-buildx-action@bb05f3f5519dd87d3ba754cc423b652a5edd6d2c # v4.2.0
+        uses: docker/setup-buildx-action@37fe631027851001ddb9b187196cc803df7f5f0e # v4.3.0
 
       # Same bake target the published image comes from, so a change to the
       # build definition is exercised here too rather than only after a merge.
