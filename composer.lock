@@ -10108,16 +10108,16 @@
         },
         {
             "name": "t3g/analytics",
-            "version": "1.0.2",
+            "version": "1.0.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/TYPO3GmbH/analytics.git",
-                "reference": "1d5ed9fbf54af3c57a22c794f097898e1b1cec79"
+                "reference": "c3b98223f66e9952541b525a9eaae54b7e0a2972"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/TYPO3GmbH/analytics/zipball/1d5ed9fbf54af3c57a22c794f097898e1b1cec79",
-                "reference": "1d5ed9fbf54af3c57a22c794f097898e1b1cec79",
+                "url": "https://api.github.com/repos/TYPO3GmbH/analytics/zipball/c3b98223f66e9952541b525a9eaae54b7e0a2972",
+                "reference": "c3b98223f66e9952541b525a9eaae54b7e0a2972",
                 "shasum": ""
             },
             "require": {
@@ -10168,7 +10168,7 @@
                 "issues": "https://github.com/TYPO3GmbH/analytics/issues",
                 "source": "https://github.com/TYPO3GmbH/analytics"
             },
-            "time": "2026-08-03T09:03:39+00:00"
+            "time": "2026-09-08T08:44:28+00:00"
         },
         {
             "name": "thieleundklose/autotranslate",
