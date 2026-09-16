@@ -66,12 +66,19 @@ jobs:
             # The 500 on /typo3/module/nrllm/configurations. TYPO3 writes the
             # exception to var/log; the trace is deliberately not printed.
             docker compose exec -T web sh -c '
-              set -e
+              found=0
               for f in $(ls -1t var/log/typo3_*.log 2>/dev/null | head -3); do
+                found=1
                 echo "--- $f"
-                grep -iE "critical|error" "$f" 2>/dev/null | tail -25 | cut -c1-400
+                # grep exits 1 on no match, which is a normal outcome here and
+                # must not end the loop: under `set -e` the first quiet log file
+                # would skip the rest and the caller would report "no readable
+                # log files" for logs it never opened.
+                grep -iE "critical|error" "$f" 2>/dev/null | tail -25 | cut -c1-400 \
+                  || echo "(no matching lines in this file)"
               done
-            ' || echo "(no readable log files)"
+              [ "$found" = 1 ] || echo "(no log files under var/log)"
+            '
 
             echo
             echo "===== vault: audit chain verification (read-only)"
@@ -83,6 +90,16 @@ jobs:
             echo
             echo "===== nr-llm: current tool overrides"
             sql "SELECT tool_name, enabled FROM tx_nrllm_tool_state ORDER BY tool_name;"
+
+            echo
+            echo "===== nr-llm: current tool GROUP overrides"
+            # A per-tool row does not win over a disabled group: the runtime gate
+            # is fail-closed and a disabled group also covers tools installed
+            # later (nr-llm ext_tables.sql, tx_nrllm_tool_group_state). Without
+            # this the output could show a tool enabled while it stays
+            # unreachable, and the next step would be taken against the wrong
+            # cause. A missing row means the group is enabled.
+            sql "SELECT group_name, enabled FROM tx_nrllm_tool_group_state ORDER BY group_name;"
 
             if [ "${MIGRATE_AUDIT_HMAC}" = "true" ]; then
               echo
