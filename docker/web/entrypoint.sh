@@ -131,6 +131,18 @@ return [
     ],
     'BE' => [
         'debug' => false,
+        // Caddy terminates TLS in front of this container and nothing reaches it
+        // unencrypted, but TYPO3 only knows that because of the reverseProxySSL
+        // entry above: without it lockSSL would see a plain http request from
+        // the proxy and redirect forever. With it set to '*', locking the
+        // backend to HTTPS is safe and the redirect loop cannot occur.
+        //
+        // It matters here rather than being hygiene: the vault reveal endpoint
+        // sends secret plaintext to the browser, and an unlocked backend leaves
+        // the session cookie without the secure flag - both readable on the wire
+        // on any connection that is not TLS, which would defeat the encryption
+        // at rest entirely.
+        'lockSSL' => true,
         'passwordHashing' => [
             'className' => \TYPO3\CMS\Core\Crypto\PasswordHashing\Argon2idPasswordHash::class,
         ],
@@ -196,6 +208,12 @@ if [ -f config/system/settings.php ]; then
         $end   = "// <<< nr_mcp_agent";
         $block = $begin . "\n"
             . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"nr_mcp_agent\"][\"llmTaskUid\"] = \"1\";\n"
+            // Lock the backend to HTTPS. It belongs in this block rather than in
+            // the settings.php template beside reverseProxySSL, because that
+            // template is written on FIRST BOOT ONLY - an instance that already
+            // has a settings.php would never see it, and this one has had one
+            // since July. This block is rewritten on every boot.
+            . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"BE\"][\"lockSSL\"] = true;\n"
             . $end;
         $existing = is_file($f) ? (string) file_get_contents($f) : "";
         if (strpos($existing, "<?php") === false) {
