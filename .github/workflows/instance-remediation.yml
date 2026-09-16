@@ -1,0 +1,187 @@
+name: Instance Remediation
+
+# Dispatch-only, for the findings that can only be answered on the instance:
+# the exception behind a backend 500, the vault audit chain, and the agent's
+# file-writing tools. Everything read-only runs unconditionally; each write is
+# behind its own input and defaults to off.
+#
+# WHAT IS PRINTED. This repository is public, so the output is bounded on
+# purpose: exception SUBJECT lines rather than full traces, the audit verifier's
+# own report, and row counts. No environment dump, no configuration file, no
+# secret value. The vault audit report names uids and reason codes, which is
+# what the finding asks to be reconciled and carries nothing confidential on an
+# instance holding one demo secret.
+#
+# WHY NOT A FREE-FORM COMMAND INPUT. A dispatchable "run this on production"
+# button in a public repository is a standing remote-exec capability, and the
+# review of it would be about the button rather than about these findings. Every
+# command below is written out here and reviewable as text.
+
+on:
+  workflow_dispatch:
+    inputs:
+      migrate_audit_hmac:
+        description: "Re-sign the audit chain to HMAC epoch 3 (vault:audit-migrate-hmac). Run the verification first and read its report."
+        type: boolean
+        default: false
+      enable_file_tools:
+        description: "Enable the agent's FAL tools (attach_file_to_content_element, set_file_alternative_text, update_fal_asset_meta) and their editing group"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+jobs:
+  remediate:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Inspect and remediate on Hetzner
+        uses: appleboy/ssh-action@0ff4204d59e8e51228ff73bce53f80d53301dee2 # v1.2.5
+        with:
+          host: ${{ secrets.HETZNER_SSH_HOST }}
+          username: ${{ secrets.HETZNER_SSH_USER }}
+          key: ${{ secrets.HETZNER_SSH_KEY }}
+          envs: MIGRATE_AUDIT_HMAC,ENABLE_FILE_TOOLS
+          script: |
+            set -eu
+            cd /opt/typo3-demo
+
+            t3() { docker compose exec -T web vendor/bin/typo3 "$@"; }
+            sql() {
+              printf '%s' "$1" | docker compose exec -T db sh -c \
+                'MYSQL_PWD="$MARIADB_PASSWORD" mariadb -t -u "$MARIADB_USER" "$MARIADB_DATABASE"'
+            }
+
+            echo "===== deployed revision"
+            # Guarded for the same reason the log loop below is: under `set -e`
+            # an unguarded read-only step is a kill switch for every step after
+            # it. /opt/typo3-demo is a git checkout today - update.yml pulls
+            # there - but a diagnostic run must not lose the audit report
+            # because the revision line could not be produced.
+            git log -1 --format='%h %ci %s' || echo "(not a git checkout, or git unavailable)"
+
+            echo
+            echo "===== backend exceptions, most recent first (subject lines only)"
+            # The 500 on /typo3/module/nrllm/configurations. TYPO3 writes the
+            # exception to var/log; the trace is deliberately not printed.
+            docker compose exec -T web sh -c '
+              found=0
+              for f in $(ls -1t var/log/typo3_*.log 2>/dev/null | head -3); do
+                found=1
+                echo "--- $f"
+                # grep exits 1 on no match, which is a normal outcome here and
+                # must not end the loop: under `set -e` the first quiet log file
+                # would skip the rest and the caller would report "no readable
+                # log files" for logs it never opened.
+                grep -iE "critical|error" "$f" 2>/dev/null | tail -25 | cut -c1-400 \
+                  || echo "(no matching lines in this file)"
+              done
+              [ "$found" = 1 ] || echo "(no log files under var/log)"
+            '
+
+            echo
+            echo "===== vault: audit chain verification (read-only)"
+            # Read the report BEFORE any re-sealing: re-sealing a tampered chain
+            # launders it into a valid one, so this runs unconditionally and the
+            # migration below is opt-in.
+            # The status is kept, because the migration below is not allowed to
+            # run against a chain that does not verify and should say so rather
+            # than let the command fail. `if cmd; then` rather than `if ! cmd`:
+            # inside a negated branch $? belongs to the `!`, not to the command.
+            AUDIT_VERIFY_OK=1
+            if t3 vault:audit-verify; then
+              echo "(chain verifies)"
+            else
+              AUDIT_VERIFY_OK=0
+              echo "(vault:audit-verify exited non-zero — that is the finding, not a workflow error)"
+            fi
+
+            echo
+            echo "===== nr-llm: current tool overrides"
+            # Guarded like every other read-only step here: a diagnostic run
+            # must report what it could not read, not end at the first table
+            # an older nr-llm does not have and take the rest with it. The
+            # WRITES below are deliberately NOT guarded - a write that fails
+            # has to fail the job.
+            sql "SELECT tool_name, enabled FROM tx_nrllm_tool_state ORDER BY tool_name;" \
+              || echo "(could not read tx_nrllm_tool_state)"
+
+            echo
+            echo "===== nr-llm: current tool GROUP overrides"
+            # A per-tool row does not win over a disabled group: the runtime gate
+            # is fail-closed and a disabled group also covers tools installed
+            # later (nr-llm ext_tables.sql, tx_nrllm_tool_group_state). Without
+            # this the output could show a tool enabled while it stays
+            # unreachable, and the next step would be taken against the wrong
+            # cause. A missing row means the group is enabled.
+            sql "SELECT group_name, enabled FROM tx_nrllm_tool_group_state ORDER BY group_name;" \
+              || echo "(could not read tx_nrllm_tool_group_state)"
+
+            if [ "${MIGRATE_AUDIT_HMAC}" = "true" ] && [ "$AUDIT_VERIFY_OK" = "0" ]; then
+              echo
+              echo "===== vault: re-signing the audit chain — NOT RUN"
+              # Measured in nr-vault, not guessed: verifyChainForReseal() refuses
+              # on ANY invalid chain, and all four reason codes - HASH_MISMATCH,
+              # UID_GAP, TABLE_RESET, EPOCH_DOWNGRADE - answer isTamperEvidence()
+              # with true, so there is no benign-gap path that lets the reseal
+              # through. Running the command here would print FAILURE and teach
+              # nobody anything; the report above is what the next step is taken
+              # from. Reconcile the chain first - that is a decision a person
+              # makes, not an input on a form.
+              echo "The chain does not verify, so vault:audit-migrate-hmac would refuse."
+              echo "Read the reason codes above and reconcile before asking for this again."
+            elif [ "${MIGRATE_AUDIT_HMAC}" = "true" ]; then
+              echo
+              echo "===== vault: re-signing the audit chain to epoch 3"
+              # This cannot launder a tampered chain even if run by mistake:
+              # VaultAuditMigrateCommand calls verifyChainForReseal() before it
+              # re-hashes anything and exits FAILURE on a chain that does not
+              # verify, naming that exact risk. The unconditional report above
+              # is still what the decision is taken from - the command refusing
+              # is a backstop, not the reason to skip reading it.
+              t3 vault:audit-migrate-hmac
+              echo "----- verification after the migration"
+              t3 vault:audit-verify || echo "(still failing after the migration — do not re-run, read the report)"
+            fi
+
+            if [ "${ENABLE_FILE_TOOLS}" = "true" ]; then
+              echo
+              echo "===== nr-llm: enabling the file tools"
+              # A missing row means "use the tool's own default", and both of
+              # these default to off (nr-llm ADR-135). An explicit row is what
+              # turns them on; the unique key on tool_name makes this idempotent.
+              sql "INSERT INTO tx_nrllm_tool_state (pid, tool_name, enabled) VALUES
+                     (0, 'attach_file_to_content_element', 1),
+                     (0, 'set_file_alternative_text', 1),
+                     (0, 'update_fal_asset_meta', 1)
+                   ON DUPLICATE KEY UPDATE enabled = 1;"
+              # The group gate, not an extra: the runtime is fail-closed, so a
+              # disabled group leaves all three rows above enabled and
+              # unreachable - and the step would print them as enabled, flush
+              # the caches and reach "done" having changed nothing an editor
+              # can use. All three tools report getGroup() === 'editing'
+              # (nr-llm Classes/Service/Tool/Builtin/*Tool.php).
+              #
+              # Enabling the group cannot switch on a tool nobody asked for:
+              # every writer ships isEnabledByDefault() === false, so a tool
+              # without an explicit row stays off whatever its group says.
+              sql "INSERT INTO tx_nrllm_tool_group_state (pid, group_name, enabled) VALUES
+                     (0, 'editing', 1)
+                   ON DUPLICATE KEY UPDATE enabled = 1;"
+              sql "SELECT tool_name, enabled FROM tx_nrllm_tool_state ORDER BY tool_name;"
+              sql "SELECT group_name, enabled FROM tx_nrllm_tool_group_state ORDER BY group_name;"
+              echo "----- flushing caches so the registry is rebuilt"
+              t3 cache:flush
+            fi
+
+            echo
+            echo "===== done"
+        env:
+          MIGRATE_AUDIT_HMAC: ${{ inputs.migrate_audit_hmac }}
+          ENABLE_FILE_TOOLS: ${{ inputs.enable_file_tools }}
