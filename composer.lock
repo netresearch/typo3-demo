@@ -63,16 +63,16 @@
         },
         {
             "name": "bk2k/bootstrap-package",
-            "version": "16.0.0",
+            "version": "16.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/benjaminkott/bootstrap_package.git",
-                "reference": "96499c64fd8c603f11317db15eb62b1d54d6ff52"
+                "reference": "69c7466830b4f9e3c26ed30dd17fc7c6e4803210"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/benjaminkott/bootstrap_package/zipball/96499c64fd8c603f11317db15eb62b1d54d6ff52",
-                "reference": "96499c64fd8c603f11317db15eb62b1d54d6ff52",
+                "url": "https://api.github.com/repos/benjaminkott/bootstrap_package/zipball/69c7466830b4f9e3c26ed30dd17fc7c6e4803210",
+                "reference": "69c7466830b4f9e3c26ed30dd17fc7c6e4803210",
                 "shasum": ""
             },
             "require": {
@@ -85,45 +85,51 @@
                 "ext-simplexml": "*",
                 "php": ">=8.2.0",
                 "scssphp/scssphp": "^1.13",
-                "typo3/cms-backend": "^13.4 || ^14.0 || 14.*.*@dev",
-                "typo3/cms-core": "^13.4 || ^14.0 || 14.*.*@dev",
-                "typo3/cms-extbase": "^13.4 || ^14.0 || 14.*.*@dev",
-                "typo3/cms-extensionmanager": "^13.4 || ^14.0 || 14.*.*@dev",
-                "typo3/cms-fluid": "^13.4 || ^14.0 || 14.*.*@dev",
-                "typo3/cms-frontend": "^13.4 || ^14.0 || 14.*.*@dev",
-                "typo3/cms-install": "^13.4 || ^14.0 || 14.*.*@dev",
-                "typo3/cms-rte-ckeditor": "^13.4 || ^14.0 || 14.*.*@dev",
-                "typo3/cms-seo": "^13.4 || ^14.0 || 14.*.*@dev"
+                "typo3/cms-backend": "^13.4 || ^14.3",
+                "typo3/cms-core": "^13.4 || ^14.3",
+                "typo3/cms-extbase": "^13.4 || ^14.3",
+                "typo3/cms-extensionmanager": "^13.4 || ^14.3",
+                "typo3/cms-fluid": "^13.4 || ^14.3",
+                "typo3/cms-frontend": "^13.4 || ^14.3",
+                "typo3/cms-install": "^13.4 || ^14.3",
+                "typo3/cms-rte-ckeditor": "^13.4 || ^14.3",
+                "typo3/cms-seo": "^13.4 || ^14.3"
             },
             "require-dev": {
                 "b13/container": "^3.1 || dev-master",
                 "bk2k/demo-package": "@dev",
-                "bk2k/extension-helper": "^2.1",
+                "bk2k/extension-helper": "^2.2",
                 "friendsofphp/php-cs-fixer": "^3.90",
                 "overtrue/phplint": "^9.6",
                 "phpstan/phpstan": "^2.1",
                 "phpstan/phpstan-deprecation-rules": "^2.0",
                 "phpstan/phpstan-phpunit": "^2.0",
                 "phpstan/phpstan-strict-rules": "^2.0",
-                "typo3/cms-belog": "^13.4 || ^14.0 || 14.*.*@dev",
-                "typo3/cms-felogin": "^13.4 || ^14.0 || 14.*.*@dev",
-                "typo3/cms-filelist": "^13.4 || ^14.0 || 14.*.*@dev",
-                "typo3/cms-form": "^13.4 || ^14.0 || 14.*.*@dev",
-                "typo3/cms-indexed-search": "^13.4 || ^14.0 || 14.*.*@dev",
-                "typo3/cms-info": "^13.4 || ^14.0 || 14.*.*@dev",
-                "typo3/cms-lowlevel": "^13.4 || ^14.0 || 14.*.*@dev",
-                "typo3/cms-tstemplate": "^13.4 || ^14.0 || 14.*.*@dev",
-                "typo3/cms-workspaces": "^13.4 || ^14.0 || 14.*.*@dev",
+                "typo3/cms-belog": "^13.4 || ^14.3",
+                "typo3/cms-felogin": "^13.4 || ^14.3",
+                "typo3/cms-filelist": "^13.4 || ^14.3",
+                "typo3/cms-form": "^13.4 || ^14.3",
+                "typo3/cms-indexed-search": "^13.4 || ^14.3",
+                "typo3/cms-info": "^13.4 || ^14.3",
+                "typo3/cms-lowlevel": "^13.4 || ^14.3",
+                "typo3/cms-tstemplate": "^13.4 || ^14.3",
+                "typo3/cms-workspaces": "^13.4 || ^14.3",
                 "typo3/testing-framework": "^9.0.0 || dev-main"
             },
             "type": "typo3-cms-extension",
             "extra": {
                 "typo3/cms": {
+                    "Package": {
+                        "providesPackages": {
+                            "scssphp/scssphp": "Contrib/scssphp"
+                        }
+                    },
+                    "version": "16.0.1",
                     "web-dir": ".build/public",
                     "extension-key": "bootstrap_package"
                 },
                 "branch-alias": {
-                    "dev-master": "16.0.x-dev"
+                    "dev-BP_16_0": "16.0.x-dev"
                 }
             },
             "autoload": {
@@ -167,7 +173,7 @@
                     "type": "custom"
                 }
             ],
-            "time": "2025-12-02T14:57:06+00:00"
+            "time": "2026-09-09T09:19:27+00:00"
         },
         {
             "name": "brick/math",
