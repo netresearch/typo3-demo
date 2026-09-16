@@ -90,7 +90,17 @@ jobs:
             # Read the report BEFORE any re-sealing: re-sealing a tampered chain
             # launders it into a valid one, so this runs unconditionally and the
             # migration below is opt-in.
-            t3 vault:audit-verify || echo "(vault:audit-verify exited non-zero — that is the finding, not a workflow error)"
+            # The status is kept, because the migration below is not allowed to
+            # run against a chain that does not verify and should say so rather
+            # than let the command fail. `if cmd; then` rather than `if ! cmd`:
+            # inside a negated branch $? belongs to the `!`, not to the command.
+            AUDIT_VERIFY_OK=1
+            if t3 vault:audit-verify; then
+              echo "(chain verifies)"
+            else
+              AUDIT_VERIFY_OK=0
+              echo "(vault:audit-verify exited non-zero — that is the finding, not a workflow error)"
+            fi
 
             echo
             echo "===== nr-llm: current tool overrides"
@@ -113,7 +123,20 @@ jobs:
             sql "SELECT group_name, enabled FROM tx_nrllm_tool_group_state ORDER BY group_name;" \
               || echo "(could not read tx_nrllm_tool_group_state)"
 
-            if [ "${MIGRATE_AUDIT_HMAC}" = "true" ]; then
+            if [ "${MIGRATE_AUDIT_HMAC}" = "true" ] && [ "$AUDIT_VERIFY_OK" = "0" ]; then
+              echo
+              echo "===== vault: re-signing the audit chain — NOT RUN"
+              # Measured in nr-vault, not guessed: verifyChainForReseal() refuses
+              # on ANY invalid chain, and all four reason codes - HASH_MISMATCH,
+              # UID_GAP, TABLE_RESET, EPOCH_DOWNGRADE - answer isTamperEvidence()
+              # with true, so there is no benign-gap path that lets the reseal
+              # through. Running the command here would print FAILURE and teach
+              # nobody anything; the report above is what the next step is taken
+              # from. Reconcile the chain first - that is a decision a person
+              # makes, not an input on a form.
+              echo "The chain does not verify, so vault:audit-migrate-hmac would refuse."
+              echo "Read the reason codes above and reconcile before asking for this again."
+            elif [ "${MIGRATE_AUDIT_HMAC}" = "true" ]; then
               echo
               echo "===== vault: re-signing the audit chain to epoch 3"
               # This cannot launder a tampered chain even if run by mistake:
