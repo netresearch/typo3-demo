@@ -1356,16 +1356,16 @@
         },
         {
             "name": "friendsoftypo3/content-blocks",
-            "version": "2.4.8",
+            "version": "2.4.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/FriendsOfTYPO3/content-blocks.git",
-                "reference": "47ffa2db718907eff883728e7fcaf99511dcb74d"
+                "reference": "c4eef30dcdb1a5676f259174da1186caef116f67"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/FriendsOfTYPO3/content-blocks/zipball/47ffa2db718907eff883728e7fcaf99511dcb74d",
-                "reference": "47ffa2db718907eff883728e7fcaf99511dcb74d",
+                "url": "https://api.github.com/repos/FriendsOfTYPO3/content-blocks/zipball/c4eef30dcdb1a5676f259174da1186caef116f67",
+                "reference": "c4eef30dcdb1a5676f259174da1186caef116f67",
                 "shasum": ""
             },
             "require": {
@@ -1377,10 +1377,10 @@
                 "symfony/finder": "^7.4",
                 "symfony/var-exporter": "^7.4 || ^8.0",
                 "symfony/yaml": "^7.4",
-                "typo3/cms-backend": "^14.3.5",
-                "typo3/cms-core": "^14.3.5",
-                "typo3/cms-fluid": "^14.3.5",
-                "typo3/cms-frontend": "^14.3.5"
+                "typo3/cms-backend": "^14.3.7",
+                "typo3/cms-core": "^14.3.7",
+                "typo3/cms-fluid": "^14.3.7",
+                "typo3/cms-frontend": "^14.3.7"
             },
             "replace": {
                 "contentblocks/content-blocks": "*"
@@ -1391,15 +1391,15 @@
                 "friendsofphp/php-cs-fixer": "^3.22",
                 "phpstan/phpstan": "^2.1",
                 "phpstan/phpstan-phpunit": "^2.0",
-                "typo3/cms-extbase": "^14.3.5",
-                "typo3/cms-extensionmanager": "^14.3.5",
-                "typo3/cms-filelist": "^14.3.5",
-                "typo3/cms-install": "^14.3.5",
-                "typo3/cms-lowlevel": "^14.3.5",
-                "typo3/cms-rte-ckeditor": "^14.3.5",
-                "typo3/cms-tstemplate": "^14.3.5",
-                "typo3/cms-workspaces": "^14.3.5",
-                "typo3/coding-standards": "0.8.x-dev",
+                "typo3/cms-extbase": "^14.3.7",
+                "typo3/cms-extensionmanager": "^14.3.7",
+                "typo3/cms-filelist": "^14.3.7",
+                "typo3/cms-install": "^14.3.7",
+                "typo3/cms-lowlevel": "^14.3.7",
+                "typo3/cms-rte-ckeditor": "^14.3.7",
+                "typo3/cms-tstemplate": "^14.3.7",
+                "typo3/cms-workspaces": "^14.3.7",
+                "typo3/coding-standards": "^0.9",
                 "typo3/testing-framework": "^9.5"
             },
             "type": "typo3-cms-extension",
@@ -1412,7 +1412,7 @@
                             "symfony/var-exporter": ""
                         }
                     },
-                    "version": "2.4.8",
+                    "version": "2.4.9",
                     "web-dir": ".Build/public",
                     "extension-key": "content_blocks"
                 }
@@ -1441,7 +1441,7 @@
                 "issues": "https://github.com/FriendsOfTYPO3/content-blocks/issues",
                 "source": "https://github.com/FriendsOfTYPO3/content-blocks"
             },
-            "time": "2026-07-22T14:34:41+00:00"
+            "time": "2026-09-09T14:14:58+00:00"
         },
         {
             "name": "georgringer/news",
