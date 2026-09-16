@@ -8,6 +8,13 @@
   },
   "packageRules": [
     {
+      "description": "TYPO3 core patches must not queue behind the dependency backlog. TYPO3-CORE-SA-2026-022 and -023 were published on 2026-09-08 and fixed in 14.3.7, inside the existing ^14.3 constraint, and the instance still ran 14.3.6 eight days later. Renovate never raised the update: ten dependency pull requests were open, which is exactly the default prConcurrentLimit, so every further update went to the Rate-Limited list on the dashboard instead of becoming a pull request. Those ten were frozen because composer-audit fails on any branch carrying the unpatched lock - so the advisory blocked the one update that would have cleared it. prPriority puts core ahead of the rest of the queue; prConcurrentLimit below raises the ceiling so a backlog cannot starve it again.",
+      "matchDatasources": ["packagist"],
+      "matchPackageNames": ["/^typo3\\/cms-/"],
+      "matchUpdateTypes": ["patch"],
+      "prPriority": 10
+    },
+    {
       "description": "dhi.io serves no anonymous requests and Renovate holds no credentials for it, so every lookup fails with no-result and lands in the dependency dashboard. The hardened images ride a floating tag that docker compose pull refreshes on each deploy, so there is nothing here for Renovate to raise. Both concrete images are named because that is provably matched today, and the host pattern is there so a further dhi.io image does not reintroduce the warning.",
       "matchDatasources": ["docker"],
       "matchPackageNames": ["dhi.io/mariadb", "dhi.io/caddy", "/^dhi\\.io\\//"],
@@ -21,5 +28,7 @@
       "matchHost": "git.netresearch.de",
       "token": "{{ secrets.GITLAB_COMPOSER_TOKEN }}"
     }
-  ]
+  ],
+  "prConcurrentLimit": 25,
+  "prHourlyLimit": 0
 }
