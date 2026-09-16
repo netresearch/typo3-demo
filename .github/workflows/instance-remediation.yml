@@ -25,7 +25,7 @@ on:
         type: boolean
         default: false
       enable_file_tools:
-        description: "Enable the agent's FAL tools (attach_file_to_content_element, set_file_alternative_text)"
+        description: "Enable the agent's FAL tools (attach_file_to_content_element, set_file_alternative_text, update_fal_asset_meta) and their editing group"
         type: boolean
         default: false
 
@@ -117,9 +117,24 @@ jobs:
               # turns them on; the unique key on tool_name makes this idempotent.
               sql "INSERT INTO tx_nrllm_tool_state (pid, tool_name, enabled) VALUES
                      (0, 'attach_file_to_content_element', 1),
-                     (0, 'set_file_alternative_text', 1)
+                     (0, 'set_file_alternative_text', 1),
+                     (0, 'update_fal_asset_meta', 1)
+                   ON DUPLICATE KEY UPDATE enabled = 1;"
+              # The group gate, not an extra: the runtime is fail-closed, so a
+              # disabled group leaves all three rows above enabled and
+              # unreachable - and the step would print them as enabled, flush
+              # the caches and reach "done" having changed nothing an editor
+              # can use. All three tools report getGroup() === 'editing'
+              # (nr-llm Classes/Service/Tool/Builtin/*Tool.php).
+              #
+              # Enabling the group cannot switch on a tool nobody asked for:
+              # every writer ships isEnabledByDefault() === false, so a tool
+              # without an explicit row stays off whatever its group says.
+              sql "INSERT INTO tx_nrllm_tool_group_state (pid, group_name, enabled) VALUES
+                     (0, 'editing', 1)
                    ON DUPLICATE KEY UPDATE enabled = 1;"
               sql "SELECT tool_name, enabled FROM tx_nrllm_tool_state ORDER BY tool_name;"
+              sql "SELECT group_name, enabled FROM tx_nrllm_tool_group_state ORDER BY group_name;"
               echo "----- flushing caches so the registry is rebuilt"
               t3 cache:flush
             fi
