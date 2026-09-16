@@ -59,7 +59,12 @@ jobs:
             }
 
             echo "===== deployed revision"
-            git log -1 --format='%h %ci %s'
+            # Guarded for the same reason the log loop below is: under `set -e`
+            # an unguarded read-only step is a kill switch for every step after
+            # it. /opt/typo3-demo is a git checkout today - update.yml pulls
+            # there - but a diagnostic run must not lose the audit report
+            # because the revision line could not be produced.
+            git log -1 --format='%h %ci %s' || echo "(not a git checkout, or git unavailable)"
 
             echo
             echo "===== backend exceptions, most recent first (subject lines only)"
@@ -104,6 +109,12 @@ jobs:
             if [ "${MIGRATE_AUDIT_HMAC}" = "true" ]; then
               echo
               echo "===== vault: re-signing the audit chain to epoch 3"
+              # This cannot launder a tampered chain even if run by mistake:
+              # VaultAuditMigrateCommand calls verifyChainForReseal() before it
+              # re-hashes anything and exits FAILURE on a chain that does not
+              # verify, naming that exact risk. The unconditional report above
+              # is still what the decision is taken from - the command refusing
+              # is a backstop, not the reason to skip reading it.
               t3 vault:audit-migrate-hmac
               echo "----- verification after the migration"
               t3 vault:audit-verify || echo "(still failing after the migration — do not re-run, read the report)"
