@@ -94,7 +94,13 @@ jobs:
 
             echo
             echo "===== nr-llm: current tool overrides"
-            sql "SELECT tool_name, enabled FROM tx_nrllm_tool_state ORDER BY tool_name;"
+            # Guarded like every other read-only step here: a diagnostic run
+            # must report what it could not read, not end at the first table
+            # an older nr-llm does not have and take the rest with it. The
+            # WRITES below are deliberately NOT guarded - a write that fails
+            # has to fail the job.
+            sql "SELECT tool_name, enabled FROM tx_nrllm_tool_state ORDER BY tool_name;" \
+              || echo "(could not read tx_nrllm_tool_state)"
 
             echo
             echo "===== nr-llm: current tool GROUP overrides"
@@ -104,7 +110,8 @@ jobs:
             # this the output could show a tool enabled while it stays
             # unreachable, and the next step would be taken against the wrong
             # cause. A missing row means the group is enabled.
-            sql "SELECT group_name, enabled FROM tx_nrllm_tool_group_state ORDER BY group_name;"
+            sql "SELECT group_name, enabled FROM tx_nrllm_tool_group_state ORDER BY group_name;" \
+              || echo "(could not read tx_nrllm_tool_group_state)"
 
             if [ "${MIGRATE_AUDIT_HMAC}" = "true" ]; then
               echo
