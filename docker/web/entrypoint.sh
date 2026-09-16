@@ -359,6 +359,16 @@ if [ -f config/system/settings.php ]; then
             // The identity `vault:store --as-provisioner` acts as; seeded in
             // data/seed-extensions.sql with exactly two vault permissions.
             . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"nr_vault\"][\"provisioningBeUserUid\"] = \"991\";\n"
+            // The audit chain HMAC epoch. nr_vault ships 3 as its default and
+            // in ext_conf_template.txt, but this instance reports 2, so an
+            // explicit older value reached its stored extension configuration
+            // and wins over the default. It is stated here because
+            // vault:audit-migrate-hmac reads its TARGET epoch from the
+            // extension configuration rather than from an argument
+            // (VaultAuditMigrateCommand::execute) - without this line that
+            // command has nothing above the current epoch to migrate to and
+            // reports there is nothing to do.
+            . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"nr_vault\"][\"auditHmacEpoch\"] = \"3\";\n"
             . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"nr_ai_search\"][\"embeddingConfiguration\"] = \"nr_ai_search.embeddings\";\n"
             . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"nr_ai_search\"][\"chatConfiguration\"] = \"nr_ai_search.chat\";\n"
             . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"nr_ai_search\"][\"embeddingDimensions\"] = \"1536\";\n"
