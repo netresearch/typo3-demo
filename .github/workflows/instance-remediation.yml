@@ -79,7 +79,21 @@ jobs:
                 # must not end the loop: under `set -e` the first quiet log file
                 # would skip the rest and the caller would report "no readable
                 # log files" for logs it never opened.
-                grep -iE "critical|error" "$f" 2>/dev/null | tail -25 | cut -c1-400 \
+                # 400 characters is the default bound and it is deliberate:
+                # this repository is public, so a subject line gets published
+                # and a stack trace does not. It costs the tail of the context
+                # JSON, which is where FormEngine names the node that failed -
+                # a 500 on a record edit was diagnosable down to the exception
+                # class and no further because of it.
+                #
+                # FormEngine exceptions therefore get more room, and only they:
+                # the predicate is the core FormEngine path in the message, not
+                # a list of exception codes that would go stale. What the extra
+                # room lets through is a node name and a request URL, not a
+                # trace. sed rather than awk because this whole block is inside
+                # a single-quoted sh -c, where an awk program cannot be quoted.
+                grep -iE "critical|error" "$f" 2>/dev/null | tail -25 \
+                  | sed -E "/cms-backend.Classes.Form/!s/^(.{400}).*/\\1/; /cms-backend.Classes.Form/s/^(.{1400}).*/\\1/" \
                   || echo "(no matching lines in this file)"
               done
               [ "$found" = 1 ] || echo "(no log files under var/log)"
