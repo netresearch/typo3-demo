@@ -35,6 +35,27 @@ jobs:
   # validate step is the freshness gate: it exits non-zero when composer.json
   # was changed without refreshing the lock, which would decouple the image
   # contents from the SBOM.
+  # A workflow that reaches the instance does it through a single-quoted
+  # `sh -c '...'`, and one apostrophe in that body - in a COMMENT, even -
+  # closes the string and silently reinterprets the rest. It has happened:
+  # "grep's own status" shipped in instance-remediation.yml and the remote
+  # shell died with `syntax error: unexpected end of file (expecting "done")`
+  # against the live instance. `bash -n` on the workflow does not see it,
+  # because a pair of apostrophes balances and only the inner block breaks.
+  workflow-shell-quoting:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: No apostrophes in a multi-line sh -c, and the inner script parses
+        run: python3 Build/Scripts/check-ssh-script-quoting.py
+
   composer-audit:
     runs-on: ubuntu-latest
     timeout-minutes: 10
