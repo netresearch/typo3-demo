@@ -52,7 +52,6 @@ def multiline_blocks(text: str) -> list[tuple[int, int, list[str]]]:
             i += 1
             continue
 
-        indent = len(lines[i]) - len(lines[i].lstrip())
         for j in range(i + 1, len(lines)):
             stripped = lines[j].strip()
             # The closer is a line that is just the quote, optionally with a
@@ -68,9 +67,34 @@ def multiline_blocks(text: str) -> list[tuple[int, int, list[str]]]:
     return out
 
 
+def workflow_dir() -> Path:
+    return (Path(__file__).resolve().parents[2] / ".github/workflows").resolve()
+
+
+def selected(argv: list[str]) -> list[Path]:
+    """The workflow files to check, and nothing else.
+
+    An argument is resolved and required to sit inside .github/workflows. This
+    script reads whatever it is handed, so without the bound a caller could
+    point it at any file on the runner - which is what SonarCloud flags as a
+    path traversal, correctly. Bounding it also states the contract: this
+    checks workflows, not arbitrary YAML.
+    """
+    root = workflow_dir()
+    if not argv:
+        return sorted(root.glob("*.yml"))
+
+    chosen: list[Path] = []
+    for arg in argv:
+        candidate = (root / Path(arg).name).resolve()
+        if candidate.parent != root or not candidate.is_file():
+            raise SystemExit(f"refusing {arg!r}: only files inside {root} are checked")
+        chosen.append(candidate)
+    return chosen
+
+
 def main(argv: list[str]) -> int:
-    root = Path(__file__).resolve().parents[2]
-    paths = [Path(a) for a in argv[1:]] or sorted((root / ".github/workflows").glob("*.yml"))
+    paths = selected(argv[1:])
 
     failures = 0
     checked = 0
