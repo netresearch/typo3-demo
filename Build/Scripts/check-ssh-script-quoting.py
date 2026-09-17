@@ -24,7 +24,7 @@ A single-line `sh -c '...'` is left alone: its closing quote is on the same
 line, so an apostrophe inside it is a syntax error the YAML or the shell
 catches immediately rather than a silent reinterpretation.
 
-Usage: check-ssh-script-quoting.py [workflow.yml ...]   (default: all of them)
+Usage: check-ssh-script-quoting.py [workflow.yml ...]   (default: every .yml and .yaml)
 """
 
 from __future__ import annotations
@@ -82,7 +82,11 @@ def selected(argv: list[str]) -> list[Path]:
     """
     root = workflow_dir()
     if not argv:
-        return sorted(root.glob("*.yml"))
+        # Both extensions: GitHub Actions reads .yml AND .yaml, so globbing one
+        # of them lets a workflow written with the other bypass this check
+        # silently - a gate that fires for nobody, which is the shape this file
+        # exists to catch elsewhere.
+        return sorted(p for ext in ("*.yml", "*.yaml") for p in root.glob(ext))
 
     chosen: list[Path] = []
     for arg in argv:
