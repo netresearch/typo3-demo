@@ -29,11 +29,15 @@ Usage: check-ssh-script-quoting.py [workflow.yml ...]   (default: every .yml and
 
 from __future__ import annotations
 
+import re
 import subprocess
 import sys
 from pathlib import Path
 
 OPENER = "sh -c '"
+
+# A `{n}` repetition count in a regex, which POSIX bounds at 255.
+DUP_COUNT = re.compile(r"\{(\d+)\}")
 
 
 def multiline_blocks(text: str) -> list[tuple[int, int, list[str]]]:
@@ -115,6 +119,23 @@ def main(argv: list[str]) -> int:
                 print("  so bash -n on the outer script still passes and only the inner block breaks.")
                 failures += 1
                 continue
+
+            # A repetition count above the POSIX RE_DUP_MAX of 255 parses
+            # fine and then fails at run time on BusyBox, which is what the
+            # web image ships. `sed -E "s/^(.{400}).*/\\1/"` came back as
+            # "Invalid contents of {}" and the diagnostic printed file names
+            # with nothing under them. `sh -n` cannot see this - it is a
+            # regex-library bound, not syntax - so it is checked here.
+            for n, line in enumerate(body, 1):
+                # Comments are prose and may name the bound they warn about;
+                # only what the shell executes is checked.
+                if line.lstrip().startswith("#"):
+                    continue
+                for count in DUP_COUNT.findall(line):
+                    if int(count) > 255:
+                        print(f"::error file={path},line={first + n}::regex repetition {{{count}}} exceeds the POSIX RE_DUP_MAX of 255.")
+                        print("  BusyBox sed rejects it at run time with \"Invalid contents of {}\"; use cut, or split the match.")
+                        failures += 1
 
             # The inner script was never linted before; the outer one was.
             script = "\n".join(body)

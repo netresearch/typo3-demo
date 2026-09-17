@@ -110,8 +110,21 @@ jobs:
                 # "syntax error: unexpected end of file (expecting done)".
                 matches=$(grep -iE "critical|error" "$f" 2>/dev/null | tail -25) || true
                 if [ -n "$matches" ]; then
-                  printf "%s\\n" "$matches" \
-                    | sed -E "/cms-backend.Classes.Form/!s/^(.{400}).*/\\1/; /cms-backend.Classes.Form/s/^(.{1400}).*/\\1/"
+                  # cut, not sed. The web image is Alpine, and BusyBox sed
+                  # enforces the POSIX RE_DUP_MAX of 255: {256} and above are
+                  # rejected outright with "Invalid contents of {}", so
+                  # {400} and {1400} both failed and the run printed the file
+                  # names with no lines under them at all. Measured in the
+                  # image rather than reasoned: 255 passes, 256 does not.
+                  # cut has no such bound.
+                  printf "%s\\n" "$matches" | while IFS= read -r line; do
+                    case "$line" in
+                      *cms-backend/Classes/Form/*)
+                        printf "%s\\n" "$line" | cut -c1-1400 ;;
+                      *)
+                        printf "%s\\n" "$line" | cut -c1-400 ;;
+                    esac
+                  done
                 else
                   echo "(no matching lines in this file)"
                 fi
