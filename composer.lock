@@ -2817,16 +2817,16 @@
         },
         {
             "name": "netresearch/nr-landingpage",
-            "version": "v0.3.11",
+            "version": "v0.3.12",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/nr-landingpage.git",
-                "reference": "927ea1bd906da3270167ee9aaee09e0ab43e468b"
+                "reference": "9c25fe50a2d6728de381279eb34ee8a34e0aff17"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/nr-landingpage/zipball/927ea1bd906da3270167ee9aaee09e0ab43e468b",
-                "reference": "927ea1bd906da3270167ee9aaee09e0ab43e468b",
+                "url": "https://api.github.com/repos/netresearch/nr-landingpage/zipball/9c25fe50a2d6728de381279eb34ee8a34e0aff17",
+                "reference": "9c25fe50a2d6728de381279eb34ee8a34e0aff17",
                 "shasum": ""
             },
             "require": {
@@ -2866,9 +2866,9 @@
             "description": "TYPO3 Landing Page Generator powered by LLM",
             "support": {
                 "issues": "https://github.com/netresearch/nr-landingpage/issues",
-                "source": "https://github.com/netresearch/nr-landingpage/tree/v0.3.11"
+                "source": "https://github.com/netresearch/nr-landingpage/tree/v0.3.12"
             },
-            "time": "2026-09-17T09:34:24+00:00"
+            "time": "2026-09-18T13:46:15+00:00"
         },
         {
             "name": "netresearch/nr-llm",
