@@ -133,6 +133,32 @@ jobs:
             '
 
             echo
+            echo "===== FormEngine node registry, in load order (read-only)"
+            # The backend 500 on a nr_landingpage template record is
+            # RuntimeException 1483890332 from FieldControl.php: a field control
+            # whose node returned a result without an iconIdentifier. Both of
+            # that table's controls hardcode one, so the renderType cannot have
+            # resolved to them - NodeFactory then falls back to UnknownElement,
+            # whose result is non-empty and carries no icon. nodeRegistry is a
+            # plain array keyed by integer, so two extensions that pick the same
+            # key silently overwrite each other and the loser is never
+            # registered. The compiled cache is the one place where the keys AND
+            # the load order are both visible, so this prints them instead of
+            # reasoning about package ordering.
+            docker compose exec -T web sh -c '
+              f=$(ls -1 var/cache/code/core/ext_localconf_*.php 2>/dev/null | head -1)
+              if [ -z "$f" ]; then
+                echo "(no compiled ext_localconf cache under var/cache/code/core)"
+                exit 0
+              fi
+              echo "--- $f"
+              echo "--- keys, in load order (a repeated key is the defect):"
+              grep -o "nodeRegistry.\].[0-9]*." "$f"
+              echo "--- registered node names, in load order:"
+              grep -o "nodeName. => .[a-zA-Z]*." "$f"
+            ' || echo "(could not read the compiled ext_localconf cache)"
+
+            echo
             echo "===== vault: audit chain verification (read-only)"
             # Read the report BEFORE any re-sealing: re-sealing a tampered chain
             # launders it into a valid one, so this runs unconditionally and the
