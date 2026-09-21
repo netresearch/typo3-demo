@@ -204,6 +204,22 @@ instance runs `autotranslate.debug = 1`:
 A green `done` badge is therefore not evidence. Check the frontend, or the
 module's translation-cache counter.
 
+## Backend languages
+
+The backend is available in German as well as English. The entrypoint adds the
+languages in `BACKEND_LANGUAGES` (`docker/web/entrypoint.sh`) to
+`LANG/availableLocales` and downloads their language packs with
+`language:update`, on the first boot and again whenever the installed packages
+change. Each backend user picks the language under *User Settings › Language*.
+
+Do not install a language through *Maintenance › Manage Language Packs*: it
+writes into the `typo3-config` and `typo3-var` volumes, and `Deploy (Fresh
+Install)` removes both. Add the language to `BACKEND_LANGUAGES` instead.
+
+The download needs outbound HTTPS to `localize.typo3.org` at boot. Without it
+the boot logs a warning, keeps English for the core labels and tries again on
+the next start. The labels an extension ships itself do not depend on it.
+
 ## Verifying the image SBOM
 
 Every image pushed from `main` carries a CycloneDX SBOM as a signed GitHub
