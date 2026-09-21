@@ -216,9 +216,11 @@ Do not install a language through *Maintenance › Manage Language Packs*: it
 writes into the `typo3-config` and `typo3-var` volumes, and `Deploy (Fresh
 Install)` removes both. Add the language to `BACKEND_LANGUAGES` instead.
 
-The download needs outbound HTTPS to `localize.typo3.org` at boot. Without it
-the boot logs a warning, keeps English for the core labels and tries again on
-the next start. The labels an extension ships itself do not depend on it.
+A boot that has to download or refresh a pack needs outbound HTTPS to
+`localize.typo3.org`; a boot whose packs are current contacts nothing. Without
+network the boot logs a warning, keeps the labels already present and tries
+again on the next start. The labels an extension ships itself do not depend on
+it.
 
 ## Verifying the image SBOM
 

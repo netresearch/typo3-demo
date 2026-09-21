@@ -373,7 +373,12 @@ if [ -f config/system/settings.php ]; then
                 : substr($existing, 0, $b);
         }
         $existing = rtrim($existing, "\n") . "\n\n" . $block . "\n";
-        file_put_contents($f, $existing);
+        // A full or read-only volume makes file_put_contents() return false
+        // without throwing; exit non-zero so the shell prints its warning.
+        if (file_put_contents($f, $existing) === false) {
+            fwrite(STDERR, "ERROR: failed to write " . $f . PHP_EOL);
+            exit(1);
+        }
         echo "additional.php: backend languages " . implode(", ", $languages) . " are selectable." . PHP_EOL;
     ' || echo "WARNING: failed to write the backend languages block to additional.php" >&2
 fi
@@ -800,22 +805,29 @@ fi
 # above; the core labels are English until the pack is there, the labels an
 # extension ships itself are not).
 #
-# It runs when a language has no pack directory yet, or when the installed
+# It runs when a language has no core pack yet, or when the installed
 # packages changed since the last download: a pack belongs to a core and
 # extension version, and an image built from a newer composer.lock brings new
-# labels. The marker is only written after every language has its directory,
+# labels. The marker is only written after every language has its core pack,
 # so a boot without network tries again next time instead of recording a
 # download that never happened. Packages without a pack on localize.typo3.org
 # - every private extension here - are reported as failed and do not abort.
 #
+# "Has its core pack" is a non-empty label file of EXT:backend, not the mere
+# directory: language:update creates the directory before it downloads, so a
+# download that broke off would otherwise count as done.
+#
 # Before cache:flush, so no cached English label outlives the download.
+core_pack_present() {
+    [ -s "var/labels/$1/backend/Resources/Private/Language/$1.locallang_login.xlf" ]
+}
 if [ -f config/system/settings.php ]; then
     packs_marker="var/labels/.packs-downloaded-for"
     packs_state=$(sha256sum vendor/composer/installed.json | cut -d" " -f1)
     packs_needed=0
     [ "$(cat "$packs_marker" 2>/dev/null || true)" = "$packs_state" ] || packs_needed=1
     for language in $BACKEND_LANGUAGES; do
-        [ -d "var/labels/$language" ] || packs_needed=1
+        core_pack_present "$language" || packs_needed=1
     done
     if [ "$packs_needed" = 1 ]; then
         # shellcheck disable=SC2086  # unquoted on purpose: one argument per language
@@ -823,7 +835,7 @@ if [ -f config/system/settings.php ]; then
             || echo "WARNING: language:update failed" >&2
         packs_complete=1
         for language in $BACKEND_LANGUAGES; do
-            [ -d "var/labels/$language" ] || packs_complete=0
+            core_pack_present "$language" || packs_complete=0
         done
         if [ "$packs_complete" = 1 ]; then
             printf '%s' "$packs_state" > "$packs_marker"
