@@ -830,10 +830,13 @@ if [ -f config/system/settings.php ]; then
         core_pack_present "$language" || packs_needed=1
     done
     if [ "$packs_needed" = 1 ]; then
+        # The command's own status counts too: on a refresh the previous pack
+        # is still there, so the file check alone would record a download that
+        # failed and never retry it.
+        packs_complete=1
         # shellcheck disable=SC2086  # unquoted on purpose: one argument per language
         vendor/bin/typo3 language:update --no-progress $BACKEND_LANGUAGES 2>&1 \
-            || echo "WARNING: language:update failed" >&2
-        packs_complete=1
+            || { echo "WARNING: language:update failed" >&2; packs_complete=0; }
         for language in $BACKEND_LANGUAGES; do
             core_pack_present "$language" || packs_complete=0
         done
