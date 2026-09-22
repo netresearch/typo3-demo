@@ -2742,16 +2742,16 @@
         },
         {
             "name": "netresearch/nr-image-sitemap",
-            "version": "14.0.0",
+            "version": "14.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/t3x-nr-image-sitemap.git",
-                "reference": "a406a1788476994fc10d0efd5b25979056200d23"
+                "reference": "2943a30a86390b76635c2582478b97723948efbb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/t3x-nr-image-sitemap/zipball/a406a1788476994fc10d0efd5b25979056200d23",
-                "reference": "a406a1788476994fc10d0efd5b25979056200d23",
+                "url": "https://api.github.com/repos/netresearch/t3x-nr-image-sitemap/zipball/2943a30a86390b76635c2582478b97723948efbb",
+                "reference": "2943a30a86390b76635c2582478b97723948efbb",
                 "shasum": ""
             },
             "require": {
@@ -2761,15 +2761,7 @@
                 "typo3/cms-seo": "^13.4 || ^14.3"
             },
             "require-dev": {
-                "friendsofphp/php-cs-fixer": "^3.65",
-                "netresearch/typo3-ci-workflows": "^1.0",
-                "overtrue/phplint": "^9.0",
-                "phpstan/extension-installer": "^1.4",
-                "phpstan/phpstan": "^2.0",
-                "phpstan/phpstan-deprecation-rules": "^2.0",
-                "phpstan/phpstan-strict-rules": "^2.0",
-                "saschaegerer/phpstan-typo3": "^2.0 || ^3.0",
-                "ssch/typo3-rector": "^3.0"
+                "netresearch/typo3-ci-workflows": "^1.4"
             },
             "type": "typo3-cms-extension",
             "extra": {
@@ -2777,8 +2769,8 @@
                     "Package": {
                         "providesPackages": []
                     },
-                    "version": "14.0.0",
-                    "web-dir": ".build/public",
+                    "version": "14.0.1",
+                    "web-dir": ".Build/public",
                     "extension-key": "nr_image_sitemap"
                 },
                 "branch-alias": {
@@ -2811,9 +2803,9 @@
             "description": "Provides a data provider to use with the typo3/cms-seo extension, to create an image sitemap",
             "support": {
                 "issues": "https://github.com/netresearch/t3x-nr-image-sitemap/issues",
-                "source": "https://github.com/netresearch/t3x-nr-image-sitemap/tree/14.0.0"
+                "source": "https://github.com/netresearch/t3x-nr-image-sitemap/tree/14.0.1"
             },
-            "time": "2026-07-30T09:30:37+00:00"
+            "time": "2026-09-18T19:55:03+00:00"
         },
         {
             "name": "netresearch/nr-landingpage",
