@@ -5523,8 +5523,10 @@ UPDATE tt_content c
 -- Anyone who can trigger it can already edit those same fields by hand, without
 -- an approval step and without the field limit. The blast radius does not grow.
 --
--- set_file_alternative_text is deliberately NOT enabled here: one writing tool
--- at a time, so a surprise has an unambiguous cause.
+-- set_file_alternative_text was deliberately NOT enabled here at first: one
+-- writing tool at a time, so a surprise has an unambiguous cause. Step 8c
+-- below enables every editorial writer now that each has been exercised on the
+-- demo (NEXT-155, NEXT-158, NEXT-160).
 --
 -- ON DUPLICATE KEY UPDATE is safe on this table: tool_name carries a UNIQUE key
 -- (unlike be_users.username, where the same pattern once created a second row).
@@ -5549,6 +5551,43 @@ ON DUPLICATE KEY UPDATE
 INSERT INTO tx_nrllm_tool_state (pid, tool_name, enabled)
 VALUES (0, 'create_page_draft', 1),
        (0, 'create_content_element_draft', 1)
+ON DUPLICATE KEY UPDATE
+  enabled = VALUES(enabled);
+
+-- 8c. Every editorial writer, and the group that gates them (NEXT-160)
+--
+-- The file tools used to be switched on by the "Instance Remediation"
+-- workflow only, so a Fresh Install lost them and an editorial run on the demo
+-- (NEXT-158) stopped at the first file (NEXT-155, NEXT-157). The remaining
+-- writers of nr-llm 0.35 - a connected translation, a move - were never
+-- enabled anywhere. This block turns every writer on at every boot. Same
+-- defence as above: each writes as the acting user through the DataHandler,
+-- each stops at a human approval, each reads its row back.
+--
+-- The last three names belong to writers that exist only in a newer nr-llm
+-- (set_page_social_image, create_record_draft; ADR-195, ADR-197) or in
+-- nr_llm_compat (create_news_draft). A row for a name the registry does not
+-- know is never read, so they are harmless until the extension that ships
+-- the tool is installed - and then the tool is on without another seed
+-- change.
+INSERT INTO tx_nrllm_tool_state (pid, tool_name, enabled)
+VALUES (0, 'set_file_alternative_text', 1),
+       (0, 'update_fal_asset_meta', 1),
+       (0, 'attach_file_to_content_element', 1),
+       (0, 'create_translation_draft', 1),
+       (0, 'move_content_element', 1),
+       (0, 'set_page_social_image', 1),
+       (0, 'create_record_draft', 1),
+       (0, 'create_news_draft', 1)
+ON DUPLICATE KEY UPDATE
+  enabled = VALUES(enabled);
+
+-- The group gate. The runtime is fail-closed: a disabled 'editing' group
+-- leaves every row above enabled and unreachable. A missing group row means
+-- enabled, so this only matters where somebody switched the group off in the
+-- module; an explicit 1 makes the seed the last word on every boot.
+INSERT INTO tx_nrllm_tool_group_state (pid, group_name, enabled)
+VALUES (0, 'editing', 1)
 ON DUPLICATE KEY UPDATE
   enabled = VALUES(enabled);
 
@@ -6065,6 +6104,12 @@ SELECT 'SEED-PROBLEM: create_page_draft or create_content_element_draft is not e
   FROM DUAL
  WHERE (SELECT COUNT(*) FROM tx_nrllm_tool_state
          WHERE tool_name IN ('create_page_draft', 'create_content_element_draft') AND enabled = 1) < 2
+UNION ALL
+SELECT 'SEED-PROBLEM: not every editorial writer of nr-llm 0.35 is enabled — an editorial run stops at the first file, translation or move'
+  FROM DUAL
+ WHERE (SELECT COUNT(*) FROM tx_nrllm_tool_state
+         WHERE tool_name IN ('set_file_alternative_text', 'update_fal_asset_meta', 'attach_file_to_content_element',
+                             'create_translation_draft', 'move_content_element') AND enabled = 1) < 5
 UNION ALL
 SELECT 'SEED-PROBLEM: the DeepWiki MCP server row is missing or disabled'
   FROM DUAL
