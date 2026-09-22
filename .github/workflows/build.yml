@@ -585,6 +585,23 @@ jobs:
           PY
           echo "Processed images are WebP."
 
+      # The entrypoint activates German as a backend language and downloads its
+      # language pack (NEXT-159). The pack directory is what TYPO3 reads: the
+      # user settings offer a language when var/labels/<language> exists, and
+      # language:update refuses a language that is not in
+      # LANG/availableLocales - so a core label file in that directory proves
+      # both halves, the activation and the download. A boot without network
+      # only logs a warning, which is why nothing else would notice.
+      - name: Verify the German backend language pack arrived
+        run: |
+          pack=var/labels/de/backend/Resources/Private/Language/de.locallang_login.xlf
+          if ! docker compose exec -T web test -s "$pack"; then
+            echo "::error::$pack is missing or empty - German is not selectable in the backend"
+            docker compose logs web 2>&1 | grep -i -E 'language|labels' || true
+            exit 1
+          fi
+          echo "German backend language pack is in place."
+
       - name: Cleanup
         if: always()
         run: docker compose down -v

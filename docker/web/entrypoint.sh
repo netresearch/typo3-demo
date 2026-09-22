@@ -335,6 +335,54 @@ if [ -f config/system/settings.php ]; then
     ' || echo "WARNING: failed to write the GFX block to additional.php" >&2
 fi
 
+# Offer German as a backend language. TYPO3 lists a language in the user
+# settings only when it is in LANG/availableLocales or var/labels/<language>
+# exists, and the language pack download further down refuses a language that
+# is not active. Nothing set either, so the whole backend - the approval card
+# of the AI Chat included - was English only (NEXT-159).
+#
+# "Manage Language Packs" in the backend would do the same, but it writes into
+# the typo3-config and typo3-var volumes, and `make reset` removes both.
+#
+# The block appends to the list instead of replacing it: a language somebody
+# activated through the backend sits in settings.php and must survive.
+# Space-separated; the download step below reads the same variable.
+BACKEND_LANGUAGES="de"
+if [ -f config/system/settings.php ]; then
+    BACKEND_LANGUAGES="$BACKEND_LANGUAGES" php -r '
+        $f = "config/system/additional.php";
+        $begin = "// >>> backend languages (managed by entrypoint, do not edit this block)";
+        $end   = "// <<< backend languages";
+        $languages = array_values(array_filter(explode(" ", (string) getenv("BACKEND_LANGUAGES"))));
+        // json_encode of a list of strings is valid PHP short array syntax.
+        $block = $begin . "\n"
+            . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"LANG\"][\"availableLocales\"] = array_values(array_unique(array_merge(\n"
+            . "    (array) (\$GLOBALS[\"TYPO3_CONF_VARS\"][\"LANG\"][\"availableLocales\"] ?? []),\n"
+            . "    " . json_encode($languages) . "\n"
+            . ")));\n"
+            . $end;
+        $existing = is_file($f) ? (string) file_get_contents($f) : "";
+        if (strpos($existing, "<?php") === false) {
+            $existing = "<?php\n" . ($existing === "" ? "" : $existing . "\n");
+        }
+        $b = strpos($existing, $begin);
+        if ($b !== false) {
+            $e = strpos($existing, $end, $b);
+            $existing = $e !== false
+                ? substr($existing, 0, $b) . substr($existing, $e + strlen($end))
+                : substr($existing, 0, $b);
+        }
+        $existing = rtrim($existing, "\n") . "\n\n" . $block . "\n";
+        // A full or read-only volume makes file_put_contents() return false
+        // without throwing; exit non-zero so the shell prints its warning.
+        if (file_put_contents($f, $existing) === false) {
+            fwrite(STDERR, "ERROR: failed to write " . $f . PHP_EOL);
+            exit(1);
+        }
+        echo "additional.php: backend languages " . implode(", ", $languages) . " are selectable." . PHP_EOL;
+    ' || echo "WARNING: failed to write the backend languages block to additional.php" >&2
+fi
+
 # Configure nr_ai_search (RAG frontend Search + Chat) and lochmueller/index.
 # Same managed-block approach as nr_mcp_agent above: a single marked block is
 # (re)written each boot; any other additional.php content is preserved.
@@ -751,6 +799,54 @@ VALUES
   (7, 163, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 3, 3, 0, 0, 48, 1, 1, 1, 'demo.form.submit',   'Nachricht senden'),
   (8, 163, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 4, 4, 0, 0, 64, 1, 1, 1, 'demo.form.thankyou', 'Danke, wir melden uns.');
 SQL
+fi
+
+# Download the language packs for BACKEND_LANGUAGES (see the managed block
+# above; the core labels are English until the pack is there, the labels an
+# extension ships itself are not).
+#
+# It runs when a language has no core pack yet, or when the installed
+# packages changed since the last download: a pack belongs to a core and
+# extension version, and an image built from a newer composer.lock brings new
+# labels. The marker is only written after every language has its core pack,
+# so a boot without network tries again next time instead of recording a
+# download that never happened. Packages without a pack on localize.typo3.org
+# - every private extension here - are reported as failed and do not abort.
+#
+# "Has its core pack" is a non-empty label file of EXT:backend, not the mere
+# directory: language:update creates the directory before it downloads, so a
+# download that broke off would otherwise count as done.
+#
+# Before cache:flush, so no cached English label outlives the download.
+core_pack_present() {
+    [ -s "var/labels/$1/backend/Resources/Private/Language/$1.locallang_login.xlf" ]
+}
+if [ -f config/system/settings.php ]; then
+    packs_marker="var/labels/.packs-downloaded-for"
+    packs_state=$(sha256sum vendor/composer/installed.json | cut -d" " -f1)
+    packs_needed=0
+    [ "$(cat "$packs_marker" 2>/dev/null || true)" = "$packs_state" ] || packs_needed=1
+    for language in $BACKEND_LANGUAGES; do
+        core_pack_present "$language" || packs_needed=1
+    done
+    if [ "$packs_needed" = 1 ]; then
+        # The command's own status counts too: on a refresh the previous pack
+        # is still there, so the file check alone would record a download that
+        # failed and never retry it.
+        packs_complete=1
+        # shellcheck disable=SC2086  # unquoted on purpose: one argument per language
+        vendor/bin/typo3 language:update --no-progress $BACKEND_LANGUAGES 2>&1 \
+            || { echo "WARNING: language:update failed" >&2; packs_complete=0; }
+        for language in $BACKEND_LANGUAGES; do
+            core_pack_present "$language" || packs_complete=0
+        done
+        if [ "$packs_complete" = 1 ]; then
+            printf '%s' "$packs_state" > "$packs_marker"
+            echo "Language packs downloaded for: $BACKEND_LANGUAGES"
+        else
+            echo "WARNING: no language pack arrived for at least one of: $BACKEND_LANGUAGES - retrying on the next boot" >&2
+        fi
+    fi
 fi
 
 vendor/bin/typo3 cache:flush 2>&1 || echo "WARNING: cache:flush failed" >&2
