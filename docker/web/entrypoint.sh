@@ -262,10 +262,13 @@ if [ -f config/system/settings.php ]; then
     ' || echo "WARNING: failed to write additional.php" >&2
 fi
 
-# Enable the nr-llm-compat interception for EXT:ai_filemetadata (the one
-# compat-supported third-party AI extension this demo installs). Opt-in by
-# design: without this flag the compat extension intercepts nothing. Same
-# managed-block mechanics as above.
+# Enable the two nr-llm-compat integrations for extensions this demo installs.
+# Opt-in by design: without these flags the compat extension does nothing.
+#  - ai_filemetadata: routes EXT:ai_filemetadata's alt-text calls through nr-llm.
+#  - news: gives the assistant the create_news_draft tool for EXT:news
+#    (NEXT-160). The tool itself stays off until an administrator enables it
+#    in nr-llm's Tools module.
+# Same managed-block mechanics as above.
 if [ -f config/system/settings.php ]; then
     php -r '
         $f = "config/system/additional.php";
@@ -273,6 +276,7 @@ if [ -f config/system/settings.php ]; then
         $end   = "// <<< nr_llm_compat";
         $block = $begin . "\n"
             . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"nr_llm_compat\"][\"integrations\"][\"ai_filemetadata\"] = \"1\";\n"
+            . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"nr_llm_compat\"][\"integrations\"][\"news\"] = \"1\";\n"
             . $end;
         $existing = is_file($f) ? (string) file_get_contents($f) : "";
         if (strpos($existing, "<?php") === false) {
@@ -287,7 +291,7 @@ if [ -f config/system/settings.php ]; then
         }
         $existing = rtrim($existing, "\n") . "\n\n" . $block . "\n";
         file_put_contents($f, $existing);
-        echo "additional.php: nr_llm_compat integration ai_filemetadata enabled." . PHP_EOL;
+        echo "additional.php: nr_llm_compat integrations ai_filemetadata and news enabled." . PHP_EOL;
     ' || echo "WARNING: failed to write additional.php" >&2
 fi
 
@@ -721,6 +725,15 @@ if [ -f /var/www/data/seed-schema.sql ]; then
     MYSQL_PWD="${MARIADB_PASSWORD:-typo3}" mariadb -h"${MARIADB_HOST:-db}" -u"${MARIADB_USER:-typo3}" "${MARIADB_DATABASE:-typo3}" \
         < /var/www/data/seed-schema.sql 2>/dev/null || echo "WARNING: seed-schema.sql import failed" >&2
 fi
+
+# Before 0.14, nr_mcp_agent wrote an English "needs an approval" sentence into
+# the error_message of a conversation that waits for an approval, and the chat
+# showed it in a German backend too (NEXT-159). This wizard removes the stored
+# copies. It checks for such rows itself and is marked done after its first run,
+# so running it on every start costs one query.
+echo "Running upgrade wizard nrMcpAgent_clearStoredApprovalNotice..."
+vendor/bin/typo3 upgrade:run nrMcpAgent_clearStoredApprovalNotice --no-interaction 2>&1 \
+    || echo "WARNING: upgrade wizard nrMcpAgent_clearStoredApprovalNotice failed" >&2
 # ---------------------------------------------------------------------------
 # Demo records for contexts and nr_textdb.
 # ---------------------------------------------------------------------------
