@@ -5591,6 +5591,34 @@ VALUES (0, 'editing', 1)
 ON DUPLICATE KEY UPDATE
   enabled = VALUES(enabled);
 
+-- 8d. The writers of nr-llm 0.36 and the web reader of 0.37 (NEXT-164, NEXT-165)
+--
+-- nr-llm 0.36 added six writers for existing content (ADR-198, ADR-199), and
+-- 0.37 added fetch_external_url (ADR-202). Every one of them ships disabled,
+-- and none was enabled here, so the demo chat could neither change nor
+-- publish an existing element nor read a web page. Same defence as 8c: each
+-- writer writes as the acting user through the DataHandler, stops at a human
+-- approval and reads its row back. fetch_external_url stops at an approval on
+-- every call as well, because the URL itself carries data out; it reaches
+-- public addresses only and refuses this installation's own hosts.
+INSERT INTO tx_nrllm_tool_state (pid, tool_name, enabled)
+VALUES (0, 'update_content_element', 1),
+       (0, 'publish_record', 1),
+       (0, 'delete_record', 1),
+       (0, 'copy_record', 1),
+       (0, 'move_page', 1),
+       (0, 'replace_file_reference', 1),
+       (0, 'fetch_external_url', 1)
+ON DUPLICATE KEY UPDATE
+  enabled = VALUES(enabled);
+
+-- fetch_external_url is the only tool of the group 'web'. A missing group row
+-- means enabled; the explicit 1 makes the seed the last word, as for 'editing'.
+INSERT INTO tx_nrllm_tool_group_state (pid, group_name, enabled)
+VALUES (0, 'web', 1)
+ON DUPLICATE KEY UPDATE
+  enabled = VALUES(enabled);
+
 -- 8b2. The dead MCP-server table of nr_mcp_agent (< 0.12) goes
 --
 -- nr_mcp_agent 0.12 removed its own MCP client and the TCA for
