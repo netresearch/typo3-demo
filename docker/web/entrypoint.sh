@@ -734,6 +734,15 @@ fi
 echo "Running upgrade wizard nrMcpAgent_clearStoredApprovalNotice..."
 vendor/bin/typo3 upgrade:run nrMcpAgent_clearStoredApprovalNotice --no-interaction 2>&1 \
     || echo "WARNING: upgrade wizard nrMcpAgent_clearStoredApprovalNotice failed" >&2
+
+# From 0.15, nr_mcp_agent keeps each message in tx_nrmcpagent_message instead
+# of one JSON value in the conversation row (its ADR-016). The chat reads both
+# until this wizard has moved the old transcripts; it moves one conversation per
+# transaction, is marked done after its first run and reports nothing to do
+# after that.
+echo "Running upgrade wizard nrMcpAgent_migrateMessagesToTable..."
+vendor/bin/typo3 upgrade:run nrMcpAgent_migrateMessagesToTable --no-interaction 2>&1 \
+    || echo "WARNING: upgrade wizard nrMcpAgent_migrateMessagesToTable failed" >&2
 # ---------------------------------------------------------------------------
 # Demo records for contexts and nr_textdb.
 # ---------------------------------------------------------------------------
