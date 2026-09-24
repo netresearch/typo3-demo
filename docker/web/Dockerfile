@@ -36,7 +36,7 @@ RUN php /tmp/patch-lochmueller-index.php && rm -f /tmp/patch-lochmueller-index.p
 COPY docker/web/patch-ai-filemetadata.php /tmp/patch-ai-filemetadata.php
 RUN php /tmp/patch-ai-filemetadata.php && rm -f /tmp/patch-ai-filemetadata.php
 
-FROM php:8.5-fpm-alpine@sha256:9dc81f4086ea5402227a6bcc489b04b4baba12394624d9621faa92ed812fb8ee AS runtime
+FROM php:8.5-fpm-alpine@sha256:ce1dcc234879feab0f309100e55e89e7cf21b9085e76de2a03a8240cec02751e AS runtime
 # Both imagick and GD are built with WebP and AVIF: TYPO3 picks its processor
 # from the install-wide setting, and core's imageFileConversionFormats can only
 # deliver a modern format if the one in use can encode it. AVIF reaches
