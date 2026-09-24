@@ -105,8 +105,13 @@ install-usecase-packs: ## Install the nr-llm use-case packs this instance demons
 	@# this step reports a refusal until an active model declares json_mode —
 	@# see #236. The step is correct and idempotent meanwhile; it installs
 	@# nothing.
+	@#
+	@# editorial-starter asks for chat alone, so it installs here. nr-llm 0.37
+	@# added five tasks to it (NEXT-174); the installer skips the identifiers an
+	@# instance already has, so an instance with the older pack gets the new
+	@# tasks on the next deploy.
 	@set -e; \
-	for pack in content-repurpose-starter; do \
+	for pack in content-repurpose-starter editorial-starter; do \
 		echo "Installing use-case pack $$pack..."; \
 		$(TYPO3) nrllm:usecasepack:install "$$pack" || \
 			echo "         Pack $$pack was not installed. The modules keep working; its records are absent."; \
