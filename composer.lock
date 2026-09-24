@@ -2813,16 +2813,16 @@
         },
         {
             "name": "netresearch/nr-llm",
-            "version": "v0.37.0",
+            "version": "v0.37.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/t3x-nr-llm.git",
-                "reference": "734f0548067c2f378d46448737e7c2c4f092d5d4"
+                "reference": "5866d7b6031cd48d4c0d08e8c03e21f4e570e37f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/t3x-nr-llm/zipball/734f0548067c2f378d46448737e7c2c4f092d5d4",
-                "reference": "734f0548067c2f378d46448737e7c2c4f092d5d4",
+                "url": "https://api.github.com/repos/netresearch/t3x-nr-llm/zipball/5866d7b6031cd48d4c0d08e8c03e21f4e570e37f",
+                "reference": "5866d7b6031cd48d4c0d08e8c03e21f4e570e37f",
                 "shasum": ""
             },
             "require": {
@@ -2860,7 +2860,7 @@
                     "Package": {
                         "providesPackages": []
                     },
-                    "version": "0.37.0",
+                    "version": "0.37.2",
                     "web-dir": ".Build/Web",
                     "extension-key": "nr_llm"
                 },
@@ -2905,7 +2905,7 @@
                 "issues": "https://github.com/netresearch/t3x-nr-llm/issues",
                 "source": "https://github.com/netresearch/t3x-nr-llm"
             },
-            "time": "2026-09-24T08:18:08+00:00"
+            "time": "2026-09-24T12:39:06+00:00"
         },
         {
             "name": "netresearch/nr-llm-compat",
