@@ -20,7 +20,7 @@
         "netresearch/nr-llm-compat": "^0.2",
         "netresearch/nr-mcp-agent": "^0.15",
         "netresearch/nr-passkeys-be": "^0.12",
-        "netresearch/nr-passkeys-fe": "^0.6",
+        "netresearch/nr-passkeys-fe": "^1.0",
         "netresearch/nr-repurpose": "^0.6",
         "netresearch/nr-scheduler": "^2.0",
         "netresearch/nr-temporal-cache": "@dev",
