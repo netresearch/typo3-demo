@@ -122,6 +122,60 @@ services:
         limits:
           memory: 1G
 
+  # Periodic housekeeping for the AI Chat (nr_mcp_agent). `ai-chat:cleanup`
+  # sets conversations stuck in processing/locked/tool_loop for more than five
+  # minutes to failed, so the chat offers Retry instead of spinning forever,
+  # and archives idle conversations after the extension's autoArchiveDays.
+  # --delete-after-days=0 keeps archived conversations: the demo's chat history
+  # is the input of the usage analysis. The stack has no cron and no scheduler
+  # task, so a loop runs the command every 15 minutes. Each run is killed after
+  # ten minutes, so a blocked database call cannot stop all later runs.
+  chat-cleanup:
+    image: ghcr.io/netresearch/typo3-demo:latest
+    logging: *default-logging
+    depends_on:
+      web:
+        condition: service_healthy
+    user: www-data
+    entrypoint: ["sh", "-c"]
+    command:
+      - >
+        while true;
+        do if timeout -k 30 600 vendor/bin/typo3 ai-chat:cleanup --delete-after-days=0;
+        then touch /tmp/chat-cleanup.ok;
+        else echo "ai-chat:cleanup failed with exit $$?";
+        fi;
+        sleep 900;
+        done
+    environment:
+      HOME: /tmp
+      MARIADB_HOST: db
+      MARIADB_DATABASE: ${MARIADB_DATABASE:-typo3}
+      MARIADB_USER: ${MARIADB_USER:-typo3}
+      MARIADB_PASSWORD: ${MARIADB_PASSWORD:-typo3}
+      TYPO3_CONTEXT: ${TYPO3_CONTEXT:-Development/Docker}
+      TYPO3_DOMAIN: ${TYPO3_DOMAIN:-localhost}
+      TYPO3_SITE_BASE: ${TYPO3_SITE_BASE:-/}
+    volumes:
+      - typo3-var:/var/www/var
+      - typo3-config:/var/www/config/system
+    # Replaces the web image's nginx HEALTHCHECK; `up --wait` needs one.
+    # Healthy while the last successful run is younger than 20 minutes, so a
+    # command that keeps failing turns the service unhealthy.
+    healthcheck:
+      test: ["CMD-SHELL", "test $$(( $$(date +%s) - $$(stat -c %Y /tmp/chat-cleanup.ok) )) -lt 1200"]
+      interval: 60s
+      timeout: 5s
+      retries: 3
+      start_period: 60s
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+
   # MariaDB as a Docker Hardened Image: minimal debian-13 base, no package
   # manager and no shell tooling beyond what the server itself needs. Pulling it
   # requires a Docker Hub account with DHI entitlement (`docker login dhi.io`) —
