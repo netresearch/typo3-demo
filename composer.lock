@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9deeb2719c9929446c31961f66532d89",
+    "content-hash": "1ea0430bb67121018b902d14a73d8540",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -3227,16 +3227,16 @@
         },
         {
             "name": "netresearch/nr-repurpose",
-            "version": "v0.5.3",
+            "version": "v0.6.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/t3x-nr-repurpose.git",
-                "reference": "66a5b69503699b8932e9e24306569472849cc37b"
+                "reference": "e7202143151c1ad122d0f1e4e58bc05dbef506ec"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/t3x-nr-repurpose/zipball/66a5b69503699b8932e9e24306569472849cc37b",
-                "reference": "66a5b69503699b8932e9e24306569472849cc37b",
+                "url": "https://api.github.com/repos/netresearch/t3x-nr-repurpose/zipball/e7202143151c1ad122d0f1e4e58bc05dbef506ec",
+                "reference": "e7202143151c1ad122d0f1e4e58bc05dbef506ec",
                 "shasum": ""
             },
             "require": {
@@ -3289,13 +3289,13 @@
                     "role": "Developer"
                 }
             ],
-            "description": "Turn a webpage or PDF into a podcast, a diagram and an Instagram story — by Netresearch, built on netresearch/nr-llm",
+            "description": "Turn a webpage or PDF into a podcast, a diagram, an Instagram story and ready-to-use texts — by Netresearch, built on netresearch/nr-llm",
             "homepage": "https://github.com/netresearch/t3x-nr-repurpose",
             "support": {
                 "issues": "https://github.com/netresearch/t3x-nr-repurpose/issues",
-                "source": "https://github.com/netresearch/t3x-nr-repurpose/tree/v0.5.3"
+                "source": "https://github.com/netresearch/t3x-nr-repurpose/tree/v0.6.0"
             },
-            "time": "2026-09-24T09:07:30+00:00"
+            "time": "2026-09-25T10:47:05+00:00"
         },
         {
             "name": "netresearch/nr-scheduler",
