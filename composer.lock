@@ -3835,16 +3835,16 @@
         },
         {
             "name": "netresearch/t3-cowriter",
-            "version": "v3.6.10",
+            "version": "v3.7.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/t3x-cowriter.git",
-                "reference": "fe6dde58064c79c9de10b7af3d4e6030be4bbee6"
+                "reference": "265fc85b4f77e0b8212f07ae7c73cb683d136a2f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/t3x-cowriter/zipball/fe6dde58064c79c9de10b7af3d4e6030be4bbee6",
-                "reference": "fe6dde58064c79c9de10b7af3d4e6030be4bbee6",
+                "url": "https://api.github.com/repos/netresearch/t3x-cowriter/zipball/265fc85b4f77e0b8212f07ae7c73cb683d136a2f",
+                "reference": "265fc85b4f77e0b8212f07ae7c73cb683d136a2f",
                 "shasum": ""
             },
             "require": {
@@ -3855,7 +3855,9 @@
                 "typo3/cms-rte-ckeditor": "^13.4 || ^14.3"
             },
             "require-dev": {
-                "netresearch/typo3-ci-workflows": "^1.8.1"
+                "netresearch/typo3-ci-workflows": "^1.8.1",
+                "typo3/cms-seo": "^13.4 || ^14.3",
+                "typo3/cms-workspaces": "^13.4 || ^14.3"
             },
             "type": "typo3-cms-extension",
             "extra": {
@@ -3920,7 +3922,7 @@
                 "issues": "https://github.com/netresearch/t3x-cowriter/issues",
                 "source": "https://github.com/netresearch/t3x-cowriter"
             },
-            "time": "2026-09-24T09:12:51+00:00"
+            "time": "2026-09-25T11:40:13+00:00"
         },
         {
             "name": "netresearch/typo3-demo-site",
