@@ -128,7 +128,8 @@ services:
   # and archives idle conversations after the extension's autoArchiveDays.
   # --delete-after-days=0 keeps archived conversations: the demo's chat history
   # is the input of the usage analysis. The stack has no cron and no scheduler
-  # task, so a loop runs the command every 15 minutes.
+  # task, so a loop runs the command every 15 minutes. Each run is killed after
+  # ten minutes, so a blocked database call cannot stop all later runs.
   chat-cleanup:
     image: ghcr.io/netresearch/typo3-demo:latest
     logging: *default-logging
@@ -140,7 +141,7 @@ services:
     command:
       - >
         while true;
-        do if vendor/bin/typo3 ai-chat:cleanup --delete-after-days=0;
+        do if timeout -k 30 600 vendor/bin/typo3 ai-chat:cleanup --delete-after-days=0;
         then touch /tmp/chat-cleanup.ok;
         else echo "ai-chat:cleanup failed with exit $$?";
         fi;
