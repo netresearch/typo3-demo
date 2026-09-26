@@ -183,6 +183,16 @@ page {
 # nr_passkeys_fe: no site set yet, include its TypoScript directly.
 @import 'EXT:nr_passkeys_fe/Configuration/TypoScript/setup.typoscript'
 
+# ai_label: AI marker after every flagged, not yet reviewed content element
+# (EU AI Act Art. 50). Imported directly instead of listing the b13/ai-label
+# set as a dependency: that set depends on typo3/fluid-styled-content, which
+# would redefine the lib.contentElement bootstrap_package configures. The
+# import adds partialRootPaths.1550 to lib.contentElement; Content Blocks
+# elements take only path 0 from it (see lib.contentBlock above), so they get
+# the same path here.
+@import 'EXT:ai_label/Configuration/TypoScript/setup.typoscript'
+lib.contentBlock.partialRootPaths.1550 = EXT:ai_label/Resources/Private/Partials/
+
 config {
     compressJs = 1
     compressCss = 1

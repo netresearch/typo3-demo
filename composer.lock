@@ -4,8 +4,87 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ade18e8f5e60d1b85ad7f7958ce44892",
+    "content-hash": "2c3e3b12e5679825064cc8e04fd6a6fc",
     "packages": [
+        {
+            "name": "b13/ai-label",
+            "version": "1.3.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/b13/ai-label.git",
+                "reference": "38f6b11c2676265427cd1d357bb0079286338efc"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/b13/ai-label/zipball/38f6b11c2676265427cd1d357bb0079286338efc",
+                "reference": "38f6b11c2676265427cd1d357bb0079286338efc",
+                "shasum": ""
+            },
+            "require": {
+                "typo3/cms-backend": "^13.4 || ^14.3",
+                "typo3/cms-frontend": "^13.4 || ^14.3"
+            },
+            "require-dev": {
+                "b13/aim": "*",
+                "phpstan/phpstan": "^2.1",
+                "typo3/cms-filelist": "^13.4 || ^14.3",
+                "typo3/cms-fluid-styled-content": "^13.4 || ^14.3",
+                "typo3/cms-workspaces": "^13.4 || ^14.3",
+                "typo3/coding-standards": "^0.5.5",
+                "typo3/testing-framework": "^9"
+            },
+            "suggest": {
+                "b13/aim": "Enables FlagAiContentMiddleware, which automatically flags a record as AI-created/AI-modified once an aim request opts in via metadata",
+                "typo3/cms-filelist": "Shows AI-label badges for flagged files in the File > Filelist backend module",
+                "typo3/cms-fluid-styled-content": "Automatically renders the AI label on every content element via a DropIn/After/All.html override",
+                "typo3/cms-workspaces": "Repairs the AI flag after publishing a workspace version, which would otherwise be written back double-encoded"
+            },
+            "type": "typo3-cms-extension",
+            "extra": {
+                "typo3/cms": {
+                    "Package": {
+                        "providesPackages": []
+                    },
+                    "app-dir": ".Build",
+                    "version": "1.3.0",
+                    "web-dir": ".Build/Web",
+                    "extension-key": "ai_label"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "B13\\AiLabel\\": "Classes/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "b13 GmbH",
+                    "email": "typo3@b13.com",
+                    "homepage": "https://b13.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "AI Label - Disclose AI-generated and AI-modified content as required by Article 50 of the EU AI Act: flag records in the backend, track editorial review, and mark flagged content in the frontend.",
+            "homepage": "https://b13.com",
+            "keywords": [
+                "TYPO3 CMS",
+                "ai",
+                "ai act",
+                "compliance",
+                "disclosure",
+                "labelling",
+                "transparency"
+            ],
+            "support": {
+                "issues": "https://github.com/b13/ai-label/issues",
+                "source": "https://github.com/b13/ai-label"
+            },
+            "time": "2026-09-16T06:34:02+00:00"
+        },
         {
             "name": "bacon/bacon-qr-code",
             "version": "v3.1.1",
@@ -3930,9 +4009,10 @@
             "dist": {
                 "type": "path",
                 "url": "packages/netresearch-demo-site",
-                "reference": "834c9e0e969c086fa4f5d3dba8b094612d3a40fc"
+                "reference": "bcfba8a506e15ffd5ad12a974da615b731213cd9"
             },
             "require": {
+                "b13/ai-label": "^1.3",
                 "bk2k/bootstrap-package": "^16.0",
                 "georgringer/news": "^14.0",
                 "typo3/cms-core": "^14.1",
