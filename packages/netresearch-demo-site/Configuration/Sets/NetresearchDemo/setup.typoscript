@@ -183,6 +183,27 @@ page {
 # nr_passkeys_fe: no site set yet, include its TypoScript directly.
 @import 'EXT:nr_passkeys_fe/Configuration/TypoScript/setup.typoscript'
 
+# ai_label: AI marker after every flagged, not yet reviewed content element
+# (EU AI Act Art. 50). Imported directly instead of listing the b13/ai-label
+# set as a dependency: that set depends on typo3/fluid-styled-content, which
+# would redefine the lib.contentElement bootstrap_package configures.
+#
+# The import puts ai_label's whole partial directory on lib.contentElement at
+# 1550. That directory also holds Media/Rendering/Image and Pagination, which
+# would replace bootstrap_package's partials of the same name. So
+# bootstrap_package's directory goes on top again at 1551, and the one partial
+# the marker needs, DropIn/After/All, comes from the site package at 1552.
+# ai_label's directory then only supplies the AiLabel partial itself.
+#
+# Content Blocks elements get no marker: their `data` is a record object, and
+# ai_label's partial accepts an array only. The AI tools create standard
+# content types, which lib.contentElement renders.
+@import 'EXT:ai_label/Configuration/TypoScript/setup.typoscript'
+lib.contentElement.partialRootPaths {
+    1551 < lib.contentElement.partialRootPaths.0
+    1552 = EXT:netresearch_demo_site/Resources/Private/Partials/AiLabel/
+}
+
 config {
     compressJs = 1
     compressCss = 1

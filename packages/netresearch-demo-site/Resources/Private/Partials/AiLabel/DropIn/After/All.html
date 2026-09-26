@@ -1,0 +1,8 @@
+<f:comment>
+    Replaces bootstrap_package's empty DropIn/After/All placeholder for
+    lib.contentElement, so every content element it renders shows EXT:ai_label's
+    marker while the element is flagged as AI-created or AI-modified and not yet
+    reviewed. The same call as EXT:ai_label's own DropIn/After/All.html; see
+    setup.typoscript for why that directory is not simply placed on top.
+</f:comment>
+<f:render partial="AiLabel" arguments="{record: data}" />
