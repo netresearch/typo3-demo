@@ -602,6 +602,49 @@ jobs:
           fi
           echo "German backend language pack is in place."
 
+      # The RTE preset is assembled from three imports, and the YAML merge
+      # REPLACES a string with a list (and a list with a string) instead of
+      # appending. That silently dropped core's contents.css, so the editor text
+      # had no colour and rendered black on the dark editor surface (1.13:1).
+      # The demo sheet after it maps Bootstrap's colour classes to the scheme.
+      # Only the loaded preset shows the result, so load it the way TYPO3 does.
+      # No apostrophes in the PHP below: it is a single-quoted shell argument.
+      # It runs as www-data, like PHP-FPM: booting TYPO3 writes cache files, and
+      # root-owned ones would lock the web process out of them.
+      - name: Verify the RTE preset keeps the editor stylesheets
+        run: |
+          docker compose exec -T -u www-data web php -r '
+          foreach (["TYPO3_PATH_APP" => "/var/www", "TYPO3_PATH_ROOT" => "/var/www/public"] as $v => $p) {
+              putenv("$v=$p"); $_ENV[$v] = $_SERVER[$v] = $p;
+          }
+          $cl = require "/var/www/vendor/autoload.php";
+          \TYPO3\CMS\Core\Core\SystemEnvironmentBuilder::run(1, \TYPO3\CMS\Core\Core\SystemEnvironmentBuilder::REQUESTTYPE_CLI);
+          $container = \TYPO3\CMS\Core\Core\Bootstrap::init($cl, false);
+          if ($container instanceof \TYPO3\CMS\Core\DependencyInjection\FailsafeContainer) {
+              fwrite(STDERR, "ERROR: TYPO3 booted a failsafe container (config path " . \TYPO3\CMS\Core\Core\Environment::getConfigPath() . ")\n");
+              exit(1);
+          }
+          $preset = $GLOBALS["TYPO3_CONF_VARS"]["RTE"]["Presets"]["default"] ?? "";
+          $config = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Configuration\Loader\YamlFileLoader::class)->load($preset);
+          $css = (array)($config["editor"]["config"]["contentsCss"] ?? []);
+          echo "preset: " . $preset . "\n";
+          foreach ($css as $i => $c) { echo "  contentsCss[" . $i . "] " . $c . "\n"; }
+          $core = array_search("EXT:rte_ckeditor/Resources/Public/Css/contents.css", $css, true);
+          $bp = array_search("EXT:bootstrap_package/Resources/Public/Css/bootstrap5-rte.min.css", $css, true);
+          $img = array_search("EXT:rte_ckeditor_image/Resources/Public/Css/editor-image-widget.css", $css, true);
+          $demo = array_search("EXT:netresearch_demo_site/Resources/Public/Css/Rte/editor-scheme.css", $css, true);
+          $bad = [];
+          if ($core === false) { $bad[] = "core contents.css is missing - the editable follows no colour scheme"; }
+          if ($bp === false) { $bad[] = "bootstrap_package editor stylesheet is missing"; }
+          if ($img === false) { $bad[] = "rte_ckeditor_image widget stylesheet is missing"; }
+          if ($demo === false) { $bad[] = "the demo editor-scheme.css is missing - Bootstrap colour classes keep light-theme values"; }
+          if ($core !== false && $bp !== false && $core < $bp) { $bad[] = "core contents.css must come after the Bootstrap sheet, or its fixed light colours win"; }
+          if ($demo !== false && $bp !== false && $demo < $bp) { $bad[] = "editor-scheme.css must come after the Bootstrap sheet, or it overrides nothing"; }
+          if (count($css) !== count(array_unique($css))) { $bad[] = "a stylesheet is listed twice"; }
+          foreach ($bad as $m) { echo "::error::" . $m . "\n"; }
+          exit($bad === [] ? 0 : 1);
+          '
+
       - name: Cleanup
         if: always()
         run: docker compose down -v

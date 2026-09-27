@@ -1,8 +1,14 @@
 # Netresearch Demo Site RTE Configuration
 # Extends Bootstrap Package's RTE preset with the rte_ckeditor_image and Cowriter
-# plugins. TYPO3 RTE YAML `imports` APPEND list values (they do not overwrite),
-# so the imported presets' importModules are already merged in — we only add the
-# Cowriter module here, and define our own CKEditor 5 toolbar below.
+# plugins, and defines our own CKEditor 5 toolbar below.
+#
+# How TYPO3 merges `imports` (YamlFileLoader + ArrayUtility::
+# replaceAndAppendScalarValuesRecursive, identical in v13.4 and v14.3): the
+# imports are applied last-to-first, and this file goes on top of them.
+#   - list on top of list: the lists are APPENDED (importModules below);
+#   - anything else (string on top of list, list on top of string): the later
+#     value REPLACES the earlier one.
+# That second branch is also what the `toolbarGroups: ''` override relies on.
 imports:
     - { resource: "EXT:bootstrap_package/Configuration/RTE/Default.yaml" }
     - { resource: "EXT:rte_ckeditor_image/Configuration/RTE/Plugin.yaml" }
@@ -23,6 +29,26 @@ editor:
         # migrator's `removeButtons` handling on its warning-free string path.)
         toolbarGroups: ''
         removeButtons: ''
+
+        # The editor stylesheets have to be declared here, because the imports
+        # lose them. Core's Editor/Base.yaml sets a list with contents.css (the
+        # rules that make the editable follow the backend light/dark scheme);
+        # Bootstrap Package replaces it with a single string; rte_ckeditor_image
+        # then replaces that string with its own one-entry list. What was left
+        # was editor-image-widget.css alone, so the text had no colour and
+        # rendered black on the dark editor surface.
+        #
+        # This list is appended to rte_ckeditor_image's, so the effective order
+        # is: editor-image-widget.css, bootstrap5-rte.min.css, contents.css,
+        # editor-scheme.css. The order matters: all of them style the editable
+        # with the same prefixed selectors, and the later sheet wins. Core's
+        # contents.css replaces Bootstrap's fixed light-theme text and
+        # background colours with the scheme's; editor-scheme.css does the same
+        # for the Bootstrap colour classes the Styles menu offers.
+        contentsCss:
+            - 'EXT:bootstrap_package/Resources/Public/Css/bootstrap5-rte.min.css'
+            - 'EXT:rte_ckeditor/Resources/Public/Css/contents.css'
+            - 'EXT:netresearch_demo_site/Resources/Public/Css/Rte/editor-scheme.css'
 
         importModules:
             # Cowriter plugin (Bootstrap Package + rte_ckeditor_image modules are

@@ -1,0 +1,54 @@
+/*
+ * Bootstrap colours inside the rich text editor, mapped to the backend scheme.
+ *
+ * Bootstrap Package's editor sheet (bootstrap5-rte.min.css) defines its colour
+ * tokens on :root with fixed light-theme values, and TYPO3 scopes that :root to
+ * the editable. In the dark scheme the classes the Styles menu offers then fall
+ * to 1.1:1 (text-muted, text-quaternary) or 2:1 (text-secondary), and a table
+ * renders as a white box. This sheet is loaded after it and after core's
+ * contents.css, and points those colours at the core tokens, which follow the
+ * scheme. TYPO3 prefixes every selector here with the editor, so nothing outside
+ * the editable is affected.
+ */
+
+:root {
+    --bs-body-color: var(--typo3-text-color-base);
+    --bs-body-bg: var(--typo3-surface-container-lowest);
+    --bs-emphasis-color: var(--typo3-text-color-base);
+    --bs-secondary-color: var(--typo3-text-color-variant);
+    --bs-border-color: var(--typo3-component-border-color);
+}
+
+/* Bootstrap builds these from rgb triplets, which a core token cannot fill. */
+.text-muted,
+.text-tertiary {
+    color: var(--typo3-text-color-variant) !important;
+}
+
+.text-quaternary {
+    color: var(--typo3-text-color-base) !important;
+}
+
+.text-primary {
+    color: var(--typo3-text-color-primary) !important;
+}
+
+.text-secondary {
+    color: var(--typo3-text-color-secondary) !important;
+}
+
+.text-success {
+    color: var(--typo3-text-color-success) !important;
+}
+
+.text-info {
+    color: var(--typo3-text-color-info) !important;
+}
+
+.text-warning {
+    color: var(--typo3-text-color-warning) !important;
+}
+
+.text-danger {
+    color: var(--typo3-text-color-danger) !important;
+}
