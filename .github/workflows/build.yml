@@ -669,6 +669,27 @@ jobs:
           [ "$failed" = 0 ] && echo "Login highlight colour and focus-ring stylesheet are in place."
           exit $failed
 
+      # The two steps above prove the sheets are wired in, not what is in them:
+      # an emptied editor-scheme.css or a template that lost its inline icon
+      # still passes them. Check one marker per file in the built image.
+      - name: Verify the backend theme files carry their rules
+        run: |
+          failed=0
+          check() {
+            if docker compose exec -T web grep -qF -- "$2" "/var/www/packages/netresearch-demo-site/$1"; then
+              echo "ok: $1 contains $2"
+            else
+              echo "::error::$1 does not contain $2"
+              failed=1
+            fi
+          }
+          check Resources/Public/Css/Rte/editor-scheme.css '--nrdemo-rte-fill'
+          check Resources/Public/Css/Rte/editor-scheme.css '--bs-table-striped-bg: color-mix'
+          check Resources/Public/Css/Backend/login.css 'outline-color: var(--typo3-text-color-primary)'
+          check Resources/Public/Css/demo-extension-card.css 'var(--typo3-component-border-color)'
+          check Resources/Private/Templates/Widget/DemoExtensionCard.html 'alternativeMarkupIdentifier="inline"'
+          exit $failed
+
       - name: Cleanup
         if: always()
         run: docker compose down -v

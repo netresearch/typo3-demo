@@ -17,7 +17,8 @@
 
 .nrdemo-card {
     /* The brand teal in the variants that keep an icon glyph above 3:1 on its
-       tinted tile: #2f99a4 itself is 2.73:1 there in the light scheme. */
+       tinted tile: #2f99a4 itself is 2.73:1 there in the light scheme.
+       Hex, because these are brand colours that core has no token for. */
     --nrdemo-accent: light-dark(#15585e, #5fc6d2);
     display: flex;
     flex-direction: column;

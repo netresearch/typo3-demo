@@ -24,36 +24,31 @@
     --bs-secondary-color: var(--typo3-text-color-variant);
     --bs-border-color: var(--typo3-component-border-color);
 
-    /* The site's own palette (Sets/NetresearchDemo/settings.yaml: primary
-       #585961, secondary #2f99a4, tertiary #8bc0c6, quaternary #1d6069), so
-       the editor previews what the page will show. Two rules pick each value:
+    /* TEXT colours of the site's palette (Sets/NetresearchDemo/settings.yaml:
+       primary #585961, secondary #2f99a4, tertiary #8bc0c6, quaternary
+       #1d6069) for .text-* and the outline buttons. Hex, not core tokens:
+       this is a preview of the site's own colours, which core does not know.
+       Two rules pick each value:
 
        1. Contrast: at least 4.5:1 on the editor surface. A site colour that
-          fails it is replaced by the nearest colour of the same OKLCH hue
-          and chroma that passes (lightness moved as little as possible).
-       2. Distinctness: every class stays apart from the others, from body
-          text, muted text and links, by at least OKLab dE 5.2 (x100) - the
-          distance the site's own primary already has from muted text, which
-          nothing here can widen.
+          fails it is replaced by a colour of the same hue that passes.
+       2. Distinctness: the four stay apart from each other and from body
+          text, muted text and links, by at least OKLab dE 5.0 (x100).
 
-       Three values are set by rule 2 rather than rule 1:
-       - light secondary #20686f: rule 1 alone gives #00818c, which is only
-         dE 3.8 from the tertiary teal.
+       Three values are set by rule 2:
+       - light secondary #20686f: #00818c, the lightest same-hue colour that
+         passes rule 1, is only dE 4.1 from the tertiary teal.
        - light quaternary #1a5860: the site's #1d6069 passes rule 1 (6.99:1)
          but is dE 2.5 from the secondary teal, so it is darkened.
-       - dark secondary: the site's #2f99a4 (5.48:1) is kept; it is dE 5.2
-         from the dark quaternary, which just meets rule 2.
-       Unchanged site colours: light primary, dark secondary, dark tertiary. */
-    --nrdemo-rte-primary: light-dark(#585961, #7b7d85);
-    --nrdemo-rte-secondary: light-dark(#20686f, #2f99a4);
-    --nrdemo-rte-tertiary: light-dark(#497d82, #8bc0c6);
-    --nrdemo-rte-quaternary: light-dark(#1a5860, #478790);
-
-    /* Text on a filled palette button: white on the dark light-scheme fills,
-       near-black on the light dark-scheme fills. */
-    --nrdemo-rte-on-fill: light-dark(#ffffff, #000000);
-    /* Hover and active move the fill away from its text colour. */
-    --nrdemo-rte-fill-shift: light-dark(#000000, #ffffff);
+       - dark secondary #32a3ae: the site's #2f99a4 passes rule 1 (5.48:1)
+         but is dE 3.6 from the dark quaternary, so it is lightened.
+       Site colours used unchanged: light primary, dark tertiary. Light
+       tertiary 5.09:1, dark primary 4.61:1 and dark quaternary 4.88:1 are
+       same-hue replacements with some margin above 4.5:1. */
+    --nrdemo-rte-primary: light-dark(#585961, #7c7e8d);
+    --nrdemo-rte-secondary: light-dark(#20686f, #32a3ae);
+    --nrdemo-rte-tertiary: light-dark(#3c757b, #8bc0c6);
+    --nrdemo-rte-quaternary: light-dark(#1a5860, #4a8d96);
 }
 
 /* Text colours ------------------------------------------------------------ */
@@ -123,11 +118,33 @@
 /* Filled palette buttons: the site's colours ------------------------------ */
 
 /* Bootstrap Package's editor sheet fills these with its own theme palette
-   (btn-primary #577760 green, and so on), not the site's. */
-.btn-primary { --nrdemo-rte-fill: var(--nrdemo-rte-primary); }
-.btn-secondary { --nrdemo-rte-fill: var(--nrdemo-rte-secondary); }
-.btn-tertiary { --nrdemo-rte-fill: var(--nrdemo-rte-tertiary); }
-.btn-quaternary { --nrdemo-rte-fill: var(--nrdemo-rte-quaternary); }
+   (btn-primary #577760 green, and so on), not the site's. These are the
+   site's own fill/text pairs from its theme.css, the same in both schemes,
+   because a filled button carries its own contrast. Hex, not core tokens:
+   the preview must match the site. Only secondary differs from the site:
+   white on #2f99a4 is 3.38:1, so it uses #257880, the Netresearch teal for
+   a fill under white text (5.15:1). Hover and active move the fill away
+   from its text colour. */
+.btn-primary {
+    --nrdemo-rte-fill: #585961;
+    --nrdemo-rte-on-fill: #ffffff;
+    --nrdemo-rte-fill-shift: #000000;
+}
+.btn-secondary {
+    --nrdemo-rte-fill: #257880;
+    --nrdemo-rte-on-fill: #ffffff;
+    --nrdemo-rte-fill-shift: #000000;
+}
+.btn-tertiary {
+    --nrdemo-rte-fill: #8bc0c6;
+    --nrdemo-rte-on-fill: #000000;
+    --nrdemo-rte-fill-shift: #ffffff;
+}
+.btn-quaternary {
+    --nrdemo-rte-fill: #1d6069;
+    --nrdemo-rte-on-fill: #ffffff;
+    --nrdemo-rte-fill-shift: #000000;
+}
 
 .btn-primary,
 .btn-secondary,
@@ -149,14 +166,15 @@
 
 /* Tables ------------------------------------------------------------------- */
 
-/* In the editor this selector does not match the <table>: CKEditor 5 (v47)
-   wraps every table in <figure class="table">, and Bootstrap Package's
-   "Table Striped" style puts its class on the inner <table>. The custom
-   properties set on the figure are inherited by the table, which is why this
-   works. If a later CKEditor renames that wrapper, the tints below stop
-   applying in the editor; the frontend markup is not affected.
-
-   Bootstrap tints stripes and the active row with black at 5 % and 10 %,
+/* In the editor, ".table" matches two elements: CKEditor 5 (47.6.0 in TYPO3
+   14.3.7) wraps every table in <figure class="table">, and Bootstrap
+   Package's table plugin (rte_ckeditor/table-plugin.js) adds "table" to the
+   inner <table> as well. Bootstrap's cell paint (".table > :not(caption) >
+   * > *") therefore reaches the cells through the inner <table>, and the
+   variables below reach them from both. If a later CKEditor or Bootstrap
+   Package stops adding the inner class, the stripes stop painting in the
+   editor; the frontend markup is not affected. */
+/* Bootstrap tints stripes and the active row with black at 5 % and 10 %,
    which disappears on the dark surface. Tint with the text colour instead. */
 .table {
     --bs-table-striped-color: var(--typo3-text-color-base);

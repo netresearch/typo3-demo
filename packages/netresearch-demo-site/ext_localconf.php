@@ -19,6 +19,7 @@ $GLOBALS['TYPO3_CONF_VARS']['RTE']['Presets']['bootstrap'] = 'EXT:netresearch_de
 // Netresearch teal for a fill under white text (5.15:1). Core applies the same
 // value to the logo accent and the card border, and derives the button's focus
 // ring from it — that ring is corrected in Css/Backend/login.css.
+// A hex value, because core declares this setting as type=color.
 $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['backend']['loginHighlightColor'] = '#257880';
 $GLOBALS['TYPO3_CONF_VARS']['BE']['stylesheets']['netresearch_demo_site'] = 'EXT:netresearch_demo_site/Resources/Public/Css/Backend/login.css';
 
