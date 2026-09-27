@@ -641,6 +641,11 @@ jobs:
           if ($core !== false && $bp !== false && $core < $bp) { $bad[] = "core contents.css must come after the Bootstrap sheet, or its fixed light colours win"; }
           if ($demo !== false && $bp !== false && $demo < $bp) { $bad[] = "editor-scheme.css must come after the Bootstrap sheet, or it overrides nothing"; }
           if (count($css) !== count(array_unique($css))) { $bad[] = "a stylesheet is listed twice"; }
+          // A listed sheet that does not exist is dropped silently by the editor.
+          foreach ($css as $c) {
+              $abs = \TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName($c);
+              if ($abs === "" || !is_file($abs)) { $bad[] = "listed stylesheet does not exist: " . $c; }
+          }
           foreach ($bad as $m) { echo "::error::" . $m . "\n"; }
           exit($bad === [] ? 0 : 1);
           '
@@ -653,7 +658,7 @@ jobs:
         run: |
           html=$(curl -sSfL --proto '=https' --proto-redir '=https' --cacert "$RUNNER_TEMP/caddy-root.crt" https://localhost/typo3/login)
           failed=0
-          if ! grep -q -- '--typo3-login-highlight: #257880' <<<"$html"; then
+          if ! grep -qE -- '--typo3-login-highlight:[[:space:]]*#257880' <<<"$html"; then
             echo '::error::the login page carries no loginHighlightColor block with #257880 - core falls back to #f80'
             failed=1
           fi
