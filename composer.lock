@@ -3914,16 +3914,16 @@
         },
         {
             "name": "netresearch/t3-cowriter",
-            "version": "v3.10.0",
+            "version": "v3.10.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/t3x-cowriter.git",
-                "reference": "2b232976bd9bc1697d8d6b32f28343c233aedac9"
+                "reference": "1d7fe71e9783b3271a561bef71fb167b0b924333"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/t3x-cowriter/zipball/2b232976bd9bc1697d8d6b32f28343c233aedac9",
-                "reference": "2b232976bd9bc1697d8d6b32f28343c233aedac9",
+                "url": "https://api.github.com/repos/netresearch/t3x-cowriter/zipball/1d7fe71e9783b3271a561bef71fb167b0b924333",
+                "reference": "1d7fe71e9783b3271a561bef71fb167b0b924333",
                 "shasum": ""
             },
             "require": {
@@ -4001,7 +4001,7 @@
                 "issues": "https://github.com/netresearch/t3x-cowriter/issues",
                 "source": "https://github.com/netresearch/t3x-cowriter"
             },
-            "time": "2026-09-27T02:31:57+00:00"
+            "time": "2026-09-27T04:01:26+00:00"
         },
         {
             "name": "netresearch/typo3-demo-site",
