@@ -2,13 +2,19 @@
  * Bootstrap colours inside the rich text editor, mapped to the backend scheme.
  *
  * Bootstrap Package's editor sheet (bootstrap5-rte.min.css) defines its colour
- * tokens on :root with fixed light-theme values, and TYPO3 scopes that :root to
- * the editable. In the dark scheme the classes the Styles menu offers then fall
- * to 1.1:1 (text-muted, text-quaternary) or 2:1 (text-secondary), and a table
- * renders as a white box. This sheet is loaded after it and after core's
- * contents.css, and points those colours at the core tokens, which follow the
- * scheme. TYPO3 prefixes every selector here with the editor, so nothing outside
- * the editable is affected.
+ * tokens with fixed light-theme values, and TYPO3 scopes its :root to the
+ * editable. In the dark scheme the classes the Styles menu offers then fall to
+ * 1.1:1 (text-muted, text-quaternary, btn-outline-quaternary) or 2:1
+ * (text-secondary), table stripes are invisible, and a table renders as a white
+ * box. This sheet is loaded after it and after core's contents.css. TYPO3
+ * prefixes every selector here with the editor, so nothing outside the editable
+ * is affected.
+ *
+ * Every class offered in the Styles menu (Configuration/RTE/Default.yaml, via
+ * Bootstrap Package's stylesSet) that carries a colour is covered here, except
+ * the filled buttons (.btn-primary and so on) and the link and list markers:
+ * those are fixed colours that reach 4.5:1 (buttons) or 3:1 (markers) in both
+ * schemes as they are.
  */
 
 :root {
@@ -17,24 +23,40 @@
     --bs-emphasis-color: var(--typo3-text-color-base);
     --bs-secondary-color: var(--typo3-text-color-variant);
     --bs-border-color: var(--typo3-component-border-color);
+
+    /* The site's own palette (Sets/NetresearchDemo/settings.yaml: primary
+       #585961, secondary #2f99a4, tertiary #8bc0c6, quaternary #1d6069), so
+       the editor previews what the page will show. Each value is the site
+       colour where it reaches 4.5:1 on the editor surface; otherwise the
+       nearest colour of the same hue that does. The four also stay apart from
+       each other, from body text, from muted text and from links. */
+    --nrdemo-rte-primary: light-dark(#585961, #7c7e8d);
+    --nrdemo-rte-secondary: light-dark(#20686f, #32a3ae);
+    --nrdemo-rte-tertiary: light-dark(#3c757b, #8bc0c6);
+    --nrdemo-rte-quaternary: light-dark(#1a5860, #4a8d96);
 }
 
+/* Text colours ------------------------------------------------------------ */
+
 /* Bootstrap builds these from rgb triplets, which a core token cannot fill. */
-.text-muted,
-.text-tertiary {
+.text-muted {
     color: var(--typo3-text-color-variant) !important;
 }
 
-.text-quaternary {
-    color: var(--typo3-text-color-base) !important;
-}
-
 .text-primary {
-    color: var(--typo3-text-color-primary) !important;
+    color: var(--nrdemo-rte-primary) !important;
 }
 
 .text-secondary {
-    color: var(--typo3-text-color-secondary) !important;
+    color: var(--nrdemo-rte-secondary) !important;
+}
+
+.text-tertiary {
+    color: var(--nrdemo-rte-tertiary) !important;
+}
+
+.text-quaternary {
+    color: var(--nrdemo-rte-quaternary) !important;
 }
 
 .text-success {
@@ -51,4 +73,63 @@
 
 .text-danger {
     color: var(--typo3-text-color-danger) !important;
+}
+
+/* Outline buttons: text and border in the matching text colour ------------ */
+
+.btn-outline-default { --nrdemo-rte-btn: var(--typo3-text-color-base); }
+.btn-outline-primary { --nrdemo-rte-btn: var(--nrdemo-rte-primary); }
+.btn-outline-secondary { --nrdemo-rte-btn: var(--nrdemo-rte-secondary); }
+.btn-outline-tertiary { --nrdemo-rte-btn: var(--nrdemo-rte-tertiary); }
+.btn-outline-quaternary { --nrdemo-rte-btn: var(--nrdemo-rte-quaternary); }
+.btn-outline-success { --nrdemo-rte-btn: var(--typo3-text-color-success); }
+.btn-outline-info { --nrdemo-rte-btn: var(--typo3-text-color-info); }
+.btn-outline-warning { --nrdemo-rte-btn: var(--typo3-text-color-warning); }
+.btn-outline-danger { --nrdemo-rte-btn: var(--typo3-text-color-danger); }
+
+.btn-outline-default,
+.btn-outline-primary,
+.btn-outline-secondary,
+.btn-outline-tertiary,
+.btn-outline-quaternary,
+.btn-outline-success,
+.btn-outline-info,
+.btn-outline-warning,
+.btn-outline-danger {
+    --bs-btn-color: var(--nrdemo-rte-btn);
+    --bs-btn-border-color: var(--nrdemo-rte-btn);
+}
+
+/* Tables ------------------------------------------------------------------- */
+
+/* Bootstrap tints stripes and the active row with black at 5 % and 10 %,
+   which disappears on the dark surface. Tint with the text colour instead. */
+.table {
+    --bs-table-striped-color: var(--typo3-text-color-base);
+    --bs-table-striped-bg: color-mix(in srgb, var(--typo3-text-color-base) 5%, transparent);
+    --bs-table-active-color: var(--typo3-text-color-base);
+    --bs-table-active-bg: color-mix(in srgb, var(--typo3-text-color-base) 10%, transparent);
+    --bs-table-hover-color: var(--typo3-text-color-base);
+    --bs-table-hover-bg: color-mix(in srgb, var(--typo3-text-color-base) 7.5%, transparent);
+}
+
+/* Row and cell states: core's state surfaces instead of fixed pastel boxes. */
+.table-success { --nrdemo-rte-state: var(--typo3-surface-container-success); }
+.table-info { --nrdemo-rte-state: var(--typo3-surface-container-info); }
+.table-warning { --nrdemo-rte-state: var(--typo3-surface-container-warning); }
+.table-danger { --nrdemo-rte-state: var(--typo3-surface-container-danger); }
+
+.table-success,
+.table-info,
+.table-warning,
+.table-danger {
+    --bs-table-color: var(--typo3-text-color-base);
+    --bs-table-bg: var(--nrdemo-rte-state);
+    --bs-table-border-color: var(--typo3-component-border-color);
+    --bs-table-striped-color: var(--typo3-text-color-base);
+    --bs-table-striped-bg: color-mix(in srgb, var(--typo3-text-color-base) 5%, var(--nrdemo-rte-state));
+    --bs-table-active-color: var(--typo3-text-color-base);
+    --bs-table-active-bg: color-mix(in srgb, var(--typo3-text-color-base) 10%, var(--nrdemo-rte-state));
+    --bs-table-hover-color: var(--typo3-text-color-base);
+    --bs-table-hover-bg: color-mix(in srgb, var(--typo3-text-color-base) 7.5%, var(--nrdemo-rte-state));
 }
