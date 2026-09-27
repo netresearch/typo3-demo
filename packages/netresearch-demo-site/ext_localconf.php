@@ -14,6 +14,14 @@ $GLOBALS['TYPO3_CONF_VARS']['RTE']['Presets']['default'] = 'EXT:netresearch_demo
 // actually appears when editing content, not only on fields pinned to 'default'.
 $GLOBALS['TYPO3_CONF_VARS']['RTE']['Presets']['bootstrap'] = 'EXT:netresearch_demo_site/Configuration/RTE/Default.yaml';
 
+// Backend login colour. The login button carries white text on this colour;
+// unset, core falls back to #f80, which gives that text 2.39:1. #257880 is the
+// Netresearch teal for a fill under white text (5.15:1). Core applies the same
+// value to the logo accent and the card border, and derives the button's focus
+// ring from it — that ring is corrected in Css/Backend/login.css.
+$GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['backend']['loginHighlightColor'] = '#257880';
+$GLOBALS['TYPO3_CONF_VARS']['BE']['stylesheets']['netresearch_demo_site'] = 'EXT:netresearch_demo_site/Resources/Public/Css/Backend/login.css';
+
 // Route ERROR-level (and above) log records to the database log (sys_log) in
 // addition to the default file writer, so runtime failures — e.g. nr-ai-search's
 // swallowed RAG errors — are visible in the backend "System > Log" module and to

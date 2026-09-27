@@ -1,0 +1,11 @@
+/*
+ * Focus ring of the backend login button.
+ *
+ * Core draws it in the login highlight colour, darkened. The highlight has to be
+ * dark for the white button text to reach 4.5:1, so the ring comes out dark as
+ * well, and on the dark login card it measures 1.64:1. The core link colour is
+ * scheme-aware and clears 3:1 against the card in both schemes.
+ */
+.typo3-login .btn-login:focus-visible {
+    outline-color: var(--typo3-text-color-primary);
+}

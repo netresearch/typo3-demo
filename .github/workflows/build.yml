@@ -645,6 +645,25 @@ jobs:
           exit($bad === [] ? 0 : 1);
           '
 
+      # Core renders the login button as white text on the login highlight
+      # colour, #f80 unless configured (2.39:1). The site package sets a darker
+      # teal and a focus ring that stays visible on the dark login card. Both
+      # arrive only through the running configuration, so read the login page.
+      - name: Verify the backend login colours are applied
+        run: |
+          html=$(curl -sSfL --proto '=https' --proto-redir '=https' --cacert "$RUNNER_TEMP/caddy-root.crt" https://localhost/typo3/login)
+          failed=0
+          if ! grep -q -- '--typo3-login-highlight: #257880' <<<"$html"; then
+            echo '::error::the login page carries no loginHighlightColor block with #257880 - core falls back to #f80'
+            failed=1
+          fi
+          if ! grep -qE '<link[^>]+Css/Backend/login\.css' <<<"$html"; then
+            echo '::error::Css/Backend/login.css is not linked on the login page - the focus ring falls back to the dark core default'
+            failed=1
+          fi
+          [ "$failed" = 0 ] && echo "Login highlight colour and focus-ring stylesheet are in place."
+          exit $failed
+
       - name: Cleanup
         if: always()
         run: docker compose down -v
