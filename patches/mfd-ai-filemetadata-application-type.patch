@@ -1,0 +1,44 @@
+--- a/Classes/EventListener/EnrichFileMetadataAfterCreation.php
++++ b/Classes/EventListener/EnrichFileMetadataAfterCreation.php
+@@ -5,16 +5,31 @@
+ use Mfd\Ai\FileMetadata\Api\OpenAiClient;
+ use Mfd\Ai\FileMetadata\Services\ConfigurationService;
+ use Mfd\Ai\FileMetadata\Services\FalAdapter;
++use Psr\Http\Message\ServerRequestInterface;
+ use Psr\Log\LoggerInterface;
+ use TYPO3\CMS\Core\Database\ConnectionPool;
+ use TYPO3\CMS\Core\Resource\Event\AfterFileMetaDataCreatedEvent;
+ use TYPO3\CMS\Core\Resource\FileRepository;
+ use TYPO3\CMS\Core\Site\Entity\Site;
+ use TYPO3\CMS\Core\Site\SiteFinder;
+-use TYPO3\CMS\Core\Core\ApplicationType;
++use TYPO3\CMS\Core\Http\ApplicationType;
+ 
+ class EnrichFileMetadataAfterCreation
+ {
++    /**
++     * A console command or a worker has no request, and a request without the
++     * applicationType attribute is none of TYPO3's applications: neither is
++     * the frontend. fromRequest() throws in both cases.
++     */
++    private function isFrontendRequest(): bool
++    {
++        $request = $GLOBALS['TYPO3_REQUEST'] ?? null;
++
++        return $request instanceof ServerRequestInterface
++            && is_int($request->getAttribute('applicationType'))
++            && ApplicationType::fromRequest($request)->isFrontend();
++    }
++
+     public function __construct(
+         private ConnectionPool $connectionPool,
+         private FileRepository $fileRepository,
+@@ -32,7 +47,7 @@
+             return;
+         }
+ 
+-        if (!$this->configurationService->generateAltTextInFrontend() && ApplicationType::fromRequest($GLOBALS['TYPO3_REQUEST'])->isFrontend()){
++        if (!$this->configurationService->generateAltTextInFrontend() && $this->isFrontendRequest()) {
+             return;
+         }
+ 
