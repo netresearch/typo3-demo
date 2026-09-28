@@ -686,6 +686,7 @@ jobs:
             fi
           }
           check Resources/Public/Css/Rte/editor-scheme.css '--nrdemo-rte-fill: #257880;'
+          check Resources/Public/Css/Rte/editor-scheme.css '--bs-btn-bg: var(--nrdemo-rte-fill);'
           check Resources/Public/Css/Rte/editor-scheme.css '--bs-btn-hover-bg: var(--nrdemo-rte-fill);'
           check Resources/Public/Css/Rte/editor-scheme.css '--bs-table-striped-bg: color-mix(in srgb, var(--typo3-text-color-base) 5%, transparent);'
           check Resources/Public/Css/Backend/login.css 'outline-color: var(--typo3-text-color-primary);'
