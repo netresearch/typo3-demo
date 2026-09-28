@@ -2229,25 +2229,25 @@
         },
         {
             "name": "lochmueller/index",
-            "version": "2.3.0",
+            "version": "2.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/lochmueller/index.git",
-                "reference": "ca5d5a1658996baf5b89b79f91703f64c07f6864"
+                "reference": "fbe12f17af276f06ae1dab00cb8d42aa19287eb5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/lochmueller/index/zipball/ca5d5a1658996baf5b89b79f91703f64c07f6864",
-                "reference": "ca5d5a1658996baf5b89b79f91703f64c07f6864",
+                "url": "https://api.github.com/repos/lochmueller/index/zipball/fbe12f17af276f06ae1dab00cb8d42aa19287eb5",
+                "reference": "fbe12f17af276f06ae1dab00cb8d42aa19287eb5",
                 "shasum": ""
             },
             "require": {
                 "php": "^8.3",
-                "typo3/cms-backend": "^13.4 || ^14.2",
-                "typo3/cms-core": "^13.4 || ^14.2",
-                "typo3/cms-frontend": "^13.4 || ^14.2",
-                "typo3/cms-reactions": "^13.4 || ^14.2",
-                "typo3/cms-webhooks": "^13.4 || ^14.2"
+                "typo3/cms-backend": "^13.4 || ^14.3",
+                "typo3/cms-core": "^13.4 || ^14.3",
+                "typo3/cms-frontend": "^13.4 || ^14.3",
+                "typo3/cms-reactions": "^13.4 || ^14.3",
+                "typo3/cms-webhooks": "^13.4 || ^14.3"
             },
             "require-dev": {
                 "bk2k/bootstrap-package": "^16.0",
@@ -2274,6 +2274,9 @@
                     "web-dir": ".Build/Web",
                     "extension-key": "index",
                     "cms-package-dir": "{$vendor-dir}/typo3/cms"
+                },
+                "branch-alias": {
+                    "dev-main": "2.4.x-dev"
                 }
             },
             "autoload": {
@@ -2295,7 +2298,7 @@
             ],
             "support": {
                 "issues": "https://github.com/lochmueller/index/issues",
-                "source": "https://github.com/lochmueller/index/tree/2.3.0"
+                "source": "https://github.com/lochmueller/index/tree/2.4.0"
             },
             "funding": [
                 {
@@ -2307,7 +2310,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-07-10T08:20:49+00:00"
+            "time": "2026-09-25T18:43:57+00:00"
         },
         {
             "name": "lolli42/finediff",
