@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM composer:2@sha256:a5f59b9fd2faf31218632be4809dc6491761085e8064c31dc3b84378c48c248b AS composer-builder
+FROM composer:2@sha256:9715c7f69044da2a212a5fbde29ee7da24e364d426560ae6367b060236f847d7 AS composer-builder
 WORKDIR /app
 COPY composer.json composer.lock* ./
 COPY packages/ packages/
