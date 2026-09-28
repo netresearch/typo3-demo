@@ -124,23 +124,29 @@
    the preview must match the site. Only secondary differs from the site:
    white on #2f99a4 is 3.38:1, so it uses #257880, the Netresearch teal for
    a fill under white text (5.15:1). Hover and active move the fill away
-   from its text colour. */
-.btn-primary {
+   from its text colour. The outline buttons of the same name take the same
+   pair for their hover and active fill, which Bootstrap otherwise draws in
+   its own theme palette. */
+.btn-primary,
+.btn-outline-primary {
     --nrdemo-rte-fill: #585961;
     --nrdemo-rte-on-fill: #ffffff;
     --nrdemo-rte-fill-shift: #000000;
 }
-.btn-secondary {
+.btn-secondary,
+.btn-outline-secondary {
     --nrdemo-rte-fill: #257880;
     --nrdemo-rte-on-fill: #ffffff;
     --nrdemo-rte-fill-shift: #000000;
 }
-.btn-tertiary {
+.btn-tertiary,
+.btn-outline-tertiary {
     --nrdemo-rte-fill: #8bc0c6;
     --nrdemo-rte-on-fill: #000000;
     --nrdemo-rte-fill-shift: #ffffff;
 }
-.btn-quaternary {
+.btn-quaternary,
+.btn-outline-quaternary {
     --nrdemo-rte-fill: #1d6069;
     --nrdemo-rte-on-fill: #ffffff;
     --nrdemo-rte-fill-shift: #000000;
@@ -162,6 +168,18 @@
     --bs-btn-disabled-color: var(--nrdemo-rte-on-fill);
     --bs-btn-disabled-bg: var(--nrdemo-rte-fill);
     --bs-btn-disabled-border-color: var(--nrdemo-rte-fill);
+}
+
+.btn-outline-primary,
+.btn-outline-secondary,
+.btn-outline-tertiary,
+.btn-outline-quaternary {
+    --bs-btn-hover-color: var(--nrdemo-rte-on-fill);
+    --bs-btn-hover-bg: var(--nrdemo-rte-fill);
+    --bs-btn-hover-border-color: var(--nrdemo-rte-fill);
+    --bs-btn-active-color: var(--nrdemo-rte-on-fill);
+    --bs-btn-active-bg: color-mix(in srgb, var(--nrdemo-rte-fill) 85%, var(--nrdemo-rte-fill-shift));
+    --bs-btn-active-border-color: color-mix(in srgb, var(--nrdemo-rte-fill) 80%, var(--nrdemo-rte-fill-shift));
 }
 
 /* Tables ------------------------------------------------------------------- */

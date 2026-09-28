@@ -671,7 +671,9 @@ jobs:
 
       # The two steps above prove the sheets are wired in, not what is in them:
       # an emptied editor-scheme.css or a template that lost its inline icon
-      # still passes them. Check one marker per file in the built image.
+      # still passes them. Check markers that carry declared values in each
+      # file of the built image (a var() reference alone would also match the
+      # places that only read the variable).
       - name: Verify the backend theme files carry their rules
         run: |
           failed=0
@@ -683,9 +685,10 @@ jobs:
               failed=1
             fi
           }
-          check Resources/Public/Css/Rte/editor-scheme.css '--nrdemo-rte-fill'
-          check Resources/Public/Css/Rte/editor-scheme.css '--bs-table-striped-bg: color-mix'
-          check Resources/Public/Css/Backend/login.css 'outline-color: var(--typo3-text-color-primary)'
+          check Resources/Public/Css/Rte/editor-scheme.css '--nrdemo-rte-fill: #257880;'
+          check Resources/Public/Css/Rte/editor-scheme.css '--bs-btn-hover-bg: var(--nrdemo-rte-fill);'
+          check Resources/Public/Css/Rte/editor-scheme.css '--bs-table-striped-bg: color-mix(in srgb, var(--typo3-text-color-base) 5%, transparent);'
+          check Resources/Public/Css/Backend/login.css 'outline-color: var(--typo3-text-color-primary);'
           check Resources/Public/Css/demo-extension-card.css 'var(--typo3-component-border-color)'
           check Resources/Private/Templates/Widget/DemoExtensionCard.html 'alternativeMarkupIdentifier="inline"'
           exit $failed
