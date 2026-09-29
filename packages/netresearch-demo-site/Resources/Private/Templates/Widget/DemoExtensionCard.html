@@ -8,10 +8,13 @@
                 Each extension registers its own backend icon and none of them
                 reached the card, so eighteen cards looked identical. This is the
                 one piece of imagery already available — no new assets needed.
+                Inline, not an img element: the module icons draw their glyph
+                in currentColor, which an img element resolves to black -
+                invisible on the dark tile. Inline, the glyph takes the tile colour.
             </f:comment>
             <f:if condition="{configuration.iconIdentifier}">
                 <span class="nrdemo-card__icon">
-                    <core:icon identifier="{configuration.iconIdentifier}" size="medium" />
+                    <core:icon identifier="{configuration.iconIdentifier}" size="medium" alternativeMarkupIdentifier="inline" />
                 </span>
             </f:if>
             <p class="nrdemo-card__lead">{description}</p>

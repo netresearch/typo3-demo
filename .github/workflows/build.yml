@@ -602,6 +602,98 @@ jobs:
           fi
           echo "German backend language pack is in place."
 
+      # The RTE preset is assembled from three imports, and the YAML merge
+      # REPLACES a string with a list (and a list with a string) instead of
+      # appending. That silently dropped core's contents.css, so the editor text
+      # had no colour and rendered black on the dark editor surface (1.13:1).
+      # The demo sheet after it maps Bootstrap's colour classes to the scheme.
+      # Only the loaded preset shows the result, so load it the way TYPO3 does.
+      # No apostrophes in the PHP below: it is a single-quoted shell argument.
+      # It runs as www-data, like PHP-FPM: booting TYPO3 writes cache files, and
+      # root-owned ones would lock the web process out of them.
+      - name: Verify the RTE preset keeps the editor stylesheets
+        run: |
+          docker compose exec -T -u www-data web php -r '
+          foreach (["TYPO3_PATH_APP" => "/var/www", "TYPO3_PATH_ROOT" => "/var/www/public"] as $v => $p) {
+              putenv("$v=$p"); $_ENV[$v] = $_SERVER[$v] = $p;
+          }
+          $cl = require "/var/www/vendor/autoload.php";
+          \TYPO3\CMS\Core\Core\SystemEnvironmentBuilder::run(1, \TYPO3\CMS\Core\Core\SystemEnvironmentBuilder::REQUESTTYPE_CLI);
+          $container = \TYPO3\CMS\Core\Core\Bootstrap::init($cl, false);
+          if ($container instanceof \TYPO3\CMS\Core\DependencyInjection\FailsafeContainer) {
+              fwrite(STDERR, "ERROR: TYPO3 booted a failsafe container (config path " . \TYPO3\CMS\Core\Core\Environment::getConfigPath() . ")\n");
+              exit(1);
+          }
+          $preset = $GLOBALS["TYPO3_CONF_VARS"]["RTE"]["Presets"]["default"] ?? "";
+          $config = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Configuration\Loader\YamlFileLoader::class)->load($preset);
+          $css = (array)($config["editor"]["config"]["contentsCss"] ?? []);
+          echo "preset: " . $preset . "\n";
+          foreach ($css as $i => $c) { echo "  contentsCss[" . $i . "] " . $c . "\n"; }
+          $core = array_search("EXT:rte_ckeditor/Resources/Public/Css/contents.css", $css, true);
+          $bp = array_search("EXT:bootstrap_package/Resources/Public/Css/bootstrap5-rte.min.css", $css, true);
+          $img = array_search("EXT:rte_ckeditor_image/Resources/Public/Css/editor-image-widget.css", $css, true);
+          $demo = array_search("EXT:netresearch_demo_site/Resources/Public/Css/Rte/editor-scheme.css", $css, true);
+          $bad = [];
+          if ($core === false) { $bad[] = "core contents.css is missing - the editable follows no colour scheme"; }
+          if ($bp === false) { $bad[] = "bootstrap_package editor stylesheet is missing"; }
+          if ($img === false) { $bad[] = "rte_ckeditor_image widget stylesheet is missing"; }
+          if ($demo === false) { $bad[] = "the demo editor-scheme.css is missing - Bootstrap colour classes keep light-theme values"; }
+          if ($core !== false && $bp !== false && $core < $bp) { $bad[] = "core contents.css must come after the Bootstrap sheet, or its fixed light colours win"; }
+          if ($demo !== false && $bp !== false && $demo < $bp) { $bad[] = "editor-scheme.css must come after the Bootstrap sheet, or it overrides nothing"; }
+          if (count($css) !== count(array_unique($css))) { $bad[] = "a stylesheet is listed twice"; }
+          // A listed sheet that does not exist is dropped silently by the editor.
+          foreach ($css as $c) {
+              $abs = \TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName($c);
+              if ($abs === "" || !is_file($abs)) { $bad[] = "listed stylesheet does not exist: " . $c; }
+          }
+          foreach ($bad as $m) { echo "::error::" . $m . "\n"; }
+          exit($bad === [] ? 0 : 1);
+          '
+
+      # Core renders the login button as white text on the login highlight
+      # colour, #f80 unless configured (2.39:1). The site package sets a darker
+      # teal and a focus ring that stays visible on the dark login card. Both
+      # arrive only through the running configuration, so read the login page.
+      - name: Verify the backend login colours are applied
+        run: |
+          html=$(curl -sSfL --proto '=https' --proto-redir '=https' --cacert "$RUNNER_TEMP/caddy-root.crt" https://localhost/typo3/login)
+          failed=0
+          if ! grep -qE -- '--typo3-login-highlight:[[:space:]]*#257880' <<<"$html"; then
+            echo '::error::the login page carries no loginHighlightColor block with #257880 - core falls back to #f80'
+            failed=1
+          fi
+          if ! grep -qE '<link[^>]+Css/Backend/login\.css' <<<"$html"; then
+            echo '::error::Css/Backend/login.css is not linked on the login page - the focus ring falls back to the dark core default'
+            failed=1
+          fi
+          [ "$failed" = 0 ] && echo "Login highlight colour and focus-ring stylesheet are in place."
+          exit $failed
+
+      # The two steps above prove the sheets are wired in, not what is in them:
+      # an emptied editor-scheme.css or a template that lost its inline icon
+      # still passes them. Check markers that carry declared values in each
+      # file of the built image (a var() reference alone would also match the
+      # places that only read the variable).
+      - name: Verify the backend theme files carry their rules
+        run: |
+          failed=0
+          check() {
+            if docker compose exec -T web grep -qF -- "$2" "/var/www/packages/netresearch-demo-site/$1"; then
+              echo "ok: $1 contains $2"
+            else
+              echo "::error::$1 does not contain $2"
+              failed=1
+            fi
+          }
+          check Resources/Public/Css/Rte/editor-scheme.css '--nrdemo-rte-fill: #257880;'
+          check Resources/Public/Css/Rte/editor-scheme.css '--bs-btn-bg: var(--nrdemo-rte-fill);'
+          check Resources/Public/Css/Rte/editor-scheme.css '--bs-btn-hover-bg: var(--nrdemo-rte-fill);'
+          check Resources/Public/Css/Rte/editor-scheme.css '--bs-table-striped-bg: color-mix(in srgb, var(--typo3-text-color-base) 5%, transparent);'
+          check Resources/Public/Css/Backend/login.css 'outline-color: var(--typo3-text-color-primary);'
+          check Resources/Public/Css/demo-extension-card.css 'var(--typo3-component-border-color)'
+          check Resources/Private/Templates/Widget/DemoExtensionCard.html 'alternativeMarkupIdentifier="inline"'
+          exit $failed
+
       - name: Cleanup
         if: always()
         run: docker compose down -v
