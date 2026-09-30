@@ -127,7 +127,14 @@ ENV CHROMIUM_PATH=/usr/bin/chromium-browser \
 EXPOSE 80
 HEALTHCHECK --interval=30s --timeout=5s --start-period=300s --retries=3 \
     CMD wget -q -O /dev/null --header="Host: ${TYPO3_DOMAIN:-localhost}" http://127.0.0.1/ || exit 1
+# Root on purpose: entrypoint.sh chowns var, fileadmin, typo3temp and
+# config/system (all but typo3temp are named volumes in compose.yml) to
+# www-data before it execs the CMD. The php-fpm
+# pool workers run as www-data (the base image's www.conf) and the nginx
+# workers as nginx (the Alpine package's compiled-in --user).
+# nosemgrep: dockerfile.security.missing-user-entrypoint.missing-user-entrypoint
 ENTRYPOINT ["/entrypoint.sh"]
+# nosemgrep: dockerfile.security.missing-user.missing-user
 CMD ["sh", "-c", "php-fpm -D && nginx -g 'daemon off;'"]
 
 FROM runtime AS dev
