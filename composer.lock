@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "345b96ae6766c11bd541938a8439beb4",
+    "content-hash": "2d5b38d8bfd16cecd28aec2ad390b622",
     "packages": [
         {
             "name": "b13/ai-label",
@@ -2770,6 +2770,61 @@
                 "source": "https://github.com/netresearch/t3x-nr-browser-ai"
             },
             "time": "2026-08-13T16:05:04+00:00"
+        },
+        {
+            "name": "netresearch/nr-bug-reporter",
+            "version": "v0.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/netresearch/t3x-nr-bug-reporter.git",
+                "reference": "c79c600341ab278135b983056d02dfbbae64dd5d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/netresearch/t3x-nr-bug-reporter/zipball/c79c600341ab278135b983056d02dfbbae64dd5d",
+                "reference": "c79c600341ab278135b983056d02dfbbae64dd5d",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^8.2",
+                "typo3/cms-backend": "^13.4 || ^14.3",
+                "typo3/cms-core": "^13.4 || ^14.3"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^10.5 || ^11.0 || ^13.0"
+            },
+            "type": "typo3-cms-extension",
+            "extra": {
+                "typo3/cms": {
+                    "extension-key": "nr_bug_reporter"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Netresearch\\NrBugReporter\\": "Classes/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "Netresearch\\NrBugReporter\\Tests\\": "Tests/"
+                }
+            },
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "description": "TYPO3 backend bug reporter: attribute an error to its originating Composer package and open a prefilled issue on that package's upstream GitHub tracker. Adds an error-page report action and a proactive backend toolbar item.",
+            "keywords": [
+                "backend",
+                "bug-report",
+                "error-handling",
+                "github",
+                "typo3"
+            ],
+            "support": {
+                "issues": "https://github.com/netresearch/t3x-nr-bug-reporter/issues",
+                "source": "https://github.com/netresearch/t3x-nr-bug-reporter"
+            },
+            "time": "2026-10-01T05:26:44+00:00"
         },
         {
             "name": "netresearch/nr-image-sitemap",
