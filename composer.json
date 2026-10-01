@@ -16,6 +16,7 @@
         "netresearch/contexts": "^5.0.1",
         "netresearch/nr-ai-search": "dev-main",
         "netresearch/nr-browser-ai": "^0.7",
+        "netresearch/nr-bug-reporter": "^0.1",
         "netresearch/nr-image-sitemap": "^14.0",
         "netresearch/nr-landingpage": "^0.3",
         "netresearch/nr-llm": "^0.38",
@@ -74,6 +75,10 @@
         {
             "type": "vcs",
             "url": "https://github.com/netresearch/t3x-nr-temporal-cache.git"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/netresearch/t3x-nr-bug-reporter.git"
         },
         {
             "type": "vcs",
