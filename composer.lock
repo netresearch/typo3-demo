@@ -8,16 +8,16 @@
     "packages": [
         {
             "name": "b13/ai-label",
-            "version": "1.3.0",
+            "version": "1.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/b13/ai-label.git",
-                "reference": "38f6b11c2676265427cd1d357bb0079286338efc"
+                "reference": "349e6cc574f7c40db5b095828545b320d61bcebc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/b13/ai-label/zipball/38f6b11c2676265427cd1d357bb0079286338efc",
-                "reference": "38f6b11c2676265427cd1d357bb0079286338efc",
+                "url": "https://api.github.com/repos/b13/ai-label/zipball/349e6cc574f7c40db5b095828545b320d61bcebc",
+                "reference": "349e6cc574f7c40db5b095828545b320d61bcebc",
                 "shasum": ""
             },
             "require": {
@@ -46,7 +46,7 @@
                         "providesPackages": []
                     },
                     "app-dir": ".Build",
-                    "version": "1.3.0",
+                    "version": "1.4.0",
                     "web-dir": ".Build/Web",
                     "extension-key": "ai_label"
                 }
@@ -83,7 +83,7 @@
                 "issues": "https://github.com/b13/ai-label/issues",
                 "source": "https://github.com/b13/ai-label"
             },
-            "time": "2026-09-16T06:34:02+00:00"
+            "time": "2026-09-29T06:27:18+00:00"
         },
         {
             "name": "bacon/bacon-qr-code",
