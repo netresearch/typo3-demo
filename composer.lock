@@ -2446,16 +2446,16 @@
         },
         {
             "name": "mfd/ai-filemetadata",
-            "version": "1.6.3",
+            "version": "1.6.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/marketing-factory/ai-filemetadata.git",
-                "reference": "890d28f6b9346f5ce385c3136b660b161298e039"
+                "reference": "e59b3319d36b2287a2c188e5db407a285c53062c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/marketing-factory/ai-filemetadata/zipball/890d28f6b9346f5ce385c3136b660b161298e039",
-                "reference": "890d28f6b9346f5ce385c3136b660b161298e039",
+                "url": "https://api.github.com/repos/marketing-factory/ai-filemetadata/zipball/e59b3319d36b2287a2c188e5db407a285c53062c",
+                "reference": "e59b3319d36b2287a2c188e5db407a285c53062c",
                 "shasum": ""
             },
             "require": {
@@ -2514,9 +2514,9 @@
             ],
             "support": {
                 "issues": "https://github.com/marketing-factory/ai-filemetadata/issues",
-                "source": "https://github.com/marketing-factory/ai-filemetadata/tree/1.6.3"
+                "source": "https://github.com/marketing-factory/ai-filemetadata/tree/1.6.4"
             },
-            "time": "2026-09-04T09:19:55+00:00"
+            "time": "2026-09-30T15:32:08+00:00"
         },
         {
             "name": "netresearch/contexts",
