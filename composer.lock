@@ -8,20 +8,21 @@
     "packages": [
         {
             "name": "b13/ai-label",
-            "version": "1.4.0",
+            "version": "1.4.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/b13/ai-label.git",
-                "reference": "349e6cc574f7c40db5b095828545b320d61bcebc"
+                "reference": "ba9a665f75697b8305a797ad0d5699f2ce116566"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/b13/ai-label/zipball/349e6cc574f7c40db5b095828545b320d61bcebc",
-                "reference": "349e6cc574f7c40db5b095828545b320d61bcebc",
+                "url": "https://api.github.com/repos/b13/ai-label/zipball/ba9a665f75697b8305a797ad0d5699f2ce116566",
+                "reference": "ba9a665f75697b8305a797ad0d5699f2ce116566",
                 "shasum": ""
             },
             "require": {
                 "typo3/cms-backend": "^13.4 || ^14.3",
+                "typo3/cms-core": "^13.4 || ^14.3",
                 "typo3/cms-frontend": "^13.4 || ^14.3"
             },
             "require-dev": {
@@ -46,7 +47,7 @@
                         "providesPackages": []
                     },
                     "app-dir": ".Build",
-                    "version": "1.4.0",
+                    "version": "1.4.1",
                     "web-dir": ".Build/Web",
                     "extension-key": "ai_label"
                 }
@@ -83,7 +84,7 @@
                 "issues": "https://github.com/b13/ai-label/issues",
                 "source": "https://github.com/b13/ai-label"
             },
-            "time": "2026-09-29T06:27:18+00:00"
+            "time": "2026-09-30T10:53:06+00:00"
         },
         {
             "name": "bacon/bacon-qr-code",
