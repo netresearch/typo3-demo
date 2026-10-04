@@ -2230,16 +2230,16 @@
         },
         {
             "name": "lochmueller/index",
-            "version": "2.4.0",
+            "version": "2.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/lochmueller/index.git",
-                "reference": "fbe12f17af276f06ae1dab00cb8d42aa19287eb5"
+                "reference": "e0d222939363b471588aa8fc6ccaaea234012bcb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/lochmueller/index/zipball/fbe12f17af276f06ae1dab00cb8d42aa19287eb5",
-                "reference": "fbe12f17af276f06ae1dab00cb8d42aa19287eb5",
+                "url": "https://api.github.com/repos/lochmueller/index/zipball/e0d222939363b471588aa8fc6ccaaea234012bcb",
+                "reference": "e0d222939363b471588aa8fc6ccaaea234012bcb",
                 "shasum": ""
             },
             "require": {
@@ -2299,7 +2299,7 @@
             ],
             "support": {
                 "issues": "https://github.com/lochmueller/index/issues",
-                "source": "https://github.com/lochmueller/index/tree/2.4.0"
+                "source": "https://github.com/lochmueller/index/tree/2.5.0"
             },
             "funding": [
                 {
@@ -2311,7 +2311,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-09-25T18:43:57+00:00"
+            "time": "2026-10-01T18:04:09+00:00"
         },
         {
             "name": "lolli42/finediff",
