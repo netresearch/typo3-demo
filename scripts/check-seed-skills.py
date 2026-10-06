@@ -63,51 +63,68 @@ def pinned_bytes(sha: str, path: str) -> bytes | None:
     return r.stdout if r.returncode == 0 else None
 
 
+def check_frontmatter(rel: str, name: str, fm: dict[str, str], body: str) -> None:
+    if fm.get("name") != name:
+        fail(f"{rel}: frontmatter name {fm.get('name')!r} differs from directory {name!r}")
+    if not fm.get("description"):
+        fail(f"{rel}: empty description")
+    if "allowed-tools" in fm or "allowed_tools" in fm:
+        fail(f"{rel}: allowed-tools would restrict the agent's tools and mark the skill partial")
+    if any(re.search(p, body, re.I) for p in UNSUPPORTED):
+        fail(f"{rel}: body references scripts/assets, nr-llm marks it partial and strips lines")
+
+
+def check_pins(rel: str, raw: bytes, seed: str) -> list[str]:
+    pins = sorted(
+        set(
+            re.findall(
+                rf"raw\.githubusercontent\.com/netresearch/typo3-demo/([0-9a-f]{{40}})/{re.escape(rel)}", seed
+            )
+        )
+    )
+    if not pins:
+        fail(f"{rel}: the seed has no source URL pinned to a commit of this repository")
+    for sha in pins:
+        pinned = pinned_bytes(sha, rel)
+        if pinned is None:
+            fail(f"{rel}: pinned commit {sha} is not reachable")
+        elif pinned != raw:
+            fail(f"{rel}: differs from the file at pinned commit {sha}")
+    return pins
+
+
+def check_skill(skill: Path, seed: str) -> None:
+    rel = skill.relative_to(ROOT).as_posix()
+    raw = skill.read_bytes()
+    try:
+        fm, body = parse(raw.decode("utf-8"))
+    except ValueError as e:  # UnicodeDecodeError and json.JSONDecodeError are ValueErrors
+        fail(f"{rel}: {e}")
+        return
+    check_frontmatter(rel, skill.parent.name, fm, body)
+
+    body_bytes = len(body.encode("utf-8"))
+    block_bytes = len(f"### Skill: {fm.get('name')}\n{body}\n".encode("utf-8"))
+    if block_bytes > MAX_BYTES:
+        fail(f"{rel}: composed block is {block_bytes} bytes, budget is {MAX_BYTES}")
+
+    checksum = hashlib.sha256(body.encode("utf-8")).hexdigest()
+    if seed.count(sql_literal(body)) != 1:
+        fail(f"{rel}: the seed does not carry the body as exactly one SQL literal")
+    if seed.count(f"'{checksum}'") < 3:
+        fail(f"{rel}: body_checksum {checksum} is missing from the seed (INSERT, UPDATE and verification expected)")
+
+    pins = check_pins(rel, raw, seed)
+    print(f"{rel}: body {body_bytes} bytes, block {block_bytes}/{MAX_BYTES}, sha256 {checksum}, pins {pins}")
+
+
 def main() -> int:
     seed = SEED.read_text(encoding="utf-8")
     skills = sorted((ROOT / "data" / "skills").glob("*/SKILL.md"))
     if not skills:
         fail("no data/skills/*/SKILL.md found")
     for skill in skills:
-        rel = skill.relative_to(ROOT).as_posix()
-        raw = skill.read_bytes()
-        try:
-            fm, body = parse(raw.decode("utf-8"))
-        except (UnicodeDecodeError, ValueError, json.JSONDecodeError) as e:
-            fail(f"{rel}: {e}")
-            continue
-        name = skill.parent.name
-        if fm.get("name") != name:
-            fail(f"{rel}: frontmatter name {fm.get('name')!r} differs from directory {name!r}")
-        if not fm.get("description"):
-            fail(f"{rel}: empty description")
-        if "allowed-tools" in fm or "allowed_tools" in fm:
-            fail(f"{rel}: allowed-tools would restrict the agent's tools and mark the skill partial")
-        if any(re.search(p, body, re.I) for p in UNSUPPORTED):
-            fail(f"{rel}: body references scripts/assets, nr-llm marks it partial and strips lines")
-
-        body_bytes = len(body.encode("utf-8"))
-        block_bytes = len(f"### Skill: {fm.get('name')}\n{body}\n".encode("utf-8"))
-        if block_bytes > MAX_BYTES:
-            fail(f"{rel}: composed block is {block_bytes} bytes, budget is {MAX_BYTES}")
-
-        checksum = hashlib.sha256(body.encode("utf-8")).hexdigest()
-        if seed.count(sql_literal(body)) != 1:
-            fail(f"{rel}: the seed does not carry the body as exactly one SQL literal")
-        if seed.count(f"'{checksum}'") < 3:
-            fail(f"{rel}: body_checksum {checksum} is missing from the seed (INSERT, UPDATE and verification expected)")
-
-        pins = re.findall(
-            rf"raw\.githubusercontent\.com/netresearch/typo3-demo/([0-9a-f]{{40}})/{re.escape(rel)}", seed
-        )
-        if not pins:
-            fail(f"{rel}: the seed has no source URL pinned to a commit of this repository")
-        for sha in sorted(set(pins)):
-            if (pinned := pinned_bytes(sha, rel)) is None:
-                fail(f"{rel}: pinned commit {sha} is not reachable")
-            elif pinned != raw:
-                fail(f"{rel}: differs from the file at pinned commit {sha}")
-        print(f"{rel}: body {body_bytes} bytes, block {block_bytes}/{MAX_BYTES}, sha256 {checksum}, pins {sorted(set(pins))}")
+        check_skill(skill, seed)
     return 1 if errors else 0
 
 
