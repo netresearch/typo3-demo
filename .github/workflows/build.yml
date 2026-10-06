@@ -67,6 +67,22 @@ jobs:
       # silently emptied the attest matrix (run 31057574829).
       subjects: ${{ needs.build.outputs.sbom-subjects }}
 
+  # The seeded skills in data/seed-extensions.sql are checked by nr-llm at use
+  # time: a body whose sha256 differs from body_checksum is dropped without an
+  # error. Nothing else in this workflow loads the seed, so a wrong checksum, a
+  # body that drifted from data/skills/*/SKILL.md, or a pin to a commit that no
+  # longer holds the file would first show up as a chat that ignores its rules.
+  seed-skills:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # The job only reads files; the pinned-commit fetch is anonymous on a
+          # public repository, so the job token has no reason to sit in .git/config.
+          persist-credentials: false
+      - name: Verify the seeded skills match data/skills
+        run: python3 scripts/check-seed-skills.py
+
   # Runs on main *and* on pull requests, but gets its image from a different
   # place in each case. On main `build` has just published the image, so pulling
   # it validates the exact artifact the deploy will roll out. On a pull request
