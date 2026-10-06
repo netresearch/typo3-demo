@@ -76,6 +76,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # The job only reads files; the pinned-commit fetch is anonymous on a
+          # public repository, so the job token has no reason to sit in .git/config.
+          persist-credentials: false
       - name: Verify the seeded skills match data/skills
         run: python3 scripts/check-seed-skills.py
 
