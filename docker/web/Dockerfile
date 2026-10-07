@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 FROM composer:2@sha256:9715c7f69044da2a212a5fbde29ee7da24e364d426560ae6367b060236f847d7 AS composer-builder
 WORKDIR /app
-COPY composer.json composer.lock* ./
+COPY composer.json composer.lock* patches.lock.json ./
 COPY packages/ packages/
 # composer-patches applies patches/ during install; without the files in the
 # build context it falls back to a remote download with a null host and dies.

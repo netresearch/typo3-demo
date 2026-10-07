@@ -1,0 +1,29 @@
+{
+    "_hash": "c7f4486e383fa2dd9cf5bd0e742121225b43203fc83ac559a74ecac22f6ce58d",
+    "patches": {
+        "mfd/ai-filemetadata": [
+            {
+                "package": "mfd/ai-filemetadata",
+                "description": "Import ApplicationType from TYPO3\\CMS\\Core\\Http and treat a missing request as not frontend, so creating file metadata no longer fails (1.6.3)",
+                "url": "patches/mfd-ai-filemetadata-application-type.patch",
+                "sha256": "75f93decf6a7835bf88f8b522109b5b20ea73b09a1a3d6a49e7e25f57ddee15d",
+                "depth": 1,
+                "extra": {
+                    "provenance": "root"
+                }
+            }
+        ],
+        "thieleundklose/autotranslate": [
+            {
+                "package": "thieleundklose/autotranslate",
+                "description": "Local translator hook: route translations through a container-resolved \\DeepL\\Translator subclass (nr-llm bridge) instead of the DeepL client",
+                "url": "patches/thieleundklose-autotranslate-translator-hook.patch",
+                "sha256": "8dca3862be5b28af5ed3066344d72d4123bac91bb91a6e512606af486a6fc33f",
+                "depth": 1,
+                "extra": {
+                    "provenance": "root"
+                }
+            }
+        ]
+    }
+}
