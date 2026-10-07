@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6c5863cba69cf1e7cda2533b121e47dd",
+    "content-hash": "4a4b710fea78c198091989c99e2a30a7",
     "packages": [
         {
             "name": "b13/ai-label",
@@ -2671,19 +2671,19 @@
             "source": {
                 "type": "git",
                 "url": "git@git.netresearch.de:support/nr-ai-search.git",
-                "reference": "792fdbcd231c4f5a3172e5614e34a8a5b11f92d6"
+                "reference": "cd8517038919d2b4f48bb6ca7da6bc3c48c2e0bf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://git.netresearch.de/api/v4/projects/support%2Fnr-ai-search/repository/archive.zip?sha=792fdbcd231c4f5a3172e5614e34a8a5b11f92d6",
-                "reference": "792fdbcd231c4f5a3172e5614e34a8a5b11f92d6",
+                "url": "https://git.netresearch.de/api/v4/projects/support%2Fnr-ai-search/repository/archive.zip?sha=cd8517038919d2b4f48bb6ca7da6bc3c48c2e0bf",
+                "reference": "cd8517038919d2b4f48bb6ca7da6bc3c48c2e0bf",
                 "shasum": ""
             },
             "require": {
                 "centamiv/vektor": "^2.0",
                 "doctrine/dbal": "^4.4",
                 "league/commonmark": "^2.4",
-                "netresearch/nr-llm": "^0.34 || ^0.35 || ^0.36 || ^0.37 || ^0.38",
+                "netresearch/nr-llm": "^0.34 || ^0.35 || ^0.36 || ^0.37 || ^0.38 || ^0.39",
                 "php": "^8.3",
                 "psr/clock": "^1.0",
                 "symfony/ai-store": "^0.10 || ^0.11",
@@ -2770,7 +2770,7 @@
             "support": {
                 "source": "https://git.netresearch.de/support/nr-ai-search/-/tree/main"
             },
-            "time": "2026-09-27T01:54:54+02:00"
+            "time": "2026-10-07T23:59:59+02:00"
         },
         {
             "name": "netresearch/nr-browser-ai",
@@ -2971,23 +2971,24 @@
         },
         {
             "name": "netresearch/nr-landingpage",
-            "version": "v0.3.16",
+            "version": "v0.3.19",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/nr-landingpage.git",
-                "reference": "4e9c77f7f7a493b4fad80f130c060c076d047ba2"
+                "reference": "6c629582b65e6db2defed0d307d5e14523916daa"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/nr-landingpage/zipball/4e9c77f7f7a493b4fad80f130c060c076d047ba2",
-                "reference": "4e9c77f7f7a493b4fad80f130c060c076d047ba2",
+                "url": "https://api.github.com/repos/netresearch/nr-landingpage/zipball/6c629582b65e6db2defed0d307d5e14523916daa",
+                "reference": "6c629582b65e6db2defed0d307d5e14523916daa",
                 "shasum": ""
             },
             "require": {
-                "netresearch/nr-llm": "^0.34 || ^0.35 || ^0.36 || ^0.37 || ^0.38",
+                "netresearch/nr-llm": "^0.34 || ^0.35 || ^0.36 || ^0.37 || ^0.38 || ^0.39",
                 "php": "^8.2",
                 "typo3/cms-backend": "^13.4 || ^14.3",
-                "typo3/cms-core": "^13.4 || ^14.3"
+                "typo3/cms-core": "^13.4 || ^14.3",
+                "typo3/html-sanitizer": "^2.3.2"
             },
             "require-dev": {
                 "friendsofphp/php-cs-fixer": "^3.0",
@@ -3017,25 +3018,25 @@
             "license": [
                 "GPL-2.0-or-later"
             ],
-            "description": "TYPO3 Landing Page Generator powered by LLM",
+            "description": "Landing Page Generator - Generate landing pages with an LLM in a step-by-step backend wizard.",
             "support": {
                 "issues": "https://github.com/netresearch/nr-landingpage/issues",
-                "source": "https://github.com/netresearch/nr-landingpage/tree/v0.3.16"
+                "source": "https://github.com/netresearch/nr-landingpage/tree/v0.3.19"
             },
-            "time": "2026-09-29T23:22:47+00:00"
+            "time": "2026-10-07T22:22:51+00:00"
         },
         {
             "name": "netresearch/nr-llm",
-            "version": "v0.38.2",
+            "version": "v0.39.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/t3x-nr-llm.git",
-                "reference": "9acdcdc485867731db97cafdb1e530dba575891e"
+                "reference": "1c0e491ed8b4f72314ec9ac379794a550da4b37e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/t3x-nr-llm/zipball/9acdcdc485867731db97cafdb1e530dba575891e",
-                "reference": "9acdcdc485867731db97cafdb1e530dba575891e",
+                "url": "https://api.github.com/repos/netresearch/t3x-nr-llm/zipball/1c0e491ed8b4f72314ec9ac379794a550da4b37e",
+                "reference": "1c0e491ed8b4f72314ec9ac379794a550da4b37e",
                 "shasum": ""
             },
             "require": {
@@ -3073,7 +3074,7 @@
                     "Package": {
                         "providesPackages": []
                     },
-                    "version": "0.38.2",
+                    "version": "0.39.0",
                     "web-dir": ".Build/Web",
                     "extension-key": "nr_llm"
                 },
@@ -3097,7 +3098,7 @@
                     "role": "Developer"
                 }
             ],
-            "description": "Shared AI/LLM foundation for TYPO3 — centralized provider management, encrypted API keys, and ready-to-use services for chat, translation, vision, and embeddings",
+            "description": "LLM Foundation - Shared AI foundation: configure LLM providers once for every AI extension, with encrypted API keys and services for chat, translation, vision and embeddings.",
             "homepage": "https://github.com/netresearch/t3x-nr-llm",
             "keywords": [
                 "Gemini",
@@ -3118,26 +3119,26 @@
                 "issues": "https://github.com/netresearch/t3x-nr-llm/issues",
                 "source": "https://github.com/netresearch/t3x-nr-llm"
             },
-            "time": "2026-09-30T10:16:45+00:00"
+            "time": "2026-10-07T20:34:46+00:00"
         },
         {
             "name": "netresearch/nr-llm-compat",
-            "version": "v0.2.3",
+            "version": "v0.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/t3x-nr-llm-compat.git",
-                "reference": "4eaa195a4d1f582686812508d47f25e265874a09"
+                "reference": "b7b021ac4a74d5436d232d484460a087d17531cf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/t3x-nr-llm-compat/zipball/4eaa195a4d1f582686812508d47f25e265874a09",
-                "reference": "4eaa195a4d1f582686812508d47f25e265874a09",
+                "url": "https://api.github.com/repos/netresearch/t3x-nr-llm-compat/zipball/b7b021ac4a74d5436d232d484460a087d17531cf",
+                "reference": "b7b021ac4a74d5436d232d484460a087d17531cf",
                 "shasum": ""
             },
             "require": {
                 "composer-runtime-api": "^2.2",
                 "composer/semver": "^3.4",
-                "netresearch/nr-llm": "^0.35 || ^0.36 || ^0.37 || ^0.38",
+                "netresearch/nr-llm": "^0.35 || ^0.36 || ^0.37 || ^0.38 || ^0.39",
                 "php": "^8.2",
                 "symfony/console": "^6.4 || ^7.0 || ^8.0",
                 "symfony/dependency-injection": "^6.4 || ^7.0 || ^8.0",
@@ -3166,7 +3167,7 @@
             "type": "typo3-cms-extension",
             "extra": {
                 "typo3/cms": {
-                    "version": "0.2.3",
+                    "version": "0.3.0",
                     "web-dir": ".Build/Web",
                     "extension-key": "nr_llm_compat"
                 }
@@ -3187,7 +3188,7 @@
                     "role": "Developer"
                 }
             ],
-            "description": "Runtime LLM compatibility layer for third-party TYPO3 AI extensions — routes their provider calls through nr-llm without modifying them",
+            "description": "LLM Compatibility Layer - Routes the LLM provider calls of third-party AI extensions through nr-llm at runtime, so its provider management, budgets and telemetry apply without modifying them.",
             "homepage": "https://github.com/netresearch/t3x-nr-llm-compat",
             "keywords": [
                 "ai",
@@ -3202,24 +3203,24 @@
                 "issues": "https://github.com/netresearch/t3x-nr-llm-compat/issues",
                 "source": "https://github.com/netresearch/t3x-nr-llm-compat"
             },
-            "time": "2026-09-27T03:20:49+00:00"
+            "time": "2026-10-07T22:23:01+00:00"
         },
         {
             "name": "netresearch/nr-mcp-agent",
-            "version": "v0.15.3",
+            "version": "v0.15.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/t3x-nr-mcp-agent.git",
-                "reference": "952b6db86d7cbe1655d0b08268827102e4c85e54"
+                "reference": "8b455ef6555f0880390863c11bb3c783ad9c7db7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/t3x-nr-mcp-agent/zipball/952b6db86d7cbe1655d0b08268827102e4c85e54",
-                "reference": "952b6db86d7cbe1655d0b08268827102e4c85e54",
+                "url": "https://api.github.com/repos/netresearch/t3x-nr-mcp-agent/zipball/8b455ef6555f0880390863c11bb3c783ad9c7db7",
+                "reference": "8b455ef6555f0880390863c11bb3c783ad9c7db7",
                 "shasum": ""
             },
             "require": {
-                "netresearch/nr-llm": "^0.37 || ^0.38",
+                "netresearch/nr-llm": "^0.37 || ^0.38 || ^0.39",
                 "php": "^8.2",
                 "phpoffice/phpword": "^1.0",
                 "smalot/pdfparser": "^2.0",
@@ -3264,7 +3265,7 @@
                     "role": "Developer"
                 }
             ],
-            "description": "AI chat assistant for the TYPO3 backend using nr-llm and MCP server",
+            "description": "AI Chat - AI chat assistant for the TYPO3 backend, using nr-llm and an MCP server for tool calling.",
             "homepage": "https://github.com/netresearch/t3x-nr-mcp-agent",
             "keywords": [
                 "ai",
@@ -3279,7 +3280,7 @@
                 "issues": "https://github.com/netresearch/t3x-nr-mcp-agent/issues",
                 "source": "https://github.com/netresearch/t3x-nr-mcp-agent"
             },
-            "time": "2026-09-29T22:22:51+00:00"
+            "time": "2026-10-07T21:57:51+00:00"
         },
         {
             "name": "netresearch/nr-passkeys-be",
@@ -3440,21 +3441,22 @@
         },
         {
             "name": "netresearch/nr-repurpose",
-            "version": "v0.9.0",
+            "version": "v0.11.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/t3x-nr-repurpose.git",
-                "reference": "411ac7249b6022bd966ad805630d4b1943d5a742"
+                "reference": "7dada00dbfdbf787d7822eddc2944f68ded9412c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/t3x-nr-repurpose/zipball/411ac7249b6022bd966ad805630d4b1943d5a742",
-                "reference": "411ac7249b6022bd966ad805630d4b1943d5a742",
+                "url": "https://api.github.com/repos/netresearch/t3x-nr-repurpose/zipball/7dada00dbfdbf787d7822eddc2944f68ded9412c",
+                "reference": "7dada00dbfdbf787d7822eddc2944f68ded9412c",
                 "shasum": ""
             },
             "require": {
+                "ext-curl": "*",
                 "ext-json": "*",
-                "netresearch/nr-llm": "^0.35 || ^0.36 || ^0.37 || ^0.38",
+                "netresearch/nr-llm": "^0.35 || ^0.36 || ^0.37 || ^0.38 || ^0.39",
                 "netresearch/nr-vault": "^1.1",
                 "php": "^8.3",
                 "psr/log": "^3.0",
@@ -3465,7 +3467,8 @@
                 "typo3/cms-core": "^14.3",
                 "typo3/cms-extbase": "^14.3",
                 "typo3/cms-fluid": "^14.3",
-                "typo3/cms-frontend": "^14.3"
+                "typo3/cms-frontend": "^14.3",
+                "typo3/html-sanitizer": "^2.3.2"
             },
             "require-dev": {
                 "netresearch/typo3-ci-workflows": "^1.12",
@@ -3487,7 +3490,7 @@
                             "smalot/pdfparser": ""
                         }
                     },
-                    "version": "0.9.0",
+                    "version": "0.11.0",
                     "web-dir": ".Build/Web",
                     "extension-key": "nr_repurpose"
                 },
@@ -3512,13 +3515,13 @@
                     "role": "Developer"
                 }
             ],
-            "description": "Turn a webpage or PDF into a podcast, a diagram, an Instagram story, documents and ready-to-use texts - by Netresearch",
+            "description": "Content Repurpose - Turn a webpage or PDF into a podcast, a diagram, an Instagram story, documents and ready-to-use texts.",
             "homepage": "https://github.com/netresearch/t3x-nr-repurpose",
             "support": {
                 "issues": "https://github.com/netresearch/t3x-nr-repurpose/issues",
                 "source": "https://github.com/netresearch/t3x-nr-repurpose"
             },
-            "time": "2026-09-30T15:27:33+00:00"
+            "time": "2026-10-07T19:53:44+00:00"
         },
         {
             "name": "netresearch/nr-scheduler",
@@ -4065,20 +4068,20 @@
         },
         {
             "name": "netresearch/t3-cowriter",
-            "version": "v3.10.2",
+            "version": "v3.11.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/t3x-cowriter.git",
-                "reference": "2e01b6060e4dfd3eeb017af961274ceb6b376e53"
+                "reference": "ef4dc633032db5fcffe5b44cb08b5417e5f1b0b7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/t3x-cowriter/zipball/2e01b6060e4dfd3eeb017af961274ceb6b376e53",
-                "reference": "2e01b6060e4dfd3eeb017af961274ceb6b376e53",
+                "url": "https://api.github.com/repos/netresearch/t3x-cowriter/zipball/ef4dc633032db5fcffe5b44cb08b5417e5f1b0b7",
+                "reference": "ef4dc633032db5fcffe5b44cb08b5417e5f1b0b7",
                 "shasum": ""
             },
             "require": {
-                "netresearch/nr-llm": "^0.38",
+                "netresearch/nr-llm": "^0.38 || ^0.39",
                 "php": "^8.2",
                 "typo3/cms-backend": "^13.4 || ^14.3",
                 "typo3/cms-core": "^13.4 || ^14.3",
@@ -4138,7 +4141,7 @@
                     "homepage": "https://www.netresearch.de"
                 }
             ],
-            "description": "With the help of AI you can now work on a page together with a cowriter - a digital assistant that helps you to write your content.",
+            "description": "AI Cowriter - AI assistant in CKEditor that helps editors write page content.",
             "homepage": "https://github.com/netresearch/t3x-cowriter",
             "keywords": [
                 "ai",
@@ -4152,7 +4155,7 @@
                 "issues": "https://github.com/netresearch/t3x-cowriter/issues",
                 "source": "https://github.com/netresearch/t3x-cowriter"
             },
-            "time": "2026-09-29T22:32:20+00:00"
+            "time": "2026-10-07T17:43:39+00:00"
         },
         {
             "name": "netresearch/typo3-demo-site",
