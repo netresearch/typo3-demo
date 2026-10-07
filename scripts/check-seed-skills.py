@@ -118,6 +118,47 @@ def check_skill(skill: Path, seed: str) -> None:
     print(f"{rel}: body {body_bytes} bytes, block {block_bytes}/{MAX_BYTES}, sha256 {checksum}, pins {pins}")
 
 
+SOURCE_ROW = re.compile(r"\((\d+), 0, '[^']*', 'single_file', 'https://raw\.githubusercontent\.com/[^/]+/[^/]+/[^/]+/([^']+)'")
+SKILL_ROW = re.compile(r"\((\d+), 0, (\d+), '([^']*)', '[^']*', '")
+UPDATE_IDENTIFIER = re.compile(r"identifier = '([^']*)'")
+UPDATE_TARGET = re.compile(r"WHERE uid = (\d+) AND source = (\d+)$")
+
+
+def skill_updates(seed: str) -> list[tuple[int, int, str]]:
+    # Each re-assert statement is cut out first, so the patterns below never scan
+    # across statement boundaries.
+    found = []
+    for part in seed.split("UPDATE tx_nrllm_skill SET ")[1:]:
+        statement = part.split(";", 1)[0]
+        ident, target = UPDATE_IDENTIFIER.search(statement), UPDATE_TARGET.search(statement)
+        if target and not ident:
+            # Without the identifier the re-assert no longer migrates a row seeded
+            # with the bare path, and the next sync duplicates it again.
+            fail(f"tx_nrllm_skill {target.group(1)} (UPDATE): re-assert does not set identifier")
+        elif ident and target:
+            found.append((int(target.group(1)), int(target.group(2)), ident.group(1)))
+    return found
+
+
+def check_identifiers(seed: str) -> None:
+    # SkillSyncService (t3x-nr-llm v0.38.2, sync()) keys a synced skill as
+    # "<source uid>:<path>" and looks it up by exactly that. A seeded row with any
+    # other identifier is not found by the next sync, which adds a duplicate.
+    paths = {int(uid): path for uid, path in SOURCE_ROW.findall(seed)}
+    rows = [(int(u), int(s), i, "INSERT") for u, s, i in SKILL_ROW.findall(seed)]
+    rows += [(u, s, i, "UPDATE") for u, s, i in skill_updates(seed)]
+    if not paths or not rows:
+        fail("no seeded single_file source or skill row found; the identifier check matched nothing")
+    for uid, source, identifier, where in rows:
+        if source not in paths:
+            fail(f"tx_nrllm_skill {uid} ({where}): source {source} is not a seeded single_file source")
+            continue
+        expected = f"{source}:{paths[source]}"
+        if identifier != expected:
+            fail(f"tx_nrllm_skill {uid} ({where}): identifier {identifier!r}, a sync looks up {expected!r}")
+    print(f"identifiers: {len(rows)} seeded skill statements checked against <source>:<path>")
+
+
 def main() -> int:
     seed = SEED.read_text(encoding="utf-8")
     skills = sorted((ROOT / "data" / "skills").glob("*/SKILL.md"))
@@ -125,6 +166,7 @@ def main() -> int:
         fail("no data/skills/*/SKILL.md found")
     for skill in skills:
         check_skill(skill, seed)
+    check_identifiers(seed)
     return 1 if errors else 0
 
 
