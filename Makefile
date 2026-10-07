@@ -54,7 +54,14 @@ update: ## Update code without purging data
 	# forever. The reverted EXT:solr spike kept its container alive for 8 days and
 	# grew a 29.6GB writable layer, which filled the disk and broke the deploy.
 	$(COMPOSE) up -d --remove-orphans --wait --wait-timeout 180 || $(COMPOSE) up -d --remove-orphans
-	$(TYPO3) database:updateschema || true
+	# No separate schema step here. The database compare runs inside
+	# `extension:setup`, which the web entrypoint calls on every container start
+	# (the `up` above) and which this target calls again further down: TYPO3
+	# 14.3's PackageSetup applies the add, change, create_table and change_table
+	# suggestions and never drops. A `database:updateschema` line stood here
+	# until 2026-10; that command comes from typo3-console, which this project
+	# does not install, so it printed "There are no commands defined in the
+	# database namespace" and the `|| true` hid it on every deploy.
 	# Three steps in a cycle, and the order is the whole point:
 	#
 	#   seed      creates be_users 991 and its group — the identity
