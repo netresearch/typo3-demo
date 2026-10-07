@@ -30,6 +30,12 @@
 -- to go. The next page created in the backend therefore took uid 183, and the
 -- INSERT IGNORE for the new demo page skipped in silence, leaving the page
 -- simply absent. That cost three deploy cycles (PRs #91, #94, #95).
+--
+-- The nr-llm skill tables (tx_nrllm_skill_source, tx_nrllm_skill) follow the
+-- same scheme with their own 9999 sentinel; see "uid band sentinel for the
+-- nr-llm skill tables" below. They were the next place the defect struck: a
+-- backend sync created two skills at 9413/9414, exactly where the next seeded
+-- skill wanted to go.
 
 -- =============================================================================
 -- Why every bodytext INSERT below ends in ON DUPLICATE KEY UPDATE
@@ -4454,6 +4460,51 @@ UPDATE tt_content SET bodytext = '<div class="rounded-3 p-4 mt-4" style="backgro
 -- after the frontmatter block, left-trimmed. SkillComposer verifies it with
 -- hash_equals before use, so a wrong value does not degrade — it drops the
 -- skill entirely.
+--
+-- identifier is "<source uid>:<path>", byte for byte what SkillSyncService
+-- (nr-llm v0.38.2, sync() lines 113 and 127) builds and then looks up with
+-- findBySourceAndIdentifier(). The seed originally wrote the bare path. A sync
+-- of 9401/9402 then found no row, added a second copy of each skill at the next
+-- AUTO_INCREMENT (9413, 9414), and orphaned and disabled the seeded rows,
+-- whose identifier it had not discovered; only the re-assert below switched
+-- them back on at each deploy. With the prefixed form a sync updates the
+-- seeded row in place. The existing rows are migrated by the re-assert.
+
+-- =============================================================================
+-- uid band sentinel for the nr-llm skill tables
+-- =============================================================================
+-- Same mechanism and reasoning as the pages/tt_content sentinel above (read
+-- its comment): one soft-deleted row at 9999 holds AUTO_INCREMENT at
+-- 10000, so a backend sync or a source an editor creates lands at 10000 and up,
+-- never on a 94xx uid this file seeds. Without it, the sync that followed the
+-- seeding of 9411/9412 took 9413 and 9414, and the next seeded skill at 9413
+-- was skipped by INSERT IGNORE.
+--
+-- deleted = 1 keeps the rows out of nr-llm: both TCA tables declare
+-- ctrl.delete, and every read in nr-llm v0.38.2 goes through Extbase
+-- repositories, which apply it (no query on these tables removes the
+-- restrictions). enabled = 0 and source = 0 on top, so a sentinel restored from
+-- the recycler is still an inert row. The identity is an ASCII
+-- title/identifier, which survives a wrong client charset unchanged.
+SET @skill_sentinel = 'seed-uid-band-sentinel';
+
+INSERT IGNORE INTO tx_nrllm_skill_source
+    (uid, pid, title, type, url, enabled, tstamp, crdate, deleted, hidden)
+VALUES (9999, 0, @skill_sentinel, 'single_file', '', 0, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 1);
+
+INSERT IGNORE INTO tx_nrllm_skill
+    (uid, pid, source, identifier, name, enabled, orphaned, tstamp, crdate, deleted, hidden)
+VALUES (9999, 0, 0, @skill_sentinel, @skill_sentinel, 0, 0, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 1);
+
+UPDATE tx_nrllm_skill_source SET enabled = 0, deleted = 1, hidden = 1
+ WHERE uid = 9999 AND title = @skill_sentinel;
+UPDATE tx_nrllm_skill SET enabled = 0, deleted = 1, hidden = 1
+ WHERE uid = 9999 AND identifier = @skill_sentinel AND source = 0;
+
+-- Only ever raises the counter; see the ALTERs after the pages sentinel above.
+ALTER TABLE tx_nrllm_skill_source AUTO_INCREMENT = 10000;
+ALTER TABLE tx_nrllm_skill        AUTO_INCREMENT = 10000;
+
 INSERT IGNORE INTO tx_nrllm_skill_source
     (uid, pid, title, type, url, ref, pinned_sha,
      github_token, trust_level, sync_status, last_synced, enabled, tstamp, crdate, deleted, hidden)
@@ -4468,7 +4519,7 @@ INSERT IGNORE INTO tx_nrllm_skill
      body, body_checksum, source_sha, support_status, trust_level, enabled,
      tstamp, crdate, deleted, hidden)
 VALUES
-    (9411, 0, 9401, 'skills/german-technical-writing/SKILL.md', 'german-technical-writing', 'Use when writing German-language prose longer than one sentence for Jira tickets, internal German wiki/spec docs, or team-chat to German-speaking colleagues (Slack, Matrix, Teams). Invoke BEFORE composing. Covers anglicism verbs (failt, triggern, returnen), calqued collocations and idioms (blockiert auf, macht Sinn, in 2026), loanword genders (der Commit, die Pipeline), per-artifact register (impersonal for Jira/wiki, ich/du for chat), German typography (Gedankenstrich, Anführungszeichen, Durchkopplung), and AI-typical rhythm (restatement, symmetric paragraphs, summary closers). Skip for commit messages, MR/PR descriptions, release notes (English by team convention), conversational chat replies, or single-line acknowledgments. If you catch yourself thinking \'my German is probably fine here\' for anything longer than a sentence — invoke this skill.',
+    (9411, 0, 9401, '9401:skills/german-technical-writing/SKILL.md', 'german-technical-writing', 'Use when writing German-language prose longer than one sentence for Jira tickets, internal German wiki/spec docs, or team-chat to German-speaking colleagues (Slack, Matrix, Teams). Invoke BEFORE composing. Covers anglicism verbs (failt, triggern, returnen), calqued collocations and idioms (blockiert auf, macht Sinn, in 2026), loanword genders (der Commit, die Pipeline), per-artifact register (impersonal for Jira/wiki, ich/du for chat), German typography (Gedankenstrich, Anführungszeichen, Durchkopplung), and AI-typical rhythm (restatement, symmetric paragraphs, summary closers). Skip for commit messages, MR/PR descriptions, release notes (English by team convention), conversational chat replies, or single-line acknowledgments. If you catch yourself thinking \'my German is probably fine here\' for anything longer than a sentence — invoke this skill.',
      '# German Technical Writing
 
 Natural German technical register for German-audience artifacts — not English-first composition phrase-translated into DeepL-German.
@@ -4512,7 +4563,7 @@ Noun rule: if a native German developer would *say* the term verbatim in a revie
 Commit messages, MR/PR descriptions, release notes and internal IT-project tickets (NRS, NRT, SRV\\*, IO\\*, LIC) are English — skip them. This skill governs *how* to write German, not *whether*.
 ', '358350ff236dacc6575f4b57efd3217314a1b9199b10b8b9a44129c00b0b6cdf', '675a4911dc729b6aadbaeb60b5b28dc069a2a656', 'full', 'first_party', 1,
      UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0),
-    (9412, 0, 9402, 'skills/typo3-typoscript-ref/SKILL.md', 'typo3-typoscript-ref', 'Use when writing, editing, reviewing or debugging TypoScript, TSconfig or Fluid templates in TYPO3 projects (v14.3 LTS is the current target). Also use for code reviews of .typoscript, .tsconfig and Fluid .html files, v13->v14 migration (INCLUDE_TYPOSCRIPT->@import, userFunc opt-in #108054, getTSFE() condition removed, updateReferenceIndex toggle removed, site.locale expression), Fluid 4->5 breaking changes, and when suggesting improvements or checking for deprecated patterns.',
+    (9412, 0, 9402, '9402:skills/typo3-typoscript-ref/SKILL.md', 'typo3-typoscript-ref', 'Use when writing, editing, reviewing or debugging TypoScript, TSconfig or Fluid templates in TYPO3 projects (v14.3 LTS is the current target). Also use for code reviews of .typoscript, .tsconfig and Fluid .html files, v13->v14 migration (INCLUDE_TYPOSCRIPT->@import, userFunc opt-in #108054, getTSFE() condition removed, updateReferenceIndex toggle removed, site.locale expression), Fluid 4->5 breaking changes, and when suggesting improvements or checking for deprecated patterns.',
      '# TYPO3 TypoScript, TSconfig and Fluid Reference
 
 Version-aware local lookup with always-on best practices.
@@ -4586,12 +4637,15 @@ scripts/lookup.sh --update
      UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0);
 
 -- Re-assert: INSERT IGNORE never repairs an existing row and skips in silence
--- when the uid is taken.
+-- when the uid is taken. identifier is part of it, which migrates rows seeded
+-- with the bare path to the form a sync looks up.
 UPDATE tx_nrllm_skill SET enabled = 1, orphaned = 0, hidden = 0, deleted = 0,
+       identifier = '9401:skills/german-technical-writing/SKILL.md',
        body_checksum = '358350ff236dacc6575f4b57efd3217314a1b9199b10b8b9a44129c00b0b6cdf' WHERE uid = 9411 AND source = 9401;
 UPDATE tx_nrllm_skill_source SET enabled = 1, hidden = 0, deleted = 0,
        sync_status = 'synced', pinned_sha = '675a4911dc729b6aadbaeb60b5b28dc069a2a656' WHERE uid = 9401;
 UPDATE tx_nrllm_skill SET enabled = 1, orphaned = 0, hidden = 0, deleted = 0,
+       identifier = '9402:skills/typo3-typoscript-ref/SKILL.md',
        body_checksum = '7ef3a934e73e8a8e4b232e6bff3ebc9cd896538f43b7084ea3eb17570bb47c2e' WHERE uid = 9412 AND source = 9402;
 UPDATE tx_nrllm_skill_source SET enabled = 1, hidden = 0, deleted = 0,
        sync_status = 'synced', pinned_sha = '80e42feaf507fb52b561b571ae25f3d2d5c59f12' WHERE uid = 9402;
@@ -5240,7 +5294,7 @@ INSERT IGNORE INTO tx_nrllm_skill
      body, body_checksum, source_sha, support_status, trust_level, enabled,
      tstamp, crdate, deleted, hidden)
 VALUES
-    (9413, 0, 9403, 'data/skills/editorial-response-guidelines/SKILL.md', 'editorial-response-guidelines', 'Editorial language rules for the Backend AI Chat. Answers, approval requests, warnings and system messages are written in editor language instead of tool and field names: result first, numbers up front, priorities, concrete action names, impact and before/after shown. German-language rules (27 numbered rules).',
+    (9421, 0, 9403, '9403:data/skills/editorial-response-guidelines/SKILL.md', 'editorial-response-guidelines', 'Editorial language rules for the Backend AI Chat. Answers, approval requests, warnings and system messages are written in editor language instead of tool and field names: result first, numbers up front, priorities, concrete action names, impact and before/after shown. German-language rules (27 numbered rules).',
      @editorial_skill_body, '32bf24a4179e67a29d39e597c2c25c267e20ce0a30b7504237af80f96851fdbd', 'c75c7d5e8d1826a52e9b611aaa0898f7c48f6de0', 'full', 'first_party', 1,
      UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0);
 
@@ -5249,28 +5303,115 @@ VALUES
 UPDATE tx_nrllm_skill SET name = 'editorial-response-guidelines', description = 'Editorial language rules for the Backend AI Chat. Answers, approval requests, warnings and system messages are written in editor language instead of tool and field names: result first, numbers up front, priorities, concrete action names, impact and before/after shown. German-language rules (27 numbered rules).',
        body = @editorial_skill_body, body_checksum = '32bf24a4179e67a29d39e597c2c25c267e20ce0a30b7504237af80f96851fdbd', source_sha = 'c75c7d5e8d1826a52e9b611aaa0898f7c48f6de0',
        support_status = 'full', trust_level = 'first_party',
-       enabled = 1, orphaned = 0, hidden = 0, deleted = 0 WHERE uid = 9413 AND source = 9403;
+       identifier = '9403:data/skills/editorial-response-guidelines/SKILL.md',
+       enabled = 1, orphaned = 0, hidden = 0, deleted = 0 WHERE uid = 9421 AND source = 9403;
 UPDATE tx_nrllm_skill_source SET url = 'https://raw.githubusercontent.com/netresearch/typo3-demo/c75c7d5e8d1826a52e9b611aaa0898f7c48f6de0/data/skills/editorial-response-guidelines/SKILL.md', ref = 'c75c7d5e8d1826a52e9b611aaa0898f7c48f6de0',
        enabled = 1, hidden = 0, deleted = 0,
        sync_status = 'synced', pinned_sha = 'c75c7d5e8d1826a52e9b611aaa0898f7c48f6de0' WHERE uid = 9403;
 
--- Attach it to the Backend AI Chat configuration (created in step 1 of the
--- backend-ai-chat block above). No unique key on the MM table, so the guard is
--- NOT EXISTS; running the seed again adds nothing.
+-- =============================================================================
+-- Repair what the first editorial seed and the sync duplicates left behind
+-- =============================================================================
+-- The editorial skill was first seeded at uid 9413. On the production instance
+-- a sync had already put a copy of german-technical-writing there (see the
+-- identifier note on the skills block above), so INSERT IGNORE skipped, and the
+-- attach statement, which did not check whose row 9413 was, attached that copy
+-- to the Backend AI Chat instead. The skill now lives at 9421, above the uids
+-- the sync took and below the sentinel.
+--
+-- What this block changes, and the proof each change rests on:
+--   1. The one MM row that first attach statement wrote, if it points at a
+--      skill that is not the editorial one: configuration backend-ai-chat ->
+--      9413, sorting 1/0, skill source other than 9403. Deleted.
+--   2. Live rows that duplicate a seeded skill: same source AND same
+--      body_checksum as a seeded row, which is itself intact and ours (uid,
+--      source and checksum all match). Soft-deleted (deleted = 1, enabled = 0),
+--      so the uid stays occupied and the row can be restored from the recycler.
+--      This includes an editorial row left at 9413 by the first seed on an
+--      instance where that insert did succeed.
+--   3. MM rows that point at such a duplicate are moved onto the seeded row, so
+--      an attachment an operator made keeps its meaning; where the configuration
+--      already has the seeded row, the duplicate attachment is dropped.
+-- Nothing else is written. A row that differs from the seeded one in source or
+-- checksum is not a provable duplicate and is left alone; the verification at
+-- the end reports it.
+DROP TEMPORARY TABLE IF EXISTS seed_owned_skill;
+CREATE TEMPORARY TABLE seed_owned_skill (
+    uid           int unsigned NOT NULL PRIMARY KEY,
+    source        int unsigned NOT NULL,
+    body_checksum varchar(64)  NOT NULL
+);
+INSERT INTO seed_owned_skill VALUES
+    (9411, 9401, '358350ff236dacc6575f4b57efd3217314a1b9199b10b8b9a44129c00b0b6cdf'),
+    (9412, 9402, '7ef3a934e73e8a8e4b232e6bff3ebc9cd896538f43b7084ea3eb17570bb47c2e'),
+    (9421, 9403, '32bf24a4179e67a29d39e597c2c25c267e20ce0a30b7504237af80f96851fdbd');
+
+-- 1. Must run before step 3, which would otherwise move this row onto 9411.
+DELETE m
+  FROM tx_nrllm_configuration_skill_mm m
+  JOIN tx_nrllm_configuration c ON c.uid = m.uid_local
+  JOIN tx_nrllm_skill k         ON k.uid = m.uid_foreign
+ WHERE m.uid_foreign = 9413 AND m.sorting = 1 AND m.sorting_foreign = 0
+   AND k.source <> 9403
+   AND c.uid = (SELECT MIN(x.uid) FROM tx_nrllm_configuration x
+                 WHERE x.identifier = 'backend-ai-chat' AND x.deleted = 0);
+
+-- The duplicates, resolved once: duplicate uid -> seeded uid. Steps 2 and 3
+-- both read this list, so they cannot disagree about which rows it covers.
+DROP TEMPORARY TABLE IF EXISTS seed_skill_duplicate;
+CREATE TEMPORARY TABLE seed_skill_duplicate (
+    uid      int unsigned NOT NULL PRIMARY KEY,
+    original int unsigned NOT NULL
+);
+INSERT INTO seed_skill_duplicate (uid, original)
+SELECT d.uid, s.uid
+  FROM seed_owned_skill s
+  JOIN tx_nrllm_skill o ON o.uid = s.uid AND o.source = s.source
+                       AND o.body_checksum = s.body_checksum AND o.deleted = 0
+  JOIN tx_nrllm_skill d ON d.source = s.source AND d.body_checksum = s.body_checksum
+                       AND d.uid <> s.uid AND d.deleted = 0;
+
+-- 3. Re-point attachments first, while the duplicates are still identifiable.
+--    IGNORE: where (configuration, seeded uid) already exists the row is kept
+--    on the duplicate and dropped by the DELETE that follows.
+UPDATE IGNORE tx_nrllm_configuration_skill_mm m
+  JOIN seed_skill_duplicate d ON d.uid = m.uid_foreign
+   SET m.uid_foreign = d.original;
+DELETE m
+  FROM tx_nrllm_configuration_skill_mm m
+  JOIN seed_skill_duplicate d ON d.uid = m.uid_foreign;
+
+-- 2. Retire the duplicates.
+UPDATE tx_nrllm_skill k
+  JOIN seed_skill_duplicate d ON d.uid = k.uid
+   SET k.deleted = 1, k.enabled = 0, k.tstamp = UNIX_TIMESTAMP();
+
+-- Attach the editorial skill to the Backend AI Chat configuration (created in
+-- step 1 of the backend-ai-chat block above). Guarded by NOT EXISTS so running
+-- the seed again adds nothing, and by the skill row being ours: the first
+-- version of this statement attached whatever sat on its uid.
 INSERT INTO tx_nrllm_configuration_skill_mm (uid_local, uid_foreign, sorting, sorting_foreign)
-SELECT c.uid, 9413, 1, 0
+SELECT c.uid, 9421, 1, 0
   FROM tx_nrllm_configuration c
  WHERE c.uid = (SELECT MIN(x.uid) FROM tx_nrllm_configuration x
                  WHERE x.identifier = 'backend-ai-chat' AND x.deleted = 0)
+   AND EXISTS (SELECT 1 FROM tx_nrllm_skill k
+                WHERE k.uid = 9421 AND k.source = 9403 AND k.name = 'editorial-response-guidelines')
    AND NOT EXISTS (SELECT 1 FROM tx_nrllm_configuration_skill_mm m
-                    WHERE m.uid_local = c.uid AND m.uid_foreign = 9413);
+                    WHERE m.uid_local = c.uid AND m.uid_foreign = 9421);
 
 -- TCA keeps the number of related rows in the configuration's own `skills` column.
 -- Counted from the MM table, not set to 1, so a skill an operator attaches later
--- in the backend survives a re-seed.
+-- in the backend survives a re-seed. Recounted for every configuration this
+-- block can have touched: the Backend AI Chat, and any configuration holding a
+-- seeded skill, which is where step 3 moves attachments to.
 UPDATE tx_nrllm_configuration c
    SET c.skills = (SELECT COUNT(*) FROM tx_nrllm_configuration_skill_mm m WHERE m.uid_local = c.uid)
- WHERE c.identifier = 'backend-ai-chat' AND c.deleted = 0;
+ WHERE c.deleted = 0
+   AND (c.identifier = 'backend-ai-chat'
+        OR EXISTS (SELECT 1 FROM tx_nrllm_configuration_skill_mm m2
+                     JOIN seed_owned_skill s ON s.uid = m2.uid_foreign
+                    WHERE m2.uid_local = c.uid));
 
 -- =============================================================================
 -- One header per extension page, not two
@@ -6699,17 +6840,42 @@ SELECT 'SEED-PROBLEM: tx_nrllm_skill_source 9403 editorial-response-guidelines m
  WHERE NOT EXISTS (SELECT 1 FROM tx_nrllm_skill_source
                     WHERE uid = 9403 AND title = 'editorial-response-guidelines' AND deleted = 0 AND enabled = 1)
 UNION ALL
-SELECT 'SEED-PROBLEM: tx_nrllm_skill 9413 editorial-response-guidelines missing, foreign, disabled or body_checksum differs from SHA2(body)' FROM DUAL
+SELECT 'SEED-PROBLEM: tx_nrllm_skill 9421 editorial-response-guidelines missing, foreign, disabled or body_checksum differs from SHA2(body)' FROM DUAL
  WHERE NOT EXISTS (SELECT 1 FROM tx_nrllm_skill
-                    WHERE uid = 9413 AND source = 9403 AND name = 'editorial-response-guidelines'
+                    WHERE uid = 9421 AND source = 9403 AND name = 'editorial-response-guidelines'
+                      AND identifier = '9403:data/skills/editorial-response-guidelines/SKILL.md'
                       AND deleted = 0 AND enabled = 1 AND orphaned = 0
                       AND body_checksum = '32bf24a4179e67a29d39e597c2c25c267e20ce0a30b7504237af80f96851fdbd'
                       AND body_checksum = SHA2(body, 256))
 UNION ALL
-SELECT 'SEED-PROBLEM: skill 9413 editorial-response-guidelines is not attached to backend-ai-chat' FROM DUAL
+SELECT 'SEED-PROBLEM: skill 9421 editorial-response-guidelines is not attached to backend-ai-chat' FROM DUAL
  WHERE NOT EXISTS (SELECT 1 FROM tx_nrllm_configuration_skill_mm m
                      JOIN tx_nrllm_configuration c ON c.uid = m.uid_local
-                    WHERE m.uid_foreign = 9413 AND c.identifier = 'backend-ai-chat' AND c.deleted = 0)
+                    WHERE m.uid_foreign = 9421 AND c.identifier = 'backend-ai-chat' AND c.deleted = 0)
+UNION ALL
+-- The two skills seeded first, which nothing verified so far. identifier is
+-- checked because the bare-path form is what let a sync duplicate them.
+SELECT CONCAT('SEED-PROBLEM: tx_nrllm_skill ', e.uid, ' ', e.name, ' missing, foreign, disabled, orphaned or not identified as ', e.identifier)
+  FROM (SELECT 9411 AS uid, 9401 AS source, 'german-technical-writing' AS name,
+               '9401:skills/german-technical-writing/SKILL.md' AS identifier
+        UNION ALL
+        SELECT 9412, 9402, 'typo3-typoscript-ref', '9402:skills/typo3-typoscript-ref/SKILL.md') e
+ WHERE NOT EXISTS (SELECT 1 FROM tx_nrllm_skill k
+                    WHERE k.uid = e.uid AND k.source = e.source AND k.name = e.name
+                      AND k.identifier = e.identifier
+                      AND k.deleted = 0 AND k.enabled = 1 AND k.orphaned = 0)
+UNION ALL
+-- The failure behind the first editorial deploy, stated directly: more than one
+-- live skill per seeded source with the same body. A sync that duplicates a
+-- seeded skill shows up here even when no seeded uid is in the way, and before
+-- the copy can be attached anywhere by mistake.
+SELECT CONCAT('SEED-PROBLEM: tx_nrllm_skill source ', d.source, ' holds ', d.n,
+              ' live skills with body_checksum ', d.body_checksum, ' (uids ', d.uids, ')')
+  FROM (SELECT source, body_checksum, COUNT(*) AS n, GROUP_CONCAT(uid ORDER BY uid) AS uids
+          FROM tx_nrllm_skill
+         WHERE deleted = 0 AND source IN (9401, 9402, 9403)
+         GROUP BY source, body_checksum
+        HAVING COUNT(*) > 1) d
 UNION ALL
 -- Workspace records survived the purge in step 3c2. Either a table outside the
 -- explicit list above grew them, or something re-created a workspace between
@@ -6807,6 +6973,15 @@ SELECT 'SEED-PROBLEM: tt_content 9999 uid band sentinel missing or foreign'
   FROM (SELECT 9999 AS uid) s
   LEFT JOIN tt_content c ON c.uid = s.uid AND c.header = @sentinel_title
  WHERE c.uid IS NULL
+UNION ALL
+SELECT 'SEED-PROBLEM: tx_nrllm_skill_source 9999 uid band sentinel missing or foreign'
+  FROM DUAL
+ WHERE NOT EXISTS (SELECT 1 FROM tx_nrllm_skill_source WHERE uid = 9999 AND title = @skill_sentinel)
+UNION ALL
+SELECT 'SEED-PROBLEM: tx_nrllm_skill 9999 uid band sentinel missing or foreign'
+  FROM DUAL
+ WHERE NOT EXISTS (SELECT 1 FROM tx_nrllm_skill
+                    WHERE uid = 9999 AND identifier = @skill_sentinel AND source = 0)
 UNION ALL
 -- Both halves of the gate from step 8, because either one alone silences the
 -- tool without an error anywhere: ToolCallPolicy asks the per-tool row AND the
