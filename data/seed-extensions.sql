@@ -5323,15 +5323,16 @@ UPDATE tx_nrllm_skill_source SET url = 'https://raw.githubusercontent.com/netres
 --   1. The one MM row that first attach statement wrote, if it points at a
 --      skill that is not the editorial one: configuration backend-ai-chat ->
 --      9413, sorting 1/0, skill source other than 9403. Deleted.
---   2. Live rows that duplicate a seeded skill: same source AND same
+--   2. Attachments (configuration and task MM rows) that point at a duplicate
+--      of a seeded skill, as defined in 3, are moved onto the seeded row, so an
+--      attachment an operator made keeps its meaning; where the configuration
+--      or task already has the seeded row, the duplicate attachment is dropped.
+--   3. Live rows that duplicate a seeded skill: same source AND same
 --      body_checksum as a seeded row, which is itself intact and ours (uid,
 --      source and checksum all match). Soft-deleted (deleted = 1, enabled = 0),
 --      so the uid stays occupied and the row can be restored from the recycler.
 --      This includes an editorial row left at 9413 by the first seed on an
 --      instance where that insert did succeed.
---   3. MM rows that point at such a duplicate are moved onto the seeded row, so
---      an attachment an operator made keeps its meaning; where the configuration
---      already has the seeded row, the duplicate attachment is dropped.
 -- Nothing else is written. A row that differs from the seeded one in source or
 -- checksum is not a provable duplicate and is left alone; the verification at
 -- the end reports it.
@@ -5346,7 +5347,7 @@ INSERT INTO seed_owned_skill VALUES
     (9412, 9402, '7ef3a934e73e8a8e4b232e6bff3ebc9cd896538f43b7084ea3eb17570bb47c2e'),
     (9421, 9403, '32bf24a4179e67a29d39e597c2c25c267e20ce0a30b7504237af80f96851fdbd');
 
--- 1. Must run before step 3, which would otherwise move this row onto 9411.
+-- 1. Must run before step 2, which would otherwise move this row onto 9411.
 DELETE m
   FROM tx_nrllm_configuration_skill_mm m
   JOIN tx_nrllm_configuration c ON c.uid = m.uid_local
@@ -5358,6 +5359,7 @@ DELETE m
 
 -- The duplicates, resolved once: duplicate uid -> seeded uid. Steps 2 and 3
 -- both read this list, so they cannot disagree about which rows it covers.
+-- Step 2 runs first, while the duplicates are still live and identifiable.
 DROP TEMPORARY TABLE IF EXISTS seed_skill_duplicate;
 CREATE TEMPORARY TABLE seed_skill_duplicate (
     uid      int unsigned NOT NULL PRIMARY KEY,
@@ -5371,17 +5373,30 @@ SELECT d.uid, s.uid
   JOIN tx_nrllm_skill d ON d.source = s.source AND d.body_checksum = s.body_checksum
                        AND d.uid <> s.uid AND d.deleted = 0;
 
--- 3. Re-point attachments first, while the duplicates are still identifiable.
---    IGNORE: where (configuration, seeded uid) already exists the row is kept
---    on the duplicate and dropped by the DELETE that follows.
+-- 2. Re-point attachments. IGNORE: where (configuration or task, seeded uid)
+--    already exists the row is kept on the duplicate and dropped by the DELETE
+--    that follows.
 UPDATE IGNORE tx_nrllm_configuration_skill_mm m
   JOIN seed_skill_duplicate d ON d.uid = m.uid_foreign
    SET m.uid_foreign = d.original;
 DELETE m
   FROM tx_nrllm_configuration_skill_mm m
   JOIN seed_skill_duplicate d ON d.uid = m.uid_foreign;
+UPDATE IGNORE tx_nrllm_task_skill_mm m
+  JOIN seed_skill_duplicate d ON d.uid = m.uid_foreign
+   SET m.uid_foreign = d.original;
+DELETE m
+  FROM tx_nrllm_task_skill_mm m
+  JOIN seed_skill_duplicate d ON d.uid = m.uid_foreign;
+-- A dropped duplicate attachment lowers the task's denormalised count.
+UPDATE tx_nrllm_task t
+   SET t.skills = (SELECT COUNT(*) FROM tx_nrllm_task_skill_mm m WHERE m.uid_local = t.uid)
+ WHERE t.deleted = 0
+   AND EXISTS (SELECT 1 FROM tx_nrllm_task_skill_mm m2
+                 JOIN seed_skill_duplicate d ON d.original = m2.uid_foreign
+                WHERE m2.uid_local = t.uid);
 
--- 2. Retire the duplicates.
+-- 3. Retire the duplicates.
 UPDATE tx_nrllm_skill k
   JOIN seed_skill_duplicate d ON d.uid = k.uid
    SET k.deleted = 1, k.enabled = 0, k.tstamp = UNIX_TIMESTAMP();
@@ -5404,7 +5419,7 @@ SELECT c.uid, 9421, 1, 0
 -- Counted from the MM table, not set to 1, so a skill an operator attaches later
 -- in the backend survives a re-seed. Recounted for every configuration this
 -- block can have touched: the Backend AI Chat, and any configuration holding a
--- seeded skill, which is where step 3 moves attachments to.
+-- seeded skill, which is where step 2 moves attachments to.
 UPDATE tx_nrllm_configuration c
    SET c.skills = (SELECT COUNT(*) FROM tx_nrllm_configuration_skill_mm m WHERE m.uid_local = c.uid)
  WHERE c.deleted = 0
