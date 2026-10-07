@@ -131,7 +131,11 @@ def skill_updates(seed: str) -> list[tuple[int, int, str]]:
     for part in seed.split("UPDATE tx_nrllm_skill SET ")[1:]:
         statement = part.split(";", 1)[0]
         ident, target = UPDATE_IDENTIFIER.search(statement), UPDATE_TARGET.search(statement)
-        if ident and target:
+        if target and not ident:
+            # Without the identifier the re-assert no longer migrates a row seeded
+            # with the bare path, and the next sync duplicates it again.
+            fail(f"tx_nrllm_skill {target.group(1)} (UPDATE): re-assert does not set identifier")
+        elif ident and target:
             found.append((int(target.group(1)), int(target.group(2)), ident.group(1)))
     return found
 
