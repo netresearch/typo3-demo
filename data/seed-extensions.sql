@@ -5337,12 +5337,20 @@ UPDATE tx_nrllm_skill_source SET url = 'https://raw.githubusercontent.com/netres
 -- Nothing else is written. A row that differs from the seeded one in source or
 -- checksum is not a provable duplicate and is left alone; the verification at
 -- the end reports it.
+--
+-- Every temporary table with string columns in this file is created FROM the
+-- table it is compared with (CREATE ... AS SELECT ... WHERE 1 = 0), so those
+-- columns carry that table's collation, whatever it is. Declared by hand, a
+-- temporary table takes the database default instead. A fresh stack, and by
+-- the wording of its deploy error production too, has a utf8mb4_unicode_ci
+-- database (docker/db/init.sh, docker/db/my.cnf) and utf8mb4_uca1400_ai_ci
+-- nr-llm tables (data/db.sql.gz): the join on body_checksum below then fails
+-- with ERROR 1267 "Illegal mix of collations". Pinning utf8mb4_uca1400_ai_ci
+-- here would only move the failure to an installation laid out the other way
+-- round, which the validate job in build.yml builds on purpose.
 DROP TEMPORARY TABLE IF EXISTS seed_owned_skill;
-CREATE TEMPORARY TABLE seed_owned_skill (
-    uid           int unsigned NOT NULL PRIMARY KEY,
-    source        int unsigned NOT NULL,
-    body_checksum varchar(64)  NOT NULL
-);
+CREATE TEMPORARY TABLE seed_owned_skill (PRIMARY KEY (uid))
+    AS SELECT uid, source, body_checksum FROM tx_nrllm_skill WHERE 1 = 0;
 INSERT INTO seed_owned_skill VALUES
     (9411, 9401, '358350ff236dacc6575f4b57efd3217314a1b9199b10b8b9a44129c00b0b6cdf'),
     (9412, 9402, '7ef3a934e73e8a8e4b232e6bff3ebc9cd896538f43b7084ea3eb17570bb47c2e'),
@@ -6088,50 +6096,45 @@ UPDATE tt_content SET bodytext = REPLACE(REPLACE(bodytext,
 -- the deploy AFTER the repair below has moved it. That is one deploy of lag on
 -- rows that have not been through a deploy since PR #96, and it self-heals.
 --
--- The string columns are pinned to utf8mb4_unicode_ci because that is what the
--- TYPO3 tables use; without it the join inherits the server collation
--- (utf8mb4_uca1400_ai_ci on MariaDB 12) and fails with "Illegal mix of
--- collations".
-
+-- Both manifests are created from the table they are matched against, so their
+-- string columns (slug, title, CType, header, ...) carry that table's collation.
+-- pages and tt_content are utf8mb4_unicode_ci today, as was the name these
+-- manifests used to pin; created from the tables, they stay right the day that
+-- changes and on the reversed layout the validate job builds. See
+-- seed_owned_skill above. The column list of each SELECT is the positional
+-- order of its INSERT ... VALUES below.
+--
+-- The columns, in order:
+--   uid, pid, sys_language_uid, l10n_parent, doktype, hidden.
+--   sorting: the value the INSERT above gives this record. Re-asserted for the
+--     same reason as the rest: an ordering corrected here has to reach the live
+--     row, not only a fresh database.
+--   is_siteroot, backend_layout, nav_hide, slug, title, nav_title:
+--     The remaining columns the pages INSERTs above set, or leave at the table
+--     default. Both cases belong here: a column absent from this manifest is a
+--     column whose correction reaches a fresh database only, which is the exact
+--     defect this block exists to close.
+--
+--     is_siteroot and backend_layout are 0 / '' on every row below, and that is
+--     a measurement, not an assumption: only the uid 101 INSERT names them at
+--     all (0, ''), and for every other row a fresh import of data/db.sql.gz plus
+--     this file leaves the pages table defaults (`is_siteroot` DEFAULT 0,
+--     `backend_layout` DEFAULT ''). Re-asserting them therefore writes back what
+--     the import already produced instead of quietly changing it. They are worth
+--     stating per row all the same: is_siteroot decides site resolution and
+--     backend_layout the page layout, so the day a seeded page needs a value
+--     other than the default, it is set here and reaches the live row.
+--
+--     On the sys_language_uid = 1 rows both are inert either way: the v14.3 TCA
+--     marks is_siteroot and backend_layout `l10n_mode => 'exclude'`, so a
+--     translation never uses its own copy — the default-language record decides.
+--     nav_title and nav_hide carry no such flag and ARE per-language, which is
+--     why the German rows below hold German navigation titles.
 DROP TEMPORARY TABLE IF EXISTS seed_expected_pages;
-CREATE TEMPORARY TABLE seed_expected_pages (
-    uid              int unsigned NOT NULL PRIMARY KEY,
-    pid              int unsigned NOT NULL,
-    sys_language_uid int          NOT NULL,
-    l10n_parent      int unsigned NOT NULL,
-    doktype          int unsigned NOT NULL,
-    hidden           tinyint      NOT NULL,
-    -- The value the INSERT above gives this record. Re-asserted for the same
-    -- reason as the rest: an ordering corrected here has to reach the live row,
-    -- not only a fresh database.
-    sorting          int          NOT NULL,
-    -- The remaining columns the pages INSERTs above set, or leave at the table
-    -- default. Both cases belong here: a column absent from this manifest is a
-    -- column whose correction reaches a fresh database only, which is the exact
-    -- defect this block exists to close.
-    --
-    -- is_siteroot and backend_layout are 0 / '' on every row below, and that is
-    -- a measurement, not an assumption: only the uid 101 INSERT names them at
-    -- all (0, ''), and for every other row a fresh import of data/db.sql.gz plus
-    -- this file leaves the pages table defaults (`is_siteroot` DEFAULT 0,
-    -- `backend_layout` DEFAULT ''). Re-asserting them therefore writes back what
-    -- the import already produced instead of quietly changing it. They are worth
-    -- stating per row all the same: is_siteroot decides site resolution and
-    -- backend_layout the page layout, so the day a seeded page needs a value
-    -- other than the default, it is set here and reaches the live row.
-    --
-    -- On the sys_language_uid = 1 rows both are inert either way: the v14.3 TCA
-    -- marks is_siteroot and backend_layout `l10n_mode => 'exclude'`, so a
-    -- translation never uses its own copy — the default-language record decides.
-    -- nav_title and nav_hide carry no such flag and ARE per-language, which is
-    -- why the German rows below hold German navigation titles.
-    is_siteroot      smallint     NOT NULL,
-    backend_layout   varchar(64)  NOT NULL,
-    nav_hide         tinyint      NOT NULL,
-    slug             varchar(255) NOT NULL,
-    title            varchar(255) NOT NULL,
-    nav_title        varchar(255) NOT NULL
-) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+CREATE TEMPORARY TABLE seed_expected_pages (PRIMARY KEY (uid))
+    AS SELECT uid, pid, sys_language_uid, l10n_parent, doktype, hidden, sorting,
+              is_siteroot, backend_layout, nav_hide, slug, title, nav_title
+         FROM pages WHERE 1 = 0;
 
 --                     uid  pid  lang  l10n_parent  doktype  hidden  sorting  is_siteroot  backend_layout  nav_hide  slug  title  nav_title
 INSERT INTO seed_expected_pages VALUES
@@ -6198,23 +6201,16 @@ INSERT INTO seed_expected_pages VALUES
   (9113, 101, 1, 9004,  1, 0, 1450, 0, '', 0, '/erweiterungen/browser-ki-formularassistent', 'Browser-KI-Formularassistent', 'Formularassistent');
 
 DROP TEMPORARY TABLE IF EXISTS seed_expected_content;
-CREATE TEMPORARY TABLE seed_expected_content (
-    uid              int unsigned NOT NULL PRIMARY KEY,
-    pid              int unsigned NOT NULL,
-    -- A pid this record was created under by an earlier release of this file and
-    -- has since been moved away from. NULL for everything that never moved.
-    legacy_pid       int unsigned     NULL,
-    sys_language_uid int          NOT NULL,
-    l18n_parent      int unsigned NOT NULL,
-    colpos           int          NOT NULL,
-    hidden           tinyint      NOT NULL,
-    -- See seed_expected_pages.sorting. This is the column that put content 605
-    -- (sorting 100) behind 606 and 607 on the live Contexts page, where an
-    -- earlier run had left it at 256.
-    sorting          int          NOT NULL,
-    ctype            varchar(255) NOT NULL,
-    header           varchar(255) NOT NULL
-) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+-- legacy_pid: a pid this record was created under by an earlier release of this
+--   file and has since been moved away from. NULL for everything that never
+--   moved; NULLIF(pid, pid) gives it pid's type, but nullable.
+-- sorting: see seed_expected_pages. This is the column that put content 605
+--   (sorting 100) behind 606 and 607 on the live Contexts page, where an earlier
+--   run had left it at 256.
+CREATE TEMPORARY TABLE seed_expected_content (PRIMARY KEY (uid))
+    AS SELECT uid, pid, NULLIF(pid, pid) AS legacy_pid, sys_language_uid, l18n_parent,
+              colPos AS colpos, hidden, sorting, CType AS ctype, header
+         FROM tt_content WHERE 1 = 0;
 
 --                     uid  pid  legacy_pid  lang  l18n_parent  colPos  hidden  sorting  CType  header
 INSERT INTO seed_expected_content VALUES
@@ -7184,7 +7180,11 @@ UNION ALL
 -- inferred from the sentinel rows: the next uid the database hands out must lie
 -- above the reserved band, or the next deploy is one silent skip away again.
 -- table_name is utf8mb3 in information_schema, so it is converted before it
--- meets the utf8mb4_unicode_ci literals of the other UNION branches.
+-- meets the other UNION branches. The explicit COLLATE does a second job: the
+-- branches above end in different collations wherever pages/tt_content and the
+-- nr-llm tables differ (e.slug vs d.body_checksum, model_id), which on its own
+-- fails with ERROR 1271 for operation 'UNION'; one branch with an explicit
+-- collation decides the column for all of them.
 SELECT CONCAT('SEED-PROBLEM: ',
               CONVERT(t.table_name USING utf8mb4) COLLATE utf8mb4_unicode_ci,
               ' AUTO_INCREMENT is ', t.auto_increment,

@@ -710,6 +710,58 @@ jobs:
           check Resources/Private/Templates/Widget/DemoExtensionCard.html 'alternativeMarkupIdentifier="inline"'
           exit $failed
 
+      # The web entrypoint imports data/seed-extensions.sql on first boot and
+      # swallows any error, so a seed that dies half-way still leaves this job
+      # green. Apply it here the way a deploy does (`make seed-extensions` fails
+      # on a client error or a SEED-PROBLEM line), twice: on this fresh stack,
+      # where docker/db/init.sh made the database utf8mb4_unicode_ci and
+      # data/db.sql.gz made the nr-llm tables utf8mb4_uca1400_ai_ci (the wording
+      # of production's ERROR 1267 points to this layout there too), and on the
+      # reverse layout built here on purpose,
+      # a database defaulting to utf8mb4_uca1400_ai_ci with those tables in
+      # utf8mb4_unicode_ci. A temporary table or other construct that takes the
+      # database default instead of the compared column's collation fails on one
+      # of the two with ERROR 1267 "Illegal mix of collations". Last step on
+      # purpose: the second pass rewrites the schema of the stack the steps
+      # above checked.
+      - name: Verify the seed applies on both collation layouts
+        run: |
+          db() { docker compose exec -T db sh -c 'MYSQL_PWD="$MARIADB_PASSWORD" mariadb --default-character-set=utf8mb4 -N -B -u "$MARIADB_USER" "$MARIADB_DATABASE"'; }
+          layout() {
+            db <<'SQL'
+          SELECT CONCAT('database ', @@collation_database, ', tx_nrllm_skill ', table_collation)
+            FROM information_schema.tables WHERE table_schema = DATABASE() AND table_name = 'tx_nrllm_skill';
+          SQL
+          }
+          layout1=$(layout)
+          echo "Layout 1: $layout1"
+          make seed-extensions
+
+          # The mirror image: every uca1400 table to unicode_ci, and the
+          # database default, which is what a temporary table inherits, to uca1400.
+          db <<'SQL' > "$RUNNER_TEMP/flip.sql"
+          SELECT CONCAT('ALTER TABLE `', table_name, '` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;')
+            FROM information_schema.tables
+           WHERE table_schema = DATABASE() AND table_collation = 'utf8mb4_uca1400_ai_ci';
+          SELECT CONCAT('ALTER DATABASE `', DATABASE(), '` CHARACTER SET utf8mb4 COLLATE utf8mb4_uca1400_ai_ci;');
+          SQL
+          # A pass on an unchanged layout proves nothing, so a dump whose tables
+          # no longer carry uca1400 stops the step instead of passing it.
+          converted=$(grep -c '^ALTER TABLE' "$RUNNER_TEMP/flip.sql" || true)
+          echo "Converting $converted tables"
+          if [ "$converted" -eq 0 ]; then
+            echo "::error::no utf8mb4_uca1400_ai_ci table to convert, so the reversed layout cannot be built"
+            exit 1
+          fi
+          db < "$RUNNER_TEMP/flip.sql"
+          layout2=$(layout)
+          echo "Layout 2: $layout2"
+          if [ "$layout2" = "$layout1" ]; then
+            echo "::error::the collation layout did not change"
+            exit 1
+          fi
+          make seed-extensions
+
       - name: Cleanup
         if: always()
         run: docker compose down -v
