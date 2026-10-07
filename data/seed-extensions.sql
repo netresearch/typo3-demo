@@ -3688,9 +3688,10 @@ UPDATE tt_content
 
 -- Belt to the sentinel's braces, and the guarantee stated outright rather than
 -- left to emerge from the row above. InnoDB clamps this value up to at least
--- MAX(uid) + 1 and never applies it downwards, so it can only ever raise the
--- counter: on an instance whose editors have already worked past 10000 it is a
--- no-op, and it can never hand out a uid that is already taken. It also restores
+-- MAX(uid) + 1, so it can never hand out a uid that is already taken, deleted
+-- or not. It is not a pure raise: a counter that hard-deleted rows left above
+-- both 10000 and MAX(uid) + 1 drops to the larger of the two (MariaDB 12.3:
+-- 10050 with MAX(uid) 9000 became 10000). It also restores
 -- the floor should the sentinel row itself ever be purged for good (emptying the
 -- recycler hard-deletes soft-deleted rows).
 ALTER TABLE pages      AUTO_INCREMENT = 10000;
@@ -4501,7 +4502,7 @@ UPDATE tx_nrllm_skill_source SET enabled = 0, deleted = 1, hidden = 1
 UPDATE tx_nrllm_skill SET enabled = 0, deleted = 1, hidden = 1
  WHERE uid = 9999 AND identifier = @skill_sentinel AND source = 0;
 
--- Only ever raises the counter; see the ALTERs after the pages sentinel above.
+-- Never below MAX(uid) + 1; see the ALTERs after the pages sentinel above.
 ALTER TABLE tx_nrllm_skill_source AUTO_INCREMENT = 10000;
 ALTER TABLE tx_nrllm_skill        AUTO_INCREMENT = 10000;
 
@@ -5348,7 +5349,13 @@ INSERT INTO seed_owned_skill VALUES
     (9421, 9403, '32bf24a4179e67a29d39e597c2c25c267e20ce0a30b7504237af80f96851fdbd');
 
 -- 1. Must run before step 2, which would otherwise move this row onto 9411.
-DELETE m
+--    Once moved it looks like an attachment an operator made, so nothing at the
+--    end could tell it apart. The count of rows still left right after the
+--    DELETE is therefore checked by the verification instead: it fails when the
+--    DELETE is gone (count 1) or this whole step is (variable unset).
+DROP TEMPORARY TABLE IF EXISTS seed_wrong_attachment;
+CREATE TEMPORARY TABLE seed_wrong_attachment AS
+SELECT m.uid_local, m.uid_foreign
   FROM tx_nrllm_configuration_skill_mm m
   JOIN tx_nrllm_configuration c ON c.uid = m.uid_local
   JOIN tx_nrllm_skill k         ON k.uid = m.uid_foreign
@@ -5356,6 +5363,12 @@ DELETE m
    AND k.source <> 9403
    AND c.uid = (SELECT MIN(x.uid) FROM tx_nrllm_configuration x
                  WHERE x.identifier = 'backend-ai-chat' AND x.deleted = 0);
+DELETE m
+  FROM tx_nrllm_configuration_skill_mm m
+  JOIN seed_wrong_attachment w ON w.uid_local = m.uid_local AND w.uid_foreign = m.uid_foreign;
+SET @seed_wrong_attachment_left = (
+    SELECT COUNT(*) FROM tx_nrllm_configuration_skill_mm m
+      JOIN seed_wrong_attachment w ON w.uid_local = m.uid_local AND w.uid_foreign = m.uid_foreign);
 
 -- The duplicates, resolved once: duplicate uid -> seeded uid. Steps 2 and 3
 -- both read this list, so they cannot disagree about which rows it covers.
@@ -5375,7 +5388,9 @@ SELECT d.uid, s.uid
 
 -- 2. Re-point attachments. IGNORE: where (configuration or task, seeded uid)
 --    already exists the row is kept on the duplicate and dropped by the DELETE
---    that follows.
+--    that follows. That relies on PRIMARY KEY (uid_local, uid_foreign), which
+--    ext_tables.sql does not declare: TYPO3 14.3 adds it to every MM table
+--    whose TCA field is not 'multiple' (DefaultTcaSchema), which holds for both.
 UPDATE IGNORE tx_nrllm_configuration_skill_mm m
   JOIN seed_skill_duplicate d ON d.uid = m.uid_foreign
    SET m.uid_foreign = d.original;
@@ -6891,6 +6906,10 @@ SELECT CONCAT('SEED-PROBLEM: tx_nrllm_skill source ', d.source, ' holds ', d.n,
          WHERE deleted = 0 AND source IN (9401, 9402, 9403)
          GROUP BY source, body_checksum
         HAVING COUNT(*) > 1) d
+UNION ALL
+SELECT 'SEED-PROBLEM: step 1 of the skill repair did not remove the attachment the first editorial seed made to a sync duplicate at 9413'
+  FROM DUAL
+ WHERE COALESCE(@seed_wrong_attachment_left, 1) > 0
 UNION ALL
 -- Workspace records survived the purge in step 3c2. Either a table outside the
 -- explicit list above grew them, or something re-created a workspace between
