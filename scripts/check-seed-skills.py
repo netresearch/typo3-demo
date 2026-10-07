@@ -120,7 +120,20 @@ def check_skill(skill: Path, seed: str) -> None:
 
 SOURCE_ROW = re.compile(r"\((\d+), 0, '[^']*', 'single_file', 'https://raw\.githubusercontent\.com/[^/]+/[^/]+/[^/]+/([^']+)'")
 SKILL_ROW = re.compile(r"\((\d+), 0, (\d+), '([^']*)', '[^']*', '")
-SKILL_UPDATE = re.compile(r"UPDATE tx_nrllm_skill SET [^;]*?identifier = '([^']*)'[^;]*?WHERE uid = (\d+) AND source = (\d+);")
+UPDATE_IDENTIFIER = re.compile(r"identifier = '([^']*)'")
+UPDATE_TARGET = re.compile(r"WHERE uid = (\d+) AND source = (\d+)$")
+
+
+def skill_updates(seed: str) -> list[tuple[int, int, str]]:
+    # Each re-assert statement is cut out first, so the patterns below never scan
+    # across statement boundaries.
+    found = []
+    for part in seed.split("UPDATE tx_nrllm_skill SET ")[1:]:
+        statement = part.split(";", 1)[0]
+        ident, target = UPDATE_IDENTIFIER.search(statement), UPDATE_TARGET.search(statement)
+        if ident and target:
+            found.append((int(target.group(1)), int(target.group(2)), ident.group(1)))
+    return found
 
 
 def check_identifiers(seed: str) -> None:
@@ -129,7 +142,7 @@ def check_identifiers(seed: str) -> None:
     # other identifier is not found by the next sync, which adds a duplicate.
     paths = {int(uid): path for uid, path in SOURCE_ROW.findall(seed)}
     rows = [(int(u), int(s), i, "INSERT") for u, s, i in SKILL_ROW.findall(seed)]
-    rows += [(int(u), int(s), i, "UPDATE") for i, u, s in SKILL_UPDATE.findall(seed)]
+    rows += [(u, s, i, "UPDATE") for u, s, i in skill_updates(seed)]
     if not paths or not rows:
         fail("no seeded single_file source or skill row found; the identifier check matched nothing")
     for uid, source, identifier, where in rows:
