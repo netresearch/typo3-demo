@@ -6478,14 +6478,14 @@ ON DUPLICATE KEY UPDATE
 -- a human approval before every call, and it refuses a user without access
 -- to the Repurpose module.
 --
--- The row is necessary but, with nr-repurpose 0.11, not sufficient: the tool
--- declares no data class, so nr-llm ranks it secretAdjacent, and the trust-zone
--- gate (tools.dataClassEnforcement = enforce) keeps it out of a run whose
--- provider has no trust zone set - this demo's OpenAI provider. It is offered
--- once nr-repurpose declares a data class (netresearch/t3x-nr-repurpose#172);
--- then no further seed change is needed. Loosening the enforcement or giving
--- the provider a trust zone it does not have would widen the gate for every
--- tool, so neither is done here.
+-- Since nr-repurpose 0.11.1 the tool declares the data class editorContent
+-- (netresearch/t3x-nr-repurpose#172). 0.11.0 declared none, so nr-llm
+-- ranked it secretAdjacent and the trust-zone gate
+-- (tools.dataClassEnforcement = enforce) kept it out of every run against this
+-- demo's OpenAI provider, which has no trust zone set (externalGlobal, ceiling
+-- editorContent). With the declaration the row below is all the tool needs.
+-- Loosening the enforcement or giving the provider a trust zone it does not
+-- have would widen the gate for every tool, so neither is done here.
 INSERT INTO tx_nrllm_tool_state (pid, tool_name, enabled)
 VALUES (0, 'attach_file_to_record', 1),
        (0, 'start_repurpose_job', 1)
@@ -6499,6 +6499,43 @@ INSERT INTO tx_nrllm_tool_group_state (pid, group_name, enabled)
 VALUES (0, 'nr_repurpose', 1)
 ON DUPLICATE KEY UPDATE
   enabled = VALUES(enabled);
+
+-- 8f. The index rebuild of nr-ai-search
+--
+-- rebuild_search_index (nr-ai-search ADR-035) queues every page and file of
+-- the lochmueller/index configurations for re-indexing - one site, one index
+-- configuration, or all sites - the same work as `typo3 index:queue`. It is
+-- registered only where lochmueller/index is installed, as here. It ships
+-- disabled: it is offered to administrators only, stops at a human approval
+-- before every call, and each approval queues one more complete run
+-- (NON_IDEMPOTENT_WRITE), so the store grows until compaction. It declares
+-- the data class editorContent, which this demo's provider ceiling admits.
+-- The queued work runs on the `index` and `nr_ai_search` consumers the
+-- worker service already starts (compose.yml).
+INSERT INTO tx_nrllm_tool_state (pid, tool_name, enabled)
+VALUES (0, 'rebuild_search_index', 1)
+ON DUPLICATE KEY UPDATE
+  enabled = VALUES(enabled);
+
+-- rebuild_search_index is the only tool of the group 'nr_ai_search'. A missing
+-- group row means enabled; the explicit 1 makes the seed the last word, as for
+-- 'editing', 'web' and 'nr_repurpose'.
+INSERT INTO tx_nrllm_tool_group_state (pid, group_name, enabled)
+VALUES (0, 'nr_ai_search', 1)
+ON DUPLICATE KEY UPDATE
+  enabled = VALUES(enabled);
+
+-- The chat's configuration may restrict the tool groups a run is offered
+-- (allowed_tool_groups, a comma list; empty means every group). The seed
+-- creates 'backend-ai-chat' without a restriction but never resets the column,
+-- so a list set in the backend would survive and hide the group. Append
+-- nr_ai_search to such a list; an empty list stays empty, because adding a
+-- name to it would turn "every group" into "this group only".
+UPDATE tx_nrllm_configuration
+SET allowed_tool_groups = CONCAT(allowed_tool_groups, ',nr_ai_search')
+WHERE identifier = 'backend-ai-chat' AND deleted = 0
+  AND allowed_tool_groups <> ''
+  AND FIND_IN_SET('nr_ai_search', allowed_tool_groups) = 0;
 
 -- 8b2. The dead MCP-server table of nr_mcp_agent (< 0.12) goes
 --
@@ -7088,6 +7125,18 @@ SELECT 'SEED-PROBLEM: tool group nr_repurpose is switched off — start_repurpos
  WHERE EXISTS (
        SELECT 1 FROM tx_nrllm_tool_group_state
         WHERE group_name = 'nr_repurpose' AND enabled = 0)
+UNION ALL
+SELECT 'SEED-PROBLEM: rebuild_search_index is not enabled — the chat cannot rebuild the AI search index'
+  FROM DUAL
+ WHERE NOT EXISTS (
+       SELECT 1 FROM tx_nrllm_tool_state
+        WHERE tool_name = 'rebuild_search_index' AND enabled = 1)
+UNION ALL
+SELECT 'SEED-PROBLEM: tool group nr_ai_search is switched off — rebuild_search_index stays unreachable'
+  FROM DUAL
+ WHERE EXISTS (
+       SELECT 1 FROM tx_nrllm_tool_group_state
+        WHERE group_name = 'nr_ai_search' AND enabled = 0)
 UNION ALL
 SELECT 'SEED-PROBLEM: the DeepWiki MCP server row is missing or disabled'
   FROM DUAL

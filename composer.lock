@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "525a176ba3a3c82f462bba9fbba8cdc3",
+    "content-hash": "c5978c59f7dade0bd77967c4e42e0cf3",
     "packages": [
         {
             "name": "b13/ai-label",
@@ -2671,12 +2671,12 @@
             "source": {
                 "type": "git",
                 "url": "git@git.netresearch.de:support/nr-ai-search.git",
-                "reference": "cd8517038919d2b4f48bb6ca7da6bc3c48c2e0bf"
+                "reference": "2e609430df6af4f71d6ab633018fa48e279ab47d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://git.netresearch.de/api/v4/projects/support%2Fnr-ai-search/repository/archive.zip?sha=cd8517038919d2b4f48bb6ca7da6bc3c48c2e0bf",
-                "reference": "cd8517038919d2b4f48bb6ca7da6bc3c48c2e0bf",
+                "url": "https://git.netresearch.de/api/v4/projects/support%2Fnr-ai-search/repository/archive.zip?sha=2e609430df6af4f71d6ab633018fa48e279ab47d",
+                "reference": "2e609430df6af4f71d6ab633018fa48e279ab47d",
                 "shasum": ""
             },
             "require": {
@@ -2703,7 +2703,7 @@
             },
             "suggest": {
                 "ext-poppler": "The poppler binaries pdftoppm and pdfimages on the indexing worker enable PDF vision enrichment (ADR-034); without them that opt-in feature degrades to plain-text extraction.",
-                "lochmueller/index": "Enables IndexAdapter, the reference content-source adapter (ADR-003)."
+                "lochmueller/index": "Enables IndexAdapter, the reference content-source adapter (ADR-003), and the rebuild_search_index chat tool (ADR-035)."
             },
             "default-branch": true,
             "type": "typo3-cms-extension",
@@ -2770,7 +2770,7 @@
             "support": {
                 "source": "https://git.netresearch.de/support/nr-ai-search/-/tree/main"
             },
-            "time": "2026-10-07T23:59:59+02:00"
+            "time": "2026-10-08T14:05:47+02:00"
         },
         {
             "name": "netresearch/nr-browser-ai",
@@ -3441,16 +3441,16 @@
         },
         {
             "name": "netresearch/nr-repurpose",
-            "version": "v0.11.1",
+            "version": "v0.11.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/t3x-nr-repurpose.git",
-                "reference": "ba5448c1b2baf45907aedf1b8ebea5caf702a104"
+                "reference": "ce2d07c8b8c9de579a561ef46be64440b94dffca"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/t3x-nr-repurpose/zipball/ba5448c1b2baf45907aedf1b8ebea5caf702a104",
-                "reference": "ba5448c1b2baf45907aedf1b8ebea5caf702a104",
+                "url": "https://api.github.com/repos/netresearch/t3x-nr-repurpose/zipball/ce2d07c8b8c9de579a561ef46be64440b94dffca",
+                "reference": "ce2d07c8b8c9de579a561ef46be64440b94dffca",
                 "shasum": ""
             },
             "require": {
@@ -3490,7 +3490,7 @@
                             "smalot/pdfparser": ""
                         }
                     },
-                    "version": "0.11.1",
+                    "version": "0.11.2",
                     "web-dir": ".Build/Web",
                     "extension-key": "nr_repurpose"
                 },
@@ -3521,7 +3521,7 @@
                 "issues": "https://github.com/netresearch/t3x-nr-repurpose/issues",
                 "source": "https://github.com/netresearch/t3x-nr-repurpose"
             },
-            "time": "2026-10-08T07:00:43+00:00"
+            "time": "2026-10-08T11:53:35+00:00"
         },
         {
             "name": "netresearch/nr-scheduler",
