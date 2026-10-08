@@ -6462,6 +6462,44 @@ VALUES (0, 'web', 1)
 ON DUPLICATE KEY UPDATE
   enabled = VALUES(enabled);
 
+-- 8e. The record attacher of nr-llm 0.39 and the repurpose starter of nr-repurpose 0.11
+--
+-- attach_file_to_record (nr-llm 0.39, ADR-212) attaches one existing file to
+-- one file field of one record of a table that has no narrower writer - on
+-- this demo the news image, tx_news_domain_model_news.fal_media. It belongs to
+-- the group 'editing', whose row is set in 8c. Same defence as 8c: it writes
+-- as the acting user through the DataHandler, checks the table grant, the
+-- field grant, the page permission and the user's file mounts, stops at a
+-- human approval and reads the reference back.
+--
+-- start_repurpose_job (nr-repurpose 0.11) starts one job of the Repurpose
+-- module from the chat, queued for the same worker as a job created in the
+-- module. It ships disabled because a job spends provider money; it stops at
+-- a human approval before every call, and it refuses a user without access
+-- to the Repurpose module.
+--
+-- The row is necessary but, with nr-repurpose 0.11, not sufficient: the tool
+-- declares no data class, so nr-llm ranks it secretAdjacent, and the trust-zone
+-- gate (tools.dataClassEnforcement = enforce) keeps it out of a run whose
+-- provider has no trust zone set - this demo's OpenAI provider. It is offered
+-- once nr-repurpose declares a data class (netresearch/t3x-nr-repurpose#172);
+-- then no further seed change is needed. Loosening the enforcement or giving
+-- the provider a trust zone it does not have would widen the gate for every
+-- tool, so neither is done here.
+INSERT INTO tx_nrllm_tool_state (pid, tool_name, enabled)
+VALUES (0, 'attach_file_to_record', 1),
+       (0, 'start_repurpose_job', 1)
+ON DUPLICATE KEY UPDATE
+  enabled = VALUES(enabled);
+
+-- start_repurpose_job is the only tool of the group 'nr_repurpose'. A missing
+-- group row means enabled; the explicit 1 makes the seed the last word, as for
+-- 'editing' and 'web'.
+INSERT INTO tx_nrllm_tool_group_state (pid, group_name, enabled)
+VALUES (0, 'nr_repurpose', 1)
+ON DUPLICATE KEY UPDATE
+  enabled = VALUES(enabled);
+
 -- 8b2. The dead MCP-server table of nr_mcp_agent (< 0.12) goes
 --
 -- nr_mcp_agent 0.12 removed its own MCP client and the TCA for
@@ -7039,6 +7077,17 @@ SELECT 'SEED-PROBLEM: not every editorial writer of nr-llm 0.35 is enabled — a
  WHERE (SELECT COUNT(*) FROM tx_nrllm_tool_state
          WHERE tool_name IN ('set_file_alternative_text', 'update_fal_asset_meta', 'attach_file_to_content_element',
                              'create_translation_draft', 'move_content_element') AND enabled = 1) < 5
+UNION ALL
+SELECT 'SEED-PROBLEM: attach_file_to_record or start_repurpose_job is not enabled — the chat cannot attach a news image or start a repurpose job'
+  FROM DUAL
+ WHERE (SELECT COUNT(*) FROM tx_nrllm_tool_state
+         WHERE tool_name IN ('attach_file_to_record', 'start_repurpose_job') AND enabled = 1) < 2
+UNION ALL
+SELECT 'SEED-PROBLEM: tool group nr_repurpose is switched off — start_repurpose_job stays unreachable'
+  FROM DUAL
+ WHERE EXISTS (
+       SELECT 1 FROM tx_nrllm_tool_group_state
+        WHERE group_name = 'nr_repurpose' AND enabled = 0)
 UNION ALL
 SELECT 'SEED-PROBLEM: the DeepWiki MCP server row is missing or disabled'
   FROM DUAL
