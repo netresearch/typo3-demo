@@ -339,6 +339,39 @@ if [ -f config/system/settings.php ]; then
     ' || echo "WARNING: failed to write the GFX block to additional.php" >&2
 fi
 
+# Run TYPO3 in the Europe/Berlin time zone. PHP in the image has no
+# date.timezone, so PHP formats dates in UTC; the approval card of
+# create_news_draft prints its date with the zone name (nr-llm-compat 0.4.0).
+# TYPO3 calls date_default_timezone_set() with
+# SYS/phpTimeZone at bootstrap. Not in the settings.php heredoc for the same
+# reason as the GFX block: that one runs only on first boot.
+if [ -f config/system/settings.php ]; then
+    php -r '
+        $f = "config/system/additional.php";
+        $begin = "// >>> sys time zone (managed by entrypoint, do not edit this block)";
+        $end   = "// <<< sys time zone";
+        // No apostrophes in these comments: the whole block is a php -r
+        // argument inside single quotes, and one would end the shell string.
+        $block = $begin . "\n"
+            . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"SYS\"][\"phpTimeZone\"] = \"Europe/Berlin\";\n"
+            . $end;
+        $existing = is_file($f) ? (string) file_get_contents($f) : "";
+        if (strpos($existing, "<?php") === false) {
+            $existing = "<?php\n" . ($existing === "" ? "" : $existing . "\n");
+        }
+        $b = strpos($existing, $begin);
+        if ($b !== false) {
+            $e = strpos($existing, $end, $b);
+            $existing = $e !== false
+                ? substr($existing, 0, $b) . substr($existing, $e + strlen($end))
+                : substr($existing, 0, $b);
+        }
+        $existing = rtrim($existing, "\n") . "\n\n" . $block . "\n";
+        file_put_contents($f, $existing);
+        echo "additional.php: SYS.phpTimeZone=Europe/Berlin." . PHP_EOL;
+    ' || echo "WARNING: failed to write the time zone block to additional.php" >&2
+fi
+
 # Offer German as a backend language. TYPO3 lists a language in the user
 # settings only when it is in LANG/availableLocales or var/labels/<language>
 # exists, and the language pack download further down refuses a language that
