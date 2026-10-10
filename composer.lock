@@ -3721,16 +3721,16 @@
         },
         {
             "name": "netresearch/nr-textdb",
-            "version": "v4.0.1",
+            "version": "v4.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/t3x-nr-textdb.git",
-                "reference": "cfed060f838279a45b109e5acf6f6c17ece27c17"
+                "reference": "09a0f4a67709112dee3c418ee0b063af263181d5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/t3x-nr-textdb/zipball/cfed060f838279a45b109e5acf6f6c17ece27c17",
-                "reference": "cfed060f838279a45b109e5acf6f6c17ece27c17",
+                "url": "https://api.github.com/repos/netresearch/t3x-nr-textdb/zipball/09a0f4a67709112dee3c418ee0b063af263181d5",
+                "reference": "09a0f4a67709112dee3c418ee0b063af263181d5",
                 "shasum": ""
             },
             "require": {
@@ -3758,7 +3758,7 @@
                     "Package": {
                         "providesPackages": []
                     },
-                    "version": "4.0.1",
+                    "version": "4.0.2",
                     "web-dir": ".Build/public",
                     "extension-key": "nr_textdb"
                 },
@@ -3819,7 +3819,7 @@
                 "issues": "https://github.com/netresearch/t3x-nr-textdb/issues",
                 "source": "https://github.com/netresearch/t3x-nr-textdb"
             },
-            "time": "2026-09-29T20:49:42+00:00"
+            "time": "2026-10-07T13:13:49+00:00"
         },
         {
             "name": "netresearch/nr-vault",
