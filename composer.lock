@@ -2904,16 +2904,16 @@
         },
         {
             "name": "netresearch/nr-image-sitemap",
-            "version": "14.0.1",
+            "version": "14.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/t3x-nr-image-sitemap.git",
-                "reference": "2943a30a86390b76635c2582478b97723948efbb"
+                "reference": "bed97149e5a50a2343f38dcd7d93ccb616686f14"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/t3x-nr-image-sitemap/zipball/2943a30a86390b76635c2582478b97723948efbb",
-                "reference": "2943a30a86390b76635c2582478b97723948efbb",
+                "url": "https://api.github.com/repos/netresearch/t3x-nr-image-sitemap/zipball/bed97149e5a50a2343f38dcd7d93ccb616686f14",
+                "reference": "bed97149e5a50a2343f38dcd7d93ccb616686f14",
                 "shasum": ""
             },
             "require": {
@@ -2931,7 +2931,7 @@
                     "Package": {
                         "providesPackages": []
                     },
-                    "version": "14.0.1",
+                    "version": "14.0.2",
                     "web-dir": ".Build/public",
                     "extension-key": "nr_image_sitemap"
                 },
@@ -2965,9 +2965,9 @@
             "description": "Provides a data provider to use with the typo3/cms-seo extension, to create an image sitemap",
             "support": {
                 "issues": "https://github.com/netresearch/t3x-nr-image-sitemap/issues",
-                "source": "https://github.com/netresearch/t3x-nr-image-sitemap/tree/14.0.1"
+                "source": "https://github.com/netresearch/t3x-nr-image-sitemap/tree/14.0.2"
             },
-            "time": "2026-09-18T19:55:03+00:00"
+            "time": "2026-10-06T22:18:51+00:00"
         },
         {
             "name": "netresearch/nr-landingpage",
