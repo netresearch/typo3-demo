@@ -2596,16 +2596,16 @@
         },
         {
             "name": "netresearch/contexts",
-            "version": "v5.0.2",
+            "version": "v5.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/t3x-contexts.git",
-                "reference": "8a5fdf96e29edb4079a505b11239a1b7bfa96d43"
+                "reference": "4a6629692cac1dab97f46edda85852fe2d59dd6a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/t3x-contexts/zipball/8a5fdf96e29edb4079a505b11239a1b7bfa96d43",
-                "reference": "8a5fdf96e29edb4079a505b11239a1b7bfa96d43",
+                "url": "https://api.github.com/repos/netresearch/t3x-contexts/zipball/4a6629692cac1dab97f46edda85852fe2d59dd6a",
+                "reference": "4a6629692cac1dab97f46edda85852fe2d59dd6a",
                 "shasum": ""
             },
             "require": {
@@ -2616,7 +2616,7 @@
                 "typo3/cms-frontend": "^13.4 || ^14.3"
             },
             "require-dev": {
-                "netresearch/typo3-ci-workflows": "^1.3",
+                "netresearch/typo3-ci-workflows": "^1.8",
                 "phpunit/phpunit": "^10.5 || ^11.0 || ^12.0 || ^13.0",
                 "squizlabs/php_codesniffer": "^4.0"
             },
@@ -2626,7 +2626,7 @@
                     "Package": {
                         "providesPackages": []
                     },
-                    "version": "5.0.2",
+                    "version": "5.0.3",
                     "extension-key": "contexts"
                 },
                 "captainhook": {
@@ -2663,7 +2663,7 @@
                 "issues": "https://github.com/netresearch/t3x-contexts/issues",
                 "source": "https://github.com/netresearch/t3x-contexts"
             },
-            "time": "2026-08-21T22:50:43+00:00"
+            "time": "2026-10-07T04:48:16+00:00"
         },
         {
             "name": "netresearch/nr-ai-search",
