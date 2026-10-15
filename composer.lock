@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3b55db33cbe6cd558011cb4e400224a8",
+    "content-hash": "f45b66a37d55a8c4eb6a2e46b126fbc4",
     "packages": [
         {
             "name": "b13/ai-label",
@@ -2305,16 +2305,16 @@
         },
         {
             "name": "lochmueller/index",
-            "version": "2.5.0",
+            "version": "3.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/lochmueller/index.git",
-                "reference": "e0d222939363b471588aa8fc6ccaaea234012bcb"
+                "reference": "110decc874baae3040f883349f86da8af366bae4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/lochmueller/index/zipball/e0d222939363b471588aa8fc6ccaaea234012bcb",
-                "reference": "e0d222939363b471588aa8fc6ccaaea234012bcb",
+                "url": "https://api.github.com/repos/lochmueller/index/zipball/110decc874baae3040f883349f86da8af366bae4",
+                "reference": "110decc874baae3040f883349f86da8af366bae4",
                 "shasum": ""
             },
             "require": {
@@ -2352,7 +2352,7 @@
                     "cms-package-dir": "{$vendor-dir}/typo3/cms"
                 },
                 "branch-alias": {
-                    "dev-main": "2.4.x-dev"
+                    "dev-main": "3.0.x-dev"
                 }
             },
             "autoload": {
@@ -2374,7 +2374,7 @@
             ],
             "support": {
                 "issues": "https://github.com/lochmueller/index/issues",
-                "source": "https://github.com/lochmueller/index/tree/2.5.0"
+                "source": "https://github.com/lochmueller/index/tree/3.0.0"
             },
             "funding": [
                 {
@@ -2386,7 +2386,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-10-01T18:04:09+00:00"
+            "time": "2026-10-12T18:49:36+00:00"
         },
         {
             "name": "lolli42/finediff",
