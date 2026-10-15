@@ -1613,27 +1613,27 @@
         },
         {
             "name": "georgringer/news",
-            "version": "14.1.1",
+            "version": "14.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/georgringer/news.git",
-                "reference": "4524b92db01754830a0625a0d16e88fd07808a64"
+                "reference": "36a5a983022f5648352975142d9daef6f77a657d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/georgringer/news/zipball/4524b92db01754830a0625a0d16e88fd07808a64",
-                "reference": "4524b92db01754830a0625a0d16e88fd07808a64",
+                "url": "https://api.github.com/repos/georgringer/news/zipball/36a5a983022f5648352975142d9daef6f77a657d",
+                "reference": "36a5a983022f5648352975142d9daef6f77a657d",
                 "shasum": ""
             },
             "require": {
                 "php": ">= 8.2 < 8.6",
                 "symfony/console": "^5.4 || ^6.4 || ^7.0",
-                "typo3/cms-backend": "^13.4.29 || ^14.0",
-                "typo3/cms-core": "^13.4.29 || ^14.0",
-                "typo3/cms-extbase": "^13.4.29 || ^14.0",
-                "typo3/cms-fluid": "^13.4.29 || ^14.0",
-                "typo3/cms-frontend": "^13.4.29 || ^14.0",
-                "typo3/cms-install": "^13.4.29 || ^14.0"
+                "typo3/cms-backend": "^13.4.29 || ^14.3",
+                "typo3/cms-core": "^13.4.29 || ^14.3",
+                "typo3/cms-extbase": "^13.4.29 || ^14.3",
+                "typo3/cms-fluid": "^13.4.29 || ^14.3",
+                "typo3/cms-frontend": "^13.4.29 || ^14.3",
+                "typo3/cms-install": "^13.4.29 || ^14.3"
             },
             "conflict": {
                 "sebastian/recursion-context": "6.0.0 || 6.0.1 || 6.0.2"
@@ -1642,12 +1642,16 @@
                 "typo3-ter/news": "self.version"
             },
             "require-dev": {
+                "a9f/fractor": "~1.0.0",
+                "a9f/fractor-xliff": "~1.0.0",
+                "a9f/fractor-xml": "~1.0.0",
                 "a9f/typo3-fractor": "@dev",
                 "friendsofphp/php-cs-fixer": "^3.89.2",
                 "phpstan/phpdoc-parser": "^1.33.0",
                 "phpunit/phpunit": "^10.5.58",
                 "ssch/typo3-rector": "^3.7",
-                "typo3/cms-seo": "^13.4.29 || ^14.0",
+                "typo3/cms-fluid-styled-content": "^13.4.29 || ^14.3",
+                "typo3/cms-seo": "^13.4.29 || ^14.3",
                 "typo3/coding-standards": "^0.8.0",
                 "typo3/testing-framework": "^8.3.1",
                 "webmozart/assert": "^1.12.1"
@@ -1714,7 +1718,7 @@
                     "type": "patreon"
                 }
             ],
-            "time": "2026-08-11T16:25:20+00:00"
+            "time": "2026-10-12T08:22:46+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",
