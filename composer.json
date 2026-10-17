@@ -10,7 +10,7 @@
         "cweagans/composer-patches": "^2.0",
         "friendsoftypo3/content-blocks": "^2.0",
         "georgringer/news": "^14.0",
-        "guzzlehttp/guzzle": "^7.15",
+        "guzzlehttp/guzzle": "^8.0",
         "lochmueller/index": "^2.2",
         "mfd/ai-filemetadata": "^1.6",
         "netresearch/contexts": "^5.0.1",
