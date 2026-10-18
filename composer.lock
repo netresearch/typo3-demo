@@ -10514,16 +10514,16 @@
         },
         {
             "name": "thieleundklose/autotranslate",
-            "version": "v3.5.0",
+            "version": "v3.6.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thieleundklose/tk-typo3-autotranslate.git",
-                "reference": "21ded0497ec83381e9fd6f7aeb13b0d550493993"
+                "reference": "c9a319bcc8a1837185539c9cd2efab2f75a940b0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thieleundklose/tk-typo3-autotranslate/zipball/21ded0497ec83381e9fd6f7aeb13b0d550493993",
-                "reference": "21ded0497ec83381e9fd6f7aeb13b0d550493993",
+                "url": "https://api.github.com/repos/thieleundklose/tk-typo3-autotranslate/zipball/c9a319bcc8a1837185539c9cd2efab2f75a940b0",
+                "reference": "c9a319bcc8a1837185539c9cd2efab2f75a940b0",
                 "shasum": ""
             },
             "require": {
@@ -10565,9 +10565,9 @@
             "description": "This extension provides automatic translation of pages and content elements via DeepL API.",
             "support": {
                 "issues": "https://github.com/thieleundklose/tk-typo3-autotranslate/issues",
-                "source": "https://github.com/thieleundklose/tk-typo3-autotranslate/tree/v3.5.0"
+                "source": "https://github.com/thieleundklose/tk-typo3-autotranslate/tree/v3.6.0"
             },
-            "time": "2026-09-06T11:38:46+00:00"
+            "time": "2026-10-10T12:25:14+00:00"
         },
         {
             "name": "typo3/class-alias-loader",
