@@ -11,7 +11,7 @@
         "friendsoftypo3/content-blocks": "^2.0",
         "georgringer/news": "^14.0",
         "guzzlehttp/guzzle": "^7.15",
-        "lochmueller/index": "^2.2",
+        "lochmueller/index": "^3.0",
         "mfd/ai-filemetadata": "^1.6",
         "netresearch/contexts": "^5.0.1",
         "netresearch/nr-ai-search": "dev-main",
