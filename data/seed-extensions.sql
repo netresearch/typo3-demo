@@ -1034,6 +1034,32 @@ SELECT 0, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), u.uid,
    AND NOT EXISTS (SELECT 1 FROM be_dashboards d
                     WHERE d.cruser_id = u.uid AND d.title = 'Netresearch Demo');
 
+-- Third dashboard: the 'nrMcpAgent' preset of nr_mcp_agent ("KI-Assistent"):
+-- "Eine Seite verbessern", "Häufige Aufgaben", "Für deine Website empfohlen"
+-- and the AI Chat widget, the entry points of the guided tours. Same reasoning
+-- as the 'Netresearch Demo' rows above: existing users are past the one-time
+-- preset branch, new users get it from user.tsconfig.
+--
+-- The title is the preset's own label reference, exactly what
+-- DashboardRepository::create() stores for a preset, and Dashboard::getTitle()
+-- translates it per user. So NOT EXISTS on (user, title) also finds a dashboard
+-- a user already created from the preset in the module.
+--
+-- Widget identifiers that are not registered are skipped by
+-- Dashboard::initializeWidgets() (TYPO3 14.3), so the rows are harmless on an
+-- nr_mcp_agent that does not ship the three new widgets yet.
+INSERT INTO be_dashboards (pid, tstamp, crdate, cruser_id, identifier, title, widgets)
+SELECT 0, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), u.uid,
+       SHA1(CONCAT('nr-mcp-agent-assistant:', u.uid)),
+       'LLL:EXT:nr_mcp_agent/Resources/Private/Language/locallang_dashboard.xlf:preset.title',
+ '{"3276c7cc072d8446e5bf490669a34c661a8cbf29":{"identifier":"nrMcpAgentImprovePage"},"b31c9870baf73b1f9d1452c18878ac3be77a8dc8":{"identifier":"nrMcpAgentQuickTasks"},"997235a272566500f197890a4a78e6926ee78d2b":{"identifier":"nrMcpAgentRecommendations"},"bf6204214bae3c5ec67439fa057a8f50c85500e8":{"identifier":"nrMcpAgentAiChat"}}'
+  FROM be_users u
+ WHERE u.deleted = 0
+   AND u.password LIKE '$%'
+   AND NOT EXISTS (SELECT 1 FROM be_dashboards d
+                    WHERE d.cruser_id = u.uid
+                      AND d.title = 'LLL:EXT:nr_mcp_agent/Resources/Private/Language/locallang_dashboard.xlf:preset.title');
+
 -- =============================================================================
 -- Backend AI Chat (nr-mcp-agent) — dedicated nr-llm system configuration
 -- =============================================================================
@@ -5452,6 +5478,118 @@ UPDATE tx_nrllm_configuration c
                     WHERE m2.uid_local = c.uid));
 
 -- =============================================================================
+-- The editorial skill instructs: version digest and approval (nr-llm ADR-214)
+-- =============================================================================
+-- From nr-llm 0.41 every skill is untrusted reference data, fenced in the user
+-- message, until an administrator approves one version of it; only then is it
+-- composed into the system message as an instruction. A version is the sha256
+-- "version digest" over name, description, body, support status, tool
+-- declaration and process marker (SkillVersionDigest, format 1). A synced row
+-- without a digest is a legacy row and can never be approved. The upgrade
+-- wizard that writes digests (nrllmAdr214SkillVersionDigest) is not run on this
+-- instance, and it would refuse this row anyway: it checks the fields against
+-- raw_frontmatter, which the seed does not write.
+--
+-- So the seed writes the digest itself, computed here from the row's own stored
+-- fields with SkillVersionDigest's serialisation, and approves that version as
+-- the demo's administrator. The text is reviewed in this repository; the
+-- approval is what the Skills module's "Approve this version" would store,
+-- plus its audit row. It binds to the digest: a changed body gets a new digest
+-- on the next deploy and a new approval. An approval that an administrator
+-- revoked stays revoked, because the seed adds one only while no approval row
+-- for that digest exists at all.
+--
+-- Everything here needs the 0.41 schema (version_digest, process,
+-- tx_nrllm_skill_approval). On an older nr-llm the statements are replaced by
+-- DO 0, so the seed keeps applying cleanly before the upgrade.
+SET @nrllm_adr214 = (
+    SELECT COUNT(*) FROM information_schema.COLUMNS
+     WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'tx_nrllm_skill'
+       AND COLUMN_NAME IN ('version_digest', 'process')) = 2
+  AND EXISTS (SELECT 1 FROM information_schema.TABLES
+               WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'tx_nrllm_skill_approval');
+
+-- The digest. LENGTH() counts bytes, as PHP's strlen() does, and both SHA2()
+-- and LENGTH() read the utf8mb4 bytes the client sends (Makefile:
+-- --default-character-set=utf8mb4). allowed_tools empty means "no
+-- declaration" ("allowed_tools=-"); the row declares none.
+SET @seed_sql = IF(@nrllm_adr214, '
+UPDATE tx_nrllm_skill
+   SET process = 0,
+       version_digest = CONCAT(''1:'', SHA2(CONCAT(
+           ''nr_llm.skill-version'', CHAR(10),
+           ''format=1'', CHAR(10),
+           ''name='', LENGTH(name), '':'', name, CHAR(10),
+           ''description='', LENGTH(COALESCE(description, '''')), '':'', COALESCE(description, ''''), CHAR(10),
+           ''body='', LENGTH(COALESCE(body, '''')), '':'', COALESCE(body, ''''), CHAR(10),
+           ''support_status='', LENGTH(support_status), '':'', support_status, CHAR(10),
+           ''allowed_tools=-'', CHAR(10),
+           ''process=0'', CHAR(10)), 256))
+ WHERE uid = 9421 AND source = 9403 AND COALESCE(allowed_tools, '''') = ''''', 'DO 0');
+PREPARE seed_stmt FROM @seed_sql;
+EXECUTE seed_stmt;
+DEALLOCATE PREPARE seed_stmt;
+
+-- The audit row first, keyed on the same "no approval for this digest yet",
+-- then the approval itself (the snapshot SkillApprovalRepository::add()
+-- writes). The approver is the lowest-uid administrator that can log in.
+-- The digests are compared byte for byte (utf8mb4_bin): the tables of this
+-- database carry three different collations, and a new table need not share
+-- tx_nrllm_skill's, which makes a plain '=' an "illegal mix of collations".
+SET @seed_sql = IF(@nrllm_adr214, '
+INSERT INTO tx_nrllm_skill_audit
+    (pid, crdate, event, source_uid, skill_identifier, source_sha, body_checksum,
+     version_digest, trust_level, scan_result, actor_uid, detail)
+SELECT 0, UNIX_TIMESTAMP(), ''version_approved'', k.source, k.identifier, k.source_sha, k.body_checksum,
+       k.version_digest, s.trust_level, '''',
+       COALESCE((SELECT MIN(u.uid) FROM be_users u
+                  WHERE u.admin = 1 AND u.deleted = 0 AND u.password LIKE ''$%''), 0),
+       ''approved by the demo seed (data/seed-extensions.sql)''
+  FROM tx_nrllm_skill k
+  JOIN tx_nrllm_skill_source s ON s.uid = k.source
+ WHERE k.uid = 9421 AND k.source = 9403 AND k.enabled = 1 AND k.deleted = 0
+   AND k.version_digest LIKE ''1:%''
+   AND NOT EXISTS (SELECT 1 FROM tx_nrllm_skill_approval a
+                    WHERE a.skill_uid = k.uid AND a.version_digest = k.version_digest COLLATE utf8mb4_bin)', 'DO 0');
+PREPARE seed_stmt FROM @seed_sql;
+EXECUTE seed_stmt;
+DEALLOCATE PREPARE seed_stmt;
+
+SET @seed_sql = IF(@nrllm_adr214, '
+INSERT INTO tx_nrllm_skill_approval
+    (pid, crdate, skill_uid, source_uid, version_digest, name, description, body,
+     support_status, allowed_tools, process, trust_level, approved_by,
+     revoked, revoked_by, revoked_at)
+SELECT 0, UNIX_TIMESTAMP(), k.uid, k.source, k.version_digest, k.name,
+       COALESCE(k.description, ''''), COALESCE(k.body, ''''), k.support_status, '''', 0,
+       s.trust_level,
+       COALESCE((SELECT MIN(u.uid) FROM be_users u
+                  WHERE u.admin = 1 AND u.deleted = 0 AND u.password LIKE ''$%''), 0),
+       0, 0, 0
+  FROM tx_nrllm_skill k
+  JOIN tx_nrllm_skill_source s ON s.uid = k.source
+ WHERE k.uid = 9421 AND k.source = 9403 AND k.enabled = 1 AND k.deleted = 0
+   AND k.version_digest LIKE ''1:%''
+   AND NOT EXISTS (SELECT 1 FROM tx_nrllm_skill_approval a
+                    WHERE a.skill_uid = k.uid AND a.version_digest = k.version_digest COLLATE utf8mb4_bin)', 'DO 0');
+PREPARE seed_stmt FROM @seed_sql;
+EXECUTE seed_stmt;
+DEALLOCATE PREPARE seed_stmt;
+
+-- The probe. A revoked approval of the current digest is an administrator's
+-- decision and no seed problem; a missing digest or no approval row at all is.
+SET @seed_sql = IF(@nrllm_adr214, '
+SELECT ''SEED-PROBLEM: the editorial skill 9421 has no version digest or no approval of it — it stays reference data'' AS seed_verification
+  FROM DUAL
+ WHERE NOT EXISTS (SELECT 1 FROM tx_nrllm_skill k
+                     JOIN tx_nrllm_skill_approval a
+                       ON a.skill_uid = k.uid AND a.version_digest = k.version_digest COLLATE utf8mb4_bin
+                    WHERE k.uid = 9421 AND k.version_digest LIKE ''1:%'')', 'DO 0');
+PREPARE seed_stmt FROM @seed_sql;
+EXECUTE seed_stmt;
+DEALLOCATE PREPARE seed_stmt;
+
+-- =============================================================================
 -- One header per extension page, not two
 -- =============================================================================
 -- The header added earlier was prepended above each page's existing hero box,
@@ -6537,6 +6675,39 @@ WHERE identifier = 'backend-ai-chat' AND deleted = 0
   AND allowed_tool_groups <> ''
   AND FIND_IN_SET('nr_ai_search', allowed_tool_groups) = 0;
 
+-- 8g. The choice builtin of the guided tours
+--
+-- A guided tour asks its plain choices - which point first, "Los geht's" or
+-- "Fertig" after the overview, how to go on when a source is missing - with
+-- nr-llm's builtin ask_choice, and the chat answers it with its reply buttons
+-- (nr_mcp_agent ADR-023). ask_choice reads nothing and writes nothing; the run
+-- waits until the editor picks one of the call's own options. It ships
+-- disabled, because a client that cannot answer a waiting run would see the
+-- run fail. The chat can, so it is enabled here.
+--
+-- Like every row in step 8, the rows are harmless on an nr-llm that does not
+-- ship the tool yet: a state row for a name the registry does not know is
+-- never read.
+INSERT INTO tx_nrllm_tool_state (pid, tool_name, enabled)
+VALUES (0, 'ask_choice', 1)
+ON DUPLICATE KEY UPDATE
+  enabled = VALUES(enabled);
+
+-- ask_choice belongs to the group 'content'. A missing group row means
+-- enabled; the explicit 1 makes the seed the last word, as for 'editing'.
+INSERT INTO tx_nrllm_tool_group_state (pid, group_name, enabled)
+VALUES (0, 'content', 1)
+ON DUPLICATE KEY UPDATE
+  enabled = VALUES(enabled);
+
+-- Same as for nr_ai_search above: a group list set in the backend keeps
+-- 'content' visible, an empty list stays empty.
+UPDATE tx_nrllm_configuration
+SET allowed_tool_groups = CONCAT(allowed_tool_groups, ',content')
+WHERE identifier = 'backend-ai-chat' AND deleted = 0
+  AND allowed_tool_groups <> ''
+  AND FIND_IN_SET('content', allowed_tool_groups) = 0;
+
 -- 8b2. The dead MCP-server table of nr_mcp_agent (< 0.12) goes
 --
 -- nr_mcp_agent 0.12 removed its own MCP client and the TCA for
@@ -7137,6 +7308,18 @@ SELECT 'SEED-PROBLEM: tool group nr_ai_search is switched off — rebuild_search
  WHERE EXISTS (
        SELECT 1 FROM tx_nrllm_tool_group_state
         WHERE group_name = 'nr_ai_search' AND enabled = 0)
+UNION ALL
+SELECT 'SEED-PROBLEM: ask_choice is not enabled — a guided tour cannot ask its choices'
+  FROM DUAL
+ WHERE NOT EXISTS (
+       SELECT 1 FROM tx_nrllm_tool_state
+        WHERE tool_name = 'ask_choice' AND enabled = 1)
+UNION ALL
+SELECT 'SEED-PROBLEM: tool group content is switched off — ask_choice stays unreachable'
+  FROM DUAL
+ WHERE EXISTS (
+       SELECT 1 FROM tx_nrllm_tool_group_state
+        WHERE group_name = 'content' AND enabled = 0)
 UNION ALL
 SELECT 'SEED-PROBLEM: the DeepWiki MCP server row is missing or disabled'
   FROM DUAL

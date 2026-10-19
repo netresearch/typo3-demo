@@ -7,8 +7,9 @@
 # appear then comes from this setting, and EXT:dashboard defaults it to
 # 'default' alone. Naming both presets from Configuration/Backend/DashboardPresets.php
 # gives a new user the explainer dashboard AND the live-widget dashboard;
-# without it the second one would have to be assembled by hand.
+# without it the second one would have to be assembled by hand. 'nrMcpAgent' is
+# the preset of nr_mcp_agent ("KI-Assistent"), the entry to the guided tours.
 #
 # Users that already exist are past that one-time branch, so they are served by
 # the be_dashboards rows in data/seed-extensions.sql instead.
-options.dashboard.dashboardPresetsForNewUsers = default,netresearch-widgets
+options.dashboard.dashboardPresetsForNewUsers = default,netresearch-widgets,nrMcpAgent
