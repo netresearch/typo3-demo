@@ -10488,22 +10488,22 @@
         },
         {
             "name": "t3g/analytics",
-            "version": "1.1.0",
+            "version": "1.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/TYPO3GmbH/analytics.git",
-                "reference": "e8348a098ebbc129fb8f8fbc300d1ccfcd6c7a6b"
+                "reference": "d1d8634e71e6df38474b85344bde7df25dce60de"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/TYPO3GmbH/analytics/zipball/e8348a098ebbc129fb8f8fbc300d1ccfcd6c7a6b",
-                "reference": "e8348a098ebbc129fb8f8fbc300d1ccfcd6c7a6b",
+                "url": "https://api.github.com/repos/TYPO3GmbH/analytics/zipball/d1d8634e71e6df38474b85344bde7df25dce60de",
+                "reference": "d1d8634e71e6df38474b85344bde7df25dce60de",
                 "shasum": ""
             },
             "require": {
                 "ext-sodium": "*",
                 "php": "^8.2",
-                "typo3/cms-backend": "^13.4 || ^14.0",
+                "typo3/cms-backend": "^13.4.18 || ^14.0",
                 "typo3/cms-core": "^13.4 || ^14.0",
                 "typo3/cms-dashboard": "^13.4 || ^14.0"
             },
@@ -10548,7 +10548,7 @@
                 "issues": "https://github.com/TYPO3GmbH/analytics/issues",
                 "source": "https://github.com/TYPO3GmbH/analytics"
             },
-            "time": "2026-09-21T10:47:17+00:00"
+            "time": "2026-10-20T06:44:56+00:00"
         },
         {
             "name": "thieleundklose/autotranslate",
