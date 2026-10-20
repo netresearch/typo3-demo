@@ -5608,16 +5608,23 @@ DEALLOCATE PREPARE seed_stmt;
 --     the run no tool at all (SkillComposer::declaredTools()), so each tour
 --     declares the tools its steps use. Stored as nr-llm stores it, a JSON
 --     list, sorted as SkillVersionDigest sorts it.
---   * attachment 'on_demand' to backend-ai-chat: nr-llm refuses an 'always'
---     process attachment in the form and skips it at compose time.
+--   * attached 'always' to backend-ai-chat, the configuration of the chat's
+--     Task 1. nr-llm 0.41.0 starts a process only for a skill in the
+--     configuration's 'always' list (ProcessRunPreparer::attachedSkill(),
+--     ProcessSkillCatalogue, both reading LlmConfiguration::getSkills()), and
+--     nr_mcp_agent's skill catalogue reads the same list; an 'on_demand' tour
+--     could neither be listed nor started. The backend form offers a process
+--     skill only for the on-demand field (ADR-214 item 6), but keeps an
+--     attachment made here. Attached 'always', a tour that a turn does not
+--     invoke is skipped at compose time with a log line and grants no tool.
 --   * version digest, one approval of that version and its audit row, as for
 --     the editorial skill above: a process whose current version is not an
 --     approved instruction cannot be started.
 --
 -- Everything here needs the 0.41 schema (process, version_digest, load_mode,
 -- tx_nrllm_skill_approval) and is DO 0 before it. On an older nr-llm the rows
--- would not exist as processes, and an attachment without load_mode would
--- compose both bodies as reference text into every chat turn.
+-- would not be processes, and the attachment would compose both bodies as
+-- reference text into every chat turn.
 SET @nrllm_tours = @nrllm_adr214
   AND EXISTS (SELECT 1 FROM information_schema.COLUMNS
                WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'tx_nrllm_configuration_skill_mm'
@@ -5681,7 +5688,7 @@ Ein Punkt der Übersicht ist alles, wofür du in dieser Tour eine konkrete Ände
 
 Melde danach den Fortschritt: Bezeichnung „<Seitentitel> · <Sprache>“, aktueller Punkt 0, Gesamtzahl gleich der Anzahl der Punkte der Übersicht.
 
-Findest du keinen Punkt, sag das in einem Satz, melde den Fortschritt als abgeschlossen und beende die Tour.
+Findest du keinen Punkt, sag das in einem Satz, melde den Fortschritt als abgeschlossen (aktueller Punkt 0, Gesamtzahl 1) und beende die Tour.
 
 Frag sonst mit einer Auswahl, ob es losgehen soll: „Lass uns das Schritt für Schritt gemeinsam optimieren.“ mit den Antworten „Los geht\'s“ und „Fertig“. Bei „Fertig“ meldest du den Fortschritt als abgeschlossen und beendest die Tour.
 
@@ -5792,7 +5799,7 @@ Offene Punkte aus früheren Durchläufen nimmst du wieder auf und kennzeichnest 
 
 Melde danach den Fortschritt: Bezeichnung „<Seitentitel> · <Sprache>“, aktueller Punkt 0, Gesamtzahl gleich der Anzahl der Punkte der Übersicht.
 
-Findest du keinen Punkt, sag das in einem Satz, melde den Fortschritt als abgeschlossen und beende die Tour.
+Findest du keinen Punkt, sag das in einem Satz, melde den Fortschritt als abgeschlossen (aktueller Punkt 0, Gesamtzahl 1) und beende die Tour.
 
 Frag sonst mit einer Auswahl, ob es losgehen soll: „Lass uns die wichtigsten Punkte Schritt für Schritt verbessern.“ mit den Antworten „Los geht\'s“ und „Fertig“. Bei „Fertig“ meldest du den Fortschritt als abgeschlossen und beendest die Tour.
 
@@ -5860,7 +5867,7 @@ INSERT IGNORE INTO tx_nrllm_skill
      tstamp, crdate, deleted, hidden)
 VALUES
     (9422, 0, 9404, ''9404:seo-optimieren'', ''seo-optimieren'', ''Geführte Tour: eine Seite auf SEO prüfen und die gefundenen Punkte nacheinander mit dem Redakteur verbessern – Seitentitel, Meta Description, Social-Media-Vorschau, Hauptüberschrift, interne Links. Jede Änderung erst nach Bestätigung.'',
-     @tour_seo_body, ''779629d03ff2bb9dddd387ab6f7dd23f8a25bdd5c525f055b19aaeda406f42c5'', '''', ''full'', ''["ask_choice","chat_highlight_element","chat_list_open_points","chat_set_progress","get_page_content","get_pagetree","read_records","search_fal_files","search_records","set_page_social_image","update_content_element","update_page_metadata"]'', 1, ''first_party'', 1,
+     @tour_seo_body, ''88c4ab9d79f37e1dc807997836acd6958aa26f4d86066262dd05ba87be72fb47'', '''', ''full'', ''["ask_choice","chat_highlight_element","chat_list_open_points","chat_set_progress","get_page_content","get_pagetree","read_records","search_fal_files","search_records","set_page_social_image","update_content_element","update_page_metadata"]'', 1, ''first_party'', 1,
      UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0)', 'DO 0');
 PREPARE seed_stmt FROM @seed_sql;
 EXECUTE seed_stmt;
@@ -5871,7 +5878,7 @@ DEALLOCATE PREPARE seed_stmt;
 -- and reported by the probe below.
 SET @seed_sql = IF(@nrllm_tours, '
 UPDATE tx_nrllm_skill SET name = ''seo-optimieren'', description = ''Geführte Tour: eine Seite auf SEO prüfen und die gefundenen Punkte nacheinander mit dem Redakteur verbessern – Seitentitel, Meta Description, Social-Media-Vorschau, Hauptüberschrift, interne Links. Jede Änderung erst nach Bestätigung.'',
-       body = @tour_seo_body, body_checksum = ''779629d03ff2bb9dddd387ab6f7dd23f8a25bdd5c525f055b19aaeda406f42c5'',
+       body = @tour_seo_body, body_checksum = ''88c4ab9d79f37e1dc807997836acd6958aa26f4d86066262dd05ba87be72fb47'',
        allowed_tools = ''["ask_choice","chat_highlight_element","chat_list_open_points","chat_set_progress","get_page_content","get_pagetree","read_records","search_fal_files","search_records","set_page_social_image","update_content_element","update_page_metadata"]'', process = 1, support_status = ''full'', trust_level = ''first_party'',
        identifier = ''9404:seo-optimieren'',
        enabled = 1, disabled_by = '''', orphaned = 0, hidden = 0, deleted = 0 WHERE uid = 9422 AND source = 9404', 'DO 0');
@@ -5919,7 +5926,7 @@ INSERT IGNORE INTO tx_nrllm_skill
      tstamp, crdate, deleted, hidden)
 VALUES
     (9423, 0, 9404, ''9404:inhalt-verbessern'', ''inhalt-verbessern'', ''Geführte Tour: eine Seite inhaltlich prüfen – Einstieg, Nutzen, Zielgruppe, Vollständigkeit, Beispiele, Belege, Aufbau, nächster Schritt – und die Verbesserungen nacheinander mit dem Redakteur umsetzen. Erfindet keine Fakten; jede Änderung erst nach Bestätigung.'',
-     @tour_content_body, ''29f9c79acca340592d640230eaabe2abddd104c19218e278faacd4179de270f4'', '''', ''full'', ''["ask_choice","chat_highlight_element","chat_list_open_points","chat_set_progress","create_content_element_draft","get_page_content","get_pagetree","read_records","search_records","update_content_element"]'', 1, ''first_party'', 1,
+     @tour_content_body, ''6fc6622b0afd1a8143aec2f7f1fd03cba2a5182025be762582e165f90314f072'', '''', ''full'', ''["ask_choice","chat_highlight_element","chat_list_open_points","chat_set_progress","create_content_element_draft","get_page_content","get_pagetree","read_records","search_records","update_content_element"]'', 1, ''first_party'', 1,
      UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0)', 'DO 0');
 PREPARE seed_stmt FROM @seed_sql;
 EXECUTE seed_stmt;
@@ -5930,7 +5937,7 @@ DEALLOCATE PREPARE seed_stmt;
 -- and reported by the probe below.
 SET @seed_sql = IF(@nrllm_tours, '
 UPDATE tx_nrllm_skill SET name = ''inhalt-verbessern'', description = ''Geführte Tour: eine Seite inhaltlich prüfen – Einstieg, Nutzen, Zielgruppe, Vollständigkeit, Beispiele, Belege, Aufbau, nächster Schritt – und die Verbesserungen nacheinander mit dem Redakteur umsetzen. Erfindet keine Fakten; jede Änderung erst nach Bestätigung.'',
-       body = @tour_content_body, body_checksum = ''29f9c79acca340592d640230eaabe2abddd104c19218e278faacd4179de270f4'',
+       body = @tour_content_body, body_checksum = ''6fc6622b0afd1a8143aec2f7f1fd03cba2a5182025be762582e165f90314f072'',
        allowed_tools = ''["ask_choice","chat_highlight_element","chat_list_open_points","chat_set_progress","create_content_element_draft","get_page_content","get_pagetree","read_records","search_records","update_content_element"]'', process = 1, support_status = ''full'', trust_level = ''first_party'',
        identifier = ''9404:inhalt-verbessern'',
        enabled = 1, disabled_by = '''', orphaned = 0, hidden = 0, deleted = 0 WHERE uid = 9423 AND source = 9404', 'DO 0');
@@ -5968,11 +5975,11 @@ PREPARE seed_stmt FROM @seed_sql;
 EXECUTE seed_stmt;
 DEALLOCATE PREPARE seed_stmt;
 
--- Attach both tours to the Backend AI Chat, on demand. An attachment that
--- exists already is set to 'on_demand', the only mode a process takes.
+-- Attach both tours to the Backend AI Chat, 'always' (see above). An
+-- attachment that exists already in another mode is set back to 'always'.
 SET @seed_sql = IF(@nrllm_tours, '
 INSERT INTO tx_nrllm_configuration_skill_mm (uid_local, uid_foreign, sorting, sorting_foreign, load_mode)
-SELECT c.uid, k.uid, 2, 0, ''on_demand''
+SELECT c.uid, k.uid, 2, 0, ''always''
   FROM tx_nrllm_configuration c
   JOIN tx_nrllm_skill k ON k.uid IN (9422, 9423) AND k.source = 9404
  WHERE c.uid = (SELECT MIN(x.uid) FROM tx_nrllm_configuration x
@@ -5986,15 +5993,16 @@ DEALLOCATE PREPARE seed_stmt;
 SET @seed_sql = IF(@nrllm_tours, '
 UPDATE tx_nrllm_configuration_skill_mm m
   JOIN tx_nrllm_skill k ON k.uid = m.uid_foreign AND k.source = 9404
-   SET m.load_mode = ''on_demand''
- WHERE m.uid_foreign IN (9422, 9423) AND m.load_mode <> ''on_demand''', 'DO 0');
+   SET m.load_mode = ''always''
+ WHERE m.uid_foreign IN (9422, 9423) AND m.load_mode <> ''always''', 'DO 0');
 PREPARE seed_stmt FROM @seed_sql;
 EXECUTE seed_stmt;
 DEALLOCATE PREPARE seed_stmt;
 
 SET @seed_sql = IF(@nrllm_tours, '
 UPDATE tx_nrllm_configuration c
-   SET c.skills = (SELECT COUNT(*) FROM tx_nrllm_configuration_skill_mm m WHERE m.uid_local = c.uid)
+   SET c.skills = (SELECT COUNT(*) FROM tx_nrllm_configuration_skill_mm m
+                    WHERE m.uid_local = c.uid AND m.load_mode = ''always'')
  WHERE c.deleted = 0 AND c.identifier = ''backend-ai-chat''', 'DO 0');
 PREPARE seed_stmt FROM @seed_sql;
 EXECUTE seed_stmt;
@@ -6045,18 +6053,18 @@ EXECUTE seed_stmt;
 DEALLOCATE PREPARE seed_stmt;
 
 -- The probe: per tour, a row that is not ours, a missing digest, no approval
--- row for the current digest, or a missing or non-on-demand attachment. A
+-- row for the current digest, or no 'always' attachment. A
 -- revoked approval is an administrator's decision and no seed problem.
 SET @seed_sql = IF(@nrllm_tours, '
 SELECT CONCAT(''SEED-PROBLEM: guided tour '', t.slug, '' (tx_nrllm_skill '', t.uid,
-              '') is missing, foreign, without an approved digest or not attached on demand to backend-ai-chat'') AS seed_verification
+              '') is missing, foreign, without an approved digest or not attached to backend-ai-chat'') AS seed_verification
   FROM (SELECT 9422 AS uid, ''seo-optimieren'' AS slug UNION ALL SELECT 9423, ''inhalt-verbessern'') t
  WHERE NOT EXISTS (
         SELECT 1 FROM tx_nrllm_skill k
           JOIN tx_nrllm_skill_source s ON s.uid = k.source AND s.type = ''backend'' AND s.deleted = 0 AND s.enabled = 1
           JOIN tx_nrllm_skill_approval a
             ON a.skill_uid = k.uid AND a.version_digest = k.version_digest COLLATE utf8mb4_bin
-          JOIN tx_nrllm_configuration_skill_mm m ON m.uid_foreign = k.uid AND m.load_mode = ''on_demand''
+          JOIN tx_nrllm_configuration_skill_mm m ON m.uid_foreign = k.uid AND m.load_mode = ''always''
           JOIN tx_nrllm_configuration c ON c.uid = m.uid_local AND c.identifier = ''backend-ai-chat'' AND c.deleted = 0
          WHERE k.uid = t.uid AND k.source = 9404 AND k.name = t.slug COLLATE utf8mb4_bin
            AND k.identifier = CONCAT(''9404:'', t.slug) COLLATE utf8mb4_bin
