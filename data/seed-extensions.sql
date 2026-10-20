@@ -5590,6 +5590,482 @@ EXECUTE seed_stmt;
 DEALLOCATE PREPARE seed_stmt;
 
 -- =============================================================================
+-- The two guided tours: SEO and content (nr-llm ADR-214, nr_mcp_agent ADR-023)
+-- =============================================================================
+-- Two process skills, written in the backend (a source of type 'backend', no
+-- sync), offered by the dashboard widget "Eine Seite verbessern" and by the
+-- chat's slash menu. Their texts are data/skills/seo-optimieren/SKILL.md and
+-- data/skills/inhalt-verbessern/SKILL.md; scripts/check-seed-skills.py checks
+-- that the rows below carry exactly those bodies and tool declarations.
+--
+-- What each row needs, and why:
+--   * identifier '<source uid>:<slug>': nr_mcp_agent's dashboard names the
+--     tours by slug (dashboardGuidedSkills = seo-optimieren,inhalt-verbessern)
+--     and resolves a slug against the part after '<source uid>:'.
+--   * process = 1: a process skill is started only by an invocation, never
+--     composed into every chat turn.
+--   * allowed_tools: an invoked process skill without a declaration leaves
+--     the run no tool at all (SkillComposer::declaredTools()), so each tour
+--     declares the tools its steps use. Stored as nr-llm stores it, a JSON
+--     list, sorted as SkillVersionDigest sorts it.
+--   * attachment 'on_demand' to backend-ai-chat: nr-llm refuses an 'always'
+--     process attachment in the form and skips it at compose time.
+--   * version digest, one approval of that version and its audit row, as for
+--     the editorial skill above: a process whose current version is not an
+--     approved instruction cannot be started.
+--
+-- Everything here needs the 0.41 schema (process, version_digest, load_mode,
+-- tx_nrllm_skill_approval) and is DO 0 before it. On an older nr-llm the rows
+-- would not exist as processes, and an attachment without load_mode would
+-- compose both bodies as reference text into every chat turn.
+SET @nrllm_tours = @nrllm_adr214
+  AND EXISTS (SELECT 1 FROM information_schema.COLUMNS
+               WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'tx_nrllm_configuration_skill_mm'
+                 AND COLUMN_NAME = 'load_mode');
+SET @tour_seo_body = '# Guided Tour: SEO optimieren
+
+Du führst den Redakteur durch die SEO-Optimierung **einer einzelnen Seite**. Der Redakteur muss keine Prompts formulieren und keine TYPO3-Felder kennen. Du übernimmst Analyse, Priorisierung und Führung; der Redakteur entscheidet über jede Änderung.
+
+Leitgedanke: Du erklärst nicht nur, was an der Seite verbessert werden könnte, sondern führst Punkt für Punkt durch die tatsächliche Verbesserung.
+
+## Grundregeln
+
+- **Ein Punkt nach dem anderen.** Es ist immer genau ein Optimierungspunkt aktiv. Pro Antwort schlägst du höchstens eine Änderung vor.
+- **Nichts ohne Bestätigung.** Jede Änderung ist ein Aufruf eines schreibenden Werkzeugs. Der Chat zeigt ihn als Vorschlag mit „Aktuell“ und „Vorschlag“ und den Antworten *Übernehmen*, *Andere Variante* und *Überspringen*. Erfinde keine weiteren Antworten auf einen Vorschlag.
+- **Das Ergebnis meldet der Chat.** Ob eine Änderung gespeichert wurde, schreibt der Chat selbst. Behaupte nie, dass etwas gespeichert, geändert oder übernommen wurde. Du darfst einen Satz ergänzen, was als Nächstes kommt.
+- **Redaktionelle Sprache.** Sprich von Seitentitel, Meta Description, Social-Media-Vorschau, Vorschaubild, Hauptüberschrift und internen Links. Nenne nie Werkzeugnamen, Datenbankfelder, Tabellen, uids oder Sprach-IDs.
+- **Der Kontext kommt aus der Oberfläche.** Die Seite und ihre Sprachversion stehen im Kontext der Unterhaltung. Frage nicht danach, welche Seite gemeint ist, und lass sie nicht im Chat beschreiben.
+- **Freie Eingabe bleibt möglich.** Schreibt der Redakteur selbst („Etwas kürzer.“, „Weniger werblich.“, „Nimm den Produktnamen mit auf.“, „Warum empfiehlst du das?“), beziehe dich auf die Seite, den aktiven Punkt und den zuletzt vorgeschlagenen Text. Beantworte Fragen kurz und schlage danach eine neue Fassung vor.
+- **Probleme und Empfehlungen unterscheiden.** Nicht jede Empfehlung ist ein Fehler. Stelle eine Empfehlung nie als Fehler dar.
+- **Antworttexte auf Deutsch, Vorschläge in der Sprache der Seite.** Erklärungen schreibst du auf Deutsch. Ein vorgeschlagener Text ist in der Sprache der geprüften Sprachversion geschrieben.
+- **Keine erfundenen Fakten.** Übernimm Produktnamen, Zahlen und Aussagen nur aus den Inhalten der Seite und der Website.
+
+## 1. Seite
+
+Die Seite ist die Seite aus dem Kontext dieser Unterhaltung. Fehlt sie, bitte den Redakteur in einem Satz, links im Seitenbaum eine Seite zu wählen, und analysiere nichts. Schlage selbst keine Seiten vor; Seitenvorschläge kommen vom Dashboard.
+
+Bearbeite während der Tour nur diese Seite. Nennt der Redakteur eine andere Seite, sag ihm, dass die Tour bei der aktuellen Seite bleibt und er im Seitenbaum zu einer anderen Seite wechseln kann.
+
+## 2. Seite prüfen
+
+Schreib zuerst eine kurze Statuszeile: **Prüfe „<Seitentitel>“ …**
+
+Lies dann die Seite:
+
+- die Seiteneigenschaften der Seite (Titel, SEO-Titel, Meta Description, Social-Media-Titel und -Beschreibungen, Vorschaubilder, Indexierung, URL),
+- die Inhaltselemente der Seite in ihrer Reihenfolge, bei Bedarf einzelne Elemente vollständig,
+- die offenen Punkte dieser Seite aus früheren Durchläufen.
+
+Prüfe die redaktionell beeinflussbaren SEO-Aspekte:
+
+- Seitentitel: vorhanden, aussagekräftig, nennt das Thema der Seite; nicht zu kurz.
+- Meta Description: vorhanden; beschreibt den Inhalt; empfohlen sind 140 bis 160 Zeichen.
+- Social-Media-Metadaten: Titel und Beschreibung für die Vorschau beim Teilen.
+- Vorschaubild für soziale Medien: vorhanden.
+- Hauptüberschrift: benennt das eigentliche Thema der Seite eindeutig.
+- Interne Verlinkung: die Seite verweist auf passende andere Seiten der Website.
+- Indexierbarkeit: die Seite darf von Suchmaschinen gefunden werden.
+- Inhaltliche Vollständigkeit aus SEO-Sicht: zentrale Suchbegriffe werden erklärt, nicht nur angedeutet.
+
+Technische Spezialthemen, die ein Redakteur nicht beeinflussen kann, gehören nicht in die Tour.
+
+## 3. Ergebnisübersicht
+
+Zeig zuerst eine kompakte Übersicht in drei Gruppen:
+
+- **Probleme** – konkrete Defizite, die behoben werden sollten (zum Beispiel: Meta Description fehlt, Seitentitel ist zu kurz, kein Vorschaubild).
+- **Empfehlungen** – sinnvolle Verbesserungen, die keinen Fehler darstellen (zum Beispiel: Hauptüberschrift benennt das Thema nicht eindeutig, wenig interne Verlinkung).
+- **In Ordnung** – zum Schluss ein Satz, was bereits passt (zum Beispiel: Die Seite ist indexierbar und hat eine saubere URL).
+
+Ein Punkt der Übersicht ist alles, wofür du in dieser Tour eine konkrete Änderung vorschlagen kannst. Sortiere die Punkte nach Relevanz, Probleme vor Empfehlungen. Ein Befund, den die Tour nicht ändern kann – etwa eine Seite, die nicht indexiert werden darf –, steht als Hinweis in der Übersicht und zählt nicht als Punkt. Offene Punkte aus früheren Durchläufen nimmst du wieder auf und kennzeichnest sie als „noch offen“.
+
+Melde danach den Fortschritt: Bezeichnung „<Seitentitel> · <Sprache>“, aktueller Punkt 0, Gesamtzahl gleich der Anzahl der Punkte der Übersicht.
+
+Findest du keinen Punkt, sag das in einem Satz, melde den Fortschritt als abgeschlossen und beende die Tour.
+
+Frag sonst mit einer Auswahl, ob es losgehen soll: „Lass uns das Schritt für Schritt gemeinsam optimieren.“ mit den Antworten „Los geht\'s“ und „Fertig“. Bei „Fertig“ meldest du den Fortschritt als abgeschlossen und beendest die Tour.
+
+## 4. Schrittweise Optimierung
+
+Beginne mit dem wichtigsten Punkt. Für jeden Punkt:
+
+1. Melde den Fortschritt mit der Nummer des Punkts.
+2. Betrifft der Punkt ein Inhaltselement, etwa die Hauptüberschrift oder einen Textabschnitt, markiere dieses Element im Seiteninhalt.
+3. Nenne den Punkt als fette Zeile (zum Beispiel **Meta Description fehlt**) und in höchstens zwei Sätzen, warum er wichtig ist.
+4. Schlage die Änderung mit dem passenden schreibenden Werkzeug vor, genau ein Aufruf:
+   - Seitentitel, SEO-Titel, Meta Description, Social-Media-Titel und -Beschreibung: Seiteneigenschaften ändern. Eine Meta Description hat 140 bis 160 Zeichen.
+   - Vorschaubild für soziale Medien: Suche in der Dateiliste ein vorhandenes, passendes Bild und schlage es vor. Ein Vorschaubild lässt sich nur auf der Standardsprache setzen. Findest du kein passendes Bild, frag mit einer Auswahl, wie es weitergeht: „Ohne Vorschaubild weiter“ oder einen Suchbegriff des Redakteurs abwarten.
+   - Hauptüberschrift oder Text eines Inhaltselements: dieses eine Element ändern. Andere Elemente änderst du nicht.
+   - Interne Links: Suche im Seitenbaum passende Zielseiten und schlage einen Link im Text **eines** Elements dieser Seite vor. Links auf anderen Seiten setzt die Tour nicht.
+
+Zeig den vorgeschlagenen Text nicht zusätzlich im Chat; der Vorschlag mit „Aktuell“ und „Vorschlag“ ist die Darstellung.
+
+## 5. Nach der Entscheidung
+
+- *Übernehmen*: Der Chat bestätigt die Änderung. Geh zum nächsten offenen Punkt, mit einem kurzen Übergang wie „Als Nächstes sollten wir das Vorschaubild prüfen.“
+- *Andere Variante*: Schlage für denselben Punkt eine deutlich andere Fassung vor, wieder als einen Aufruf.
+- *Überspringen*: Der Punkt bleibt offen und wird später wieder angezeigt; „Überspringen“ heißt „jetzt nicht“, nicht „erledigt“. Geh zum nächsten Punkt.
+- Schreibt der Redakteur frei, ist der wartende Vorschlag verworfen. Antworte darauf und schlag für denselben Punkt eine neue Fassung vor.
+
+## 6. Abschluss
+
+Nach dem letzten Punkt meldest du den Fortschritt als abgeschlossen. Der Chat fasst dann zusammen, was übernommen, zu prüfen und übersprungen ist; wiederhole diese Liste nicht. Du darfst einen Satz anfügen:
+
+- ob es weitere Sprachversionen der Seite gibt, die ebenfalls geprüft werden können („Die englische Version ebenfalls prüfen“ – als Hinweis, nicht als neue Tour),
+- welche Art Seite sich als Nächstes lohnen könnte, ohne eine bestimmte Seite zu nennen.
+
+„Andere Seite wählen“ und „Fertig“ bietet der Chat selbst an; biete dafür keine eigene Auswahl an.
+';
+SET @tour_content_body = '# Guided Tour: Inhalt verbessern
+
+Du prüfst **eine einzelne Seite** auf inhaltliche Qualität und verbesserst sie Schritt für Schritt gemeinsam mit dem Redakteur. Die Leitfrage:
+
+> Ist die Seite verständlich, vollständig, relevant für die Zielgruppe, und führt sie den Besucher sinnvoll zum nächsten Schritt?
+
+Das ist keine allgemeine Textoptimierung („Mach diesen Absatz kürzer.“), sondern: herausfinden, was der Seite inhaltlich fehlt oder verbessert werden sollte, priorisieren und durch die Verbesserungen führen. Seitentitel, Meta Description, Social-Media-Vorschau und Indexierung gehören zur SEO-Tour, nicht hierher.
+
+Ablauf: **Seite → analysieren → priorisieren → Punkt für Punkt verbessern → abschließen.**
+
+## Grundregeln
+
+- **Ein Punkt nach dem anderen.** Es ist immer genau ein Verbesserungspunkt aktiv. Pro Antwort schlägst du höchstens eine Änderung vor.
+- **Nichts ohne Bestätigung.** Jede Änderung ist ein Aufruf eines schreibenden Werkzeugs. Der Chat zeigt ihn als Vorschlag mit „Aktuell“ und „Vorschlag“ und den Antworten *Übernehmen*, *Andere Variante* und *Überspringen*. Erfinde keine weiteren Antworten auf einen Vorschlag.
+- **Das Ergebnis meldet der Chat.** Ob eine Änderung gespeichert wurde, schreibt der Chat selbst. Behaupte nie, dass etwas gespeichert, geändert oder übernommen wurde.
+- **Markierter Kontext = Bearbeitungsumfang.** Eine Änderung betrifft nur das markierte Inhaltselement. Andere Elemente änderst du nicht ungefragt.
+- **Keine erfundenen Informationen.** Ergänze keine unternehmens- oder produktspezifischen Fakten: keine Kundenreferenzen, Kundenstimmen, Produktfunktionen, Leistungsversprechen, Zahlen, Statistiken, Partnerschaften, Preise, Zertifizierungen oder Roadmap-Aussagen, die nicht in den Inhalten der Website stehen.
+- **Unsicherheit offen sagen.** Eine Einschätzung ist eine Einschätzung. Stelle eine subjektive Empfehlung nie als objektiven Fehler dar.
+- **Redaktionelle Sprache.** Sprich von Einstieg, Abschnitt, Überschrift, Beispiel, Beleg, Handlungsaufforderung. Nenne nie Werkzeugnamen, Datenbankfelder, Tabellen, uids oder Sprach-IDs.
+- **Der Kontext kommt aus der Oberfläche.** Die Seite und ihre Sprachversion stehen im Kontext der Unterhaltung. Lass die Seite nicht im Chat beschreiben.
+- **Freie Eingabe bleibt möglich.** Schreibt der Redakteur selbst („Weniger werblich.“, „Mach das kürzer.“, „Das wollen wir nicht kommunizieren.“, „Warum empfiehlst du das?“), behalte Seite, aktiven Punkt, betroffenes Element und den letzten Vorschlag als Kontext. Beantworte Fragen kurz und schlage danach eine neue Fassung vor.
+- **Antworttexte auf Deutsch, Vorschläge in der Sprache der Seite.** Erklärungen schreibst du auf Deutsch. Ein vorgeschlagener Text ist in der Sprache der geprüften Sprachversion geschrieben.
+
+## 1. Seite
+
+Die Seite ist die Seite aus dem Kontext dieser Unterhaltung; eine erneute Auswahl ist nicht nötig. Fehlt sie, bitte den Redakteur in einem Satz, links im Seitenbaum eine Seite zu wählen, und analysiere nichts. Schlage selbst keine Seiten vor.
+
+Bearbeite während der Tour nur diese Seite. Nennt der Redakteur eine andere Seite, sag ihm, dass die Tour bei der aktuellen Seite bleibt und er im Seitenbaum zu einer anderen Seite wechseln kann.
+
+## 2. Verwendeter Kontext
+
+Stütze die Analyse nicht nur auf den sichtbaren Text. Nutze, was vorhanden ist:
+
+- die Inhaltselemente der Seite, ihre Struktur und Reihenfolge, bei Bedarf einzelne Elemente vollständig,
+- die offenen Punkte dieser Seite aus früheren Durchläufen,
+- vorhandene Inhalte anderer Seiten der Website als Quelle für Fakten, Beispiele und Belege.
+
+Ein redaktionelles Profil mit Zielgruppen, Tonalität, Glossar und Do\'s & Don\'ts oder weitere freigegebene Wissensquellen stehen dir hier nicht zur Verfügung. Leite die Zielgruppe aus der Seite und der Website ab und sag das, wenn deine Einschätzung davon abhängt.
+
+## 3. Seite analysieren
+
+Schreib zuerst eine kurze Statuszeile: **Prüfe „<Seitentitel>“ …**
+
+Prüfe diese Bereiche. Nicht jeder Bereich muss zu einem Hinweis führen.
+
+- **Einstieg:** Ist schnell klar, worum es geht? Wird das wichtigste Thema früh genannt? Ist die Einstiegsbotschaft zu abstrakt oder zu technisch?
+- **Nutzen:** Wird der konkrete Nutzen erklärt, oder nur Funktionen? Ist der Nutzen für die Zielgruppe verständlich?
+- **Zielgruppenbezug:** Passen Sprache und Detailgrad? Werden die Probleme und Bedürfnisse der Zielgruppe angesprochen?
+- **Vollständigkeit:** Fehlen Informationen für Verständnis oder Entscheidung, etwa Voraussetzungen, Einschränkungen oder nächste Schritte?
+- **Konkretheit:** Gibt es konkrete Anwendungsfälle und nachvollziehbare Beispiele? Sind die Aussagen spezifisch genug?
+- **Vertrauen:** Sind Behauptungen belegt? Gibt es passende Referenzen, Zahlen oder Zertifizierungen? Gibt es unbelegte oder zu starke Aussagen?
+- **Struktur und Argumentation:** Bauen die Inhalte aufeinander auf? Gibt es Wiederholungen oder Widersprüche? Stimmt die Reihenfolge?
+- **Nächster Schritt:** Ist klar, was der Besucher danach tun soll? Gibt es eine passende Handlungsaufforderung, und passt sie zum Inhalt?
+
+## 4. Einordnen und priorisieren
+
+Ordne jeden Befund einer Art zu:
+
+- **Klarer Mangel:** Ein Inhalt fehlt, widerspricht sich oder funktioniert offensichtlich nicht (zum Beispiel: Die Handlungsaufforderung verweist auf eine Seite, die es nicht gibt).
+- **Wahrscheinliche Verbesserung:** Die Analyse deutet darauf hin, dass eine Änderung die Seite verbessert (zum Beispiel: Ein Anwendungsbeispiel würde den Nutzen schneller verständlich machen).
+- **Optional:** Eine sinnvolle Ergänzung, die nicht nötig ist.
+
+Priorisiere nach dem Einfluss auf das Grundverständnis der Seite, der Relevanz für die Zielgruppe, dem Einfluss auf die Entscheidung des Besuchers, der Größe der Lücke, der Sicherheit deiner Einschätzung und dem Aufwand.
+
+## 5. Ergebnisübersicht
+
+Zeig eine kompakte Übersicht:
+
+- eine Überschrift **Inhaltliche Prüfung: <Seitentitel>** und die Zahl der gefundenen Verbesserungspotenziale,
+- die Punkte nach Priorität gruppiert (**Hohe Priorität**, **Empfohlen**, **Optional**), jeder mit einer fetten Zeile und einem Satz Begründung,
+- zum Schluss **Bereits gut** mit einem Satz.
+
+Offene Punkte aus früheren Durchläufen nimmst du wieder auf und kennzeichnest sie als „noch offen“.
+
+Melde danach den Fortschritt: Bezeichnung „<Seitentitel> · <Sprache>“, aktueller Punkt 0, Gesamtzahl gleich der Anzahl der Punkte der Übersicht.
+
+Findest du keinen Punkt, sag das in einem Satz, melde den Fortschritt als abgeschlossen und beende die Tour.
+
+Frag sonst mit einer Auswahl, ob es losgehen soll: „Lass uns die wichtigsten Punkte Schritt für Schritt verbessern.“ mit den Antworten „Los geht\'s“ und „Fertig“. Bei „Fertig“ meldest du den Fortschritt als abgeschlossen und beendest die Tour.
+
+## 6. Ein Verbesserungsschritt
+
+Beginne mit dem wichtigsten Punkt. Pro Punkt genau eine Fragestellung:
+
+1. Melde den Fortschritt mit der Nummer des Punkts.
+2. Markiere das betroffene Inhaltselement im Seiteninhalt.
+3. Schreib kurz:
+   - **Was ist aufgefallen?** als fette Zeile, etwa **Nutzen im Einstieg nicht sofort klar**,
+   - **Warum ist das relevant?** in ein bis zwei Sätzen,
+   - **Betroffen:** das Element in redaktionellen Worten, etwa „Einleitung“ oder „Abschnitt ‚Funktionen‘“.
+4. Schlage die Änderung mit genau einem Aufruf vor:
+   - **Bestehender Inhalt:** Ändere die Überschrift oder den Text dieses einen Elements. „Aktuell“ und „Vorschlag“ zeigt der Chat; wiederhole den Text nicht im Chat.
+   - **Neuer Inhalt:** Wenn eine Lücke einen neuen Abschnitt braucht, etwa ein Anwendungsbeispiel, schlage ein neues Inhaltselement vor. Nutze dafür die Elementtypen, die die Seite schon verwendet. Sag vorher, **wo** es hinkommt („direkt nach der Funktionsübersicht“), und markiere das Element, nach dem es eingefügt wird. Ein neues Element wird als verborgener Entwurf angelegt und ist erst sichtbar, wenn der Redakteur es im Seitenmodul einblendet.
+
+## 7. Wenn Informationen fehlen
+
+Braucht eine Verbesserung Fakten, die du nicht in den Inhalten der Website findest, sag das offen, zum Beispiel:
+
+> **Eine konkrete Kundenreferenz könnte diese Aussage stärken.**
+> Auf der Website habe ich keine passende Referenz gefunden.
+
+Frag dann mit einer Auswahl, wie es weitergeht, etwa „Website nach einer Referenz durchsuchen“, „Ich ergänze die Information selbst“ und „Ohne Referenz weiter“. Die Antwort zum Weitermachen nennt das Thema des Punkts („Ohne Beispiel weiter“, „Ohne Beleg weiter“); „Überspringen“ verwendest du dafür nicht, denn das ist die Antwort auf einen Vorschlag.
+
+- Bei „durchsuchen“ suchst du in den Inhalten der Website und schlägst nur vor, was du dort gefunden hast, mit Angabe der Seite.
+- Bei „selbst ergänzen“ wartest du auf die Angaben des Redakteurs und formulierst daraus den Vorschlag.
+- Bei „Ohne … weiter“ gehst du zum nächsten Punkt.
+
+## 8. Nach der Entscheidung
+
+- *Übernehmen*: Der Chat bestätigt die Änderung. Geh zum nächsten Punkt.
+- *Andere Variante*: Schlage für denselben Punkt eine deutlich andere Fassung vor, wieder als einen Aufruf.
+- *Überspringen*: „Überspringen“ heißt nicht „erledigt“; der Punkt bleibt offen und kann später wieder angezeigt werden. Geh zum nächsten Punkt.
+- Schreibt der Redakteur frei, ist der wartende Vorschlag verworfen. Antworte darauf und schlag für denselben Punkt eine neue Fassung vor.
+
+## 9. Abschluss
+
+Nach dem letzten Punkt meldest du den Fortschritt als abgeschlossen. Der Chat fasst dann zusammen, was geändert, zu prüfen und offen ist; wiederhole diese Liste nicht und schreib keine eigene Zusammenfassung der Änderungen.
+
+„Andere Seite wählen“ und „Fertig“ bietet der Chat selbst an; biete dafür keine eigene Auswahl an.
+';
+
+SET @seed_sql = IF(@nrllm_tours, '
+INSERT IGNORE INTO tx_nrllm_skill_source
+    (uid, pid, title, type, url, trust_level, enabled, tstamp, crdate, deleted, hidden)
+VALUES (9404, 0, ''guided-tours'', ''backend'', '''', ''first_party'', 1, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0)', 'DO 0');
+PREPARE seed_stmt FROM @seed_sql;
+EXECUTE seed_stmt;
+DEALLOCATE PREPARE seed_stmt;
+
+SET @seed_sql = IF(@nrllm_tours, '
+UPDATE tx_nrllm_skill_source SET trust_level = ''first_party'', enabled = 1, hidden = 0, deleted = 0
+ WHERE uid = 9404 AND type = ''backend'' AND title = ''guided-tours''', 'DO 0');
+PREPARE seed_stmt FROM @seed_sql;
+EXECUTE seed_stmt;
+DEALLOCATE PREPARE seed_stmt;
+
+-- seo-optimieren
+SET @seed_sql = IF(@nrllm_tours, '
+INSERT IGNORE INTO tx_nrllm_skill
+    (uid, pid, source, identifier, name, description,
+     body, body_checksum, source_sha, support_status, allowed_tools, process, trust_level, enabled,
+     tstamp, crdate, deleted, hidden)
+VALUES
+    (9422, 0, 9404, ''9404:seo-optimieren'', ''seo-optimieren'', ''Geführte Tour: eine Seite auf SEO prüfen und die gefundenen Punkte nacheinander mit dem Redakteur verbessern – Seitentitel, Meta Description, Social-Media-Vorschau, Hauptüberschrift, interne Links. Jede Änderung erst nach Bestätigung.'',
+     @tour_seo_body, ''779629d03ff2bb9dddd387ab6f7dd23f8a25bdd5c525f055b19aaeda406f42c5'', '''', ''full'', ''["ask_choice","chat_highlight_element","chat_list_open_points","chat_set_progress","get_page_content","get_pagetree","read_records","search_fal_files","search_records","set_page_social_image","update_content_element","update_page_metadata"]'', 1, ''first_party'', 1,
+     UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0)', 'DO 0');
+PREPARE seed_stmt FROM @seed_sql;
+EXECUTE seed_stmt;
+DEALLOCATE PREPARE seed_stmt;
+
+-- Re-assert, as for the skills above: INSERT IGNORE never repairs a row.
+-- Only a row on our source is touched; a foreign row on this uid is left alone
+-- and reported by the probe below.
+SET @seed_sql = IF(@nrllm_tours, '
+UPDATE tx_nrllm_skill SET name = ''seo-optimieren'', description = ''Geführte Tour: eine Seite auf SEO prüfen und die gefundenen Punkte nacheinander mit dem Redakteur verbessern – Seitentitel, Meta Description, Social-Media-Vorschau, Hauptüberschrift, interne Links. Jede Änderung erst nach Bestätigung.'',
+       body = @tour_seo_body, body_checksum = ''779629d03ff2bb9dddd387ab6f7dd23f8a25bdd5c525f055b19aaeda406f42c5'',
+       allowed_tools = ''["ask_choice","chat_highlight_element","chat_list_open_points","chat_set_progress","get_page_content","get_pagetree","read_records","search_fal_files","search_records","set_page_social_image","update_content_element","update_page_metadata"]'', process = 1, support_status = ''full'', trust_level = ''first_party'',
+       identifier = ''9404:seo-optimieren'',
+       enabled = 1, disabled_by = '''', orphaned = 0, hidden = 0, deleted = 0 WHERE uid = 9422 AND source = 9404', 'DO 0');
+PREPARE seed_stmt FROM @seed_sql;
+EXECUTE seed_stmt;
+DEALLOCATE PREPARE seed_stmt;
+
+-- The digest, SkillVersionDigest format 1 with the declared tools and the
+-- process marker. The tool lines are the sorted list above, written out; the
+-- WHERE clause keeps the digest from being written over any other list.
+SET @seed_sql = IF(@nrllm_tours, '
+UPDATE tx_nrllm_skill
+   SET version_digest = CONCAT(''1:'', SHA2(CONCAT(
+           ''nr_llm.skill-version'', CHAR(10),
+           ''format=1'', CHAR(10),
+           ''name='', LENGTH(name), '':'', name, CHAR(10),
+           ''description='', LENGTH(COALESCE(description, '''')), '':'', COALESCE(description, ''''), CHAR(10),
+           ''body='', LENGTH(COALESCE(body, '''')), '':'', COALESCE(body, ''''), CHAR(10),
+           ''support_status='', LENGTH(support_status), '':'', support_status, CHAR(10),
+           ''allowed_tools=12'', CHAR(10),
+           ''tool=10:ask_choice'', CHAR(10),
+           ''tool=22:chat_highlight_element'', CHAR(10),
+           ''tool=21:chat_list_open_points'', CHAR(10),
+           ''tool=17:chat_set_progress'', CHAR(10),
+           ''tool=16:get_page_content'', CHAR(10),
+           ''tool=12:get_pagetree'', CHAR(10),
+           ''tool=12:read_records'', CHAR(10),
+           ''tool=16:search_fal_files'', CHAR(10),
+           ''tool=14:search_records'', CHAR(10),
+           ''tool=21:set_page_social_image'', CHAR(10),
+           ''tool=22:update_content_element'', CHAR(10),
+           ''tool=20:update_page_metadata'', CHAR(10),
+           ''process=1'', CHAR(10)), 256))
+ WHERE uid = 9422 AND source = 9404 AND process = 1
+   AND allowed_tools = ''["ask_choice","chat_highlight_element","chat_list_open_points","chat_set_progress","get_page_content","get_pagetree","read_records","search_fal_files","search_records","set_page_social_image","update_content_element","update_page_metadata"]'' COLLATE utf8mb4_bin', 'DO 0');
+PREPARE seed_stmt FROM @seed_sql;
+EXECUTE seed_stmt;
+DEALLOCATE PREPARE seed_stmt;
+
+-- inhalt-verbessern
+SET @seed_sql = IF(@nrllm_tours, '
+INSERT IGNORE INTO tx_nrllm_skill
+    (uid, pid, source, identifier, name, description,
+     body, body_checksum, source_sha, support_status, allowed_tools, process, trust_level, enabled,
+     tstamp, crdate, deleted, hidden)
+VALUES
+    (9423, 0, 9404, ''9404:inhalt-verbessern'', ''inhalt-verbessern'', ''Geführte Tour: eine Seite inhaltlich prüfen – Einstieg, Nutzen, Zielgruppe, Vollständigkeit, Beispiele, Belege, Aufbau, nächster Schritt – und die Verbesserungen nacheinander mit dem Redakteur umsetzen. Erfindet keine Fakten; jede Änderung erst nach Bestätigung.'',
+     @tour_content_body, ''29f9c79acca340592d640230eaabe2abddd104c19218e278faacd4179de270f4'', '''', ''full'', ''["ask_choice","chat_highlight_element","chat_list_open_points","chat_set_progress","create_content_element_draft","get_page_content","get_pagetree","read_records","search_records","update_content_element"]'', 1, ''first_party'', 1,
+     UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0)', 'DO 0');
+PREPARE seed_stmt FROM @seed_sql;
+EXECUTE seed_stmt;
+DEALLOCATE PREPARE seed_stmt;
+
+-- Re-assert, as for the skills above: INSERT IGNORE never repairs a row.
+-- Only a row on our source is touched; a foreign row on this uid is left alone
+-- and reported by the probe below.
+SET @seed_sql = IF(@nrllm_tours, '
+UPDATE tx_nrllm_skill SET name = ''inhalt-verbessern'', description = ''Geführte Tour: eine Seite inhaltlich prüfen – Einstieg, Nutzen, Zielgruppe, Vollständigkeit, Beispiele, Belege, Aufbau, nächster Schritt – und die Verbesserungen nacheinander mit dem Redakteur umsetzen. Erfindet keine Fakten; jede Änderung erst nach Bestätigung.'',
+       body = @tour_content_body, body_checksum = ''29f9c79acca340592d640230eaabe2abddd104c19218e278faacd4179de270f4'',
+       allowed_tools = ''["ask_choice","chat_highlight_element","chat_list_open_points","chat_set_progress","create_content_element_draft","get_page_content","get_pagetree","read_records","search_records","update_content_element"]'', process = 1, support_status = ''full'', trust_level = ''first_party'',
+       identifier = ''9404:inhalt-verbessern'',
+       enabled = 1, disabled_by = '''', orphaned = 0, hidden = 0, deleted = 0 WHERE uid = 9423 AND source = 9404', 'DO 0');
+PREPARE seed_stmt FROM @seed_sql;
+EXECUTE seed_stmt;
+DEALLOCATE PREPARE seed_stmt;
+
+-- The digest, SkillVersionDigest format 1 with the declared tools and the
+-- process marker. The tool lines are the sorted list above, written out; the
+-- WHERE clause keeps the digest from being written over any other list.
+SET @seed_sql = IF(@nrllm_tours, '
+UPDATE tx_nrllm_skill
+   SET version_digest = CONCAT(''1:'', SHA2(CONCAT(
+           ''nr_llm.skill-version'', CHAR(10),
+           ''format=1'', CHAR(10),
+           ''name='', LENGTH(name), '':'', name, CHAR(10),
+           ''description='', LENGTH(COALESCE(description, '''')), '':'', COALESCE(description, ''''), CHAR(10),
+           ''body='', LENGTH(COALESCE(body, '''')), '':'', COALESCE(body, ''''), CHAR(10),
+           ''support_status='', LENGTH(support_status), '':'', support_status, CHAR(10),
+           ''allowed_tools=10'', CHAR(10),
+           ''tool=10:ask_choice'', CHAR(10),
+           ''tool=22:chat_highlight_element'', CHAR(10),
+           ''tool=21:chat_list_open_points'', CHAR(10),
+           ''tool=17:chat_set_progress'', CHAR(10),
+           ''tool=28:create_content_element_draft'', CHAR(10),
+           ''tool=16:get_page_content'', CHAR(10),
+           ''tool=12:get_pagetree'', CHAR(10),
+           ''tool=12:read_records'', CHAR(10),
+           ''tool=14:search_records'', CHAR(10),
+           ''tool=22:update_content_element'', CHAR(10),
+           ''process=1'', CHAR(10)), 256))
+ WHERE uid = 9423 AND source = 9404 AND process = 1
+   AND allowed_tools = ''["ask_choice","chat_highlight_element","chat_list_open_points","chat_set_progress","create_content_element_draft","get_page_content","get_pagetree","read_records","search_records","update_content_element"]'' COLLATE utf8mb4_bin', 'DO 0');
+PREPARE seed_stmt FROM @seed_sql;
+EXECUTE seed_stmt;
+DEALLOCATE PREPARE seed_stmt;
+
+-- Attach both tours to the Backend AI Chat, on demand. An attachment that
+-- exists already is set to 'on_demand', the only mode a process takes.
+SET @seed_sql = IF(@nrllm_tours, '
+INSERT INTO tx_nrllm_configuration_skill_mm (uid_local, uid_foreign, sorting, sorting_foreign, load_mode)
+SELECT c.uid, k.uid, 2, 0, ''on_demand''
+  FROM tx_nrllm_configuration c
+  JOIN tx_nrllm_skill k ON k.uid IN (9422, 9423) AND k.source = 9404
+ WHERE c.uid = (SELECT MIN(x.uid) FROM tx_nrllm_configuration x
+                 WHERE x.identifier = ''backend-ai-chat'' AND x.deleted = 0)
+   AND NOT EXISTS (SELECT 1 FROM tx_nrllm_configuration_skill_mm m
+                    WHERE m.uid_local = c.uid AND m.uid_foreign = k.uid)', 'DO 0');
+PREPARE seed_stmt FROM @seed_sql;
+EXECUTE seed_stmt;
+DEALLOCATE PREPARE seed_stmt;
+
+SET @seed_sql = IF(@nrllm_tours, '
+UPDATE tx_nrllm_configuration_skill_mm m
+  JOIN tx_nrllm_skill k ON k.uid = m.uid_foreign AND k.source = 9404
+   SET m.load_mode = ''on_demand''
+ WHERE m.uid_foreign IN (9422, 9423) AND m.load_mode <> ''on_demand''', 'DO 0');
+PREPARE seed_stmt FROM @seed_sql;
+EXECUTE seed_stmt;
+DEALLOCATE PREPARE seed_stmt;
+
+SET @seed_sql = IF(@nrllm_tours, '
+UPDATE tx_nrllm_configuration c
+   SET c.skills = (SELECT COUNT(*) FROM tx_nrllm_configuration_skill_mm m WHERE m.uid_local = c.uid)
+ WHERE c.deleted = 0 AND c.identifier = ''backend-ai-chat''', 'DO 0');
+PREPARE seed_stmt FROM @seed_sql;
+EXECUTE seed_stmt;
+DEALLOCATE PREPARE seed_stmt;
+
+-- Audit row, then the approval snapshot, as for the editorial skill: added
+-- only while no approval row for the current digest exists, so an approval an
+-- administrator revoked stays revoked. The snapshot carries the declared
+-- tools and the process marker, which a pinned tour composes from.
+SET @seed_sql = IF(@nrllm_tours, '
+INSERT INTO tx_nrllm_skill_audit
+    (pid, crdate, event, source_uid, skill_identifier, source_sha, body_checksum,
+     version_digest, trust_level, scan_result, actor_uid, detail)
+SELECT 0, UNIX_TIMESTAMP(), ''version_approved'', k.source, k.identifier, k.source_sha, k.body_checksum,
+       k.version_digest, s.trust_level, '''',
+       COALESCE((SELECT MIN(u.uid) FROM be_users u
+                  WHERE u.admin = 1 AND u.deleted = 0 AND u.password LIKE ''$%''), 0),
+       ''approved by the demo seed (data/seed-extensions.sql)''
+  FROM tx_nrllm_skill k
+  JOIN tx_nrllm_skill_source s ON s.uid = k.source AND s.type = ''backend''
+ WHERE k.uid IN (9422, 9423) AND k.source = 9404 AND k.enabled = 1 AND k.deleted = 0
+   AND k.process = 1 AND k.version_digest LIKE ''1:%''
+   AND NOT EXISTS (SELECT 1 FROM tx_nrllm_skill_approval a
+                    WHERE a.skill_uid = k.uid AND a.version_digest = k.version_digest COLLATE utf8mb4_bin)', 'DO 0');
+PREPARE seed_stmt FROM @seed_sql;
+EXECUTE seed_stmt;
+DEALLOCATE PREPARE seed_stmt;
+
+SET @seed_sql = IF(@nrllm_tours, '
+INSERT INTO tx_nrllm_skill_approval
+    (pid, crdate, skill_uid, source_uid, version_digest, name, description, body,
+     support_status, allowed_tools, process, trust_level, approved_by,
+     revoked, revoked_by, revoked_at)
+SELECT 0, UNIX_TIMESTAMP(), k.uid, k.source, k.version_digest, k.name,
+       COALESCE(k.description, ''''), COALESCE(k.body, ''''), k.support_status, k.allowed_tools, 1,
+       s.trust_level,
+       COALESCE((SELECT MIN(u.uid) FROM be_users u
+                  WHERE u.admin = 1 AND u.deleted = 0 AND u.password LIKE ''$%''), 0),
+       0, 0, 0
+  FROM tx_nrllm_skill k
+  JOIN tx_nrllm_skill_source s ON s.uid = k.source AND s.type = ''backend''
+ WHERE k.uid IN (9422, 9423) AND k.source = 9404 AND k.enabled = 1 AND k.deleted = 0
+   AND k.process = 1 AND k.version_digest LIKE ''1:%''
+   AND NOT EXISTS (SELECT 1 FROM tx_nrllm_skill_approval a
+                    WHERE a.skill_uid = k.uid AND a.version_digest = k.version_digest COLLATE utf8mb4_bin)', 'DO 0');
+PREPARE seed_stmt FROM @seed_sql;
+EXECUTE seed_stmt;
+DEALLOCATE PREPARE seed_stmt;
+
+-- The probe: per tour, a row that is not ours, a missing digest, no approval
+-- row for the current digest, or a missing or non-on-demand attachment. A
+-- revoked approval is an administrator's decision and no seed problem.
+SET @seed_sql = IF(@nrllm_tours, '
+SELECT CONCAT(''SEED-PROBLEM: guided tour '', t.slug, '' (tx_nrllm_skill '', t.uid,
+              '') is missing, foreign, without an approved digest or not attached on demand to backend-ai-chat'') AS seed_verification
+  FROM (SELECT 9422 AS uid, ''seo-optimieren'' AS slug UNION ALL SELECT 9423, ''inhalt-verbessern'') t
+ WHERE NOT EXISTS (
+        SELECT 1 FROM tx_nrllm_skill k
+          JOIN tx_nrllm_skill_source s ON s.uid = k.source AND s.type = ''backend'' AND s.deleted = 0 AND s.enabled = 1
+          JOIN tx_nrllm_skill_approval a
+            ON a.skill_uid = k.uid AND a.version_digest = k.version_digest COLLATE utf8mb4_bin
+          JOIN tx_nrllm_configuration_skill_mm m ON m.uid_foreign = k.uid AND m.load_mode = ''on_demand''
+          JOIN tx_nrllm_configuration c ON c.uid = m.uid_local AND c.identifier = ''backend-ai-chat'' AND c.deleted = 0
+         WHERE k.uid = t.uid AND k.source = 9404 AND k.name = t.slug COLLATE utf8mb4_bin
+           AND k.identifier = CONCAT(''9404:'', t.slug) COLLATE utf8mb4_bin
+           AND k.process = 1 AND k.enabled = 1 AND k.deleted = 0 AND k.version_digest LIKE ''1:%'')', 'DO 0');
+PREPARE seed_stmt FROM @seed_sql;
+EXECUTE seed_stmt;
+DEALLOCATE PREPARE seed_stmt;
+
+-- =============================================================================
 -- One header per extension page, not two
 -- =============================================================================
 -- The header added earlier was prepended above each page's existing hero box,
@@ -6707,6 +7183,35 @@ SET allowed_tool_groups = CONCAT(allowed_tool_groups, ',content')
 WHERE identifier = 'backend-ai-chat' AND deleted = 0
   AND allowed_tool_groups <> ''
   AND FIND_IN_SET('content', allowed_tool_groups) = 0;
+
+-- 8h. The tool groups of the guided tours
+--
+-- The tours (see "The two guided tours" above) declare tools of five groups:
+-- content and editing, structure (the page tree), files (the image search for
+-- the social preview) and nr_mcp_agent (progress, highlight and open points of
+-- the chat). Their tools are on already: the readers and nr_mcp_agent's tools
+-- by default, the writers in 8 to 8d. Same rule as above for a group list set
+-- in the backend: each missing group is appended, an empty list stays empty.
+UPDATE tx_nrllm_configuration
+SET allowed_tool_groups = CONCAT(allowed_tool_groups, ',editing')
+WHERE identifier = 'backend-ai-chat' AND deleted = 0
+  AND allowed_tool_groups <> ''
+  AND FIND_IN_SET('editing', allowed_tool_groups) = 0;
+UPDATE tx_nrllm_configuration
+SET allowed_tool_groups = CONCAT(allowed_tool_groups, ',structure')
+WHERE identifier = 'backend-ai-chat' AND deleted = 0
+  AND allowed_tool_groups <> ''
+  AND FIND_IN_SET('structure', allowed_tool_groups) = 0;
+UPDATE tx_nrllm_configuration
+SET allowed_tool_groups = CONCAT(allowed_tool_groups, ',files')
+WHERE identifier = 'backend-ai-chat' AND deleted = 0
+  AND allowed_tool_groups <> ''
+  AND FIND_IN_SET('files', allowed_tool_groups) = 0;
+UPDATE tx_nrllm_configuration
+SET allowed_tool_groups = CONCAT(allowed_tool_groups, ',nr_mcp_agent')
+WHERE identifier = 'backend-ai-chat' AND deleted = 0
+  AND allowed_tool_groups <> ''
+  AND FIND_IN_SET('nr_mcp_agent', allowed_tool_groups) = 0;
 
 -- 8b2. The dead MCP-server table of nr_mcp_agent (< 0.12) goes
 --
