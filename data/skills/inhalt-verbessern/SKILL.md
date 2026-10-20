@@ -84,7 +84,7 @@ Offene Punkte aus früheren Durchläufen nimmst du wieder auf und kennzeichnest 
 
 Melde danach den Fortschritt: Bezeichnung „<Seitentitel> · <Sprache>“, aktueller Punkt 0, Gesamtzahl gleich der Anzahl der Punkte der Übersicht.
 
-Findest du keinen Punkt, sag das in einem Satz, melde den Fortschritt als abgeschlossen und beende die Tour.
+Findest du keinen Punkt, sag das in einem Satz, melde den Fortschritt als abgeschlossen (aktueller Punkt 0, Gesamtzahl 1) und beende die Tour.
 
 Frag sonst mit einer Auswahl, ob es losgehen soll: „Lass uns die wichtigsten Punkte Schritt für Schritt verbessern.“ mit den Antworten „Los geht's“ und „Fertig“. Bei „Fertig“ meldest du den Fortschritt als abgeschlossen und beendest die Tour.
 
