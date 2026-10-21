@@ -75,6 +75,7 @@ RUN { \
     echo 'session.cookie_httponly=1'; \
     echo 'session.cookie_secure=1'; \
     echo 'session.cookie_samesite=Lax'; \
+    echo 'session.use_strict_mode=1'; \
 } > /usr/local/etc/php/conf.d/typo3.ini
 WORKDIR /var/www
 # COPY ordered: rarely-changed infra first, frequently-changed app code last
