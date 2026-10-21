@@ -158,12 +158,27 @@ def check_backend_skill(rel: str, fm: dict[str, str], body: str, checksum: str, 
     name = fm["name"]
     tools = declared_tools(fm)
     tools_json = json.dumps(tools, separators=(",", ":"))
-    sources = {int(uid) for uid in BACKEND_SOURCE_ROW.findall(seed)}
     rows = [r for r in BACKEND_SKILL_ROW.findall(seed) if r[3] == name]
     if len(rows) != 1:
         fail(f"{rel}: expected one process-skill INSERT named {name!r} in the seed, found {len(rows)}")
         return
-    uid, source, identifier, _, variable, row_checksum, row_tools = rows[0]
+    uid, source, identifier, _, variable, _, _ = rows[0]
+    check_backend_insert(rel, rows[0], name, body, checksum, tools_json, seed)
+
+    statements = [part.split("PREPARE seed_stmt", 1)[0] for part in seed.split("SET @seed_sql = ")[1:]]
+    target = f"WHERE uid = {uid} AND source = {source}"
+    reassert = [s for s in statements if re.match(r"IF\(@\w+, '\s*UPDATE tx_nrllm_skill SET name", s) and target in s]
+    expected = (f"body = @{variable},", f"body_checksum = ''{checksum}''", f"allowed_tools = ''{tools_json}''",
+                "process = 1,", f"identifier = ''{identifier}''")
+    check_reassert(rel, uid, reassert, expected)
+    digest = [s for s in statements if "SET version_digest" in s and target in s]
+    check_digest(rel, uid, digest, tools, tools_json)
+
+
+def check_backend_insert(rel: str, row: tuple[str, ...], name: str, body: str, checksum: str,
+                         tools_json: str, seed: str) -> None:
+    uid, source, identifier, _, variable, row_checksum, row_tools = row
+    sources = {int(u) for u in BACKEND_SOURCE_ROW.findall(seed)}
     if int(source) not in sources:
         fail(f"{rel}: tx_nrllm_skill {uid} is on source {source}, which is not a seeded 'backend' source")
     if identifier != f"{source}:{name}":
@@ -176,17 +191,17 @@ def check_backend_skill(rel: str, fm: dict[str, str], body: str, checksum: str, 
     if f"SET @{variable} = {sql_literal(body)};" not in seed:
         fail(f"{rel}: @{variable}, which the INSERT uses, is not set to the body")
 
-    statements = [part.split("PREPARE seed_stmt", 1)[0] for part in seed.split("SET @seed_sql = ")[1:]]
-    target = f"WHERE uid = {uid} AND source = {source}"
-    reassert = [s for s in statements if re.match(r"IF\(@\w+, '\s*UPDATE tx_nrllm_skill SET name", s) and target in s]
+
+def check_reassert(rel: str, uid: str, reassert: list[str], expected: tuple[str, ...]) -> None:
     if len(reassert) != 1:
         fail(f"{rel}: expected one re-assert UPDATE for tx_nrllm_skill {uid}, found {len(reassert)}")
-    else:
-        for expected in (f"body = @{variable},", f"body_checksum = ''{checksum}''", f"allowed_tools = ''{tools_json}''",
-                         "process = 1,", f"identifier = ''{identifier}''"):
-            if expected not in reassert[0]:
-                fail(f"{rel}: the re-assert UPDATE of tx_nrllm_skill {uid} does not set {expected}")
-    digest = [s for s in statements if "SET version_digest" in s and target in s]
+        return
+    for part in expected:
+        if part not in reassert[0]:
+            fail(f"{rel}: the re-assert UPDATE of tx_nrllm_skill {uid} does not set {part}")
+
+
+def check_digest(rel: str, uid: str, digest: list[str], tools: list[str], tools_json: str) -> None:
     if len(digest) != 1:
         fail(f"{rel}: expected one digest UPDATE for tx_nrllm_skill {uid}, found {len(digest)}")
         return
