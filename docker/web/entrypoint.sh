@@ -889,8 +889,11 @@ if [ -f config/system/settings.php ]; then
         # is still there, so the file check alone would record a download that
         # failed and never retry it.
         packs_complete=1
+        # -v: when the command throws, Symfony then prints the exception class
+        # and the file and line it came from next to the message. It adds no
+        # output to a run that succeeds.
         # shellcheck disable=SC2086  # unquoted on purpose: one argument per language
-        vendor/bin/typo3 language:update --no-progress $BACKEND_LANGUAGES 2>&1 \
+        vendor/bin/typo3 language:update -v --no-progress $BACKEND_LANGUAGES 2>&1 \
             || { echo "WARNING: language:update failed" >&2; packs_complete=0; }
         for language in $BACKEND_LANGUAGES; do
             core_pack_present "$language" || packs_complete=0
