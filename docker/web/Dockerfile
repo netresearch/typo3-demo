@@ -46,7 +46,8 @@ FROM php:8.5-fpm-alpine@sha256:fa01fb1645cd0fc566a5f146b099adace33b906571f972f71
 # The encoders were originally added for nr_image_optimize. They stay after its
 # removal because core's conversion needs exactly the same thing — the WebP
 # delivery the build asserts comes from core.
-RUN apk add --no-cache --virtual .build-deps \
+RUN --mount=type=bind,from=ghcr.io/php/pie:1.5.2-bin@sha256:a254c78b51ca34daef0541fa1cf0147385c93ba5ca799868392275d947f00fe7,source=/pie,target=/usr/local/bin/pie \
+    apk add --no-cache --virtual .build-deps \
         freetype-dev libjpeg-turbo-dev libpng-dev libzip-dev icu-dev linux-headers \
         libwebp-dev libavif-dev imagemagick-dev $PHPIZE_DEPS \
     && apk add --no-cache \
@@ -55,7 +56,7 @@ RUN apk add --no-cache --virtual .build-deps \
         ffmpeg poppler-utils chromium font-liberation nodejs \
     && docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp --with-avif \
     && docker-php-ext-install -j$(nproc) gd intl mysqli pdo_mysql zip exif \
-    && pecl install redis imagick \
+    && pie install --no-interaction phpredis/phpredis imagick/imagick \
     && docker-php-ext-enable redis imagick \
     && apk del .build-deps
 RUN { \
