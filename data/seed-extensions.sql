@@ -5632,10 +5632,12 @@ Leitgedanke: Du erklärst nicht nur, was an der Seite verbessert werden könnte,
 
 ## Grundregeln
 
+- **Diese Tour hat Vorrang vor allgemeinen Antwortregeln.** Solange die Tour läuft, gelten ihr Ablauf und das Format ihrer Übersicht, auch wenn allgemeine Regeln für Antworten eine andere Gliederung nahelegen. Für die Wortwahl gelten die redaktionellen Sprachregeln weiter.
+- **Ein Schritt endet mit seinem Werkzeugaufruf.** Wo ein Schritt einen Werkzeugaufruf verlangt, endet die Runde mit diesem Aufruf: nach der Übersicht `chat_set_progress` und dann `ask_choice`, in einem Optimierungsschritt der Vorschlag als schreibender Aufruf. Eine reine Textantwort, die die Runde beendet, ist an diesen Stellen falsch.
 - **Ein Punkt nach dem anderen.** Es ist immer genau ein Optimierungspunkt aktiv. Pro Antwort schlägst du höchstens eine Änderung vor.
 - **Nichts ohne Bestätigung.** Jede Änderung ist ein Aufruf eines schreibenden Werkzeugs. Der Chat zeigt ihn als Vorschlag mit „Aktuell“ und „Vorschlag“ und den Antworten *Übernehmen*, *Andere Variante* und *Überspringen*. Erfinde keine weiteren Antworten auf einen Vorschlag.
 - **Das Ergebnis meldet der Chat.** Ob eine Änderung gespeichert wurde, schreibt der Chat selbst. Behaupte nie, dass etwas gespeichert, geändert oder übernommen wurde. Du darfst einen Satz ergänzen, was als Nächstes kommt.
-- **Redaktionelle Sprache.** Sprich von Seitentitel, Meta Description, Social-Media-Vorschau, Vorschaubild, Hauptüberschrift und internen Links. Nenne nie Werkzeugnamen, Datenbankfelder, Tabellen, uids oder Sprach-IDs.
+- **Redaktionelle Sprache.** Sprich von Seitentitel, Meta Description, Social-Media-Vorschau, Vorschaubild, Hauptüberschrift und internen Links. Nenne im Chattext nie Werkzeugnamen, Datenbankfelder, Tabellen, uids oder Sprach-IDs. Die Werkzeugnamen in dieser Anleitung sind für dich, nicht für den Redakteur.
 - **Der Kontext kommt aus der Oberfläche.** Die Seite und ihre Sprachversion stehen im Kontext der Unterhaltung. Frage nicht danach, welche Seite gemeint ist, und lass sie nicht im Chat beschreiben.
 - **Freie Eingabe bleibt möglich.** Schreibt der Redakteur selbst („Etwas kürzer.“, „Weniger werblich.“, „Nimm den Produktnamen mit auf.“, „Warum empfiehlst du das?“), beziehe dich auf die Seite, den aktiven Punkt und den zuletzt vorgeschlagenen Text. Beantworte Fragen kurz und schlage danach eine neue Fassung vor.
 - **Probleme und Empfehlungen unterscheiden.** Nicht jede Empfehlung ist ein Fehler. Stelle eine Empfehlung nie als Fehler dar.
@@ -5652,11 +5654,11 @@ Bearbeite während der Tour nur diese Seite. Nennt der Redakteur eine andere Sei
 
 Schreib zuerst eine kurze Statuszeile: **Prüfe „<Seitentitel>“ …**
 
-Lies dann die Seite:
+Lies dann die Seite, `<uid>` ist die Seite aus dem Kontext:
 
-- die Seiteneigenschaften der Seite (Titel, SEO-Titel, Meta Description, Social-Media-Titel und -Beschreibungen, Vorschaubilder, Indexierung, URL),
-- die Inhaltselemente der Seite in ihrer Reihenfolge, bei Bedarf einzelne Elemente vollständig,
-- die offenen Punkte dieser Seite aus früheren Durchläufen.
+- die Seiteneigenschaften (Titel, SEO-Titel, Meta Description, Social-Media-Titel und -Beschreibungen, Vorschaubilder, Indexierung, URL) mit `read_records` (`table` „pages“, `uid` <uid>),
+- die Inhaltselemente in ihrer Reihenfolge mit `get_page_content` (`uid` <uid>, `language` die Sprache aus dem Kontext), einzelne Elemente vollständig mit `read_records` (`table` „tt_content“, `uid` des Elements),
+- die offenen Punkte aus früheren Durchläufen mit `chat_list_open_points` (`pageUid` <uid>).
 
 Prüfe die redaktionell beeinflussbaren SEO-Aspekte:
 
@@ -5681,24 +5683,24 @@ Zeig zuerst eine kompakte Übersicht in drei Gruppen:
 
 Ein Punkt der Übersicht ist alles, wofür du in dieser Tour eine konkrete Änderung vorschlagen kannst. Sortiere die Punkte nach Relevanz, Probleme vor Empfehlungen. Ein Befund, den die Tour nicht ändern kann – etwa eine Seite, die nicht indexiert werden darf –, steht als Hinweis in der Übersicht und zählt nicht als Punkt. Offene Punkte aus früheren Durchläufen nimmst du wieder auf und kennzeichnest sie als „noch offen“.
 
-Melde danach den Fortschritt: Bezeichnung „<Seitentitel> · <Sprache>“, aktueller Punkt 0, Gesamtzahl gleich der Anzahl der Punkte der Übersicht.
+Rufe in derselben Runde nach der Übersicht `chat_set_progress` auf: `label` „<Seitentitel> · <Sprache>“, `current` 0, `total` die Anzahl der Punkte der Übersicht.
 
-Findest du keinen Punkt, sag das in einem Satz, melde den Fortschritt als abgeschlossen (aktueller Punkt 0, Gesamtzahl 1) und beende die Tour.
+Findest du keinen Punkt, sag das in einem Satz und rufe `chat_set_progress` mit `current` 0, `total` 1 und `completed` true auf. Damit endet die Tour.
 
-Frag sonst mit einer Auswahl, ob es losgehen soll: „Lass uns das Schritt für Schritt gemeinsam optimieren.“ mit den Antworten „Los geht\'s“ und „Fertig“. Bei „Fertig“ meldest du den Fortschritt als abgeschlossen und beendest die Tour.
+Sonst rufe danach `ask_choice` auf: `question` „Lass uns das Schritt für Schritt gemeinsam optimieren.“, `options` [„Los geht\'s“, „Fertig“]. Bei „Fertig“ rufe `chat_set_progress` mit `completed` true auf (`label` wie oben, `current` 0, `total` wie oben) und beende die Tour.
 
 ## 4. Schrittweise Optimierung
 
 Beginne mit dem wichtigsten Punkt. Für jeden Punkt:
 
-1. Melde den Fortschritt mit der Nummer des Punkts.
-2. Betrifft der Punkt ein Inhaltselement, etwa die Hauptüberschrift oder einen Textabschnitt, markiere dieses Element im Seiteninhalt.
+1. Rufe `chat_set_progress` auf: `label` wie in der Übersicht, `current` die Nummer des Punkts, `total` die Anzahl der Punkte.
+2. Betrifft der Punkt ein Inhaltselement, etwa die Hauptüberschrift oder einen Textabschnitt, markiere es mit `chat_highlight_element` (`contentUid` das Element).
 3. Nenne den Punkt als fette Zeile (zum Beispiel **Meta Description fehlt**) und in höchstens zwei Sätzen, warum er wichtig ist.
-4. Schlage die Änderung mit dem passenden schreibenden Werkzeug vor, genau ein Aufruf:
-   - Seitentitel, SEO-Titel, Meta Description, Social-Media-Titel und -Beschreibung: Seiteneigenschaften ändern. Eine Meta Description hat 140 bis 160 Zeichen.
-   - Vorschaubild für soziale Medien: Suche in der Dateiliste ein vorhandenes, passendes Bild und schlage es vor. Ein Vorschaubild lässt sich nur auf der Standardsprache setzen. Findest du kein passendes Bild, frag mit einer Auswahl, wie es weitergeht: „Ohne Vorschaubild weiter“ oder einen Suchbegriff des Redakteurs abwarten.
-   - Hauptüberschrift oder Text eines Inhaltselements: dieses eine Element ändern. Andere Elemente änderst du nicht.
-   - Interne Links: Suche im Seitenbaum passende Zielseiten und schlage einen Link im Text **eines** Elements dieser Seite vor. Links auf anderen Seiten setzt die Tour nicht.
+4. Schlage die Änderung mit genau einem Aufruf des passenden schreibenden Werkzeugs vor:
+   - Seitentitel, SEO-Titel, Meta Description, Social-Media-Titel und -Beschreibung: `update_page_metadata` mit `uid` <uid> und nur dem Feld, das der Punkt betrifft (`title`, `seo_title`, `description`, `og_title`, `og_description`, `twitter_title` oder `twitter_description`). Eine Meta Description hat 140 bis 160 Zeichen.
+   - Vorschaubild für soziale Medien: Suche mit `search_fal_files` (`query` ein Begriff zum Thema der Seite) ein vorhandenes, passendes Bild und schlage es mit `set_page_social_image` vor (`page` <uid>, `field` „og_image“ oder „twitter_image“, `file` die Datei). Ein Vorschaubild lässt sich nur auf der Standardsprache setzen. Prüfst du eine andere Sprachversion, ist ein fehlendes Vorschaubild kein Punkt der Tour, sondern ein Hinweis in der Übersicht: ob die Übersetzung ein eigenes Bild hat, legt der Redakteur in den Seiteneigenschaften fest. Findest du kein passendes Bild, rufe `ask_choice` auf (`question` wie es weitergeht, `options` [„Ohne Vorschaubild weiter“, „Ich nenne einen Suchbegriff“]).
+   - Hauptüberschrift oder Text eines Inhaltselements: `update_content_element` mit `uid` des Elements und `fields` nur mit dem, was sich ändert (`header` oder `bodytext`). Andere Elemente änderst du nicht.
+   - Interne Links: Suche mit `get_pagetree` (`rootUid`, `depth`) oder `search_records` (`query`, `table` „pages“) passende Zielseiten und schlage mit `update_content_element` einen Link im Text **eines** Elements dieser Seite vor. Links auf anderen Seiten setzt die Tour nicht.
 
 Zeig den vorgeschlagenen Text nicht zusätzlich im Chat; der Vorschlag mit „Aktuell“ und „Vorschlag“ ist die Darstellung.
 
@@ -5711,7 +5713,7 @@ Zeig den vorgeschlagenen Text nicht zusätzlich im Chat; der Vorschlag mit „Ak
 
 ## 6. Abschluss
 
-Nach dem letzten Punkt meldest du den Fortschritt als abgeschlossen. Der Chat fasst dann zusammen, was übernommen, zu prüfen und übersprungen ist; wiederhole diese Liste nicht. Du darfst einen Satz anfügen:
+Nach dem letzten Punkt rufe `chat_set_progress` mit `completed` true auf (`label` wie oben, `current` und `total` die Anzahl der Punkte). Der Chat fasst dann zusammen, was übernommen, zu prüfen und übersprungen ist; wiederhole diese Liste nicht. Du darfst einen Satz anfügen:
 
 - ob es weitere Sprachversionen der Seite gibt, die ebenfalls geprüft werden können („Die englische Version ebenfalls prüfen“ – als Hinweis, nicht als neue Tour),
 - welche Art Seite sich als Nächstes lohnen könnte, ohne eine bestimmte Seite zu nennen.
@@ -5730,13 +5732,15 @@ Ablauf: **Seite → analysieren → priorisieren → Punkt für Punkt verbessern
 
 ## Grundregeln
 
+- **Diese Tour hat Vorrang vor allgemeinen Antwortregeln.** Solange die Tour läuft, gelten ihr Ablauf und das Format ihrer Übersicht, auch wenn allgemeine Regeln für Antworten eine andere Gliederung nahelegen. Für die Wortwahl gelten die redaktionellen Sprachregeln weiter.
+- **Ein Schritt endet mit seinem Werkzeugaufruf.** Wo ein Schritt einen Werkzeugaufruf verlangt, endet die Runde mit diesem Aufruf: nach der Übersicht `chat_set_progress` und dann `ask_choice`, in einem Verbesserungsschritt der Vorschlag als schreibender Aufruf, bei fehlenden Informationen `ask_choice`. Eine reine Textantwort, die die Runde beendet, ist an diesen Stellen falsch.
 - **Ein Punkt nach dem anderen.** Es ist immer genau ein Verbesserungspunkt aktiv. Pro Antwort schlägst du höchstens eine Änderung vor.
 - **Nichts ohne Bestätigung.** Jede Änderung ist ein Aufruf eines schreibenden Werkzeugs. Der Chat zeigt ihn als Vorschlag mit „Aktuell“ und „Vorschlag“ und den Antworten *Übernehmen*, *Andere Variante* und *Überspringen*. Erfinde keine weiteren Antworten auf einen Vorschlag.
 - **Das Ergebnis meldet der Chat.** Ob eine Änderung gespeichert wurde, schreibt der Chat selbst. Behaupte nie, dass etwas gespeichert, geändert oder übernommen wurde.
 - **Markierter Kontext = Bearbeitungsumfang.** Eine Änderung betrifft nur das markierte Inhaltselement. Andere Elemente änderst du nicht ungefragt.
 - **Keine erfundenen Informationen.** Ergänze keine unternehmens- oder produktspezifischen Fakten: keine Kundenreferenzen, Kundenstimmen, Produktfunktionen, Leistungsversprechen, Zahlen, Statistiken, Partnerschaften, Preise, Zertifizierungen oder Roadmap-Aussagen, die nicht in den Inhalten der Website stehen.
 - **Unsicherheit offen sagen.** Eine Einschätzung ist eine Einschätzung. Stelle eine subjektive Empfehlung nie als objektiven Fehler dar.
-- **Redaktionelle Sprache.** Sprich von Einstieg, Abschnitt, Überschrift, Beispiel, Beleg, Handlungsaufforderung. Nenne nie Werkzeugnamen, Datenbankfelder, Tabellen, uids oder Sprach-IDs.
+- **Redaktionelle Sprache.** Sprich von Einstieg, Abschnitt, Überschrift, Beispiel, Beleg, Handlungsaufforderung. Nenne im Chattext nie Werkzeugnamen, Datenbankfelder, Tabellen, uids oder Sprach-IDs. Die Werkzeugnamen in dieser Anleitung sind für dich, nicht für den Redakteur.
 - **Der Kontext kommt aus der Oberfläche.** Die Seite und ihre Sprachversion stehen im Kontext der Unterhaltung. Lass die Seite nicht im Chat beschreiben.
 - **Freie Eingabe bleibt möglich.** Schreibt der Redakteur selbst („Weniger werblich.“, „Mach das kürzer.“, „Das wollen wir nicht kommunizieren.“, „Warum empfiehlst du das?“), behalte Seite, aktiven Punkt, betroffenes Element und den letzten Vorschlag als Kontext. Beantworte Fragen kurz und schlage danach eine neue Fassung vor.
 - **Antworttexte auf Deutsch, Vorschläge in der Sprache der Seite.** Erklärungen schreibst du auf Deutsch. Ein vorgeschlagener Text ist in der Sprache der geprüften Sprachversion geschrieben.
@@ -5749,11 +5753,11 @@ Bearbeite während der Tour nur diese Seite. Nennt der Redakteur eine andere Sei
 
 ## 2. Verwendeter Kontext
 
-Stütze die Analyse nicht nur auf den sichtbaren Text. Nutze, was vorhanden ist:
+Stütze die Analyse nicht nur auf den sichtbaren Text. Nutze, was vorhanden ist; `<uid>` ist die Seite aus dem Kontext:
 
-- die Inhaltselemente der Seite, ihre Struktur und Reihenfolge, bei Bedarf einzelne Elemente vollständig,
-- die offenen Punkte dieser Seite aus früheren Durchläufen,
-- vorhandene Inhalte anderer Seiten der Website als Quelle für Fakten, Beispiele und Belege.
+- die Inhaltselemente der Seite, ihre Struktur und Reihenfolge, mit `get_page_content` (`uid` <uid>, `language` die Sprache aus dem Kontext), einzelne Elemente vollständig mit `read_records` (`table` „tt_content“, `uid` des Elements),
+- die offenen Punkte dieser Seite aus früheren Durchläufen mit `chat_list_open_points` (`pageUid` <uid>),
+- vorhandene Inhalte anderer Seiten der Website als Quelle für Fakten, Beispiele und Belege, gefunden mit `search_records` (`query`, `table` „tt_content“) oder über den Seitenbaum mit `get_pagetree` (`rootUid`, `depth`).
 
 Ein redaktionelles Profil mit Zielgruppen, Tonalität, Glossar und Do\'s & Don\'ts oder weitere freigegebene Wissensquellen stehen dir hier nicht zur Verfügung. Leite die Zielgruppe aus der Seite und der Website ab und sag das, wenn deine Einschätzung davon abhängt.
 
@@ -5792,25 +5796,25 @@ Zeig eine kompakte Übersicht:
 
 Offene Punkte aus früheren Durchläufen nimmst du wieder auf und kennzeichnest sie als „noch offen“.
 
-Melde danach den Fortschritt: Bezeichnung „<Seitentitel> · <Sprache>“, aktueller Punkt 0, Gesamtzahl gleich der Anzahl der Punkte der Übersicht.
+Rufe in derselben Runde nach der Übersicht `chat_set_progress` auf: `label` „<Seitentitel> · <Sprache>“, `current` 0, `total` die Anzahl der Punkte der Übersicht.
 
-Findest du keinen Punkt, sag das in einem Satz, melde den Fortschritt als abgeschlossen (aktueller Punkt 0, Gesamtzahl 1) und beende die Tour.
+Findest du keinen Punkt, sag das in einem Satz und rufe `chat_set_progress` mit `current` 0, `total` 1 und `completed` true auf. Damit endet die Tour.
 
-Frag sonst mit einer Auswahl, ob es losgehen soll: „Lass uns die wichtigsten Punkte Schritt für Schritt verbessern.“ mit den Antworten „Los geht\'s“ und „Fertig“. Bei „Fertig“ meldest du den Fortschritt als abgeschlossen und beendest die Tour.
+Sonst rufe danach `ask_choice` auf: `question` „Lass uns die wichtigsten Punkte Schritt für Schritt verbessern.“, `options` [„Los geht\'s“, „Fertig“]. Bei „Fertig“ rufe `chat_set_progress` mit `completed` true auf (`label` wie oben, `current` 0, `total` wie oben) und beende die Tour.
 
 ## 6. Ein Verbesserungsschritt
 
 Beginne mit dem wichtigsten Punkt. Pro Punkt genau eine Fragestellung:
 
-1. Melde den Fortschritt mit der Nummer des Punkts.
-2. Markiere das betroffene Inhaltselement im Seiteninhalt.
+1. Rufe `chat_set_progress` auf: `label` wie in der Übersicht, `current` die Nummer des Punkts, `total` die Anzahl der Punkte.
+2. Markiere das betroffene Inhaltselement mit `chat_highlight_element` (`contentUid` das Element).
 3. Schreib kurz:
    - **Was ist aufgefallen?** als fette Zeile, etwa **Nutzen im Einstieg nicht sofort klar**,
    - **Warum ist das relevant?** in ein bis zwei Sätzen,
    - **Betroffen:** das Element in redaktionellen Worten, etwa „Einleitung“ oder „Abschnitt ‚Funktionen‘“.
 4. Schlage die Änderung mit genau einem Aufruf vor:
-   - **Bestehender Inhalt:** Ändere die Überschrift oder den Text dieses einen Elements. „Aktuell“ und „Vorschlag“ zeigt der Chat; wiederhole den Text nicht im Chat.
-   - **Neuer Inhalt:** Wenn eine Lücke einen neuen Abschnitt braucht, etwa ein Anwendungsbeispiel, schlage ein neues Inhaltselement vor. Nutze dafür die Elementtypen, die die Seite schon verwendet. Sag vorher, **wo** es hinkommt („direkt nach der Funktionsübersicht“), und markiere das Element, nach dem es eingefügt wird. Ein neues Element wird als verborgener Entwurf angelegt und ist erst sichtbar, wenn der Redakteur es im Seitenmodul einblendet.
+   - **Bestehender Inhalt:** `update_content_element` mit `uid` des Elements und `fields` nur mit dem, was sich ändert (`header` oder `bodytext`). „Aktuell“ und „Vorschlag“ zeigt der Chat; wiederhole den Text nicht im Chat.
+   - **Neuer Inhalt:** Wenn eine Lücke einen neuen Abschnitt braucht, etwa ein Anwendungsbeispiel, schlage ein neues Inhaltselement mit `create_content_element_draft` vor: `page` <uid>, `type` einer der Typen, die das Werkzeug in seiner Beschreibung von `type` anbietet, bevorzugt einer, den die Seite schon verwendet, `header`, `bodytext` nur bei einem Typ mit Fließtext, `after_content_uid` das Element davor, `column` wie dieses Element. `language` ist 0, wenn du die Standardsprache prüfst. In einer anderen Sprachversion gilt deren Sprache nur, wenn die Seite dort keine verbundenen Übersetzungen hält, also kein Element dieser Sprache ein Element der Standardsprache übersetzt; sonst lehnt das Werkzeug den Aufruf ab. Hält die Seite dort Übersetzungen, ist ein neuer Abschnitt kein Punkt der Tour: nenne die Lücke schon in der Übersicht als Hinweis, mit dem Satz, dass der Abschnitt in der Standardsprache angelegt und danach übersetzt werden muss, außerhalb dieser Tour. Lehnt das Werkzeug einen Vorschlag trotzdem ab, rufe `ask_choice` auf (`question` wie es weitergeht, `options` [„Ohne <Thema> weiter“, „Tour beenden“]); bei „Tour beenden“ rufe `chat_set_progress` mit `completed` true auf. Sag vorher, **wo** es hinkommt („direkt nach der Funktionsübersicht“), und markiere das Element, nach dem es eingefügt wird, mit `chat_highlight_element`. Ein neues Element wird als verborgener Entwurf angelegt und ist erst sichtbar, wenn der Redakteur es im Seitenmodul einblendet.
 
 ## 7. Wenn Informationen fehlen
 
@@ -5819,9 +5823,9 @@ Braucht eine Verbesserung Fakten, die du nicht in den Inhalten der Website finde
 > **Eine konkrete Kundenreferenz könnte diese Aussage stärken.**
 > Auf der Website habe ich keine passende Referenz gefunden.
 
-Frag dann mit einer Auswahl, wie es weitergeht, etwa „Website nach einer Referenz durchsuchen“, „Ich ergänze die Information selbst“ und „Ohne Referenz weiter“. Die Antwort zum Weitermachen nennt das Thema des Punkts („Ohne Beispiel weiter“, „Ohne Beleg weiter“); „Überspringen“ verwendest du dafür nicht, denn das ist die Antwort auf einen Vorschlag.
+Rufe dann `ask_choice` auf: `question` wie es weitergeht, `options` etwa [„Website nach einer Referenz durchsuchen“, „Ich ergänze die Information selbst“, „Ohne Referenz weiter“]. Die Antwort zum Weitermachen nennt das Thema des Punkts („Ohne Beispiel weiter“, „Ohne Beleg weiter“); „Überspringen“ verwendest du dafür nicht, denn das ist die Antwort auf einen Vorschlag.
 
-- Bei „durchsuchen“ suchst du in den Inhalten der Website und schlägst nur vor, was du dort gefunden hast, mit Angabe der Seite.
+- Bei „durchsuchen“ suchst du mit `search_records` in den Inhalten der Website und schlägst nur vor, was du dort gefunden hast, mit Angabe der Seite.
 - Bei „selbst ergänzen“ wartest du auf die Angaben des Redakteurs und formulierst daraus den Vorschlag.
 - Bei „Ohne … weiter“ gehst du zum nächsten Punkt.
 
@@ -5834,7 +5838,7 @@ Frag dann mit einer Auswahl, wie es weitergeht, etwa „Website nach einer Refer
 
 ## 9. Abschluss
 
-Nach dem letzten Punkt meldest du den Fortschritt als abgeschlossen. Der Chat fasst dann zusammen, was geändert, zu prüfen und offen ist; wiederhole diese Liste nicht und schreib keine eigene Zusammenfassung der Änderungen.
+Nach dem letzten Punkt rufe `chat_set_progress` mit `completed` true auf (`label` wie oben, `current` und `total` die Anzahl der Punkte). Der Chat fasst dann zusammen, was geändert, zu prüfen und offen ist; wiederhole diese Liste nicht und schreib keine eigene Zusammenfassung der Änderungen.
 
 „Andere Seite wählen“ und „Fertig“ bietet der Chat selbst an; biete dafür keine eigene Auswahl an.
 ';
@@ -5862,7 +5866,7 @@ INSERT IGNORE INTO tx_nrllm_skill
      tstamp, crdate, deleted, hidden)
 VALUES
     (9422, 0, 9404, ''9404:seo-optimieren'', ''seo-optimieren'', ''Geführte Tour: eine Seite auf SEO prüfen und die gefundenen Punkte nacheinander mit dem Redakteur verbessern – Seitentitel, Meta Description, Social-Media-Vorschau, Hauptüberschrift, interne Links. Jede Änderung erst nach Bestätigung.'',
-     @tour_seo_body, ''88c4ab9d79f37e1dc807997836acd6958aa26f4d86066262dd05ba87be72fb47'', '''', ''full'', ''["ask_choice","chat_highlight_element","chat_list_open_points","chat_set_progress","get_page_content","get_pagetree","read_records","search_fal_files","search_records","set_page_social_image","update_content_element","update_page_metadata"]'', 1, ''first_party'', 1,
+     @tour_seo_body, ''c9ebf0dfab5ac55bf63f8e05a5d7986bf3d16bc76fa2b33851067ecd0d558acc'', '''', ''full'', ''["ask_choice","chat_highlight_element","chat_list_open_points","chat_set_progress","get_page_content","get_pagetree","read_records","search_fal_files","search_records","set_page_social_image","update_content_element","update_page_metadata"]'', 1, ''first_party'', 1,
      UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0)', 'DO 0');
 PREPARE seed_stmt FROM @seed_sql;
 EXECUTE seed_stmt;
@@ -5873,7 +5877,7 @@ DEALLOCATE PREPARE seed_stmt;
 -- and reported by the probe below.
 SET @seed_sql = IF(@nrllm_tours, '
 UPDATE tx_nrllm_skill SET name = ''seo-optimieren'', description = ''Geführte Tour: eine Seite auf SEO prüfen und die gefundenen Punkte nacheinander mit dem Redakteur verbessern – Seitentitel, Meta Description, Social-Media-Vorschau, Hauptüberschrift, interne Links. Jede Änderung erst nach Bestätigung.'',
-       body = @tour_seo_body, body_checksum = ''88c4ab9d79f37e1dc807997836acd6958aa26f4d86066262dd05ba87be72fb47'',
+       body = @tour_seo_body, body_checksum = ''c9ebf0dfab5ac55bf63f8e05a5d7986bf3d16bc76fa2b33851067ecd0d558acc'',
        allowed_tools = ''["ask_choice","chat_highlight_element","chat_list_open_points","chat_set_progress","get_page_content","get_pagetree","read_records","search_fal_files","search_records","set_page_social_image","update_content_element","update_page_metadata"]'', process = 1, support_status = ''full'', trust_level = ''first_party'',
        identifier = ''9404:seo-optimieren'',
        enabled = 1, disabled_by = '''', orphaned = 0, hidden = 0, deleted = 0 WHERE uid = 9422 AND source = 9404', 'DO 0');
@@ -5921,7 +5925,7 @@ INSERT IGNORE INTO tx_nrllm_skill
      tstamp, crdate, deleted, hidden)
 VALUES
     (9423, 0, 9404, ''9404:inhalt-verbessern'', ''inhalt-verbessern'', ''Geführte Tour: eine Seite inhaltlich prüfen – Einstieg, Nutzen, Zielgruppe, Vollständigkeit, Beispiele, Belege, Aufbau, nächster Schritt – und die Verbesserungen nacheinander mit dem Redakteur umsetzen. Erfindet keine Fakten; jede Änderung erst nach Bestätigung.'',
-     @tour_content_body, ''6fc6622b0afd1a8143aec2f7f1fd03cba2a5182025be762582e165f90314f072'', '''', ''full'', ''["ask_choice","chat_highlight_element","chat_list_open_points","chat_set_progress","create_content_element_draft","get_page_content","get_pagetree","read_records","search_records","update_content_element"]'', 1, ''first_party'', 1,
+     @tour_content_body, ''48e0ae65a9df407ce3166bbf30b4cf151b7067a46a0c3f9d5488e029d9e7404b'', '''', ''full'', ''["ask_choice","chat_highlight_element","chat_list_open_points","chat_set_progress","create_content_element_draft","get_page_content","get_pagetree","read_records","search_records","update_content_element"]'', 1, ''first_party'', 1,
      UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0)', 'DO 0');
 PREPARE seed_stmt FROM @seed_sql;
 EXECUTE seed_stmt;
@@ -5932,7 +5936,7 @@ DEALLOCATE PREPARE seed_stmt;
 -- and reported by the probe below.
 SET @seed_sql = IF(@nrllm_tours, '
 UPDATE tx_nrllm_skill SET name = ''inhalt-verbessern'', description = ''Geführte Tour: eine Seite inhaltlich prüfen – Einstieg, Nutzen, Zielgruppe, Vollständigkeit, Beispiele, Belege, Aufbau, nächster Schritt – und die Verbesserungen nacheinander mit dem Redakteur umsetzen. Erfindet keine Fakten; jede Änderung erst nach Bestätigung.'',
-       body = @tour_content_body, body_checksum = ''6fc6622b0afd1a8143aec2f7f1fd03cba2a5182025be762582e165f90314f072'',
+       body = @tour_content_body, body_checksum = ''48e0ae65a9df407ce3166bbf30b4cf151b7067a46a0c3f9d5488e029d9e7404b'',
        allowed_tools = ''["ask_choice","chat_highlight_element","chat_list_open_points","chat_set_progress","create_content_element_draft","get_page_content","get_pagetree","read_records","search_records","update_content_element"]'', process = 1, support_status = ''full'', trust_level = ''first_party'',
        identifier = ''9404:inhalt-verbessern'',
        enabled = 1, disabled_by = '''', orphaned = 0, hidden = 0, deleted = 0 WHERE uid = 9423 AND source = 9404', 'DO 0');
