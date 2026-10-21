@@ -608,12 +608,19 @@ jobs:
       # LANG/availableLocales - so a core label file in that directory proves
       # both halves, the activation and the download. A boot without network
       # only logs a warning, which is why nothing else would notice.
+      #
+      # On failure it prints the whole language:update block of the boot log,
+      # not the lines matching a word: Symfony prints an exception as a box of
+      # its own lines, and the word filter this step used kept only the usage
+      # line and dropped the message.
       - name: Verify the German backend language pack arrived
         run: |
           pack=var/labels/de/backend/Resources/Private/Language/de.locallang_login.xlf
           if ! docker compose exec -T web test -s "$pack"; then
             echo "::error::$pack is missing or empty - German is not selectable in the backend"
-            docker compose logs web 2>&1 | grep -i -E 'language|labels' || true
+            docker compose logs web 2>&1 \
+              | awk '/Updating language packs/ {p = 1} p {print} /retrying on the next boot|Language packs downloaded for/ {p = 0}' \
+              || true
             exit 1
           fi
           echo "German backend language pack is in place."
