@@ -5698,7 +5698,7 @@ Beginne mit dem wichtigsten Punkt. Für jeden Punkt:
 3. Nenne den Punkt als fette Zeile (zum Beispiel **Meta Description fehlt**) und in höchstens zwei Sätzen, warum er wichtig ist.
 4. Schlage die Änderung mit genau einem Aufruf des passenden schreibenden Werkzeugs vor:
    - Seitentitel, SEO-Titel, Meta Description, Social-Media-Titel und -Beschreibung: `update_page_metadata` mit `uid` <uid> und nur dem Feld, das der Punkt betrifft (`title`, `seo_title`, `description`, `og_title`, `og_description`, `twitter_title` oder `twitter_description`). Eine Meta Description hat 140 bis 160 Zeichen.
-   - Vorschaubild für soziale Medien: Suche mit `search_fal_files` (`query` ein Begriff zum Thema der Seite) ein vorhandenes, passendes Bild und schlage es mit `set_page_social_image` vor (`page` <uid>, `field` „og_image“ oder „twitter_image“, `file` die Datei). Ein Vorschaubild lässt sich nur auf der Standardsprache setzen. Findest du kein passendes Bild, rufe `ask_choice` auf (`question` wie es weitergeht, `options` [„Ohne Vorschaubild weiter“, „Ich nenne einen Suchbegriff“]).
+   - Vorschaubild für soziale Medien: Suche mit `search_fal_files` (`query` ein Begriff zum Thema der Seite) ein vorhandenes, passendes Bild und schlage es mit `set_page_social_image` vor (`page` <uid>, `field` „og_image“ oder „twitter_image“, `file` die Datei). Ein Vorschaubild lässt sich nur auf der Standardsprache setzen. Prüfst du eine andere Sprachversion, ist ein fehlendes Vorschaubild kein Punkt der Tour, sondern ein Hinweis in der Übersicht: ob die Übersetzung ein eigenes Bild hat, legt der Redakteur in den Seiteneigenschaften fest. Findest du kein passendes Bild, rufe `ask_choice` auf (`question` wie es weitergeht, `options` [„Ohne Vorschaubild weiter“, „Ich nenne einen Suchbegriff“]).
    - Hauptüberschrift oder Text eines Inhaltselements: `update_content_element` mit `uid` des Elements und `fields` nur mit dem, was sich ändert (`header` oder `bodytext`). Andere Elemente änderst du nicht.
    - Interne Links: Suche mit `get_pagetree` (`rootUid`, `depth`) oder `search_records` (`query`, `table` „pages“) passende Zielseiten und schlage mit `update_content_element` einen Link im Text **eines** Elements dieser Seite vor. Links auf anderen Seiten setzt die Tour nicht.
 
@@ -5814,7 +5814,7 @@ Beginne mit dem wichtigsten Punkt. Pro Punkt genau eine Fragestellung:
    - **Betroffen:** das Element in redaktionellen Worten, etwa „Einleitung“ oder „Abschnitt ‚Funktionen‘“.
 4. Schlage die Änderung mit genau einem Aufruf vor:
    - **Bestehender Inhalt:** `update_content_element` mit `uid` des Elements und `fields` nur mit dem, was sich ändert (`header` oder `bodytext`). „Aktuell“ und „Vorschlag“ zeigt der Chat; wiederhole den Text nicht im Chat.
-   - **Neuer Inhalt:** Wenn eine Lücke einen neuen Abschnitt braucht, etwa ein Anwendungsbeispiel, schlage ein neues Inhaltselement mit `create_content_element_draft` vor: `page` <uid>, `type` ein Elementtyp, den die Seite schon verwendet, `header`, `bodytext`, `after_content_uid` das Element davor, `column` und `language` wie dieses Element. Sag vorher, **wo** es hinkommt („direkt nach der Funktionsübersicht“), und markiere das Element, nach dem es eingefügt wird, mit `chat_highlight_element`. Ein neues Element wird als verborgener Entwurf angelegt und ist erst sichtbar, wenn der Redakteur es im Seitenmodul einblendet.
+   - **Neuer Inhalt:** Wenn eine Lücke einen neuen Abschnitt braucht, etwa ein Anwendungsbeispiel, schlage ein neues Inhaltselement mit `create_content_element_draft` vor: `page` <uid>, `type` einer der Typen, die das Werkzeug in seiner Beschreibung von `type` anbietet, bevorzugt einer, den die Seite schon verwendet, `header`, `bodytext` nur bei einem Typ mit Fließtext, `after_content_uid` das Element davor, `column` wie dieses Element. `language` ist 0, wenn du die Standardsprache prüfst. In einer anderen Sprachversion gilt deren Sprache nur, wenn die Seite dort keine verbundenen Übersetzungen hält, also kein Element dieser Sprache ein Element der Standardsprache übersetzt; sonst lehnt das Werkzeug den Aufruf ab. Hält die Seite dort Übersetzungen, schlage keinen neuen Abschnitt vor: nenne die Lücke als Hinweis und sag, dass der Abschnitt in der Standardsprache angelegt und danach übersetzt werden muss, außerhalb dieser Tour. Sag vorher, **wo** es hinkommt („direkt nach der Funktionsübersicht“), und markiere das Element, nach dem es eingefügt wird, mit `chat_highlight_element`. Ein neues Element wird als verborgener Entwurf angelegt und ist erst sichtbar, wenn der Redakteur es im Seitenmodul einblendet.
 
 ## 7. Wenn Informationen fehlen
 
@@ -5866,7 +5866,7 @@ INSERT IGNORE INTO tx_nrllm_skill
      tstamp, crdate, deleted, hidden)
 VALUES
     (9422, 0, 9404, ''9404:seo-optimieren'', ''seo-optimieren'', ''Geführte Tour: eine Seite auf SEO prüfen und die gefundenen Punkte nacheinander mit dem Redakteur verbessern – Seitentitel, Meta Description, Social-Media-Vorschau, Hauptüberschrift, interne Links. Jede Änderung erst nach Bestätigung.'',
-     @tour_seo_body, ''b5097388ae47d5af864441f4e52842b7987589d80b2cd50b9ea0f8bfea8b8ce1'', '''', ''full'', ''["ask_choice","chat_highlight_element","chat_list_open_points","chat_set_progress","get_page_content","get_pagetree","read_records","search_fal_files","search_records","set_page_social_image","update_content_element","update_page_metadata"]'', 1, ''first_party'', 1,
+     @tour_seo_body, ''c9ebf0dfab5ac55bf63f8e05a5d7986bf3d16bc76fa2b33851067ecd0d558acc'', '''', ''full'', ''["ask_choice","chat_highlight_element","chat_list_open_points","chat_set_progress","get_page_content","get_pagetree","read_records","search_fal_files","search_records","set_page_social_image","update_content_element","update_page_metadata"]'', 1, ''first_party'', 1,
      UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0)', 'DO 0');
 PREPARE seed_stmt FROM @seed_sql;
 EXECUTE seed_stmt;
@@ -5877,7 +5877,7 @@ DEALLOCATE PREPARE seed_stmt;
 -- and reported by the probe below.
 SET @seed_sql = IF(@nrllm_tours, '
 UPDATE tx_nrllm_skill SET name = ''seo-optimieren'', description = ''Geführte Tour: eine Seite auf SEO prüfen und die gefundenen Punkte nacheinander mit dem Redakteur verbessern – Seitentitel, Meta Description, Social-Media-Vorschau, Hauptüberschrift, interne Links. Jede Änderung erst nach Bestätigung.'',
-       body = @tour_seo_body, body_checksum = ''b5097388ae47d5af864441f4e52842b7987589d80b2cd50b9ea0f8bfea8b8ce1'',
+       body = @tour_seo_body, body_checksum = ''c9ebf0dfab5ac55bf63f8e05a5d7986bf3d16bc76fa2b33851067ecd0d558acc'',
        allowed_tools = ''["ask_choice","chat_highlight_element","chat_list_open_points","chat_set_progress","get_page_content","get_pagetree","read_records","search_fal_files","search_records","set_page_social_image","update_content_element","update_page_metadata"]'', process = 1, support_status = ''full'', trust_level = ''first_party'',
        identifier = ''9404:seo-optimieren'',
        enabled = 1, disabled_by = '''', orphaned = 0, hidden = 0, deleted = 0 WHERE uid = 9422 AND source = 9404', 'DO 0');
@@ -5925,7 +5925,7 @@ INSERT IGNORE INTO tx_nrllm_skill
      tstamp, crdate, deleted, hidden)
 VALUES
     (9423, 0, 9404, ''9404:inhalt-verbessern'', ''inhalt-verbessern'', ''Geführte Tour: eine Seite inhaltlich prüfen – Einstieg, Nutzen, Zielgruppe, Vollständigkeit, Beispiele, Belege, Aufbau, nächster Schritt – und die Verbesserungen nacheinander mit dem Redakteur umsetzen. Erfindet keine Fakten; jede Änderung erst nach Bestätigung.'',
-     @tour_content_body, ''abf919530e24b5af90ee2269dc4df10202e783b04661fc1c8b38ebeb977467f4'', '''', ''full'', ''["ask_choice","chat_highlight_element","chat_list_open_points","chat_set_progress","create_content_element_draft","get_page_content","get_pagetree","read_records","search_records","update_content_element"]'', 1, ''first_party'', 1,
+     @tour_content_body, ''b873d41fd92bf087fc4c00bf6224ed099fed212dfabbd1fc273dc8ebbbdf1db8'', '''', ''full'', ''["ask_choice","chat_highlight_element","chat_list_open_points","chat_set_progress","create_content_element_draft","get_page_content","get_pagetree","read_records","search_records","update_content_element"]'', 1, ''first_party'', 1,
      UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0)', 'DO 0');
 PREPARE seed_stmt FROM @seed_sql;
 EXECUTE seed_stmt;
@@ -5936,7 +5936,7 @@ DEALLOCATE PREPARE seed_stmt;
 -- and reported by the probe below.
 SET @seed_sql = IF(@nrllm_tours, '
 UPDATE tx_nrllm_skill SET name = ''inhalt-verbessern'', description = ''Geführte Tour: eine Seite inhaltlich prüfen – Einstieg, Nutzen, Zielgruppe, Vollständigkeit, Beispiele, Belege, Aufbau, nächster Schritt – und die Verbesserungen nacheinander mit dem Redakteur umsetzen. Erfindet keine Fakten; jede Änderung erst nach Bestätigung.'',
-       body = @tour_content_body, body_checksum = ''abf919530e24b5af90ee2269dc4df10202e783b04661fc1c8b38ebeb977467f4'',
+       body = @tour_content_body, body_checksum = ''b873d41fd92bf087fc4c00bf6224ed099fed212dfabbd1fc273dc8ebbbdf1db8'',
        allowed_tools = ''["ask_choice","chat_highlight_element","chat_list_open_points","chat_set_progress","create_content_element_draft","get_page_content","get_pagetree","read_records","search_records","update_content_element"]'', process = 1, support_status = ''full'', trust_level = ''first_party'',
        identifier = ''9404:inhalt-verbessern'',
        enabled = 1, disabled_by = '''', orphaned = 0, hidden = 0, deleted = 0 WHERE uid = 9423 AND source = 9404', 'DO 0');
