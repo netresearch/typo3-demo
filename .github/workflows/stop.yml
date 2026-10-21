@@ -1,0 +1,33 @@
+name: Stop Stack
+
+# Dispatch-only. Stops the demo stack on the Hetzner host, for example to take
+# the site offline until a security fix is deployed. Containers and named
+# volumes are kept, so no data is lost; the next Deploy (Update) run starts
+# the stack again through `make update`.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+jobs:
+  stop:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Stop the stack on Hetzner
+        uses: appleboy/ssh-action@0ff4204d59e8e51228ff73bce53f80d53301dee2 # v1.2.5
+        with:
+          host: ${{ secrets.HETZNER_SSH_HOST }}
+          username: ${{ secrets.HETZNER_SSH_USER }}
+          key: ${{ secrets.HETZNER_SSH_KEY }}
+          script: |
+            set -e
+            cd /opt/typo3-demo
+            docker compose stop
+            docker compose ps --all
