@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3326d35086b8bcd5d06a73ec6212bea5",
+    "content-hash": "0ff23fabce3c2d15a9a628914fad871d",
     "packages": [
         {
             "name": "b13/ai-label",
@@ -3038,16 +3038,16 @@
         },
         {
             "name": "netresearch/nr-llm",
-            "version": "v0.41.1",
+            "version": "v0.41.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/t3x-nr-llm.git",
-                "reference": "e6a4e98ea789863bc3b5b8bc4b6a28277aa8c499"
+                "reference": "c87e103e308364e6bb5c8c6414d3212c760b107f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/t3x-nr-llm/zipball/e6a4e98ea789863bc3b5b8bc4b6a28277aa8c499",
-                "reference": "e6a4e98ea789863bc3b5b8bc4b6a28277aa8c499",
+                "url": "https://api.github.com/repos/netresearch/t3x-nr-llm/zipball/c87e103e308364e6bb5c8c6414d3212c760b107f",
+                "reference": "c87e103e308364e6bb5c8c6414d3212c760b107f",
                 "shasum": ""
             },
             "require": {
@@ -3065,6 +3065,7 @@
                 "fakerphp/faker": "^1.24",
                 "netresearch/typo3-ci-workflows": "^2.0.3",
                 "nikic/php-parser": "^5.4",
+                "phpunit/phpcov": "^10.0 || ^11.0 || ^12.0 || ^13.0",
                 "tpwd/ke_search": "^7.0",
                 "typo3/cms-dashboard": "^13.4 || ^14.3",
                 "typo3/cms-filemetadata": "^13.4 || ^14.3",
@@ -3087,7 +3088,7 @@
                     "Package": {
                         "providesPackages": []
                     },
-                    "version": "0.41.1",
+                    "version": "0.41.2",
                     "web-dir": ".Build/Web",
                     "extension-key": "nr_llm"
                 },
@@ -3132,7 +3133,7 @@
                 "issues": "https://github.com/netresearch/t3x-nr-llm/issues",
                 "source": "https://github.com/netresearch/t3x-nr-llm"
             },
-            "time": "2026-10-21T06:02:45+00:00"
+            "time": "2026-10-22T08:31:14+00:00"
         },
         {
             "name": "netresearch/nr-llm-compat",
@@ -3220,16 +3221,16 @@
         },
         {
             "name": "netresearch/nr-mcp-agent",
-            "version": "v0.17.0",
+            "version": "v0.17.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/t3x-nr-mcp-agent.git",
-                "reference": "cb2f8eec3e2e60fb7d42640c9aed3d6f392de4c1"
+                "reference": "049dd02ad06e329e9e68a927695d5d6ff47cf421"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/t3x-nr-mcp-agent/zipball/cb2f8eec3e2e60fb7d42640c9aed3d6f392de4c1",
-                "reference": "cb2f8eec3e2e60fb7d42640c9aed3d6f392de4c1",
+                "url": "https://api.github.com/repos/netresearch/t3x-nr-mcp-agent/zipball/049dd02ad06e329e9e68a927695d5d6ff47cf421",
+                "reference": "049dd02ad06e329e9e68a927695d5d6ff47cf421",
                 "shasum": ""
             },
             "require": {
@@ -3295,7 +3296,7 @@
                 "issues": "https://github.com/netresearch/t3x-nr-mcp-agent/issues",
                 "source": "https://github.com/netresearch/t3x-nr-mcp-agent"
             },
-            "time": "2026-10-21T07:01:58+00:00"
+            "time": "2026-10-22T07:43:39+00:00"
         },
         {
             "name": "netresearch/nr-passkeys-be",
