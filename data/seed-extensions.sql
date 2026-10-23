@@ -5634,6 +5634,7 @@ Leitgedanke: Du erklärst nicht nur, was an der Seite verbessert werden könnte,
 
 - **Diese Tour hat Vorrang vor allgemeinen Antwortregeln.** Solange die Tour läuft, gelten ihr Ablauf und das Format ihrer Übersicht, auch wenn allgemeine Regeln für Antworten eine andere Gliederung nahelegen. Für die Wortwahl gelten die redaktionellen Sprachregeln weiter.
 - **Ein Schritt endet mit seinem Werkzeugaufruf.** Wo ein Schritt einen Werkzeugaufruf verlangt, endet die Runde mit diesem Aufruf: nach der Übersicht `chat_set_progress` und dann `ask_choice`, in einem Optimierungsschritt der Vorschlag als schreibender Aufruf. Eine reine Textantwort, die die Runde beendet, ist an diesen Stellen falsch.
+- **Suchen ist begrenzt.** In einem Schritt suchst du höchstens dreimal (`search_records`, `search_fal_files`). Findest du damit nichts Passendes, suchst du nicht mit abgewandelten Begriffen weiter: In der Analyse nimmst du den Befund ohne Beleg auf, in einem Optimierungsschritt rufst du `ask_choice` auf, wie es weitergeht. Die drei Suchen gelten bis zur nächsten Antwort des Redakteurs: Wählt er eine Antwort, die eine Suche verlangt, etwa „Ich nenne einen Suchbegriff“, beginnt damit ein neuer Schritt mit höchstens drei Suchen.
 - **Ein Punkt nach dem anderen.** Es ist immer genau ein Optimierungspunkt aktiv. Pro Antwort schlägst du höchstens eine Änderung vor.
 - **Nichts ohne Bestätigung.** Jede Änderung ist ein Aufruf eines schreibenden Werkzeugs. Der Chat zeigt ihn als Vorschlag mit „Aktuell“ und „Vorschlag“ und den Antworten *Übernehmen*, *Andere Variante* und *Überspringen*. Erfinde keine weiteren Antworten auf einen Vorschlag.
 - **Das Ergebnis meldet der Chat.** Ob eine Änderung gespeichert wurde, schreibt der Chat selbst. Behaupte nie, dass etwas gespeichert, geändert oder übernommen wurde. Du darfst einen Satz ergänzen, was als Nächstes kommt.
@@ -5734,6 +5735,7 @@ Ablauf: **Seite → analysieren → priorisieren → Punkt für Punkt verbessern
 
 - **Diese Tour hat Vorrang vor allgemeinen Antwortregeln.** Solange die Tour läuft, gelten ihr Ablauf und das Format ihrer Übersicht, auch wenn allgemeine Regeln für Antworten eine andere Gliederung nahelegen. Für die Wortwahl gelten die redaktionellen Sprachregeln weiter.
 - **Ein Schritt endet mit seinem Werkzeugaufruf.** Wo ein Schritt einen Werkzeugaufruf verlangt, endet die Runde mit diesem Aufruf: nach der Übersicht `chat_set_progress` und dann `ask_choice`, in einem Verbesserungsschritt der Vorschlag als schreibender Aufruf, bei fehlenden Informationen `ask_choice`. Eine reine Textantwort, die die Runde beendet, ist an diesen Stellen falsch.
+- **Suchen ist begrenzt.** In einem Schritt suchst du höchstens dreimal (`search_records`). Findest du damit nichts Passendes, suchst du nicht mit abgewandelten Begriffen weiter: In der Analyse nimmst du den Befund ohne Beleg auf, in einem Verbesserungsschritt rufst du `ask_choice` auf, wie es weitergeht. Die drei Suchen gelten bis zur nächsten Antwort des Redakteurs: Wählt er eine Antwort, die eine Suche verlangt, etwa „Website nach einer Referenz durchsuchen“, beginnt damit ein neuer Schritt mit höchstens drei Suchen.
 - **Ein Punkt nach dem anderen.** Es ist immer genau ein Verbesserungspunkt aktiv. Pro Antwort schlägst du höchstens eine Änderung vor.
 - **Nichts ohne Bestätigung.** Jede Änderung ist ein Aufruf eines schreibenden Werkzeugs. Der Chat zeigt ihn als Vorschlag mit „Aktuell“ und „Vorschlag“ und den Antworten *Übernehmen*, *Andere Variante* und *Überspringen*. Erfinde keine weiteren Antworten auf einen Vorschlag.
 - **Das Ergebnis meldet der Chat.** Ob eine Änderung gespeichert wurde, schreibt der Chat selbst. Behaupte nie, dass etwas gespeichert, geändert oder übernommen wurde.
@@ -5866,7 +5868,7 @@ INSERT IGNORE INTO tx_nrllm_skill
      tstamp, crdate, deleted, hidden)
 VALUES
     (9422, 0, 9404, ''9404:seo-optimieren'', ''seo-optimieren'', ''Geführte Tour: eine Seite auf SEO prüfen und die gefundenen Punkte nacheinander mit dem Redakteur verbessern – Seitentitel, Meta Description, Social-Media-Vorschau, Hauptüberschrift, interne Links. Jede Änderung erst nach Bestätigung.'',
-     @tour_seo_body, ''c9ebf0dfab5ac55bf63f8e05a5d7986bf3d16bc76fa2b33851067ecd0d558acc'', '''', ''full'', ''["ask_choice","chat_highlight_element","chat_list_open_points","chat_set_progress","get_page_content","get_pagetree","read_records","search_fal_files","search_records","set_page_social_image","update_content_element","update_page_metadata"]'', 1, ''first_party'', 1,
+     @tour_seo_body, ''191645b2221843ff3cd625bc6698a2105058fb47e92720cd319e2b7c003fa48e'', '''', ''full'', ''["ask_choice","chat_highlight_element","chat_list_open_points","chat_set_progress","get_page_content","get_pagetree","read_records","search_fal_files","search_records","set_page_social_image","update_content_element","update_page_metadata"]'', 1, ''first_party'', 1,
      UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0)', 'DO 0');
 PREPARE seed_stmt FROM @seed_sql;
 EXECUTE seed_stmt;
@@ -5877,7 +5879,7 @@ DEALLOCATE PREPARE seed_stmt;
 -- and reported by the probe below.
 SET @seed_sql = IF(@nrllm_tours, '
 UPDATE tx_nrllm_skill SET name = ''seo-optimieren'', description = ''Geführte Tour: eine Seite auf SEO prüfen und die gefundenen Punkte nacheinander mit dem Redakteur verbessern – Seitentitel, Meta Description, Social-Media-Vorschau, Hauptüberschrift, interne Links. Jede Änderung erst nach Bestätigung.'',
-       body = @tour_seo_body, body_checksum = ''c9ebf0dfab5ac55bf63f8e05a5d7986bf3d16bc76fa2b33851067ecd0d558acc'',
+       body = @tour_seo_body, body_checksum = ''191645b2221843ff3cd625bc6698a2105058fb47e92720cd319e2b7c003fa48e'',
        allowed_tools = ''["ask_choice","chat_highlight_element","chat_list_open_points","chat_set_progress","get_page_content","get_pagetree","read_records","search_fal_files","search_records","set_page_social_image","update_content_element","update_page_metadata"]'', process = 1, support_status = ''full'', trust_level = ''first_party'',
        identifier = ''9404:seo-optimieren'',
        enabled = 1, disabled_by = '''', orphaned = 0, hidden = 0, deleted = 0 WHERE uid = 9422 AND source = 9404', 'DO 0');
@@ -5925,7 +5927,7 @@ INSERT IGNORE INTO tx_nrllm_skill
      tstamp, crdate, deleted, hidden)
 VALUES
     (9423, 0, 9404, ''9404:inhalt-verbessern'', ''inhalt-verbessern'', ''Geführte Tour: eine Seite inhaltlich prüfen – Einstieg, Nutzen, Zielgruppe, Vollständigkeit, Beispiele, Belege, Aufbau, nächster Schritt – und die Verbesserungen nacheinander mit dem Redakteur umsetzen. Erfindet keine Fakten; jede Änderung erst nach Bestätigung.'',
-     @tour_content_body, ''48e0ae65a9df407ce3166bbf30b4cf151b7067a46a0c3f9d5488e029d9e7404b'', '''', ''full'', ''["ask_choice","chat_highlight_element","chat_list_open_points","chat_set_progress","create_content_element_draft","get_page_content","get_pagetree","read_records","search_records","update_content_element"]'', 1, ''first_party'', 1,
+     @tour_content_body, ''fd9b71c0097ec5e5a0cd509f44123417ed7da1339a21e56c85e3ef119f955869'', '''', ''full'', ''["ask_choice","chat_highlight_element","chat_list_open_points","chat_set_progress","create_content_element_draft","get_page_content","get_pagetree","read_records","search_records","update_content_element"]'', 1, ''first_party'', 1,
      UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0)', 'DO 0');
 PREPARE seed_stmt FROM @seed_sql;
 EXECUTE seed_stmt;
@@ -5936,7 +5938,7 @@ DEALLOCATE PREPARE seed_stmt;
 -- and reported by the probe below.
 SET @seed_sql = IF(@nrllm_tours, '
 UPDATE tx_nrllm_skill SET name = ''inhalt-verbessern'', description = ''Geführte Tour: eine Seite inhaltlich prüfen – Einstieg, Nutzen, Zielgruppe, Vollständigkeit, Beispiele, Belege, Aufbau, nächster Schritt – und die Verbesserungen nacheinander mit dem Redakteur umsetzen. Erfindet keine Fakten; jede Änderung erst nach Bestätigung.'',
-       body = @tour_content_body, body_checksum = ''48e0ae65a9df407ce3166bbf30b4cf151b7067a46a0c3f9d5488e029d9e7404b'',
+       body = @tour_content_body, body_checksum = ''fd9b71c0097ec5e5a0cd509f44123417ed7da1339a21e56c85e3ef119f955869'',
        allowed_tools = ''["ask_choice","chat_highlight_element","chat_list_open_points","chat_set_progress","create_content_element_draft","get_page_content","get_pagetree","read_records","search_records","update_content_element"]'', process = 1, support_status = ''full'', trust_level = ''first_party'',
        identifier = ''9404:inhalt-verbessern'',
        enabled = 1, disabled_by = '''', orphaned = 0, hidden = 0, deleted = 0 WHERE uid = 9423 AND source = 9404', 'DO 0');
