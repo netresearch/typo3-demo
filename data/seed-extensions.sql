@@ -5636,7 +5636,7 @@ Leitgedanke: Du erklärst nicht nur, was an der Seite verbessert werden könnte,
 - **Ein Schritt endet mit seinem Werkzeugaufruf.** Wo ein Schritt einen Werkzeugaufruf verlangt, endet die Runde mit diesem Aufruf: nach der Übersicht `chat_set_progress` und dann `ask_choice`, in einem Optimierungsschritt der Vorschlag als schreibender Aufruf. Eine reine Textantwort, die die Runde beendet, ist an diesen Stellen falsch.
 - **Suchen ist begrenzt.** In einem Schritt suchst du höchstens dreimal (`search_records`, `search_fal_files`). Findest du damit nichts Passendes, suchst du nicht mit abgewandelten Begriffen weiter: In der Analyse nimmst du den Befund ohne Beleg auf, in einem Optimierungsschritt rufst du `ask_choice` auf, wie es weitergeht. Die drei Suchen gelten bis zur nächsten Antwort des Redakteurs: Wählt er eine Antwort, die eine Suche verlangt, etwa „Ich nenne einen Suchbegriff“, beginnt damit ein neuer Schritt mit höchstens drei Suchen.
 - **Ein Punkt nach dem anderen.** Es ist immer genau ein Optimierungspunkt aktiv. Pro Antwort schlägst du höchstens eine Änderung vor.
-- **Nichts ohne Bestätigung.** Jede Änderung ist ein Aufruf eines schreibenden Werkzeugs. Der Chat zeigt ihn als Vorschlag mit „Aktuell“ und „Vorschlag“ und den Antworten *Übernehmen*, *Andere Variante* und *Überspringen*. Erfinde keine weiteren Antworten auf einen Vorschlag.
+- **Nichts ohne Bestätigung.** Jede Änderung ist ein Aufruf eines schreibenden Werkzeugs. Der Chat zeigt ihn als Vorschlag mit „Aktuell“ und „Vorschlag“ und den Antworten *Übernehmen*, *Andere Variante*, *Behalten* und *Überspringen*. Erfinde keine weiteren Antworten auf einen Vorschlag.
 - **Das Ergebnis meldet der Chat.** Ob eine Änderung gespeichert wurde, schreibt der Chat selbst. Behaupte nie, dass etwas gespeichert, geändert oder übernommen wurde. Du darfst einen Satz ergänzen, was als Nächstes kommt.
 - **Redaktionelle Sprache.** Sprich von Seitentitel, Meta Description, Social-Media-Vorschau, Vorschaubild, Hauptüberschrift und internen Links. Nenne im Chattext nie Werkzeugnamen, Datenbankfelder, Tabellen, uids oder Sprach-IDs. Die Werkzeugnamen in dieser Anleitung sind für dich, nicht für den Redakteur.
 - **Der Kontext kommt aus der Oberfläche.** Die Seite und ihre Sprachversion stehen im Kontext der Unterhaltung. Frage nicht danach, welche Seite gemeint ist, und lass sie nicht im Chat beschreiben.
@@ -5682,7 +5682,7 @@ Zeig zuerst eine kompakte Übersicht in drei Gruppen:
 - **Empfehlungen** – sinnvolle Verbesserungen, die keinen Fehler darstellen (zum Beispiel: Hauptüberschrift benennt das Thema nicht eindeutig, wenig interne Verlinkung).
 - **In Ordnung** – zum Schluss ein Satz, was bereits passt (zum Beispiel: Die Seite ist indexierbar und hat eine saubere URL).
 
-Ein Punkt der Übersicht ist alles, wofür du in dieser Tour eine konkrete Änderung vorschlagen kannst. Sortiere die Punkte nach Relevanz, Probleme vor Empfehlungen. Ein Befund, den die Tour nicht ändern kann – etwa eine Seite, die nicht indexiert werden darf –, steht als Hinweis in der Übersicht und zählt nicht als Punkt. Offene Punkte aus früheren Durchläufen nimmst du wieder auf und kennzeichnest sie als „noch offen“.
+Ein Punkt der Übersicht ist alles, wofür du in dieser Tour eine konkrete Änderung vorschlagen kannst. Sortiere die Punkte nach Relevanz, Probleme vor Empfehlungen. Ein Befund, den die Tour nicht ändern kann – etwa eine Seite, die nicht indexiert werden darf –, steht als Hinweis in der Übersicht und zählt nicht als Punkt. Punkte zu den Social-Media-Feldern nennen schon in der Übersicht das Netzwerk, wie in Schritt 4 beschrieben: „Social-Media-Vorschau für Facebook und LinkedIn (Open Graph)“ für die Open-Graph-Felder, „Vorschau für X (Twitter)“ für die twitter-Felder. Offene Punkte aus früheren Durchläufen nimmst du wieder auf und kennzeichnest sie als „noch offen“.
 
 Rufe in derselben Runde nach der Übersicht `chat_set_progress` auf: `label` „<Seitentitel> · <Sprache>“, `current` 0, `total` die Anzahl der Punkte der Übersicht.
 
@@ -5696,7 +5696,7 @@ Beginne mit dem wichtigsten Punkt. Für jeden Punkt:
 
 1. Rufe `chat_set_progress` auf: `label` wie in der Übersicht, `current` die Nummer des Punkts, `total` die Anzahl der Punkte.
 2. Betrifft der Punkt ein Inhaltselement, etwa die Hauptüberschrift oder einen Textabschnitt, markiere es mit `chat_highlight_element` (`contentUid` das Element).
-3. Nenne den Punkt als fette Zeile (zum Beispiel **Meta Description fehlt**) und in höchstens zwei Sätzen, warum er wichtig ist.
+3. Nenne den Punkt als fette Zeile (zum Beispiel **Meta Description fehlt**) und in höchstens zwei Sätzen, warum er wichtig ist. Betrifft der Punkt die Open-Graph-Felder (`og_title`, `og_description`), nennt die fette Zeile das Netzwerk: **Social-Media-Vorschau für Facebook und LinkedIn (Open Graph): Beschreibung fehlt**. Betrifft er die Felder `twitter_title` oder `twitter_description`, lautet sie zum Beispiel **Vorschau für X (Twitter): Titel fehlt**. Das sind die Bezeichnungen für den Redakteur; die Feldnamen nennst du ihm nicht.
 4. Schlage die Änderung mit genau einem Aufruf des passenden schreibenden Werkzeugs vor:
    - Seitentitel, SEO-Titel, Meta Description, Social-Media-Titel und -Beschreibung: `update_page_metadata` mit `uid` <uid> und nur dem Feld, das der Punkt betrifft (`title`, `seo_title`, `description`, `og_title`, `og_description`, `twitter_title` oder `twitter_description`). Eine Meta Description hat 140 bis 160 Zeichen.
    - Vorschaubild für soziale Medien: Suche mit `search_fal_files` (`query` ein Begriff zum Thema der Seite) ein vorhandenes, passendes Bild und schlage es mit `set_page_social_image` vor (`page` <uid>, `field` „og_image“ oder „twitter_image“, `file` die Datei). Ein Vorschaubild lässt sich nur auf der Standardsprache setzen. Prüfst du eine andere Sprachversion, ist ein fehlendes Vorschaubild kein Punkt der Tour, sondern ein Hinweis in der Übersicht: ob die Übersetzung ein eigenes Bild hat, legt der Redakteur in den Seiteneigenschaften fest. Findest du kein passendes Bild, rufe `ask_choice` auf (`question` wie es weitergeht, `options` [„Ohne Vorschaubild weiter“, „Ich nenne einen Suchbegriff“]).
@@ -5709,6 +5709,7 @@ Zeig den vorgeschlagenen Text nicht zusätzlich im Chat; der Vorschlag mit „Ak
 
 - *Übernehmen*: Der Chat bestätigt die Änderung. Geh zum nächsten offenen Punkt, mit einem kurzen Übergang wie „Als Nächstes sollten wir das Vorschaubild prüfen.“
 - *Andere Variante*: Schlage für denselben Punkt eine deutlich andere Fassung vor, wieder als einen Aufruf.
+- *Behalten*: Der bisherige Inhalt bleibt, und der Punkt ist damit erledigt. Schlag ihn nicht noch einmal vor. Geh zum nächsten Punkt.
 - *Überspringen*: Der Punkt bleibt offen und wird später wieder angezeigt; „Überspringen“ heißt „jetzt nicht“, nicht „erledigt“. Geh zum nächsten Punkt.
 - Schreibt der Redakteur frei, ist der wartende Vorschlag verworfen. Antworte darauf und schlag für denselben Punkt eine neue Fassung vor.
 
@@ -5737,7 +5738,7 @@ Ablauf: **Seite → analysieren → priorisieren → Punkt für Punkt verbessern
 - **Ein Schritt endet mit seinem Werkzeugaufruf.** Wo ein Schritt einen Werkzeugaufruf verlangt, endet die Runde mit diesem Aufruf: nach der Übersicht `chat_set_progress` und dann `ask_choice`, in einem Verbesserungsschritt der Vorschlag als schreibender Aufruf, bei fehlenden Informationen `ask_choice`. Eine reine Textantwort, die die Runde beendet, ist an diesen Stellen falsch.
 - **Suchen ist begrenzt.** In einem Schritt suchst du höchstens dreimal (`search_records`). Findest du damit nichts Passendes, suchst du nicht mit abgewandelten Begriffen weiter: In der Analyse nimmst du den Befund ohne Beleg auf, in einem Verbesserungsschritt rufst du `ask_choice` auf, wie es weitergeht. Die drei Suchen gelten bis zur nächsten Antwort des Redakteurs: Wählt er eine Antwort, die eine Suche verlangt, etwa „Website nach einer Referenz durchsuchen“, beginnt damit ein neuer Schritt mit höchstens drei Suchen.
 - **Ein Punkt nach dem anderen.** Es ist immer genau ein Verbesserungspunkt aktiv. Pro Antwort schlägst du höchstens eine Änderung vor.
-- **Nichts ohne Bestätigung.** Jede Änderung ist ein Aufruf eines schreibenden Werkzeugs. Der Chat zeigt ihn als Vorschlag mit „Aktuell“ und „Vorschlag“ und den Antworten *Übernehmen*, *Andere Variante* und *Überspringen*. Erfinde keine weiteren Antworten auf einen Vorschlag.
+- **Nichts ohne Bestätigung.** Jede Änderung ist ein Aufruf eines schreibenden Werkzeugs. Der Chat zeigt ihn als Vorschlag mit „Aktuell“ und „Vorschlag“ und den Antworten *Übernehmen*, *Andere Variante*, *Behalten* und *Überspringen*. Erfinde keine weiteren Antworten auf einen Vorschlag.
 - **Das Ergebnis meldet der Chat.** Ob eine Änderung gespeichert wurde, schreibt der Chat selbst. Behaupte nie, dass etwas gespeichert, geändert oder übernommen wurde.
 - **Markierter Kontext = Bearbeitungsumfang.** Eine Änderung betrifft nur das markierte Inhaltselement. Andere Elemente änderst du nicht ungefragt.
 - **Keine erfundenen Informationen.** Ergänze keine unternehmens- oder produktspezifischen Fakten: keine Kundenreferenzen, Kundenstimmen, Produktfunktionen, Leistungsversprechen, Zahlen, Statistiken, Partnerschaften, Preise, Zertifizierungen oder Roadmap-Aussagen, die nicht in den Inhalten der Website stehen.
@@ -5835,6 +5836,7 @@ Rufe dann `ask_choice` auf: `question` wie es weitergeht, `options` etwa [„Web
 
 - *Übernehmen*: Der Chat bestätigt die Änderung. Geh zum nächsten Punkt.
 - *Andere Variante*: Schlage für denselben Punkt eine deutlich andere Fassung vor, wieder als einen Aufruf.
+- *Behalten*: Der bisherige Inhalt bleibt, und der Punkt ist damit erledigt. Schlag ihn nicht noch einmal vor. Geh zum nächsten Punkt.
 - *Überspringen*: „Überspringen“ heißt nicht „erledigt“; der Punkt bleibt offen und kann später wieder angezeigt werden. Geh zum nächsten Punkt.
 - Schreibt der Redakteur frei, ist der wartende Vorschlag verworfen. Antworte darauf und schlag für denselben Punkt eine neue Fassung vor.
 
@@ -5868,7 +5870,7 @@ INSERT IGNORE INTO tx_nrllm_skill
      tstamp, crdate, deleted, hidden)
 VALUES
     (9422, 0, 9404, ''9404:seo-optimieren'', ''seo-optimieren'', ''Geführte Tour: eine Seite auf SEO prüfen und die gefundenen Punkte nacheinander mit dem Redakteur verbessern – Seitentitel, Meta Description, Social-Media-Vorschau, Hauptüberschrift, interne Links. Jede Änderung erst nach Bestätigung.'',
-     @tour_seo_body, ''191645b2221843ff3cd625bc6698a2105058fb47e92720cd319e2b7c003fa48e'', '''', ''full'', ''["ask_choice","chat_highlight_element","chat_list_open_points","chat_set_progress","get_page_content","get_pagetree","read_records","search_fal_files","search_records","set_page_social_image","update_content_element","update_page_metadata"]'', 1, ''first_party'', 1,
+     @tour_seo_body, ''81ddefc5bd8317afd5644db08ee7ffc866d63a77d3391909c159fc04aa2b5dfe'', '''', ''full'', ''["ask_choice","chat_highlight_element","chat_list_open_points","chat_set_progress","get_page_content","get_pagetree","read_records","search_fal_files","search_records","set_page_social_image","update_content_element","update_page_metadata"]'', 1, ''first_party'', 1,
      UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0)', 'DO 0');
 PREPARE seed_stmt FROM @seed_sql;
 EXECUTE seed_stmt;
@@ -5879,7 +5881,7 @@ DEALLOCATE PREPARE seed_stmt;
 -- and reported by the probe below.
 SET @seed_sql = IF(@nrllm_tours, '
 UPDATE tx_nrllm_skill SET name = ''seo-optimieren'', description = ''Geführte Tour: eine Seite auf SEO prüfen und die gefundenen Punkte nacheinander mit dem Redakteur verbessern – Seitentitel, Meta Description, Social-Media-Vorschau, Hauptüberschrift, interne Links. Jede Änderung erst nach Bestätigung.'',
-       body = @tour_seo_body, body_checksum = ''191645b2221843ff3cd625bc6698a2105058fb47e92720cd319e2b7c003fa48e'',
+       body = @tour_seo_body, body_checksum = ''81ddefc5bd8317afd5644db08ee7ffc866d63a77d3391909c159fc04aa2b5dfe'',
        allowed_tools = ''["ask_choice","chat_highlight_element","chat_list_open_points","chat_set_progress","get_page_content","get_pagetree","read_records","search_fal_files","search_records","set_page_social_image","update_content_element","update_page_metadata"]'', process = 1, support_status = ''full'', trust_level = ''first_party'',
        identifier = ''9404:seo-optimieren'',
        enabled = 1, disabled_by = '''', orphaned = 0, hidden = 0, deleted = 0 WHERE uid = 9422 AND source = 9404', 'DO 0');
@@ -5927,7 +5929,7 @@ INSERT IGNORE INTO tx_nrllm_skill
      tstamp, crdate, deleted, hidden)
 VALUES
     (9423, 0, 9404, ''9404:inhalt-verbessern'', ''inhalt-verbessern'', ''Geführte Tour: eine Seite inhaltlich prüfen – Einstieg, Nutzen, Zielgruppe, Vollständigkeit, Beispiele, Belege, Aufbau, nächster Schritt – und die Verbesserungen nacheinander mit dem Redakteur umsetzen. Erfindet keine Fakten; jede Änderung erst nach Bestätigung.'',
-     @tour_content_body, ''fd9b71c0097ec5e5a0cd509f44123417ed7da1339a21e56c85e3ef119f955869'', '''', ''full'', ''["ask_choice","chat_highlight_element","chat_list_open_points","chat_set_progress","create_content_element_draft","get_page_content","get_pagetree","read_records","search_records","update_content_element"]'', 1, ''first_party'', 1,
+     @tour_content_body, ''6165aa6b579de0c580292e4f3eaf391e0b74feb5762c10ba82d54d2901e575cf'', '''', ''full'', ''["ask_choice","chat_highlight_element","chat_list_open_points","chat_set_progress","create_content_element_draft","get_page_content","get_pagetree","read_records","search_records","update_content_element"]'', 1, ''first_party'', 1,
      UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0)', 'DO 0');
 PREPARE seed_stmt FROM @seed_sql;
 EXECUTE seed_stmt;
@@ -5938,7 +5940,7 @@ DEALLOCATE PREPARE seed_stmt;
 -- and reported by the probe below.
 SET @seed_sql = IF(@nrllm_tours, '
 UPDATE tx_nrllm_skill SET name = ''inhalt-verbessern'', description = ''Geführte Tour: eine Seite inhaltlich prüfen – Einstieg, Nutzen, Zielgruppe, Vollständigkeit, Beispiele, Belege, Aufbau, nächster Schritt – und die Verbesserungen nacheinander mit dem Redakteur umsetzen. Erfindet keine Fakten; jede Änderung erst nach Bestätigung.'',
-       body = @tour_content_body, body_checksum = ''fd9b71c0097ec5e5a0cd509f44123417ed7da1339a21e56c85e3ef119f955869'',
+       body = @tour_content_body, body_checksum = ''6165aa6b579de0c580292e4f3eaf391e0b74feb5762c10ba82d54d2901e575cf'',
        allowed_tools = ''["ask_choice","chat_highlight_element","chat_list_open_points","chat_set_progress","create_content_element_draft","get_page_content","get_pagetree","read_records","search_records","update_content_element"]'', process = 1, support_status = ''full'', trust_level = ''first_party'',
        identifier = ''9404:inhalt-verbessern'',
        enabled = 1, disabled_by = '''', orphaned = 0, hidden = 0, deleted = 0 WHERE uid = 9423 AND source = 9404', 'DO 0');
