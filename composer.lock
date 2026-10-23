@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "386b4e5e0ab8486dbbb1f938d267f709",
+    "content-hash": "2b722473fcd8ead8a7fad0853d2af39d",
     "packages": [
         {
             "name": "b13/ai-label",
@@ -3221,16 +3221,16 @@
         },
         {
             "name": "netresearch/nr-mcp-agent",
-            "version": "v0.17.4",
+            "version": "v0.17.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/t3x-nr-mcp-agent.git",
-                "reference": "91311d22a8f320b9cb355124a096295193d905a7"
+                "reference": "ded3e08119f1704b2ef7760507cfa2f035f6be40"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/t3x-nr-mcp-agent/zipball/91311d22a8f320b9cb355124a096295193d905a7",
-                "reference": "91311d22a8f320b9cb355124a096295193d905a7",
+                "url": "https://api.github.com/repos/netresearch/t3x-nr-mcp-agent/zipball/ded3e08119f1704b2ef7760507cfa2f035f6be40",
+                "reference": "ded3e08119f1704b2ef7760507cfa2f035f6be40",
                 "shasum": ""
             },
             "require": {
@@ -3296,7 +3296,7 @@
                 "issues": "https://github.com/netresearch/t3x-nr-mcp-agent/issues",
                 "source": "https://github.com/netresearch/t3x-nr-mcp-agent"
             },
-            "time": "2026-10-23T08:40:28+00:00"
+            "time": "2026-10-23T10:47:31+00:00"
         },
         {
             "name": "netresearch/nr-passkeys-be",
