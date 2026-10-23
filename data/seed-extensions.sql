@@ -5682,7 +5682,7 @@ Zeig zuerst eine kompakte Übersicht in drei Gruppen:
 - **Empfehlungen** – sinnvolle Verbesserungen, die keinen Fehler darstellen (zum Beispiel: Hauptüberschrift benennt das Thema nicht eindeutig, wenig interne Verlinkung).
 - **In Ordnung** – zum Schluss ein Satz, was bereits passt (zum Beispiel: Die Seite ist indexierbar und hat eine saubere URL).
 
-Ein Punkt der Übersicht ist alles, wofür du in dieser Tour eine konkrete Änderung vorschlagen kannst. Sortiere die Punkte nach Relevanz, Probleme vor Empfehlungen. Ein Befund, den die Tour nicht ändern kann – etwa eine Seite, die nicht indexiert werden darf –, steht als Hinweis in der Übersicht und zählt nicht als Punkt. Offene Punkte aus früheren Durchläufen nimmst du wieder auf und kennzeichnest sie als „noch offen“.
+Ein Punkt der Übersicht ist alles, wofür du in dieser Tour eine konkrete Änderung vorschlagen kannst. Sortiere die Punkte nach Relevanz, Probleme vor Empfehlungen. Ein Befund, den die Tour nicht ändern kann – etwa eine Seite, die nicht indexiert werden darf –, steht als Hinweis in der Übersicht und zählt nicht als Punkt. Punkte zu den Social-Media-Feldern nennen schon in der Übersicht das Netzwerk, wie in Schritt 4 beschrieben: „Social-Media-Vorschau für Facebook und LinkedIn (Open Graph)“ für die Open-Graph-Felder, „Vorschau für X (Twitter)“ für die twitter-Felder. Offene Punkte aus früheren Durchläufen nimmst du wieder auf und kennzeichnest sie als „noch offen“.
 
 Rufe in derselben Runde nach der Übersicht `chat_set_progress` auf: `label` „<Seitentitel> · <Sprache>“, `current` 0, `total` die Anzahl der Punkte der Übersicht.
 
@@ -5696,7 +5696,7 @@ Beginne mit dem wichtigsten Punkt. Für jeden Punkt:
 
 1. Rufe `chat_set_progress` auf: `label` wie in der Übersicht, `current` die Nummer des Punkts, `total` die Anzahl der Punkte.
 2. Betrifft der Punkt ein Inhaltselement, etwa die Hauptüberschrift oder einen Textabschnitt, markiere es mit `chat_highlight_element` (`contentUid` das Element).
-3. Nenne den Punkt als fette Zeile (zum Beispiel **Meta Description fehlt**) und in höchstens zwei Sätzen, warum er wichtig ist.
+3. Nenne den Punkt als fette Zeile (zum Beispiel **Meta Description fehlt**) und in höchstens zwei Sätzen, warum er wichtig ist. Betrifft der Punkt die Open-Graph-Felder (`og_title`, `og_description`), nennt die fette Zeile das Netzwerk: **Social-Media-Vorschau für Facebook und LinkedIn (Open Graph): Beschreibung fehlt**. Betrifft er die Felder `twitter_title` oder `twitter_description`, lautet sie zum Beispiel **Vorschau für X (Twitter): Titel fehlt**. Das sind die Bezeichnungen für den Redakteur; die Feldnamen nennst du ihm nicht.
 4. Schlage die Änderung mit genau einem Aufruf des passenden schreibenden Werkzeugs vor:
    - Seitentitel, SEO-Titel, Meta Description, Social-Media-Titel und -Beschreibung: `update_page_metadata` mit `uid` <uid> und nur dem Feld, das der Punkt betrifft (`title`, `seo_title`, `description`, `og_title`, `og_description`, `twitter_title` oder `twitter_description`). Eine Meta Description hat 140 bis 160 Zeichen.
    - Vorschaubild für soziale Medien: Suche mit `search_fal_files` (`query` ein Begriff zum Thema der Seite) ein vorhandenes, passendes Bild und schlage es mit `set_page_social_image` vor (`page` <uid>, `field` „og_image“ oder „twitter_image“, `file` die Datei). Ein Vorschaubild lässt sich nur auf der Standardsprache setzen. Prüfst du eine andere Sprachversion, ist ein fehlendes Vorschaubild kein Punkt der Tour, sondern ein Hinweis in der Übersicht: ob die Übersetzung ein eigenes Bild hat, legt der Redakteur in den Seiteneigenschaften fest. Findest du kein passendes Bild, rufe `ask_choice` auf (`question` wie es weitergeht, `options` [„Ohne Vorschaubild weiter“, „Ich nenne einen Suchbegriff“]).
@@ -5868,7 +5868,7 @@ INSERT IGNORE INTO tx_nrllm_skill
      tstamp, crdate, deleted, hidden)
 VALUES
     (9422, 0, 9404, ''9404:seo-optimieren'', ''seo-optimieren'', ''Geführte Tour: eine Seite auf SEO prüfen und die gefundenen Punkte nacheinander mit dem Redakteur verbessern – Seitentitel, Meta Description, Social-Media-Vorschau, Hauptüberschrift, interne Links. Jede Änderung erst nach Bestätigung.'',
-     @tour_seo_body, ''191645b2221843ff3cd625bc6698a2105058fb47e92720cd319e2b7c003fa48e'', '''', ''full'', ''["ask_choice","chat_highlight_element","chat_list_open_points","chat_set_progress","get_page_content","get_pagetree","read_records","search_fal_files","search_records","set_page_social_image","update_content_element","update_page_metadata"]'', 1, ''first_party'', 1,
+     @tour_seo_body, ''f07db49a36770506f6360ea8f2c2fb11021c21f30f27ad78cabc54e40247c901'', '''', ''full'', ''["ask_choice","chat_highlight_element","chat_list_open_points","chat_set_progress","get_page_content","get_pagetree","read_records","search_fal_files","search_records","set_page_social_image","update_content_element","update_page_metadata"]'', 1, ''first_party'', 1,
      UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0)', 'DO 0');
 PREPARE seed_stmt FROM @seed_sql;
 EXECUTE seed_stmt;
@@ -5879,7 +5879,7 @@ DEALLOCATE PREPARE seed_stmt;
 -- and reported by the probe below.
 SET @seed_sql = IF(@nrllm_tours, '
 UPDATE tx_nrllm_skill SET name = ''seo-optimieren'', description = ''Geführte Tour: eine Seite auf SEO prüfen und die gefundenen Punkte nacheinander mit dem Redakteur verbessern – Seitentitel, Meta Description, Social-Media-Vorschau, Hauptüberschrift, interne Links. Jede Änderung erst nach Bestätigung.'',
-       body = @tour_seo_body, body_checksum = ''191645b2221843ff3cd625bc6698a2105058fb47e92720cd319e2b7c003fa48e'',
+       body = @tour_seo_body, body_checksum = ''f07db49a36770506f6360ea8f2c2fb11021c21f30f27ad78cabc54e40247c901'',
        allowed_tools = ''["ask_choice","chat_highlight_element","chat_list_open_points","chat_set_progress","get_page_content","get_pagetree","read_records","search_fal_files","search_records","set_page_social_image","update_content_element","update_page_metadata"]'', process = 1, support_status = ''full'', trust_level = ''first_party'',
        identifier = ''9404:seo-optimieren'',
        enabled = 1, disabled_by = '''', orphaned = 0, hidden = 0, deleted = 0 WHERE uid = 9422 AND source = 9404', 'DO 0');
