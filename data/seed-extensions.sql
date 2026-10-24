@@ -4688,7 +4688,7 @@ UPDATE tx_nrllm_skill_source SET enabled = 1, hidden = 0, deleted = 0,
 --
 -- Same mechanism as the two skills above (single_file, first_party, SHA-pinned),
 -- with two differences:
---   * the source is this repository, pinned to the commit that added SKILL.md;
+--   * the source is this repository, pinned to the commit that last changed SKILL.md;
 --   * the skill is ATTACHED to the configuration. The two skills above sit in the
 --     tile but in no configuration's tx_nrllm_configuration_skill_mm row, so no
 --     chat ever received them. Attached, nr-llm prepends the composed block to the
@@ -5379,7 +5379,7 @@ INSERT IGNORE INTO tx_nrllm_skill_source
     (uid, pid, title, type, url, ref, pinned_sha,
      github_token, trust_level, sync_status, last_synced, enabled, tstamp, crdate, deleted, hidden)
 VALUES
-    (9403, 0, 'editorial-response-guidelines', 'single_file', 'https://raw.githubusercontent.com/netresearch/typo3-demo/c75c7d5e8d1826a52e9b611aaa0898f7c48f6de0/data/skills/editorial-response-guidelines/SKILL.md', 'c75c7d5e8d1826a52e9b611aaa0898f7c48f6de0', 'c75c7d5e8d1826a52e9b611aaa0898f7c48f6de0',
+    (9403, 0, 'editorial-response-guidelines', 'single_file', 'https://raw.githubusercontent.com/netresearch/typo3-demo/6d0cc33aaac48ac5409a480c72b257d3d04f4b5c/data/skills/editorial-response-guidelines/SKILL.md', '6d0cc33aaac48ac5409a480c72b257d3d04f4b5c', '6d0cc33aaac48ac5409a480c72b257d3d04f4b5c',
      '', 'first_party', 'synced', UNIX_TIMESTAMP(), 1, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0);
 
 INSERT IGNORE INTO tx_nrllm_skill
@@ -5388,19 +5388,19 @@ INSERT IGNORE INTO tx_nrllm_skill
      tstamp, crdate, deleted, hidden)
 VALUES
     (9421, 0, 9403, '9403:data/skills/editorial-response-guidelines/SKILL.md', 'editorial-response-guidelines', 'Editorial language rules for the Backend AI Chat. Answers, approval requests, warnings and system messages are written in editor language instead of tool and field names: result first, numbers up front, priorities, concrete action names, impact and before/after shown. German-language rules (31 numbered rules).',
-     @editorial_skill_body, 'e95db36fb750d7ae6d266823d7f75bc8b562ab4d1e6fd0a210cff907a5f918c4', 'c75c7d5e8d1826a52e9b611aaa0898f7c48f6de0', 'full', 'first_party', 1,
+     @editorial_skill_body, 'e95db36fb750d7ae6d266823d7f75bc8b562ab4d1e6fd0a210cff907a5f918c4', '6d0cc33aaac48ac5409a480c72b257d3d04f4b5c', 'full', 'first_party', 1,
      UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0);
 
 -- Re-assert: INSERT IGNORE never repairs an existing row. Body and checksum are
 -- written together, so a changed body can never meet a stale checksum.
 UPDATE tx_nrllm_skill SET name = 'editorial-response-guidelines', description = 'Editorial language rules for the Backend AI Chat. Answers, approval requests, warnings and system messages are written in editor language instead of tool and field names: result first, numbers up front, priorities, concrete action names, impact and before/after shown. German-language rules (31 numbered rules).',
-       body = @editorial_skill_body, body_checksum = 'e95db36fb750d7ae6d266823d7f75bc8b562ab4d1e6fd0a210cff907a5f918c4', source_sha = 'c75c7d5e8d1826a52e9b611aaa0898f7c48f6de0',
+       body = @editorial_skill_body, body_checksum = 'e95db36fb750d7ae6d266823d7f75bc8b562ab4d1e6fd0a210cff907a5f918c4', source_sha = '6d0cc33aaac48ac5409a480c72b257d3d04f4b5c',
        support_status = 'full', trust_level = 'first_party',
        identifier = '9403:data/skills/editorial-response-guidelines/SKILL.md',
        enabled = 1, orphaned = 0, hidden = 0, deleted = 0 WHERE uid = 9421 AND source = 9403;
-UPDATE tx_nrllm_skill_source SET url = 'https://raw.githubusercontent.com/netresearch/typo3-demo/c75c7d5e8d1826a52e9b611aaa0898f7c48f6de0/data/skills/editorial-response-guidelines/SKILL.md', ref = 'c75c7d5e8d1826a52e9b611aaa0898f7c48f6de0',
+UPDATE tx_nrllm_skill_source SET url = 'https://raw.githubusercontent.com/netresearch/typo3-demo/6d0cc33aaac48ac5409a480c72b257d3d04f4b5c/data/skills/editorial-response-guidelines/SKILL.md', ref = '6d0cc33aaac48ac5409a480c72b257d3d04f4b5c',
        enabled = 1, hidden = 0, deleted = 0,
-       sync_status = 'synced', pinned_sha = 'c75c7d5e8d1826a52e9b611aaa0898f7c48f6de0' WHERE uid = 9403;
+       sync_status = 'synced', pinned_sha = '6d0cc33aaac48ac5409a480c72b257d3d04f4b5c' WHERE uid = 9403;
 
 -- =============================================================================
 -- Repair what the first editorial seed and the sync duplicates left behind
