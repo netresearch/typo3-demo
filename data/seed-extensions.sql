@@ -1034,9 +1034,10 @@ SELECT 0, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), u.uid,
    AND NOT EXISTS (SELECT 1 FROM be_dashboards d
                     WHERE d.cruser_id = u.uid AND d.title = 'Netresearch Demo');
 
--- Third dashboard: the 'nrMcpAgent' preset of nr_mcp_agent ("KI-Assistent"):
--- "Eine Seite verbessern", "Häufige Aufgaben", "Für deine Website empfohlen"
--- and the AI Chat widget, the entry points of the guided tours. Same reasoning
+-- Third dashboard: the 'nrMcpAgent' preset of nr_mcp_agent ("KI-Assistent"),
+-- in the preset's order: the "AI Assistant" question box, "Eine Seite
+-- verbessern", "Häufige Aufgaben", the recent chats and "Für deine Website
+-- empfohlen", the entry points of the guided tours. Same reasoning
 -- as the 'Netresearch Demo' rows above: existing users are past the one-time
 -- preset branch, new users get it from user.tsconfig.
 --
@@ -1052,7 +1053,7 @@ INSERT INTO be_dashboards (pid, tstamp, crdate, cruser_id, identifier, title, wi
 SELECT 0, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), u.uid,
        SHA1(CONCAT('nr-mcp-agent-assistant:', u.uid)),
        'LLL:EXT:nr_mcp_agent/Resources/Private/Language/locallang_dashboard.xlf:preset.title',
- '{"3276c7cc072d8446e5bf490669a34c661a8cbf29":{"identifier":"nrMcpAgentImprovePage"},"b31c9870baf73b1f9d1452c18878ac3be77a8dc8":{"identifier":"nrMcpAgentQuickTasks"},"997235a272566500f197890a4a78e6926ee78d2b":{"identifier":"nrMcpAgentRecommendations"},"bf6204214bae3c5ec67439fa057a8f50c85500e8":{"identifier":"nrMcpAgentAiChat"}}'
+ '{"6a1f0c3e9b7d4e2a8c5f1b3d7e9a0c42":{"identifier":"nrMcpAgentPrompt"},"3276c7cc072d8446e5bf490669a34c661a8cbf29":{"identifier":"nrMcpAgentImprovePage"},"b31c9870baf73b1f9d1452c18878ac3be77a8dc8":{"identifier":"nrMcpAgentQuickTasks"},"bf6204214bae3c5ec67439fa057a8f50c85500e8":{"identifier":"nrMcpAgentAiChat"},"997235a272566500f197890a4a78e6926ee78d2b":{"identifier":"nrMcpAgentRecommendations"}}'
   FROM be_users u
  WHERE u.deleted = 0
    AND u.password LIKE '$%'
@@ -3376,6 +3377,19 @@ UPDATE be_dashboards
  WHERE title = 'Netresearch Demo'
    AND JSON_VALID(widgets)
    AND JSON_SEARCH(widgets, 'one', 'nrdemo.browserai') IS NULL;
+
+-- "KI-Assistent" dashboard — retrofit the "AI Assistant" question box
+-- (nr_mcp_agent 0.19.0). Same reasoning as above, but the box goes FIRST, as in
+-- the preset: JSON_MERGE_PRESERVE keeps the keys of its first argument in front,
+-- so the new object leads and every existing card keeps its place after it.
+UPDATE be_dashboards
+   SET widgets = JSON_MERGE_PRESERVE(
+         JSON_OBJECT('6a1f0c3e9b7d4e2a8c5f1b3d7e9a0c42', JSON_OBJECT('identifier', 'nrMcpAgentPrompt')),
+         widgets
+       )
+ WHERE title = 'LLL:EXT:nr_mcp_agent/Resources/Private/Language/locallang_dashboard.xlf:preset.title'
+   AND JSON_VALID(widgets)
+   AND JSON_SEARCH(widgets, 'one', 'nrMcpAgentPrompt') IS NULL;
 
 
 INSERT INTO tt_content (uid, pid, tstamp, crdate, sys_language_uid, l18n_parent, l10n_source, CType, header, bodytext, colPos, sorting, hidden, deleted)
