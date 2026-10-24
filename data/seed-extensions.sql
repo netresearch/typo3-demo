@@ -4680,15 +4680,15 @@ UPDATE tx_nrllm_skill_source SET enabled = 1, hidden = 0, deleted = 0,
 -- =============================================================================
 -- Skill attached to the Backend AI Chat: editorial response guidelines
 -- =============================================================================
--- The 27 language rules of the Confluence page "Editorial Response Guidelines"
--- (page 5907709979, version 4 of 2026-10-06; the page is still being edited, so
+-- The 31 language rules of the Confluence page "Editorial Response Guidelines"
+-- (page 5907709979, version 5 of 2026-10-23; the page is still being edited, so
 -- the version is also recorded in the skill's frontmatter). The skill text lives
 -- in data/skills/editorial-response-guidelines/SKILL.md; this block carries it verbatim.
 -- scripts/check-seed-skills.py (CI job seed-skills) fails when the two drift.
 --
 -- Same mechanism as the two skills above (single_file, first_party, SHA-pinned),
 -- with two differences:
---   * the source is this repository, pinned to the commit that added SKILL.md;
+--   * the source is this repository, pinned to the commit that last changed SKILL.md;
 --   * the skill is ATTACHED to the configuration. The two skills above sit in the
 --     tile but in no configuration's tx_nrllm_configuration_skill_mm row, so no
 --     chat ever received them. Attached, nr-llm prepends the composed block to the
@@ -5304,6 +5304,72 @@ So bleibt der Assistent auch bei technischen Vorgängen handlungsorientiert.
 
 ---
 
+### 28. Nur Informationen nennen, die für die aktuelle Aufgabe relevant sind
+
+Der Assistent soll nicht alles erklären, was er über eine Seite, einen Datensatz oder einen TYPO3-Prozess weiß.
+
+Vor jeder Antwort muss er entscheiden, welche Informationen der Redakteur für seine aktuelle Aufgabe tatsächlich benötigt.
+
+- Keine ungefragten Erklärungen zu CMS-Funktionen, Sprachversionen oder technischen Abläufen.
+- Keine zusätzlichen Informationen nur deshalb nennen, weil sie aus den Systemdaten verfügbar sind.
+- Hintergrundinformationen nur ergänzen, wenn sie die Antwort verständlicher machen oder eine Entscheidung beeinflussen.
+- Nicht versuchen, jede Antwort fachlich vollständig zu machen.
+
+**Leitregel: Nicht alles sagen, was richtig ist, sondern das, was gerade hilfreich ist.**
+
+---
+
+### 29. Aus der Perspektive des Redakteurs antworten
+
+Der Assistent soll nicht die interne Sicht des Systems beschreiben, sondern die praktische Bedeutung für den Redakteur.
+
+- Beschreibe, was der Redakteur sieht, ändern kann oder beachten muss.
+- Formuliere aus Sicht der redaktionellen Aufgabe, nicht aus Sicht der Datenstruktur.
+- Übersetze technische Zusammenhänge in konkrete, verständliche Aussagen.
+- Erwähne technische Rahmenbedingungen nur, wenn sie die gewünschte Handlung beeinflussen.
+
+**Beispiel:**
+
+Nicht:
+
+„Die Seite ist als englische Standardversion angelegt, ihre SEO- und Social-Media-Texte sind jedoch deutsch. Änderungen an diesen Texten schlage ich auf Englisch vor; weitere Sprachversionen werden mit den Übersetzungswerkzeugen des CMS erstellt.“
+
+Sondern:
+
+„Die Seite ist auf Englisch angelegt, aber die SEO- und Social-Media-Texte sind noch auf Deutsch. Ich kann dir passende englische Texte dafür vorschlagen.“
+
+---
+
+### 30. Antwortsprache und Inhaltssprache unterscheiden
+
+Die Sprache der Chat-Antwort richtet sich nach der Sprache des Nutzers beziehungsweise der eingestellten Oberflächensprache, nicht automatisch nach der Sprache der bearbeiteten Seite.
+
+Die Sprache eines vorgeschlagenen Inhalts richtet sich dagegen nach der Sprache der jeweiligen Zielseite oder der ausdrücklichen Anweisung des Redakteurs.
+
+- Deutsche Nutzeranfrage → deutsche Antwort.
+- Englische Zielseite → englischer Textvorschlag, sofern keine andere Sprache gewünscht ist.
+- Unterschiedliche Sprachen bei Seite und Metadaten verständlich benennen, wenn dies für die Aufgabe relevant ist.
+- Keine ungefragten Erklärungen über das Übersetzungssystem von TYPO3.
+
+---
+
+### 31. Jede Antwort auf unnötige Komplexität prüfen
+
+Vor der Ausgabe soll der Assistent seine Antwort intern anhand folgender Fragen überprüfen:
+
+1. Beantwortet die Antwort direkt die eigentliche Frage?
+2. Ist jede enthaltene Information für die aktuelle Aufgabe relevant?
+3. Könnte ein Redakteur die Antwort ohne technisches TYPO3-Wissen verstehen?
+4. Enthält die Antwort ungefragte technische Erklärungen?
+5. Lässt sich die Antwort kürzer oder natürlicher formulieren, ohne wichtige Informationen zu verlieren?
+6. Ist klar, was der Redakteur als Nächstes tun kann?
+
+Wenn eine Information nicht notwendig ist, soll sie entfallen.
+
+**Leitregel: Verständlichkeit und praktischer Nutzen haben Vorrang vor technischer Vollständigkeit – ohne die fachliche Korrektheit zu beeinträchtigen.**
+
+---
+
 ## Leitregel für Freigaben und Systemmeldungen
 
 > **Der Redakteur soll verstehen, was sich ändert und welche Folgen das hat – nicht, welches interne Tool gerade ausgeführt wird.**
@@ -5313,7 +5379,7 @@ INSERT IGNORE INTO tx_nrllm_skill_source
     (uid, pid, title, type, url, ref, pinned_sha,
      github_token, trust_level, sync_status, last_synced, enabled, tstamp, crdate, deleted, hidden)
 VALUES
-    (9403, 0, 'editorial-response-guidelines', 'single_file', 'https://raw.githubusercontent.com/netresearch/typo3-demo/c75c7d5e8d1826a52e9b611aaa0898f7c48f6de0/data/skills/editorial-response-guidelines/SKILL.md', 'c75c7d5e8d1826a52e9b611aaa0898f7c48f6de0', 'c75c7d5e8d1826a52e9b611aaa0898f7c48f6de0',
+    (9403, 0, 'editorial-response-guidelines', 'single_file', 'https://raw.githubusercontent.com/netresearch/typo3-demo/6d0cc33aaac48ac5409a480c72b257d3d04f4b5c/data/skills/editorial-response-guidelines/SKILL.md', '6d0cc33aaac48ac5409a480c72b257d3d04f4b5c', '6d0cc33aaac48ac5409a480c72b257d3d04f4b5c',
      '', 'first_party', 'synced', UNIX_TIMESTAMP(), 1, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0);
 
 INSERT IGNORE INTO tx_nrllm_skill
@@ -5321,20 +5387,20 @@ INSERT IGNORE INTO tx_nrllm_skill
      body, body_checksum, source_sha, support_status, trust_level, enabled,
      tstamp, crdate, deleted, hidden)
 VALUES
-    (9421, 0, 9403, '9403:data/skills/editorial-response-guidelines/SKILL.md', 'editorial-response-guidelines', 'Editorial language rules for the Backend AI Chat. Answers, approval requests, warnings and system messages are written in editor language instead of tool and field names: result first, numbers up front, priorities, concrete action names, impact and before/after shown. German-language rules (27 numbered rules).',
-     @editorial_skill_body, '32bf24a4179e67a29d39e597c2c25c267e20ce0a30b7504237af80f96851fdbd', 'c75c7d5e8d1826a52e9b611aaa0898f7c48f6de0', 'full', 'first_party', 1,
+    (9421, 0, 9403, '9403:data/skills/editorial-response-guidelines/SKILL.md', 'editorial-response-guidelines', 'Editorial language rules for the Backend AI Chat. Answers, approval requests, warnings and system messages are written in editor language instead of tool and field names: result first, numbers up front, priorities, concrete action names, impact and before/after shown. German-language rules (31 numbered rules).',
+     @editorial_skill_body, 'e95db36fb750d7ae6d266823d7f75bc8b562ab4d1e6fd0a210cff907a5f918c4', '6d0cc33aaac48ac5409a480c72b257d3d04f4b5c', 'full', 'first_party', 1,
      UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0);
 
 -- Re-assert: INSERT IGNORE never repairs an existing row. Body and checksum are
 -- written together, so a changed body can never meet a stale checksum.
-UPDATE tx_nrllm_skill SET name = 'editorial-response-guidelines', description = 'Editorial language rules for the Backend AI Chat. Answers, approval requests, warnings and system messages are written in editor language instead of tool and field names: result first, numbers up front, priorities, concrete action names, impact and before/after shown. German-language rules (27 numbered rules).',
-       body = @editorial_skill_body, body_checksum = '32bf24a4179e67a29d39e597c2c25c267e20ce0a30b7504237af80f96851fdbd', source_sha = 'c75c7d5e8d1826a52e9b611aaa0898f7c48f6de0',
+UPDATE tx_nrllm_skill SET name = 'editorial-response-guidelines', description = 'Editorial language rules for the Backend AI Chat. Answers, approval requests, warnings and system messages are written in editor language instead of tool and field names: result first, numbers up front, priorities, concrete action names, impact and before/after shown. German-language rules (31 numbered rules).',
+       body = @editorial_skill_body, body_checksum = 'e95db36fb750d7ae6d266823d7f75bc8b562ab4d1e6fd0a210cff907a5f918c4', source_sha = '6d0cc33aaac48ac5409a480c72b257d3d04f4b5c',
        support_status = 'full', trust_level = 'first_party',
        identifier = '9403:data/skills/editorial-response-guidelines/SKILL.md',
        enabled = 1, orphaned = 0, hidden = 0, deleted = 0 WHERE uid = 9421 AND source = 9403;
-UPDATE tx_nrllm_skill_source SET url = 'https://raw.githubusercontent.com/netresearch/typo3-demo/c75c7d5e8d1826a52e9b611aaa0898f7c48f6de0/data/skills/editorial-response-guidelines/SKILL.md', ref = 'c75c7d5e8d1826a52e9b611aaa0898f7c48f6de0',
+UPDATE tx_nrllm_skill_source SET url = 'https://raw.githubusercontent.com/netresearch/typo3-demo/6d0cc33aaac48ac5409a480c72b257d3d04f4b5c/data/skills/editorial-response-guidelines/SKILL.md', ref = '6d0cc33aaac48ac5409a480c72b257d3d04f4b5c',
        enabled = 1, hidden = 0, deleted = 0,
-       sync_status = 'synced', pinned_sha = 'c75c7d5e8d1826a52e9b611aaa0898f7c48f6de0' WHERE uid = 9403;
+       sync_status = 'synced', pinned_sha = '6d0cc33aaac48ac5409a480c72b257d3d04f4b5c' WHERE uid = 9403;
 
 -- =============================================================================
 -- Repair what the first editorial seed and the sync duplicates left behind
@@ -5380,7 +5446,7 @@ CREATE TEMPORARY TABLE seed_owned_skill (PRIMARY KEY (uid))
 INSERT INTO seed_owned_skill VALUES
     (9411, 9401, '358350ff236dacc6575f4b57efd3217314a1b9199b10b8b9a44129c00b0b6cdf'),
     (9412, 9402, '7ef3a934e73e8a8e4b232e6bff3ebc9cd896538f43b7084ea3eb17570bb47c2e'),
-    (9421, 9403, '32bf24a4179e67a29d39e597c2c25c267e20ce0a30b7504237af80f96851fdbd');
+    (9421, 9403, 'e95db36fb750d7ae6d266823d7f75bc8b562ab4d1e6fd0a210cff907a5f918c4');
 
 -- 1. Must run before step 2, which would otherwise move this row onto 9411.
 --    Once moved it looks like an attachment an operator made, so nothing at the
@@ -7635,7 +7701,7 @@ SELECT 'SEED-PROBLEM: tx_nrllm_skill 9421 editorial-response-guidelines missing,
                     WHERE uid = 9421 AND source = 9403 AND name = 'editorial-response-guidelines'
                       AND identifier = '9403:data/skills/editorial-response-guidelines/SKILL.md'
                       AND deleted = 0 AND enabled = 1 AND orphaned = 0
-                      AND body_checksum = '32bf24a4179e67a29d39e597c2c25c267e20ce0a30b7504237af80f96851fdbd'
+                      AND body_checksum = 'e95db36fb750d7ae6d266823d7f75bc8b562ab4d1e6fd0a210cff907a5f918c4'
                       AND body_checksum = SHA2(body, 256))
 UNION ALL
 SELECT 'SEED-PROBLEM: skill 9421 editorial-response-guidelines is not attached to backend-ai-chat' FROM DUAL
