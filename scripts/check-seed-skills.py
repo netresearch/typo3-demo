@@ -110,7 +110,11 @@ def check_pins(rel: str, raw: bytes, seed: str) -> list[str]:
         if pinned is None:
             fail(f"{rel}: pinned commit {sha} is not reachable")
         elif pinned != raw:
-            fail(f"{rel}: differs from the file at pinned commit {sha}")
+            fail(
+                f"{rel}: differs from the file at pinned commit {sha}. A changed skill takes two commits: "
+                "first the SKILL.md with the seed's body and checksum, then the seed's pin moved to that "
+                "first commit. Merge with a merge commit; a squash or rebase after the pin drops the pinned commit."
+            )
     return pins
 
 
