@@ -3381,11 +3381,13 @@ UPDATE be_dashboards
 -- "KI-Assistent" dashboard — retrofit the "AI Assistant" question box
 -- (nr_mcp_agent 0.19.0). Same reasoning as above, but the box goes FIRST, as in
 -- the preset: JSON_MERGE_PRESERVE keeps the keys of its first argument in front,
--- so the new object leads and every existing card keeps its place after it.
+-- so the new object leads and every existing card keeps its place after it. A
+-- dashboard whose cards were all removed is stored as `[]` (json_encode of an
+-- empty PHP array); it is read as an empty object so the result stays keyed.
 UPDATE be_dashboards
    SET widgets = JSON_MERGE_PRESERVE(
          JSON_OBJECT('6a1f0c3e9b7d4e2a8c5f1b3d7e9a0c42', JSON_OBJECT('identifier', 'nrMcpAgentPrompt')),
-         widgets
+         IF(JSON_TYPE(widgets) = 'ARRAY', JSON_OBJECT(), widgets)
        )
  WHERE title = 'LLL:EXT:nr_mcp_agent/Resources/Private/Language/locallang_dashboard.xlf:preset.title'
    AND JSON_VALID(widgets)
