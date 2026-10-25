@@ -47,8 +47,9 @@ RUN php /tmp/patch-ai-filemetadata.php && rm -f /tmp/patch-ai-filemetadata.php
 COPY docker/web/bootstrap-image-partial.sha256 /tmp/bootstrap-image-partial.sha256
 RUN sha256sum -c /tmp/bootstrap-image-partial.sha256 \
     || { echo "bootstrap_package changed Media/Rendering/Image.html." >&2; \
-         echo "Update the site package's copy of Partials/ContentElements/Media/Rendering/Image.html" >&2; \
-         echo "and the checksum in docker/web/bootstrap-image-partial.sha256." >&2; \
+         echo "Carry the change into the site package's copy of that partial," >&2; \
+         echo "update the version in the copy's comment," >&2; \
+         echo "and record the new checksum in docker/web/bootstrap-image-partial.sha256." >&2; \
          exit 1; }
 
 FROM php:8.5-fpm-alpine@sha256:4c2818074ec49f6abe46620f3965e0cb75bc3a5f2b417edd1aacaba6f091c40e AS runtime
