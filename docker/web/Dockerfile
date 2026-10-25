@@ -46,7 +46,10 @@ RUN php /tmp/patch-ai-filemetadata.php && rm -f /tmp/patch-ai-filemetadata.php
 # the new file's sha256 here and the version in the copy's comment.
 COPY docker/web/bootstrap-image-partial.sha256 /tmp/bootstrap-image-partial.sha256
 RUN sha256sum -c /tmp/bootstrap-image-partial.sha256 \
-    || { echo "bootstrap_package changed Media/Rendering/Image.html: update packages/netresearch-demo-site/Resources/Private/Partials/ContentElements/Media/Rendering/Image.html and docker/web/bootstrap-image-partial.sha256" >&2; exit 1; }
+    || { echo "bootstrap_package changed Media/Rendering/Image.html." >&2; \
+         echo "Update the site package's copy of Partials/ContentElements/Media/Rendering/Image.html" >&2; \
+         echo "and the checksum in docker/web/bootstrap-image-partial.sha256." >&2; \
+         exit 1; }
 
 FROM php:8.5-fpm-alpine@sha256:4c2818074ec49f6abe46620f3965e0cb75bc3a5f2b417edd1aacaba6f091c40e AS runtime
 # Both imagick and GD are built with WebP and AVIF: TYPO3 picks its processor
