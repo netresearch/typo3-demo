@@ -3385,6 +3385,8 @@ UPDATE be_dashboards
 -- so the new object leads and every existing card keeps its place after it. A
 -- dashboard whose cards were all removed is stored as `[]` (json_encode of an
 -- empty PHP array); it is read as an empty object so the result stays keyed.
+-- Any other array is left alone: TYPO3 keys every widget by its hash, so a
+-- filled array is not its data, and reading it as {} would drop its entries.
 UPDATE be_dashboards
    SET widgets = JSON_MERGE_PRESERVE(
          JSON_OBJECT('6a1f0c3e9b7d4e2a8c5f1b3d7e9a0c42', JSON_OBJECT('identifier', 'nrMcpAgentPrompt')),
@@ -3392,11 +3394,13 @@ UPDATE be_dashboards
        )
  WHERE title = 'LLL:EXT:nr_mcp_agent/Resources/Private/Language/locallang_dashboard.xlf:preset.title'
    AND JSON_VALID(widgets)
+   AND (JSON_TYPE(widgets) = 'OBJECT' OR JSON_LENGTH(widgets) = 0)
    AND JSON_SEARCH(widgets, 'one', 'nrMcpAgentPrompt') IS NULL;
 
 -- "KI-Assistent" dashboard — retrofit "Website prüfen" (nr_mcp_agent 0.21.0,
 -- ADR-026). It goes LAST, as in the preset: JSON_INSERT appends the key. A
--- dashboard stored as `[]` is read as an empty object, as above.
+-- dashboard stored as `[]` is read as an empty object, any other array is left
+-- alone, as above.
 UPDATE be_dashboards
    SET widgets = JSON_INSERT(
          IF(JSON_TYPE(widgets) = 'ARRAY', JSON_OBJECT(), widgets),
@@ -3405,6 +3409,7 @@ UPDATE be_dashboards
        )
  WHERE title = 'LLL:EXT:nr_mcp_agent/Resources/Private/Language/locallang_dashboard.xlf:preset.title'
    AND JSON_VALID(widgets)
+   AND (JSON_TYPE(widgets) = 'OBJECT' OR JSON_LENGTH(widgets) = 0)
    AND JSON_SEARCH(widgets, 'one', 'nrMcpAgentWebsiteCheck') IS NULL;
 
 
