@@ -36,6 +36,22 @@ RUN php /tmp/patch-lochmueller-index.php && rm -f /tmp/patch-lochmueller-index.p
 COPY docker/web/patch-ai-filemetadata.php /tmp/patch-ai-filemetadata.php
 RUN php /tmp/patch-ai-filemetadata.php && rm -f /tmp/patch-ai-filemetadata.php
 
+# The site package replaces bootstrap_package's Media/Rendering/Image.html with
+# a copy of the 16.0.1 file that adds the decorative-image branch. The copy wins
+# for every image in Text & Images, Text & Media and Images, so a change upstream
+# (srcset, lazy loading, a bugfix) would never reach the site, and Renovate merges
+# bootstrap_package updates on its own. This check fails the build, which is the
+# required check, as soon as the installed original differs from the one the copy
+# was made from. To pass it: carry the upstream change into the copy, then record
+# the new file's sha256 here and the version in the copy's comment.
+COPY docker/web/bootstrap-image-partial.sha256 /tmp/bootstrap-image-partial.sha256
+RUN sha256sum -c /tmp/bootstrap-image-partial.sha256 \
+    || { echo "bootstrap_package changed Media/Rendering/Image.html." >&2; \
+         echo "Carry the change into the site package's copy of that partial," >&2; \
+         echo "update the version in the copy's comment," >&2; \
+         echo "and record the new checksum in docker/web/bootstrap-image-partial.sha256." >&2; \
+         exit 1; }
+
 FROM php:8.5-fpm-alpine@sha256:4c2818074ec49f6abe46620f3965e0cb75bc3a5f2b417edd1aacaba6f091c40e AS runtime
 # Both imagick and GD are built with WebP and AVIF: TYPO3 picks its processor
 # from the install-wide setting, and core's imageFileConversionFormats can only

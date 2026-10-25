@@ -3,8 +3,9 @@
     with one change: an image the editor marked as decorative (nr_mcp_agent,
     sys_file_reference.tx_nrmcpagent_decorative) is output with alt="" and no
     title, so screen readers skip it (W3C technique H67). Keep it in step with
-    bootstrap_package when that is updated. Without the original's html
-    wrapper: f and bk2k are global namespaces.
+    bootstrap_package: the image build fails when the installed original no
+    longer matches docker/web/bootstrap-image-partial.sha256. Without the
+    original's html wrapper: f and bk2k are global namespaces.
 </f:comment>
 <picture>
     <f:for each="{variants}" key="name" as="variant">
