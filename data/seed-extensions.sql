@@ -1037,7 +1037,8 @@ SELECT 0, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), u.uid,
 -- Third dashboard: the 'nrMcpAgent' preset of nr_mcp_agent ("KI-Assistent"),
 -- in the preset's order: the "AI Assistant" question box, "Eine Seite
 -- verbessern", "Häufige Aufgaben", the recent chats and "Für deine Website
--- empfohlen", the entry points of the guided tours. Same reasoning
+-- empfohlen", the entry points of the guided tours, then "Website prüfen",
+-- the site-wide checks (nr_mcp_agent 0.21.0, ADR-026). Same reasoning
 -- as the 'Netresearch Demo' rows above: existing users are past the one-time
 -- preset branch, new users get it from user.tsconfig.
 --
@@ -1053,7 +1054,7 @@ INSERT INTO be_dashboards (pid, tstamp, crdate, cruser_id, identifier, title, wi
 SELECT 0, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), u.uid,
        SHA1(CONCAT('nr-mcp-agent-assistant:', u.uid)),
        'LLL:EXT:nr_mcp_agent/Resources/Private/Language/locallang_dashboard.xlf:preset.title',
- '{"6a1f0c3e9b7d4e2a8c5f1b3d7e9a0c42":{"identifier":"nrMcpAgentPrompt"},"3276c7cc072d8446e5bf490669a34c661a8cbf29":{"identifier":"nrMcpAgentImprovePage"},"b31c9870baf73b1f9d1452c18878ac3be77a8dc8":{"identifier":"nrMcpAgentQuickTasks"},"bf6204214bae3c5ec67439fa057a8f50c85500e8":{"identifier":"nrMcpAgentAiChat"},"997235a272566500f197890a4a78e6926ee78d2b":{"identifier":"nrMcpAgentRecommendations"}}'
+ '{"6a1f0c3e9b7d4e2a8c5f1b3d7e9a0c42":{"identifier":"nrMcpAgentPrompt"},"3276c7cc072d8446e5bf490669a34c661a8cbf29":{"identifier":"nrMcpAgentImprovePage"},"b31c9870baf73b1f9d1452c18878ac3be77a8dc8":{"identifier":"nrMcpAgentQuickTasks"},"bf6204214bae3c5ec67439fa057a8f50c85500e8":{"identifier":"nrMcpAgentAiChat"},"997235a272566500f197890a4a78e6926ee78d2b":{"identifier":"nrMcpAgentRecommendations"},"e3f9950b2430e3948d12f8d17c136653f353c6e4":{"identifier":"nrMcpAgentWebsiteCheck"}}'
   FROM be_users u
  WHERE u.deleted = 0
    AND u.password LIKE '$%'
@@ -3384,6 +3385,8 @@ UPDATE be_dashboards
 -- so the new object leads and every existing card keeps its place after it. A
 -- dashboard whose cards were all removed is stored as `[]` (json_encode of an
 -- empty PHP array); it is read as an empty object so the result stays keyed.
+-- Any other array is left alone: TYPO3 keys every widget by its hash, so a
+-- filled array is not its data, and reading it as {} would drop its entries.
 UPDATE be_dashboards
    SET widgets = JSON_MERGE_PRESERVE(
          JSON_OBJECT('6a1f0c3e9b7d4e2a8c5f1b3d7e9a0c42', JSON_OBJECT('identifier', 'nrMcpAgentPrompt')),
@@ -3391,7 +3394,23 @@ UPDATE be_dashboards
        )
  WHERE title = 'LLL:EXT:nr_mcp_agent/Resources/Private/Language/locallang_dashboard.xlf:preset.title'
    AND JSON_VALID(widgets)
+   AND (JSON_TYPE(widgets) = 'OBJECT' OR JSON_LENGTH(widgets) = 0)
    AND JSON_SEARCH(widgets, 'one', 'nrMcpAgentPrompt') IS NULL;
+
+-- "KI-Assistent" dashboard — retrofit "Website prüfen" (nr_mcp_agent 0.21.0,
+-- ADR-026). It goes LAST, as in the preset: JSON_INSERT appends the key. A
+-- dashboard stored as `[]` is read as an empty object, any other array is left
+-- alone, as above.
+UPDATE be_dashboards
+   SET widgets = JSON_INSERT(
+         IF(JSON_TYPE(widgets) = 'ARRAY', JSON_OBJECT(), widgets),
+         '$."e3f9950b2430e3948d12f8d17c136653f353c6e4"',
+         JSON_OBJECT('identifier', 'nrMcpAgentWebsiteCheck')
+       )
+ WHERE title = 'LLL:EXT:nr_mcp_agent/Resources/Private/Language/locallang_dashboard.xlf:preset.title'
+   AND JSON_VALID(widgets)
+   AND (JSON_TYPE(widgets) = 'OBJECT' OR JSON_LENGTH(widgets) = 0)
+   AND JSON_SEARCH(widgets, 'one', 'nrMcpAgentWebsiteCheck') IS NULL;
 
 
 INSERT INTO tt_content (uid, pid, tstamp, crdate, sys_language_uid, l18n_parent, l10n_source, CType, header, bodytext, colPos, sorting, hidden, deleted)

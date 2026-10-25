@@ -204,6 +204,13 @@ lib.contentElement.partialRootPaths {
     1552 = EXT:netresearch_demo_site/Resources/Private/Partials/AiLabel/
 }
 
+# Decorative images (nr_mcp_agent, ADR-026): the site renders content with
+# bootstrap_package, so nr_mcp_agent's set and import for fluid_styled_content
+# do not apply. The site package carries bootstrap_package's
+# Media/Rendering/Image with the decorative condition, on top of everything
+# else; every other partial still comes from bootstrap_package.
+lib.contentElement.partialRootPaths.1553 = EXT:netresearch_demo_site/Resources/Private/Partials/ContentElements/
+
 config {
     compressJs = 1
     compressCss = 1
