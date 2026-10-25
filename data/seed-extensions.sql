@@ -7153,6 +7153,20 @@ VALUES (0, 'set_file_alternative_text', 1),
 ON DUPLICATE KEY UPDATE
   enabled = VALUES(enabled);
 
+-- 8d. The two writers behind "Optimieren" in the list of missing alt texts
+--
+-- set_file_reference_alternative_text (nr-llm 0.41.6, ADR-230) sets the alt
+-- text of one use of an image; set_file_reference_decorative (nr_mcp_agent
+-- 0.22, ADR-026) marks one use as decorative. Both ship disabled, and
+-- "Optimieren" is not offered until both are on. Same defence as above:
+-- each writes as the acting user, checks that user's rights on the image's
+-- record and on every inline owner above it, and stops at a human approval.
+INSERT INTO tx_nrllm_tool_state (pid, tool_name, enabled)
+VALUES (0, 'set_file_reference_alternative_text', 1),
+       (0, 'set_file_reference_decorative', 1)
+ON DUPLICATE KEY UPDATE
+  enabled = VALUES(enabled);
+
 -- The group gate. The runtime is fail-closed: a disabled 'editing' group
 -- leaves every row above enabled and unreachable. A missing group row means
 -- enabled, so this only matters where somebody switched the group off in the
