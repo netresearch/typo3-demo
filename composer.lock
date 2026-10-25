@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7e3ee53b3a8adc529506906c7193a58b",
+    "content-hash": "44bbf085ef6c0ca63d52dd93ff7cdf84",
     "packages": [
         {
             "name": "b13/ai-label",
@@ -3221,16 +3221,16 @@
         },
         {
             "name": "netresearch/nr-mcp-agent",
-            "version": "v0.20.0",
+            "version": "v0.21.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/t3x-nr-mcp-agent.git",
-                "reference": "2134dad463984e9c5ca4dd6fc8341d0c74412c41"
+                "reference": "e7994eba8eb4140d41e19de7aca86216eca8b6fc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/t3x-nr-mcp-agent/zipball/2134dad463984e9c5ca4dd6fc8341d0c74412c41",
-                "reference": "2134dad463984e9c5ca4dd6fc8341d0c74412c41",
+                "url": "https://api.github.com/repos/netresearch/t3x-nr-mcp-agent/zipball/e7994eba8eb4140d41e19de7aca86216eca8b6fc",
+                "reference": "e7994eba8eb4140d41e19de7aca86216eca8b6fc",
                 "shasum": ""
             },
             "require": {
@@ -3247,7 +3247,9 @@
                 "netresearch/typo3-ci-workflows": "^2.0.1",
                 "phpunit/phpunit": "^10.5 || ^11.0",
                 "typo3/cms-dashboard": "^13.4 || ^14.3",
-                "typo3/cms-seo": "^13.4 || ^14.3"
+                "typo3/cms-fluid-styled-content": "^13.4 || ^14.3",
+                "typo3/cms-seo": "^13.4 || ^14.3",
+                "typo3/cms-workspaces": "^13.4 || ^14.3"
             },
             "suggest": {
                 "netresearch/nr-vault": "For secure API key storage (^0.14)",
@@ -3296,7 +3298,7 @@
                 "issues": "https://github.com/netresearch/t3x-nr-mcp-agent/issues",
                 "source": "https://github.com/netresearch/t3x-nr-mcp-agent"
             },
-            "time": "2026-10-25T06:34:35+00:00"
+            "time": "2026-10-25T11:21:51+00:00"
         },
         {
             "name": "netresearch/nr-passkeys-be",
