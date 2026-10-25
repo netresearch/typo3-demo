@@ -1,10 +1,10 @@
-<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" xmlns:bk2k="http://typo3.org/ns/BK2K/BootstrapPackage/ViewHelpers" data-namespace-typo3-fluid="true">
 <f:comment>
     bootstrap_package 16.0.1, Resources/Private/Partials/ContentElements/Media/Rendering/Image.html,
     with one change: an image the editor marked as decorative (nr_mcp_agent,
     sys_file_reference.tx_nrmcpagent_decorative) is output with alt="" and no
     title, so screen readers skip it (W3C technique H67). Keep it in step with
-    bootstrap_package when that is updated.
+    bootstrap_package when that is updated. Without the original's html
+    wrapper: f and bk2k are global namespaces.
 </f:comment>
 <picture>
     <f:for each="{variants}" key="name" as="variant">
@@ -62,4 +62,3 @@
         <f:else><img loading="lazy" src="{src}" width="{finalWidth}" height="{finalHeight}" title="{file.properties.title}" alt="{file.properties.alternative}"></f:else>
     </f:if>
 </picture>
-</html>
