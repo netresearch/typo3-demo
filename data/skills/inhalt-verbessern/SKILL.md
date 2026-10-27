@@ -96,7 +96,7 @@ Sonst rufe danach `ask_choice` auf: `question` „Lass uns die wichtigsten Punkt
 Beginne mit dem wichtigsten Punkt. Pro Punkt genau eine Fragestellung:
 
 1. Rufe `chat_set_progress` auf: `label` wie in der Übersicht, `current` die Nummer des Punkts, `total` die Anzahl der Punkte.
-2. Betrifft der Punkt ein Inhaltselement, markiere es mit `chat_highlight_element` (`contentUid` das Element). Betrifft er eine Seiteneigenschaft, markiere sie mit `chat_highlight_element` (`pageField` der Feldname der Seite, etwa `title` für den Seitentitel). Betrifft der Punkt weder ein Inhaltselement noch eine Seiteneigenschaft, markiere nichts.
+2. Betrifft der Punkt ein Inhaltselement, markiere es mit `chat_highlight_element` (`contentUid` das Element). Betrifft er eine Seiteneigenschaft, markiere sie mit `chat_highlight_element` (`pageField` der Feldname der Seite, etwa `title` für den Seitentitel). Braucht der Punkt einen neuen Abschnitt, markiere das Element, nach dem er eingefügt wird (siehe Schritt 4). Betrifft der Punkt weder ein Inhaltselement noch eine Seiteneigenschaft, markiere nichts.
 3. Schreib kurz:
    - **Was ist aufgefallen?** als fette Zeile, etwa **Nutzen im Einstieg nicht sofort klar**,
    - **Warum ist das relevant?** in ein bis zwei Sätzen,
