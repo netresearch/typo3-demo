@@ -5796,7 +5796,7 @@ Sonst rufe danach `ask_choice` auf: `question` „Lass uns das Schritt für Schr
 Beginne mit dem wichtigsten Punkt. Für jeden Punkt:
 
 1. Rufe `chat_set_progress` auf: `label` wie in der Übersicht, `current` die Nummer des Punkts, `total` die Anzahl der Punkte.
-2. Betrifft der Punkt ein Inhaltselement, etwa die Hauptüberschrift oder einen Textabschnitt, markiere es mit `chat_highlight_element` (`contentUid` das Element).
+2. Betrifft der Punkt ein Inhaltselement, etwa die Hauptüberschrift oder einen Textabschnitt, markiere es mit `chat_highlight_element` (`contentUid` das Element). Betrifft er eine Seiteneigenschaft, markiere sie mit `chat_highlight_element` (`pageField` der Feldname der Seite): Seitentitel `title`, SEO-Titel `seo_title`, Meta Description `description`, Social-Media-Titel und -Beschreibung für Facebook und LinkedIn `og_title` und `og_description`, für X (Twitter) `twitter_title` und `twitter_description`, Vorschaubild `og_image` oder `twitter_image`. Betrifft der Punkt weder ein Inhaltselement noch eine Seiteneigenschaft, markiere nichts.
 3. Nenne den Punkt als fette Zeile (zum Beispiel **Meta Description fehlt**) und in höchstens zwei Sätzen, warum er wichtig ist. Betrifft der Punkt die Open-Graph-Felder (`og_title`, `og_description`), nennt die fette Zeile das Netzwerk: **Social-Media-Vorschau für Facebook und LinkedIn (Open Graph): Beschreibung fehlt**. Betrifft er die Felder `twitter_title` oder `twitter_description`, lautet sie zum Beispiel **Vorschau für X (Twitter): Titel fehlt**. Das sind die Bezeichnungen für den Redakteur; die Feldnamen nennst du ihm nicht.
 4. Schlage die Änderung mit genau einem Aufruf des passenden schreibenden Werkzeugs vor:
    - Seitentitel, SEO-Titel, Meta Description, Social-Media-Titel und -Beschreibung: `update_page_metadata` mit `uid` <uid> und nur dem Feld, das der Punkt betrifft (`title`, `seo_title`, `description`, `og_title`, `og_description`, `twitter_title` oder `twitter_description`). Eine Meta Description hat 140 bis 160 Zeichen.
@@ -5911,7 +5911,7 @@ Sonst rufe danach `ask_choice` auf: `question` „Lass uns die wichtigsten Punkt
 Beginne mit dem wichtigsten Punkt. Pro Punkt genau eine Fragestellung:
 
 1. Rufe `chat_set_progress` auf: `label` wie in der Übersicht, `current` die Nummer des Punkts, `total` die Anzahl der Punkte.
-2. Markiere das betroffene Inhaltselement mit `chat_highlight_element` (`contentUid` das Element).
+2. Betrifft der Punkt ein Inhaltselement, markiere es mit `chat_highlight_element` (`contentUid` das Element). Betrifft er eine Seiteneigenschaft, markiere sie mit `chat_highlight_element` (`pageField` der Feldname der Seite, etwa `title` für den Seitentitel). Braucht der Punkt einen neuen Abschnitt, markiere das Element, nach dem er eingefügt wird (siehe Punkt 4 dieses Abschnitts). Betrifft der Punkt weder ein Inhaltselement noch eine Seiteneigenschaft, markiere nichts.
 3. Schreib kurz:
    - **Was ist aufgefallen?** als fette Zeile, etwa **Nutzen im Einstieg nicht sofort klar**,
    - **Warum ist das relevant?** in ein bis zwei Sätzen,
@@ -5971,7 +5971,7 @@ INSERT IGNORE INTO tx_nrllm_skill
      tstamp, crdate, deleted, hidden)
 VALUES
     (9422, 0, 9404, ''9404:seo-optimieren'', ''seo-optimieren'', ''Geführte Tour: eine Seite auf SEO prüfen und die gefundenen Punkte nacheinander mit dem Redakteur verbessern – Seitentitel, Meta Description, Social-Media-Vorschau, Hauptüberschrift, interne Links. Jede Änderung erst nach Bestätigung.'',
-     @tour_seo_body, ''81ddefc5bd8317afd5644db08ee7ffc866d63a77d3391909c159fc04aa2b5dfe'', '''', ''full'', ''["ask_choice","chat_highlight_element","chat_list_open_points","chat_set_progress","get_page_content","get_pagetree","read_records","search_fal_files","search_records","set_page_social_image","update_content_element","update_page_metadata"]'', 1, ''first_party'', 1,
+     @tour_seo_body, ''f47d06b3a48518d4053d9ac019077d586e066c3a39326f1cac8c0309f5c5d9d5'', '''', ''full'', ''["ask_choice","chat_highlight_element","chat_list_open_points","chat_set_progress","get_page_content","get_pagetree","read_records","search_fal_files","search_records","set_page_social_image","update_content_element","update_page_metadata"]'', 1, ''first_party'', 1,
      UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0)', 'DO 0');
 PREPARE seed_stmt FROM @seed_sql;
 EXECUTE seed_stmt;
@@ -5982,7 +5982,7 @@ DEALLOCATE PREPARE seed_stmt;
 -- and reported by the probe below.
 SET @seed_sql = IF(@nrllm_tours, '
 UPDATE tx_nrllm_skill SET name = ''seo-optimieren'', description = ''Geführte Tour: eine Seite auf SEO prüfen und die gefundenen Punkte nacheinander mit dem Redakteur verbessern – Seitentitel, Meta Description, Social-Media-Vorschau, Hauptüberschrift, interne Links. Jede Änderung erst nach Bestätigung.'',
-       body = @tour_seo_body, body_checksum = ''81ddefc5bd8317afd5644db08ee7ffc866d63a77d3391909c159fc04aa2b5dfe'',
+       body = @tour_seo_body, body_checksum = ''f47d06b3a48518d4053d9ac019077d586e066c3a39326f1cac8c0309f5c5d9d5'',
        allowed_tools = ''["ask_choice","chat_highlight_element","chat_list_open_points","chat_set_progress","get_page_content","get_pagetree","read_records","search_fal_files","search_records","set_page_social_image","update_content_element","update_page_metadata"]'', process = 1, support_status = ''full'', trust_level = ''first_party'',
        identifier = ''9404:seo-optimieren'',
        enabled = 1, disabled_by = '''', orphaned = 0, hidden = 0, deleted = 0 WHERE uid = 9422 AND source = 9404', 'DO 0');
@@ -6030,7 +6030,7 @@ INSERT IGNORE INTO tx_nrllm_skill
      tstamp, crdate, deleted, hidden)
 VALUES
     (9423, 0, 9404, ''9404:inhalt-verbessern'', ''inhalt-verbessern'', ''Geführte Tour: eine Seite inhaltlich prüfen – Einstieg, Nutzen, Zielgruppe, Vollständigkeit, Beispiele, Belege, Aufbau, nächster Schritt – und die Verbesserungen nacheinander mit dem Redakteur umsetzen. Erfindet keine Fakten; jede Änderung erst nach Bestätigung.'',
-     @tour_content_body, ''6165aa6b579de0c580292e4f3eaf391e0b74feb5762c10ba82d54d2901e575cf'', '''', ''full'', ''["ask_choice","chat_highlight_element","chat_list_open_points","chat_set_progress","create_content_element_draft","get_page_content","get_pagetree","read_records","search_records","update_content_element"]'', 1, ''first_party'', 1,
+     @tour_content_body, ''4a2761ba48c61177768437f9491820fe175533dc41e7d08e8c373b6732dfdc7e'', '''', ''full'', ''["ask_choice","chat_highlight_element","chat_list_open_points","chat_set_progress","create_content_element_draft","get_page_content","get_pagetree","read_records","search_records","update_content_element"]'', 1, ''first_party'', 1,
      UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0)', 'DO 0');
 PREPARE seed_stmt FROM @seed_sql;
 EXECUTE seed_stmt;
@@ -6041,7 +6041,7 @@ DEALLOCATE PREPARE seed_stmt;
 -- and reported by the probe below.
 SET @seed_sql = IF(@nrllm_tours, '
 UPDATE tx_nrllm_skill SET name = ''inhalt-verbessern'', description = ''Geführte Tour: eine Seite inhaltlich prüfen – Einstieg, Nutzen, Zielgruppe, Vollständigkeit, Beispiele, Belege, Aufbau, nächster Schritt – und die Verbesserungen nacheinander mit dem Redakteur umsetzen. Erfindet keine Fakten; jede Änderung erst nach Bestätigung.'',
-       body = @tour_content_body, body_checksum = ''6165aa6b579de0c580292e4f3eaf391e0b74feb5762c10ba82d54d2901e575cf'',
+       body = @tour_content_body, body_checksum = ''4a2761ba48c61177768437f9491820fe175533dc41e7d08e8c373b6732dfdc7e'',
        allowed_tools = ''["ask_choice","chat_highlight_element","chat_list_open_points","chat_set_progress","create_content_element_draft","get_page_content","get_pagetree","read_records","search_records","update_content_element"]'', process = 1, support_status = ''full'', trust_level = ''first_party'',
        identifier = ''9404:inhalt-verbessern'',
        enabled = 1, disabled_by = '''', orphaned = 0, hidden = 0, deleted = 0 WHERE uid = 9423 AND source = 9404', 'DO 0');
