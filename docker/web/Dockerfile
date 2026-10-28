@@ -32,13 +32,16 @@ RUN php /tmp/patch-lochmueller-index.php && rm -f /tmp/patch-lochmueller-index.p
 # mfd/ai-filemetadata's upload listener must run only in a backend request: a
 # CLI job that writes images to FAL (nr_repurpose) would otherwise call the
 # vision model for each image, and a failed call aborts the job. The composer
-# patch patches/mfd-ai-filemetadata-application-type.patch carries that guard;
-# this check fails the build if the installed listener does not.
+# patch patches/mfd-ai-filemetadata-application-type.patch carries that guard,
+# and it catches a failed generation so that it cannot fail the upload. This
+# check fails the build if the installed listener lacks either.
 RUN grep -qF 'ApplicationType::fromRequest($request)->isBackend()' \
         vendor/mfd/ai-filemetadata/Classes/EventListener/EnrichFileMetadataAfterCreation.php \
     && grep -qF '!$this->isBackendRequest()' \
         vendor/mfd/ai-filemetadata/Classes/EventListener/EnrichFileMetadataAfterCreation.php \
-    || { echo "mfd/ai-filemetadata: the upload listener lacks the backend-only guard." >&2; \
+    && grep -qF "'Alt text generation on upload failed for file {fileUid}" \
+        vendor/mfd/ai-filemetadata/Classes/EventListener/EnrichFileMetadataAfterCreation.php \
+    || { echo "mfd/ai-filemetadata: the upload listener lacks the backend-only guard or the catch around generation." >&2; \
          echo "Check that patches/mfd-ai-filemetadata-application-type.patch still applies." >&2; \
          exit 1; }
 

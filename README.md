@@ -194,12 +194,19 @@ an upload is expected to cost two vision calls. Without the mapping only English
 was generated. `falExcludedPrefixes` is not configured: the upload listener does
 not consult it.
 
+A failed generation never fails the upload. The same composer patch wraps the
+vision call, the metadata update and the German translation in a `try`; on any
+exception the upload succeeds and the TYPO3 log gets a warning "Alt text
+generation on upload failed for file …" with the file uid, `storage:identifier`,
+exception class and message. That file then has no alt text (vision call
+failed) or no German one (translation failed); the generate button fills it
+later.
+
 The German record is written through DataHandler as the uploading user.
 `bypassAccessCheckForRecords` skips only the page permission check, so a
-non-admin needs modify access to `sys_file_metadata` and access to language 1;
-without it DataHandler logs an error, the extension throws, and the upload
-request fails after the file and its English text were saved. All seeded
-accounts that can upload are admins.
+non-admin needs modify access to `sys_file_metadata` and access to language 1
+to get a German alt text; without it the upload keeps only the English text
+and logs the warning. All seeded accounts that can upload are admins.
 
 ## The DeepL key
 

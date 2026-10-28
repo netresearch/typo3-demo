@@ -1,12 +1,12 @@
 {
-    "_hash": "4472f8ab6746a5c57fa95f3ef5a04ea42ecf2f88841f51e94747eeb7df3d5af4",
+    "_hash": "28c1d2a602818df08084f0148dd34944d8bcd5de5c8c939401a0554cde8a0242",
     "patches": {
         "mfd/ai-filemetadata": [
             {
                 "package": "mfd/ai-filemetadata",
-                "description": "Import ApplicationType from TYPO3\\CMS\\Core\\Http (1.6.3+ imports a class that does not exist) and generate alt texts on upload only in a backend request unless generateAltTextInFrontend is on, so CLI jobs that write images to FAL (nr_repurpose) no longer call the vision model",
+                "description": "Import ApplicationType from TYPO3\\CMS\\Core\\Http (1.6.3+ imports a class that does not exist) and generate alt texts on upload only in a backend request unless generateAltTextInFrontend is on, so CLI jobs that write images to FAL (nr_repurpose) no longer call the vision model; a failed generation is logged as a warning instead of failing the upload",
                 "url": "patches/mfd-ai-filemetadata-application-type.patch",
-                "sha256": "72cb686903a631ebf2a2402f7f75429e4e3d141f3ca81e9060f4e7c60e3e52a5",
+                "sha256": "5494fffcd284a1bc78de7588b38f081e3808d4f6ad0bef28bca353241ec75b68",
                 "depth": 1,
                 "extra": {
                     "provenance": "root"
