@@ -190,9 +190,16 @@ again the only file the extension reads — with `"1:/" => [0 => "en_US.UTF-8",
 1 => "de_DE.UTF-8"]`: all of fileadmin (storage 1), site languages 0 and 1. The
 listener writes the English text into the new metadata record and then creates
 the German metadata translation (`sys_language_uid = 1`) with its own call, so
-an upload costs two vision calls. Without the mapping only English was
-generated. `falExcludedPrefixes` is not configured: the upload listener does
+an upload is expected to cost two vision calls. Without the mapping only English
+was generated. `falExcludedPrefixes` is not configured: the upload listener does
 not consult it.
+
+The German record is written through DataHandler as the uploading user.
+`bypassAccessCheckForRecords` skips only the page permission check, so a
+non-admin needs modify access to `sys_file_metadata` and access to language 1;
+without it DataHandler logs an error, the extension throws, and the upload
+request fails after the file and its English text were saved. All seeded
+accounts that can upload are admins.
 
 ## The DeepL key
 
