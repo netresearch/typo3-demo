@@ -272,7 +272,7 @@ services:
         description: 'AI-generated alternative texts for FAL images: a generate button next to the alt-text field, an automatic run on upload, and a CLI command for the existing stock. Preparation for the accessibility requirements of EU Directive 2019/882.'
         howTo:
           - 'Open File > Filelist, pick an image and edit its metadata — the alternative text field carries a generate button.'
-          - 'Upload a new image: the alt text is generated on creation (generateAltTextOnFileUpload).'
+          - 'Upload a new image in the backend: the alt text is generated on creation in English and German — switch the metadata record to Deutsch to see the German one (generateAltTextOnFileUpload).'
           - 'For the existing stock, run the bulk command in the web container: vendor/bin/typo3 ai:generate-alt-texts'
           - 'Token spend per run is on the Netresearch Widgets dashboard.'
     tags:

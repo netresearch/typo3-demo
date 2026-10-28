@@ -174,6 +174,26 @@ rediscovered:
 synchronous API call while a visitor waits for the page. `enableTokenTracking`
 is on, and the three token widgets sit on the Netresearch Widgets dashboard.
 
+The automatic run on upload happens only in a **backend request** — an upload
+in the file list or a file field. Upstream's listener only skips frontend
+requests, so it also ran on the CLI: nr_repurpose saves its rendered images to
+FAL, each save called the vision model, nothing in the chain catches an
+exception, and one failed call aborted the artifact. The composer patch
+`patches/mfd-ai-filemetadata-application-type.patch` narrows the guard to the
+backend, and the image build fails if the installed listener lacks it. Existing
+images without an alt text still get one from the generate button or
+`ai:generate-alt-texts`.
+
+An upload generates the alt text in **English and German**. The entrypoint
+writes `EXTCONF.ai_filemetadata.falLanguageMappings` into `settings.php` —
+again the only file the extension reads — with `"1:/" => [0 => "en_US.UTF-8",
+1 => "de_DE.UTF-8"]`: all of fileadmin (storage 1), site languages 0 and 1. The
+listener writes the English text into the new metadata record and then creates
+the German metadata translation (`sys_language_uid = 1`) with its own call, so
+an upload costs two vision calls. Without the mapping only English was
+generated. `falExcludedPrefixes` is not configured: the upload listener does
+not consult it.
+
 ## The DeepL key
 
 `thieleundklose/autotranslate` cannot use the route the OpenAI key takes. It

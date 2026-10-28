@@ -479,7 +479,8 @@ if [ -f config/system/settings.php ]; then
             //
             // This line was briefly disabled on the theory that it broke the
             // rendered artifacts. It did not: the cause was the alt-text
-            // listener firing on the CLI, fixed separately. With that fixed the
+            // listener firing on the CLI, which the backend-only guard in
+            // patches/mfd-ai-filemetadata-application-type.patch prevents. With that the
             // job produces all ten artifacts, podcast and AI images included.
             //
             // Note for anyone reading this after a deploy: extension:setup
@@ -575,6 +576,18 @@ if [ -f config/system/settings.php ]; then
         }
         $cfg["EXTENSIONS"]["ai_filemetadata"] = $ext;
 
+        // German alt texts on upload. Without a mapping the upload listener
+        // writes only the default language (English). With more than one
+        // language mapped for the folder, it calls FalAdapter::localizeFile(),
+        // which creates the sys_language_uid 1 metadata record with a German
+        // alt text. The key is a prefix of "<storage uid>:<identifier>", so
+        // "1:/" is all of fileadmin; the ids are the site language ids and the
+        // locales those of config/sites/default/config.yaml. Same file as
+        // above: ConfigurationService reads EXTCONF from settings.php only.
+        $cfg["EXTCONF"]["ai_filemetadata"]["falLanguageMappings"] = [
+            "1:/" => [0 => "en_US.UTF-8", 1 => "de_DE.UTF-8"],
+        ];
+
         // Write to a sibling and rename. file_put_contents() truncates in place,
         // and settings.php is the one file whose corruption bricks the instance:
         // a partial write (full volume) leaves a parse error, the
@@ -594,7 +607,9 @@ if [ -f config/system/settings.php ]; then
         }
         // Verify the candidate before it replaces anything.
         $check = include $tmp;
-        if (!is_array($check) || ($check["EXTENSIONS"]["ai_filemetadata"]["imageResizing"] ?? null) !== "512") {
+        if (!is_array($check)
+            || ($check["EXTENSIONS"]["ai_filemetadata"]["imageResizing"] ?? null) !== "512"
+            || ($check["EXTCONF"]["ai_filemetadata"]["falLanguageMappings"]["1:/"][1] ?? null) !== "de_DE.UTF-8") {
             @unlink($tmp);
             fwrite(STDERR, "the new settings.php did not parse back - settings.php left untouched" . PHP_EOL);
             exit(1);
@@ -608,7 +623,7 @@ if [ -f config/system/settings.php ]; then
             fwrite(STDERR, "failed to rename " . $tmp . " over settings.php - settings.php left untouched" . PHP_EOL);
             exit(1);
         }
-        echo "settings.php: ai_filemetadata configured, OpenAI key "
+        echo "settings.php: ai_filemetadata configured (alt texts on upload: en_US, de_DE), OpenAI key "
             . ($key !== "" ? $origin : "NOT set - alt-text generation will fail")
             . "." . PHP_EOL;
     ' || echo "WARNING: ai_filemetadata is NOT configured - settings.php was left untouched, so alt-text generation runs on the extension's fail-open defaults (no image downscaling, frontend generation on)" >&2

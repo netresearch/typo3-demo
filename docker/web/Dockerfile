@@ -29,12 +29,18 @@ RUN --mount=type=secret,id=composer_auth \
 COPY docker/web/patch-lochmueller-index.php /tmp/patch-lochmueller-index.php
 RUN php /tmp/patch-lochmueller-index.php && rm -f /tmp/patch-lochmueller-index.php
 
-# Patch mfd/ai-filemetadata: its listener gates automatic alt texts on upload
-# behind the FRONTEND setting, so switching frontend generation off — which this
-# demo does on purpose — also switches uploads off. The patch enforces that flag
-# only inside an actual frontend request. Idempotent; upstream report pending.
-COPY docker/web/patch-ai-filemetadata.php /tmp/patch-ai-filemetadata.php
-RUN php /tmp/patch-ai-filemetadata.php && rm -f /tmp/patch-ai-filemetadata.php
+# mfd/ai-filemetadata's upload listener must run only in a backend request: a
+# CLI job that writes images to FAL (nr_repurpose) would otherwise call the
+# vision model for each image, and a failed call aborts the job. The composer
+# patch patches/mfd-ai-filemetadata-application-type.patch carries that guard;
+# this check fails the build if the installed listener does not.
+RUN grep -qF 'ApplicationType::fromRequest($request)->isBackend()' \
+        vendor/mfd/ai-filemetadata/Classes/EventListener/EnrichFileMetadataAfterCreation.php \
+    && grep -qF '!$this->isBackendRequest()' \
+        vendor/mfd/ai-filemetadata/Classes/EventListener/EnrichFileMetadataAfterCreation.php \
+    || { echo "mfd/ai-filemetadata: the upload listener lacks the backend-only guard." >&2; \
+         echo "Check that patches/mfd-ai-filemetadata-application-type.patch still applies." >&2; \
+         exit 1; }
 
 # The site package replaces bootstrap_package's Media/Rendering/Image.html with
 # a copy of the 16.0.1 file that adds the decorative-image branch. The copy wins

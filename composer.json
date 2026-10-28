@@ -105,7 +105,7 @@
         },
         "patches": {
             "mfd/ai-filemetadata": {
-                "Import ApplicationType from TYPO3\\CMS\\Core\\Http and treat a missing request as not frontend, so creating file metadata no longer fails (1.6.3)": "patches/mfd-ai-filemetadata-application-type.patch"
+                "Import ApplicationType from TYPO3\\CMS\\Core\\Http (1.6.3+ imports a class that does not exist) and generate alt texts on upload only in a backend request unless generateAltTextInFrontend is on, so CLI jobs that write images to FAL (nr_repurpose) no longer call the vision model":"patches/mfd-ai-filemetadata-application-type.patch"
             },
             "thieleundklose/autotranslate": {
                 "Local translator hook: route translations through a container-resolved \\DeepL\\Translator subclass (nr-llm bridge) instead of the DeepL client": "patches/thieleundklose-autotranslate-translator-hook.patch"

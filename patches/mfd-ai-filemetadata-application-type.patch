@@ -1,6 +1,6 @@
 --- a/Classes/EventListener/EnrichFileMetadataAfterCreation.php
 +++ b/Classes/EventListener/EnrichFileMetadataAfterCreation.php
-@@ -5,16 +5,31 @@
+@@ -5,16 +5,40 @@
  use Mfd\Ai\FileMetadata\Api\OpenAiClient;
  use Mfd\Ai\FileMetadata\Services\ConfigurationService;
  use Mfd\Ai\FileMetadata\Services\FalAdapter;
@@ -17,28 +17,37 @@
  class EnrichFileMetadataAfterCreation
  {
 +    /**
++     * Patched (typo3-demo, patches/mfd-ai-filemetadata-application-type.patch):
++     * the listener generates only in a BACKEND request, which is what an upload
++     * is, unless generateAltTextInFrontend is on.
++     *
++     * Upstream checks "not a frontend request", which also lets it run on the
++     * CLI. nr_repurpose's job saves rendered images to FAL; each save fired this
++     * listener, nothing in the chain catches an exception, and a failed vision
++     * call killed nine of ten artifacts of one job.
++     *
 +     * A console command or a worker has no request, and a request without the
-+     * applicationType attribute is none of TYPO3's applications: neither is
-+     * the frontend. fromRequest() throws in both cases.
++     * applicationType attribute is none of TYPO3's applications; fromRequest()
++     * throws in both cases, so both count as "not backend".
 +     */
-+    private function isFrontendRequest(): bool
++    private function isBackendRequest(): bool
 +    {
 +        $request = $GLOBALS['TYPO3_REQUEST'] ?? null;
 +
 +        return $request instanceof ServerRequestInterface
 +            && is_int($request->getAttribute('applicationType'))
-+            && ApplicationType::fromRequest($request)->isFrontend();
++            && ApplicationType::fromRequest($request)->isBackend();
 +    }
 +
      public function __construct(
          private ConnectionPool $connectionPool,
          private FileRepository $fileRepository,
-@@ -32,7 +47,7 @@
+@@ -32,7 +56,7 @@
              return;
          }
  
 -        if (!$this->configurationService->generateAltTextInFrontend() && ApplicationType::fromRequest($GLOBALS['TYPO3_REQUEST'])->isFrontend()){
-+        if (!$this->configurationService->generateAltTextInFrontend() && $this->isFrontendRequest()) {
++        if (!$this->configurationService->generateAltTextInFrontend() && !$this->isBackendRequest()) {
              return;
          }
  

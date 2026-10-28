@@ -1,12 +1,12 @@
 {
-    "_hash": "c7f4486e383fa2dd9cf5bd0e742121225b43203fc83ac559a74ecac22f6ce58d",
+    "_hash": "4472f8ab6746a5c57fa95f3ef5a04ea42ecf2f88841f51e94747eeb7df3d5af4",
     "patches": {
         "mfd/ai-filemetadata": [
             {
                 "package": "mfd/ai-filemetadata",
-                "description": "Import ApplicationType from TYPO3\\CMS\\Core\\Http and treat a missing request as not frontend, so creating file metadata no longer fails (1.6.3)",
+                "description": "Import ApplicationType from TYPO3\\CMS\\Core\\Http (1.6.3+ imports a class that does not exist) and generate alt texts on upload only in a backend request unless generateAltTextInFrontend is on, so CLI jobs that write images to FAL (nr_repurpose) no longer call the vision model",
                 "url": "patches/mfd-ai-filemetadata-application-type.patch",
-                "sha256": "75f93decf6a7835bf88f8b522109b5b20ea73b09a1a3d6a49e7e25f57ddee15d",
+                "sha256": "72cb686903a631ebf2a2402f7f75429e4e3d141f3ca81e9060f4e7c60e3e52a5",
                 "depth": 1,
                 "extra": {
                     "provenance": "root"
