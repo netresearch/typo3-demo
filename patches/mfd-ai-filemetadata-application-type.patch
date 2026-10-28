@@ -51,7 +51,7 @@
              return;
          }
  
-@@ -67,34 +91,49 @@
+@@ -67,34 +91,48 @@
              ];
          }
  
@@ -115,10 +115,9 @@
 +            }
 +        } catch (\Throwable $e) {
 +            $this->logger->warning(
-+                'Alt text generation on upload failed for file {fileUid} ({location}): {exceptionClass}: {exceptionMessage}',
++                'Alt text generation on upload failed for file {fileUid}: {exceptionClass}: {exceptionMessage}',
 +                [
 +                    'fileUid' => $event->getFileUid(),
-+                    'location' => $file->getStorage()?->getUid() . ':' . $file->getIdentifier(),
 +                    'exceptionClass' => $e::class,
 +                    'exceptionMessage' => $e->getMessage(),
 +                ]

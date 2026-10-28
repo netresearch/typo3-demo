@@ -33,16 +33,20 @@ RUN php /tmp/patch-lochmueller-index.php && rm -f /tmp/patch-lochmueller-index.p
 # CLI job that writes images to FAL (nr_repurpose) would otherwise call the
 # vision model for each image, and a failed call aborts the job. The composer
 # patch patches/mfd-ai-filemetadata-application-type.patch carries that guard,
-# and it catches a failed generation so that it cannot fail the upload. This
-# check fails the build if the installed listener lacks either.
-RUN grep -qF 'ApplicationType::fromRequest($request)->isBackend()' \
-        vendor/mfd/ai-filemetadata/Classes/EventListener/EnrichFileMetadataAfterCreation.php \
-    && grep -qF '!$this->isBackendRequest()' \
-        vendor/mfd/ai-filemetadata/Classes/EventListener/EnrichFileMetadataAfterCreation.php \
-    && grep -qF "'Alt text generation on upload failed for file {fileUid}" \
-        vendor/mfd/ai-filemetadata/Classes/EventListener/EnrichFileMetadataAfterCreation.php \
-    || { echo "mfd/ai-filemetadata: the upload listener lacks the backend-only guard or the catch around generation." >&2; \
-         echo "Check that patches/mfd-ai-filemetadata-application-type.patch still applies." >&2; \
+# and it catches a failed generation so that it cannot fail the upload.
+# patches/mfd-ai-filemetadata-fal-adapter-log.patch makes FalAdapter log its
+# DataHandler errors instead of var_dump()ing HTML into the upload response.
+# This check fails the build if the installed extension lacks any of them.
+RUN listener=vendor/mfd/ai-filemetadata/Classes/EventListener/EnrichFileMetadataAfterCreation.php \
+    && adapter=vendor/mfd/ai-filemetadata/Classes/Services/FalAdapter.php \
+    && grep -qF 'ApplicationType::fromRequest($request)->isBackend()' "$listener" \
+    && grep -qF '!$this->isBackendRequest()' "$listener" \
+    && grep -qF "'Alt text generation on upload failed for file {fileUid}" "$listener" \
+    && test -f "$adapter" \
+    && ! grep -qF 'DebuggerUtility::var_dump' "$adapter" \
+    || { echo "mfd/ai-filemetadata lacks the backend-only guard, the catch" >&2; \
+         echo "around generation, or the FalAdapter logging patch." >&2; \
+         echo "Check that the patches/mfd-ai-filemetadata-*.patch files still apply." >&2; \
          exit 1; }
 
 # The site package replaces bootstrap_package's Media/Rendering/Image.html with

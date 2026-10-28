@@ -197,10 +197,13 @@ not consult it.
 A failed generation never fails the upload. The same composer patch wraps the
 vision call, the metadata update and the German translation in a `try`; on any
 exception the upload succeeds and the TYPO3 log gets a warning "Alt text
-generation on upload failed for file …" with the file uid, `storage:identifier`,
-exception class and message. That file then has no alt text (vision call
-failed) or no German one (translation failed); the generate button fills it
-later.
+generation on upload failed for file …" with the file uid, exception class and
+message — not the file name, which may carry personal data. That file then has
+no alt text (vision call failed) or no German one (translation failed); the
+generate button fills it later. A second patch,
+`patches/mfd-ai-filemetadata-fal-adapter-log.patch`, makes the extension log
+its DataHandler errors as a warning instead of `var_dump()`ing them as HTML
+into the upload's AJAX response.
 
 The German record is written through DataHandler as the uploading user.
 `bypassAccessCheckForRecords` skips only the page permission check, so a

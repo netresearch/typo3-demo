@@ -1,12 +1,22 @@
 {
-    "_hash": "28c1d2a602818df08084f0148dd34944d8bcd5de5c8c939401a0554cde8a0242",
+    "_hash": "822ed56cce63e5e0b45c8ff884153af7b6058862d06a4bd0d27ed3206b361077",
     "patches": {
         "mfd/ai-filemetadata": [
             {
                 "package": "mfd/ai-filemetadata",
                 "description": "Import ApplicationType from TYPO3\\CMS\\Core\\Http (1.6.3+ imports a class that does not exist) and generate alt texts on upload only in a backend request unless generateAltTextInFrontend is on, so CLI jobs that write images to FAL (nr_repurpose) no longer call the vision model; a failed generation is logged as a warning instead of failing the upload",
                 "url": "patches/mfd-ai-filemetadata-application-type.patch",
-                "sha256": "5494fffcd284a1bc78de7588b38f081e3808d4f6ad0bef28bca353241ec75b68",
+                "sha256": "6a2bae3a6f5ec2e031e7cca49ef62503f195ac0b2ba8ec23aa39d965049a034e",
+                "depth": 1,
+                "extra": {
+                    "provenance": "root"
+                }
+            },
+            {
+                "package": "mfd/ai-filemetadata",
+                "description": "FalAdapter::localizeFile(): log DataHandler errors as a warning instead of DebuggerUtility::var_dump(), which wrote HTML into the AJAX upload response; the exception stays",
+                "url": "patches/mfd-ai-filemetadata-fal-adapter-log.patch",
+                "sha256": "c1be0f371bdbec1dce6ce7da21de2f2360855612f6f3f2add01386acd09c23bb",
                 "depth": 1,
                 "extra": {
                     "provenance": "root"

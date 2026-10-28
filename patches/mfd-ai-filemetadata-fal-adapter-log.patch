@@ -1,0 +1,21 @@
+--- a/Classes/Services/FalAdapter.php
++++ b/Classes/Services/FalAdapter.php
+@@ -22,7 +22,6 @@
+ use TYPO3\CMS\Core\Utility\StringUtility;
+ use TYPO3\CMS\Core\Utility\VersionNumberUtility;
+ use TYPO3\CMS\Extbase\Service\ImageService;
+-use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
+ 
+ class FalAdapter
+ {
+@@ -227,7 +226,9 @@
+         $dataHandler->start($data, $cmd);
+         $dataHandler->process_datamap();
+         if ($dataHandler->errorLog !== []) {
+-            DebuggerUtility::var_dump($dataHandler->errorLog);
++            // Patched (typo3-demo): log instead of dumping HTML into the response,
++            // which for an upload is the AJAX response of the file list.
++            $this->logger->warning('DataHandler errors while localizing file metadata: {errors}', ['errors' => $dataHandler->errorLog]);
+             throw new \RuntimeException('Error while mass updating file metadata');
+         }
+     }
