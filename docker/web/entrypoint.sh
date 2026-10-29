@@ -526,6 +526,8 @@ if [ -f config/system/settings.php ]; then
 fi
 
 # Configure ai_filemetadata (AI-generated alternative texts for FAL images).
+# The same write also switches on t3_cowriter translation.polish (a language
+# model revises DeepL translations made in the editor), see the block below.
 #
 # This one goes into settings.php, NOT additional.php, and that distinction is
 # the whole point. The extension reads its behaviour settings through
@@ -588,6 +590,14 @@ if [ -f config/system/settings.php ]; then
             "1:/" => [0 => "en_US.UTF-8", 1 => "de_DE.UTF-8"],
         ];
 
+        // Cowriter (3.16+): a language model revises every DeepL translation
+        // made in the rich text editor, so one translation costs two requests.
+        // The cowriter reads translation/polish through ExtensionConfiguration
+        // and treats only the string "1" as on. Other cowriter settings already
+        // stored here are kept; extension:setup later fills in the template
+        // defaults without overriding a value that is already set.
+        $cfg["EXTENSIONS"]["t3_cowriter"]["translation"]["polish"] = "1";
+
         // Write to a sibling and rename. file_put_contents() truncates in place,
         // and settings.php is the one file whose corruption bricks the instance:
         // a partial write (full volume) leaves a parse error, the
@@ -609,7 +619,8 @@ if [ -f config/system/settings.php ]; then
         $check = include $tmp;
         if (!is_array($check)
             || ($check["EXTENSIONS"]["ai_filemetadata"]["imageResizing"] ?? null) !== "512"
-            || ($check["EXTCONF"]["ai_filemetadata"]["falLanguageMappings"]["1:/"][1] ?? null) !== "de_DE.UTF-8") {
+            || ($check["EXTCONF"]["ai_filemetadata"]["falLanguageMappings"]["1:/"][1] ?? null) !== "de_DE.UTF-8"
+            || ($check["EXTENSIONS"]["t3_cowriter"]["translation"]["polish"] ?? null) !== "1") {
             @unlink($tmp);
             fwrite(STDERR, "the new settings.php did not parse back - settings.php left untouched" . PHP_EOL);
             exit(1);
@@ -623,10 +634,10 @@ if [ -f config/system/settings.php ]; then
             fwrite(STDERR, "failed to rename " . $tmp . " over settings.php - settings.php left untouched" . PHP_EOL);
             exit(1);
         }
-        echo "settings.php: ai_filemetadata configured (alt texts on upload: en_US, de_DE), OpenAI key "
+        echo "settings.php: t3_cowriter translation polish on; ai_filemetadata configured (alt texts on upload: en_US, de_DE), OpenAI key "
             . ($key !== "" ? $origin : "NOT set - alt-text generation will fail")
             . "." . PHP_EOL;
-    ' || echo "WARNING: ai_filemetadata is NOT configured - settings.php was left untouched, so alt-text generation runs on the extension's fail-open defaults (no image downscaling, frontend generation on)" >&2
+    ' || echo "WARNING: ai_filemetadata and t3_cowriter are NOT configured - settings.php was left untouched, so alt-text generation runs on the extension's fail-open defaults (no image downscaling, frontend generation on) and DeepL translations are not revised" >&2
 fi
 
 # Configure autotranslate (DeepL).
