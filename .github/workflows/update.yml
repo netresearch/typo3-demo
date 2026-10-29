@@ -66,7 +66,9 @@ jobs:
           # empty, the deploy still succeeds and says the AI modules stay dead —
           # a missing key must not take the whole instance down with it.
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          # Consumed by `make provision-deepl-key` inside `make update`, which
-          # writes it into the host .env so it survives a reboot. Absent or empty,
-          # a key already stored on the host is kept and the deploy still succeeds.
+          # Consumed twice inside `make update`: `make persist-env-secret` writes
+          # it into the host .env so it survives a reboot, and
+          # `make provision-deepl-key` stores it in the vault for nr-llm's DeepL
+          # translator. Absent or empty, a key already stored on the host and in
+          # the vault is kept and the deploy still succeeds.
           DEEPL_API_KEY: ${{ secrets.DEEPL_API_KEY }}
