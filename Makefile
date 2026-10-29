@@ -223,6 +223,23 @@ provision-deepl-key: ## Store $DEEPL_API_KEY in the vault for nr_llm's DeepL tra
 		echo "       that out costs a whole deploy cycle." >&2; \
 		exit 1; \
 	fi; \
+	status=$$(printf '%s' "$$DEEPL_API_KEY" | $(COMPOSE) exec -T web php -r ' \
+		$$k = trim((string) stream_get_contents(STDIN)); \
+		$$u = str_ends_with($$k, ":fx") ? "https://api-free.deepl.com/v2/usage" : "https://api.deepl.com/v2/usage"; \
+		$$c = stream_context_create(["http" => ["header" => "Authorization: DeepL-Auth-Key " . $$k, "timeout" => 15, "ignore_errors" => true]]); \
+		@file_get_contents($$u, false, $$c); \
+		echo isset($$http_response_header[0]) ? (explode(" ", $$http_response_header[0])[1] ?? "none") : "none";' 2>/dev/null || echo none); \
+	if [ "$$status" != "200" ]; then \
+		echo "WARNING: DEEPL_API_KEY was not confirmed by DeepL (GET /v2/usage answered"; \
+		echo "         '$$status'; 'none' means no HTTP response from the web container)."; \
+		echo "         The key is NOT stored: an invalid key would make every Cowriter"; \
+		echo "         translation fail, because the Cowriter does not fall back to the"; \
+		echo "         language model when DeepL errors. A secret stored by a previous"; \
+		echo "         deploy is kept; without one the Cowriter keeps translating with"; \
+		echo "         the language model. Replace the DEEPL_API_KEY repository secret."; \
+		exit 0; \
+	fi; \
+	echo "DeepL accepted the key (GET /v2/usage answered 200)."; \
 	echo "Storing the DeepL key as vault secret '$(DEEPL_KEY_ID)' ..."; \
 	if ! out=$$(printf '%s' "$$DEEPL_API_KEY" | $(TYPO3) vault:store $(DEEPL_KEY_ID) --stdin --as-provisioner 2>&1); then \
 		echo "ERROR: vault:store failed. Its output follows; the key is passed on" >&2; \

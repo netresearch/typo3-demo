@@ -217,7 +217,11 @@ The key travels as the `DEEPL_API_KEY` repository secret and reaches two places.
 
 **nr-llm, through nr-vault.** `make update` runs `make provision-deepl-key`
 right after `make provision-llm-key`. It stores the value as the vault secret
-`deepl_api_key` the same way the OpenAI key is stored: on stdin, never echoed,
+`deepl_api_key` only after DeepL has accepted the key (`GET /v2/usage` answers
+200, sent from the `web` container). A rejected or unreachable key is not
+stored and the deploy logs a warning, because the Cowriter does not fall back
+to the language model when DeepL errors: a dead key would break every Cowriter
+translation. The secret is stored the same way the OpenAI key is: on stdin, never echoed,
 written as the provisioning user 991, which owns a secret it created. It fails
 the deploy if `vault:store` fails or the secret is missing afterwards. The
 entrypoint sets `EXTENSIONS.nr_llm.translators.deepl.apiKeyIdentifier` to that
