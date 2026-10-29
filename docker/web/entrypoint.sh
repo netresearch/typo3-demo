@@ -903,15 +903,24 @@ if [ -f config/system/settings.php ]; then
         # The command's own status counts too: on a refresh the previous pack
         # is still there, so the file check alone would record a download that
         # failed and never retry it.
-        packs_complete=1
         # -v: when the command throws, Symfony then prints the exception class
         # and the file and line it came from next to the message. It adds no
         # output to a run that succeeds.
-        # shellcheck disable=SC2086  # unquoted on purpose: one argument per language
-        vendor/bin/typo3 language:update -v --no-progress $BACKEND_LANGUAGES 2>&1 \
-            || { echo "WARNING: language:update failed" >&2; packs_complete=0; }
-        for language in $BACKEND_LANGUAGES; do
-            core_pack_present "$language" || packs_complete=0
+        #
+        # localize.typo3.org sometimes does not answer within the client's 10 s
+        # connect timeout (cURL error 28); a missing core pack is therefore
+        # retried up to two more times, 15 s apart, before the boot gives up.
+        for attempt in 1 2 3; do
+            packs_complete=1
+            # shellcheck disable=SC2086  # unquoted on purpose: one argument per language
+            vendor/bin/typo3 language:update -v --no-progress $BACKEND_LANGUAGES 2>&1 \
+                || { echo "WARNING: language:update failed (attempt $attempt of 3)" >&2; packs_complete=0; }
+            missing_pack=0
+            for language in $BACKEND_LANGUAGES; do
+                core_pack_present "$language" || { packs_complete=0; missing_pack=1; }
+            done
+            [ "$missing_pack" = 0 ] && break
+            [ "$attempt" = 3 ] || sleep 15
         done
         if [ "$packs_complete" = 1 ]; then
             printf '%s' "$packs_state" > "$packs_marker"
