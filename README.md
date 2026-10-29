@@ -213,16 +213,35 @@ and logs the warning. All seeded accounts that can upload are admins.
 
 ## The DeepL key
 
-`thieleundklose/autotranslate` cannot use the route the OpenAI key takes. It
+The key travels as the `DEEPL_API_KEY` repository secret and reaches two places.
+
+**nr-llm, through nr-vault.** `make update` runs `make provision-deepl-key`
+right after `make provision-llm-key`. It stores the value as the vault secret
+`deepl_api_key` only after DeepL has accepted the key (`GET /v2/usage` answers
+200, sent from the `web` container). A rejected or unreachable key is not
+stored and the deploy logs a warning, because the Cowriter does not fall back
+to the language model when DeepL errors: a dead key would break every Cowriter
+translation. The secret is stored the same way the OpenAI key is: on stdin, never echoed,
+written as the provisioning user 991, which owns a secret it created. It fails
+the deploy if `vault:store` fails or the secret is missing afterwards. The
+entrypoint sets `EXTENSIONS.nr_llm.translators.deepl.apiKeyIdentifier` to that
+name. nr-llm's DeepL translator counts as available only when the identifier
+names an existing secret; otherwise the Cowriter translates with the language
+model. An empty variable skips the step and keeps a stored secret.
+
+**autotranslate's extension configuration.** `thieleundklose/autotranslate`
 reads its key from the extension configuration or from the site configuration
 and has no nr-vault support at all, and the site configuration is public in this
-repository — so the extension configuration is the only usable place.
-
-The key therefore travels as the `DEEPL_API_KEY` repository secret:
-`make update` runs `make provision-deepl-key`, which writes it into the host
-`.env` (so a reboot keeps it), compose passes it into the `web` container, and
-the entrypoint writes it into `config/system/additional.php` as a managed block.
-An empty variable keeps whatever key that file already holds; it never wipes it.
+repository. `make update` runs
+`make persist-env-secret SECRET_NAME=DEEPL_API_KEY`, which writes the key into
+the host `.env` (so a reboot keeps it), compose passes it into the `web`
+container, and the entrypoint writes it into `config/system/additional.php` as
+a managed block. An empty variable keeps
+whatever key that file already holds; it never wipes it. autotranslate does not
+translate with this copy, though: its translations are routed through nr-llm by
+`Netresearch\DemoSite\Translation\NrLlmDeeplTranslator`, which calls
+`TranslationService::translate()`, and that method always uses the language
+model, never the DeepL translator.
 
 Language mapping lives in `config/sites/default/config.yaml` and is not secret:
 `deeplSourceLang: EN` on the English language, `deeplTargetLang: DE` on the
@@ -241,12 +260,16 @@ instance runs `autotranslate.debug = 1`:
 A green `done` badge is therefore not evidence. Check the frontend, or the
 module's translation-cache counter.
 
-A translation made with the Cowriter in the rich text editor is revised by a
-language model after DeepL has translated it, so each one costs two requests.
-The entrypoint switches this on by writing the cowriter setting
+A translation made with the Cowriter in the rich text editor goes to nr-llm's
+DeepL translator whenever the vault secret above exists, and a language model
+then revises the DeepL text, so each one costs two requests. The entrypoint
+switches the revision on by writing the cowriter setting
 `translation.polish = "1"` into `config/system/settings.php`, next to the
 ai_filemetadata settings. When the revision fails or changes markup,
-placeholders or glossary terms, the DeepL text is inserted unchanged.
+placeholders or glossary terms, the DeepL text is inserted unchanged. Without
+the secret the Cowriter translates with the language model in one request and
+nothing is revised. The JSON answer of the translate route shows which path ran:
+only the DeepL path carries `translator` and `polished`.
 
 ## Backend languages
 

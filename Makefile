@@ -1,4 +1,4 @@
-.PHONY: up down reset update logs shell db-shell seed seed-extensions provision-llm-key install-usecase-packs persist-env-secret export-seed build clean dev dev-down prune help
+.PHONY: up down reset update logs shell db-shell seed seed-extensions provision-llm-key provision-deepl-key install-usecase-packs persist-env-secret export-seed build clean dev dev-down prune help
 
 COMPOSE     := docker compose
 COMPOSE_DEV := docker compose -f compose.yml -f compose.dev.yml
@@ -12,6 +12,10 @@ TYPO3       := $(COMPOSE) exec -T -u www-data web vendor/bin/typo3
 # Underscores, no hyphens: nr_vault validates a non-UUID identifier against
 # /^[a-zA-Z]\w*$$/ (IdentifierValidator::USER_PATTERN) and rejects anything else.
 LLM_KEY_ID  := openai_api_key
+# Identifier of the DeepL key in nr_vault, same rules. nr_llm's DeepL translator
+# reads it through EXTENSIONS.nr_llm.translators.deepl.apiKeyIdentifier, which
+# the entrypoint sets to this name.
+DEEPL_KEY_ID := deepl_api_key
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
@@ -80,6 +84,7 @@ update: ## Update code without purging data
 	# provisioning is cheaper than splitting it.
 	$(MAKE) seed-extensions
 	$(MAKE) provision-llm-key
+	$(MAKE) provision-deepl-key
 	$(MAKE) seed-extensions
 	$(TYPO3) extension:setup || true
 	$(MAKE) install-usecase-packs
@@ -181,6 +186,73 @@ provision-llm-key: ## Store $OPENAI_API_KEY in the vault and point the OpenAI pr
 		*:0) echo "ERROR: the provider row was not linked to the vault secret." >&2; exit 1 ;; \
 	esac; \
 	echo "OpenAI key provisioned and linked to provider 1."
+
+provision-deepl-key: ## Store $DEEPL_API_KEY in the vault for nr_llm's DeepL translator
+	@# nr_llm's DeepLTranslator is available only when
+	@# translators.deepl.apiKeyIdentifier names a secret that exists in the
+	@# vault (AbstractSpecializedService::isAvailable). Until this target
+	@# existed, the key reached the container for autotranslate only, the
+	@# translator stayed unavailable, and the Cowriter translated every text
+	@# with the language model: TranslatorRegistry::findBestTranslator() only
+	@# offers available translators.
+	@#
+	@# Same mechanics and guards as provision-llm-key above: stdin only, never
+	@# echoed, written as the provisioning identity 991. On the first run 991
+	@# creates the secret and becomes its owner (nr_vault records the acting
+	@# technical user), so later runs rotate it as owner and need no seed grant.
+	@# Admins read it through nr_vault's admin bypass, as they read the OpenAI
+	@# key. A non-admin without a vault group (the seeded nasa-redakteur) is
+	@# denied this secret exactly as it is denied the OpenAI key.
+	@#
+	@# An empty DEEPL_API_KEY skips the step, so a secret stored by an earlier
+	@# deploy is kept and never wiped.
+	@set -e; \
+	if [ -z "$${DEEPL_API_KEY:-}" ]; then \
+		echo "DEEPL_API_KEY is not set - skipping DeepL key provisioning."; \
+		echo "         A secret stored by a previous deploy is kept; without one the"; \
+		echo "         Cowriter translates with the language model instead of DeepL."; \
+		exit 0; \
+	fi; \
+	if [ "$(DEEPL_KEY_ID)" != "deepl_api_key" ]; then \
+		echo "ERROR: DEEPL_KEY_ID is '$(DEEPL_KEY_ID)', but the entrypoint points nr_llm" >&2; \
+		echo "       at 'deepl_api_key'. A secret under another name would be stored" >&2; \
+		echo "       and never read; change both places together." >&2; \
+		exit 1; \
+	fi; \
+	status=$$(printf '%s' "$$DEEPL_API_KEY" | $(COMPOSE) exec -T web php -r ' \
+		$$k = (string) stream_get_contents(STDIN); \
+		if ($$k !== trim($$k)) { echo "whitespace"; exit(0); } \
+		$$u = str_ends_with($$k, ":fx") ? "https://api-free.deepl.com/v2/usage" : "https://api.deepl.com/v2/usage"; \
+		$$c = stream_context_create(["http" => ["header" => "Authorization: DeepL-Auth-Key " . $$k, "timeout" => 15, "ignore_errors" => true]]); \
+		@file_get_contents($$u, false, $$c); \
+		echo isset($$http_response_header[0]) ? (explode(" ", $$http_response_header[0])[1] ?? "none") : "none";' 2>/dev/null || echo none); \
+	if [ "$$status" != "200" ]; then \
+		echo "WARNING: DEEPL_API_KEY was not confirmed by DeepL (GET /v2/usage answered"; \
+		echo "         '$$status'; 'none' means no HTTP response from the web container,"; \
+		echo "         'whitespace' that the value starts or ends with blanks)."; \
+		echo "         The key is NOT stored: an invalid key would make every Cowriter"; \
+		echo "         translation fail, because the Cowriter does not fall back to the"; \
+		echo "         language model when DeepL errors. A secret stored by a previous"; \
+		echo "         deploy is kept; without one the Cowriter keeps translating with"; \
+		echo "         the language model. Replace the DEEPL_API_KEY repository secret."; \
+		exit 0; \
+	fi; \
+	echo "DeepL accepted the key (GET /v2/usage answered 200)."; \
+	echo "Storing the DeepL key as vault secret '$(DEEPL_KEY_ID)' ..."; \
+	if ! out=$$(printf '%s' "$$DEEPL_API_KEY" | $(TYPO3) vault:store $(DEEPL_KEY_ID) --stdin --as-provisioner 2>&1); then \
+		echo "ERROR: vault:store failed. Its output follows; the key is passed on" >&2; \
+		echo "       stdin, so it cannot appear in the command line it reports." >&2; \
+		printf '%s\n' "$$out" | sed 's/^/    /' >&2; \
+		echo "    --- commands the CLI actually offers under 'vault' ---" >&2; \
+		$(TYPO3) list vault 2>&1 | sed 's/^/    /' >&2 || true; \
+		exit 1; \
+	fi; \
+	count=$$(echo "SELECT COUNT(*) FROM tx_nrvault_secret WHERE identifier = '$(DEEPL_KEY_ID)' AND deleted = 0;" \
+		| $(COMPOSE) exec -T db sh -c 'MYSQL_PWD="$$MARIADB_PASSWORD" mariadb -N -u "$$MARIADB_USER" "$$MARIADB_DATABASE"'); \
+	case "$$count" in \
+		0|'') echo "ERROR: vault:store reported success but no secret '$(DEEPL_KEY_ID)' exists." >&2; exit 1 ;; \
+	esac; \
+	echo "DeepL key provisioned as vault secret '$(DEEPL_KEY_ID)'."
 
 persist-env-secret: ## Write $$SECRET_NAME from the environment into .env (usage: make persist-env-secret SECRET_NAME=FOO)
 	@# Some extensions cannot use nr_vault. ai_filemetadata reads a plain OpenAI

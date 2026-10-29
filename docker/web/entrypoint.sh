@@ -492,6 +492,15 @@ if [ -f config/system/settings.php ]; then
             // No apostrophes in these comments: the whole block is a php -r
             // argument inside single quotes, and one would end the shell string.
             . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"nr_llm\"][\"providers\"][\"openai\"][\"apiKeyIdentifier\"] = \"openai_api_key\";\n"
+            // The DeepL translator of nr_llm. Same availability rule as the
+            // media services above: an identifier, and a vault secret of that
+            // name, which `make provision-deepl-key` stores from DEEPL_API_KEY.
+            // Without it the translator is unavailable and the Cowriter
+            // translates every text with the language model, so its DeepL
+            // path and the revision after it (translation.polish) never run.
+            // Without the secret this line changes nothing: the translator
+            // stays unavailable and the language model translates as before.
+            . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"nr_llm\"][\"translators\"][\"deepl\"][\"apiKeyIdentifier\"] = \"deepl_api_key\";\n"
             // nr_llm defaults to dall-e-3, which this account does not serve:
             //   400 The model dall-e-3 does not exist.
             // gpt-image-1 answers 200 with an image. Measured, not assumed - the
@@ -521,7 +530,7 @@ if [ -f config/system/settings.php ]; then
         }
         $existing = rtrim($existing, "\n") . "\n\n" . $block . "\n";
         file_put_contents($f, $existing);
-        echo "additional.php: nr_ai_search configured (technicalBeUserUid=990, dims=1536), nr_vault provisioning actor 991, nr_repurpose actor 992, nr_llm media on (gpt-image-1/tts-1), index dev-sync on." . PHP_EOL;
+        echo "additional.php: nr_ai_search configured (technicalBeUserUid=990, dims=1536), nr_vault provisioning actor 991, nr_repurpose actor 992, nr_llm media on (gpt-image-1/tts-1), nr_llm DeepL translator key deepl_api_key, index dev-sync on." . PHP_EOL;
     ' || echo "WARNING: failed to write nr_ai_search additional.php block" >&2
 fi
 
@@ -645,8 +654,10 @@ fi
 # The extension reads its key from the extension configuration or from the site
 # configuration and knows nothing about nr_vault, so the key cannot take the
 # route OPENAI_API_KEY takes. It arrives as DEEPL_API_KEY in the container
-# environment (compose.yml passes it through; `make provision-deepl-key` puts it
-# into the host .env so it survives a reboot).
+# environment (compose.yml passes it through; `make persist-env-secret
+# SECRET_NAME=DEEPL_API_KEY` puts it into the host .env so it survives a reboot).
+# nr_llm takes the vault route with the same key: `make provision-deepl-key`
+# stores it as the vault secret deepl_api_key, see the nr_ai_search block.
 #
 # apiKey is only written when the variable is non-empty. An empty variable must
 # not wipe a key that a previous boot stored in this volume — same rule as
