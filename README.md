@@ -284,6 +284,14 @@ request itself. From 3.18 the same switch also adds a **Generate image** control
 to file fields that accept PNG (for example the images of a Text & Media
 element); the generated file is added to the field as a new file reference.
 
+The Cowriter's inline suggestions (3.19+) are switched on the same way: the
+entrypoint writes `inlineSuggestions.enable = "1"`, and the demo RTE preset
+lists the per-editor toggle `cowriterInlineSuggestions`. After a pause in typing
+at the end of a paragraph or heading, a short continuation appears as grey text;
+Tab inserts it. Each suggestion is a request against the editor's nr-llm budget,
+also when it is not taken: at most one every 5 s per field and 12 per minute per
+backend user.
+
 ## Backend languages
 
 The backend is available in German as well as English. The entrypoint adds the
