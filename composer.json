@@ -30,7 +30,7 @@
         "netresearch/nr-textdb": "^4.0",
         "netresearch/nr-vault": "^1.1",
         "netresearch/rte-ckeditor-image": "^13.10",
-        "netresearch/t3-cowriter": "^3.15.0",
+        "netresearch/t3-cowriter": "^3.16.0",
         "netresearch/typo3-demo-site": "@dev",
         "t3g/analytics": "^1.0",
         "thieleundklose/autotranslate": "^3.2",

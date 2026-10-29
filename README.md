@@ -241,6 +241,13 @@ instance runs `autotranslate.debug = 1`:
 A green `done` badge is therefore not evidence. Check the frontend, or the
 module's translation-cache counter.
 
+A translation made with the Cowriter in the rich text editor is revised by a
+language model after DeepL has translated it, so each one costs two requests.
+The entrypoint switches this on by writing the cowriter setting
+`translation.polish = "1"` into `config/system/settings.php`, next to the
+ai_filemetadata settings. When the revision fails or changes markup,
+placeholders or glossary terms, the DeepL text is inserted unchanged.
+
 ## Backend languages
 
 The backend is available in German as well as English. The entrypoint adds the
