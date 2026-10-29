@@ -21,6 +21,11 @@ on:
 # existed an auto-merged dependency PR landed on `main` without a Build and
 # therefore without a deploy — the nr-vault ^0.12 security bump sat there until
 # it was rebuilt by hand. The queue's merge does fire the push event.
+#
+# The enqueue itself must not use GITHUB_TOKEN either: a queue entry it creates
+# raises no merge_group event, so the queue's required checks never start and
+# the entry blocks the queue for every PR behind it (#329 and #367 on
+# 2026-10-28/29). Enqueueing with the org App's token starts them.
 permissions: {}
 
 jobs:
@@ -29,3 +34,7 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
+    # Only these two secrets are passed, not `secrets: inherit`.
+    secrets:
+      merge-app-id: ${{ secrets.PROJECT_APP_ID }}
+      merge-app-private-key: ${{ secrets.PROJECT_APP_PRIVATE_KEY }}
