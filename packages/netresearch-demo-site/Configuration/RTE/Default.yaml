@@ -85,7 +85,7 @@ editor:
                 - removeFormat
                 - sourceEditing
                 - '|'
-                # All five components the extension registers. Importing the
+                # All six components the extension registers. Importing the
                 # module alone is not enough — an explicit toolbar.items list
                 # decides what appears, and this one named only the first, so
                 # vision, translation and tasks stayed invisible on the demo.
@@ -96,3 +96,6 @@ editor:
                 - cowriterTranslate
                 - cowriterTemplates
                 - cowriterImage
+                # cowriterInlineSuggestions (3.19+) is the per-editor on/off
+                # toggle for the grey inline suggestions.
+                - cowriterInlineSuggestions

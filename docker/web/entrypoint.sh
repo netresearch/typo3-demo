@@ -609,6 +609,12 @@ if [ -f config/system/settings.php ]; then
         // registry and falls back to gpt-image-2.
         $cfg["EXTENSIONS"]["t3_cowriter"]["image"]["enable"] = "1";
 
+        // Cowriter (3.19+): inline suggestions while typing in the rich text
+        // editor. Each suggestion is a request against the editor budget,
+        // at most one every 5 s per field and 12 per minute per user.
+        // delay, minChars and configuration keep their defaults.
+        $cfg["EXTENSIONS"]["t3_cowriter"]["inlineSuggestions"]["enable"] = "1";
+
         // Write to a sibling and rename. file_put_contents() truncates in place,
         // and settings.php is the one file whose corruption bricks the instance:
         // a partial write (full volume) leaves a parse error, the
@@ -632,7 +638,8 @@ if [ -f config/system/settings.php ]; then
             || ($check["EXTENSIONS"]["ai_filemetadata"]["imageResizing"] ?? null) !== "512"
             || ($check["EXTCONF"]["ai_filemetadata"]["falLanguageMappings"]["1:/"][1] ?? null) !== "de_DE.UTF-8"
             || ($check["EXTENSIONS"]["t3_cowriter"]["translation"]["polish"] ?? null) !== "1"
-            || ($check["EXTENSIONS"]["t3_cowriter"]["image"]["enable"] ?? null) !== "1") {
+            || ($check["EXTENSIONS"]["t3_cowriter"]["image"]["enable"] ?? null) !== "1"
+            || ($check["EXTENSIONS"]["t3_cowriter"]["inlineSuggestions"]["enable"] ?? null) !== "1") {
             @unlink($tmp);
             fwrite(STDERR, "the new settings.php did not parse back - settings.php left untouched" . PHP_EOL);
             exit(1);
@@ -646,10 +653,10 @@ if [ -f config/system/settings.php ]; then
             fwrite(STDERR, "failed to rename " . $tmp . " over settings.php - settings.php left untouched" . PHP_EOL);
             exit(1);
         }
-        echo "settings.php: t3_cowriter translation polish and image generation on; ai_filemetadata configured (alt texts on upload: en_US, de_DE), OpenAI key "
+        echo "settings.php: t3_cowriter translation polish, image generation and inline suggestions on; ai_filemetadata configured (alt texts on upload: en_US, de_DE), OpenAI key "
             . ($key !== "" ? $origin : "NOT set - alt-text generation will fail")
             . "." . PHP_EOL;
-    ' || echo "WARNING: ai_filemetadata and t3_cowriter are NOT configured - settings.php was left untouched, so alt-text generation runs on the extension's fail-open defaults (no image downscaling, frontend generation on) and DeepL translations are not revised and image generation stays off" >&2
+    ' || echo "WARNING: ai_filemetadata and t3_cowriter are NOT configured - settings.php was left untouched, so alt-text generation runs on the extension's fail-open defaults (no image downscaling, frontend generation on) and DeepL translations are not revised and image generation and inline suggestions stay off" >&2
 fi
 
 # Configure autotranslate (DeepL).
