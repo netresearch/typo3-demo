@@ -278,7 +278,9 @@ upload folder and inserted through rte_ckeditor_image, which the demo RTE
 preset imports. `image.model` is not set, so the Cowriter uses the active image
 model of nr-llm's model registry, or `gpt-image-2` when there is none. Because
 the file is added through FAL in a backend request, ai_filemetadata's
-alt-text-on-upload also runs for it, which is a second OpenAI request.
+alt-text-on-upload also runs for it: one vision call per mapped language, so
+two with the English and German mapping described above, on top of the image
+request itself.
 
 ## Backend languages
 
