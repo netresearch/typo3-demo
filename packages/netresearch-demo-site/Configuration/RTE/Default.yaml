@@ -85,11 +85,14 @@ editor:
                 - removeFormat
                 - sourceEditing
                 - '|'
-                # All four components the extension registers. Importing the
+                # All five components the extension registers. Importing the
                 # module alone is not enough — an explicit toolbar.items list
                 # decides what appears, and this one named only the first, so
                 # vision, translation and tasks stayed invisible on the demo.
+                # cowriterImage (3.17+) inserts through rte_ckeditor_image's
+                # typo3image element, which the import above provides.
                 - cowriter
                 - cowriterVision
                 - cowriterTranslate
                 - cowriterTemplates
+                - cowriterImage
