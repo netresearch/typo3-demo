@@ -271,6 +271,17 @@ the secret the Cowriter translates with the language model in one request and
 nothing is revised. The JSON answer of the translate route shows which path ran:
 only the DeepL path carries `translator` and `polished`.
 
+The Cowriter's **Generate image** button (3.17+) is switched on the same way:
+the entrypoint writes `image.enable = "1"` next to `translation.polish`. The
+image is generated with nr-llm's OpenAI key, stored in the editor's default
+upload folder and inserted through rte_ckeditor_image, which the demo RTE
+preset imports. `image.model` is not set, so the Cowriter uses the active image
+model of nr-llm's model registry, or `gpt-image-2` when there is none. Because
+the file is added through FAL in a backend request, ai_filemetadata's
+alt-text-on-upload also runs for it: one vision call per mapped language, so
+two with the English and German mapping described above, on top of the image
+request itself.
+
 ## Backend languages
 
 The backend is available in German as well as English. The entrypoint adds the

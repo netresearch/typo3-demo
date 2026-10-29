@@ -501,11 +501,6 @@ if [ -f config/system/settings.php ]; then
             // Without the secret this line changes nothing: the translator
             // stays unavailable and the language model translates as before.
             . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"nr_llm\"][\"translators\"][\"deepl\"][\"apiKeyIdentifier\"] = \"deepl_api_key\";\n"
-            // nr_llm defaults to dall-e-3, which this account does not serve:
-            //   400 The model dall-e-3 does not exist.
-            // gpt-image-1 answers 200 with an image. Measured, not assumed - the
-            // same class of mistake that made the chat model fail twice.
-            . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"nr_llm\"][\"image\"][\"dalle\"][\"defaultModel\"] = \"gpt-image-1\";\n"
             // tts-1 is the nr_llm default and answers with real audio here.
             // Set explicitly so the value is visible rather than implicit.
             . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"nr_llm\"][\"speech\"][\"tts\"][\"defaultModel\"] = \"tts-1\";\n"
@@ -530,7 +525,7 @@ if [ -f config/system/settings.php ]; then
         }
         $existing = rtrim($existing, "\n") . "\n\n" . $block . "\n";
         file_put_contents($f, $existing);
-        echo "additional.php: nr_ai_search configured (technicalBeUserUid=990, dims=1536), nr_vault provisioning actor 991, nr_repurpose actor 992, nr_llm media on (gpt-image-1/tts-1), nr_llm DeepL translator key deepl_api_key, index dev-sync on." . PHP_EOL;
+        echo "additional.php: nr_ai_search configured (technicalBeUserUid=990, dims=1536), nr_vault provisioning actor 991, nr_repurpose actor 992, nr_llm media on (tts-1), nr_llm DeepL translator key deepl_api_key, index dev-sync on." . PHP_EOL;
     ' || echo "WARNING: failed to write nr_ai_search additional.php block" >&2
 fi
 
@@ -607,6 +602,13 @@ if [ -f config/system/settings.php ]; then
         // defaults without overriding a value that is already set.
         $cfg["EXTENSIONS"]["t3_cowriter"]["translation"]["polish"] = "1";
 
+        // Cowriter (3.17+): the toolbar button "Generate image" in the rich
+        // text editor. The image is stored in the editor upload folder and
+        // inserted through rte_ckeditor_image. Only the string "1" is on.
+        // image.model stays unset: the cowriter then asks the nr_llm model
+        // registry and falls back to gpt-image-2.
+        $cfg["EXTENSIONS"]["t3_cowriter"]["image"]["enable"] = "1";
+
         // Write to a sibling and rename. file_put_contents() truncates in place,
         // and settings.php is the one file whose corruption bricks the instance:
         // a partial write (full volume) leaves a parse error, the
@@ -629,7 +631,8 @@ if [ -f config/system/settings.php ]; then
         if (!is_array($check)
             || ($check["EXTENSIONS"]["ai_filemetadata"]["imageResizing"] ?? null) !== "512"
             || ($check["EXTCONF"]["ai_filemetadata"]["falLanguageMappings"]["1:/"][1] ?? null) !== "de_DE.UTF-8"
-            || ($check["EXTENSIONS"]["t3_cowriter"]["translation"]["polish"] ?? null) !== "1") {
+            || ($check["EXTENSIONS"]["t3_cowriter"]["translation"]["polish"] ?? null) !== "1"
+            || ($check["EXTENSIONS"]["t3_cowriter"]["image"]["enable"] ?? null) !== "1") {
             @unlink($tmp);
             fwrite(STDERR, "the new settings.php did not parse back - settings.php left untouched" . PHP_EOL);
             exit(1);
@@ -643,10 +646,10 @@ if [ -f config/system/settings.php ]; then
             fwrite(STDERR, "failed to rename " . $tmp . " over settings.php - settings.php left untouched" . PHP_EOL);
             exit(1);
         }
-        echo "settings.php: t3_cowriter translation polish on; ai_filemetadata configured (alt texts on upload: en_US, de_DE), OpenAI key "
+        echo "settings.php: t3_cowriter translation polish and image generation on; ai_filemetadata configured (alt texts on upload: en_US, de_DE), OpenAI key "
             . ($key !== "" ? $origin : "NOT set - alt-text generation will fail")
             . "." . PHP_EOL;
-    ' || echo "WARNING: ai_filemetadata and t3_cowriter are NOT configured - settings.php was left untouched, so alt-text generation runs on the extension's fail-open defaults (no image downscaling, frontend generation on) and DeepL translations are not revised" >&2
+    ' || echo "WARNING: ai_filemetadata and t3_cowriter are NOT configured - settings.php was left untouched, so alt-text generation runs on the extension's fail-open defaults (no image downscaling, frontend generation on) and DeepL translations are not revised and image generation stays off" >&2
 fi
 
 # Configure autotranslate (DeepL).

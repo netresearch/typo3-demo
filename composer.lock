@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "bbfca049f2dee863a361ae23afafa4b9",
+    "content-hash": "394d650386c7046d31af3b5e711bc51e",
     "packages": [
         {
             "name": "b13/ai-label",
@@ -4086,16 +4086,16 @@
         },
         {
             "name": "netresearch/t3-cowriter",
-            "version": "v3.16.0",
+            "version": "v3.17.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/t3x-cowriter.git",
-                "reference": "666b9aee4fb724a6ff2162897ac3665e5bd5907b"
+                "reference": "db3e85a134463f3c75ebcea41de5722f77ce6d57"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/t3x-cowriter/zipball/666b9aee4fb724a6ff2162897ac3665e5bd5907b",
-                "reference": "666b9aee4fb724a6ff2162897ac3665e5bd5907b",
+                "url": "https://api.github.com/repos/netresearch/t3x-cowriter/zipball/db3e85a134463f3c75ebcea41de5722f77ce6d57",
+                "reference": "db3e85a134463f3c75ebcea41de5722f77ce6d57",
                 "shasum": ""
             },
             "require": {
@@ -4106,6 +4106,7 @@
                 "typo3/cms-rte-ckeditor": "^13.4 || ^14.3"
             },
             "require-dev": {
+                "netresearch/rte-ckeditor-image": "^13.10.3",
                 "netresearch/typo3-ci-workflows": "^2.0.3",
                 "typo3/cms-seo": "^13.4 || ^14.3",
                 "typo3/cms-workspaces": "^13.4 || ^14.3"
@@ -4173,7 +4174,7 @@
                 "issues": "https://github.com/netresearch/t3x-cowriter/issues",
                 "source": "https://github.com/netresearch/t3x-cowriter"
             },
-            "time": "2026-10-29T10:14:18+00:00"
+            "time": "2026-10-29T12:45:55+00:00"
         },
         {
             "name": "netresearch/typo3-demo-site",
