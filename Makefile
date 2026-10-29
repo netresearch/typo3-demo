@@ -213,25 +213,23 @@ provision-deepl-key: ## Store $DEEPL_API_KEY in the vault for nr_llm's DeepL tra
 		echo "         Cowriter translates with the language model instead of DeepL."; \
 		exit 0; \
 	fi; \
-	case "$(DEEPL_KEY_ID)" in \
-		[a-zA-Z]*) : ;; \
-		*) echo "ERROR: DEEPL_KEY_ID '$(DEEPL_KEY_ID)' must start with a letter." >&2; exit 1 ;; \
-	esac; \
-	if printf '%s' "$(DEEPL_KEY_ID)" | grep -q '[^a-zA-Z0-9_]'; then \
-		echo "ERROR: DEEPL_KEY_ID '$(DEEPL_KEY_ID)' may contain only letters, digits" >&2; \
-		echo "       and underscores - nr_vault rejects anything else, and finding" >&2; \
-		echo "       that out costs a whole deploy cycle." >&2; \
+	if [ "$(DEEPL_KEY_ID)" != "deepl_api_key" ]; then \
+		echo "ERROR: DEEPL_KEY_ID is '$(DEEPL_KEY_ID)', but the entrypoint points nr_llm" >&2; \
+		echo "       at 'deepl_api_key'. A secret under another name would be stored" >&2; \
+		echo "       and never read; change both places together." >&2; \
 		exit 1; \
 	fi; \
 	status=$$(printf '%s' "$$DEEPL_API_KEY" | $(COMPOSE) exec -T web php -r ' \
-		$$k = trim((string) stream_get_contents(STDIN)); \
+		$$k = (string) stream_get_contents(STDIN); \
+		if ($$k !== trim($$k)) { echo "whitespace"; exit(0); } \
 		$$u = str_ends_with($$k, ":fx") ? "https://api-free.deepl.com/v2/usage" : "https://api.deepl.com/v2/usage"; \
 		$$c = stream_context_create(["http" => ["header" => "Authorization: DeepL-Auth-Key " . $$k, "timeout" => 15, "ignore_errors" => true]]); \
 		@file_get_contents($$u, false, $$c); \
 		echo isset($$http_response_header[0]) ? (explode(" ", $$http_response_header[0])[1] ?? "none") : "none";' 2>/dev/null || echo none); \
 	if [ "$$status" != "200" ]; then \
 		echo "WARNING: DEEPL_API_KEY was not confirmed by DeepL (GET /v2/usage answered"; \
-		echo "         '$$status'; 'none' means no HTTP response from the web container)."; \
+		echo "         '$$status'; 'none' means no HTTP response from the web container,"; \
+		echo "         'whitespace' that the value starts or ends with blanks)."; \
 		echo "         The key is NOT stored: an invalid key would make every Cowriter"; \
 		echo "         translation fail, because the Cowriter does not fall back to the"; \
 		echo "         language model when DeepL errors. A secret stored by a previous"; \
