@@ -280,7 +280,9 @@ model of nr-llm's model registry, or `gpt-image-2` when there is none. Because
 the file is added through FAL in a backend request, ai_filemetadata's
 alt-text-on-upload also runs for it: one vision call per mapped language, so
 two with the English and German mapping described above, on top of the image
-request itself.
+request itself. From 3.18 the same switch also adds a **Generate image** control
+to file fields that accept PNG (for example the images of a Text & Media
+element); the generated file is added to the field as a new file reference.
 
 ## Backend languages
 
