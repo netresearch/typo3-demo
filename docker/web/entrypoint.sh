@@ -839,6 +839,14 @@ vendor/bin/typo3 upgrade:run nrMcpAgent_migrateMessagesToTable --no-interaction 
 echo "Running upgrade wizard nrMcpAgent_lastMessageTime..."
 vendor/bin/typo3 upgrade:run nrMcpAgent_lastMessageTime --no-interaction 2>&1 \
     || echo "WARNING: upgrade wizard nrMcpAgent_lastMessageTime failed" >&2
+
+# From 0.26.2: dashboards keep a widget's size once it is placed, so "Letzte
+# Chats" stayed narrow on dashboards arranged before 0.26.0. This wizard removes
+# only that widget's stored position where it is smaller than full width; the
+# dashboard then places it again at full width. Marked done after its first run.
+echo "Running upgrade wizard nrMcpAgent_recentChatsWidgetSize..."
+vendor/bin/typo3 upgrade:run nrMcpAgent_recentChatsWidgetSize --no-interaction 2>&1 \
+    || echo "WARNING: upgrade wizard nrMcpAgent_recentChatsWidgetSize failed" >&2
 # ---------------------------------------------------------------------------
 # Demo records for contexts and nr_textdb.
 # ---------------------------------------------------------------------------
