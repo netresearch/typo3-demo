@@ -292,6 +292,23 @@ Tab inserts it. Each suggestion is a request against the editor's nr-llm budget,
 also when it is not taken: at most one every 5 s per field and 12 per minute per
 backend user.
 
+The Cowriter's **Present as tabs or accordion** button (3.20+) is switched on
+the same way: the entrypoint writes `presentation.enable = "1"`. It appears next
+to the rich text of Text, Text & Images and Text & Media elements, because the
+demo installs bootstrap_package. A text with h2 or h3 headings is split at them
+without a request; a text without headings costs one request against the
+editor's nr-llm budget. The new Tabs or Accordion element is created hidden
+after the original, and a switch in the dialog shows it and hides the original.
+There is no switch for an element with translations or for a connected
+translation; the dialog says what to do instead.
+
+From nr-mcp-agent 0.26 the chat lists order conversations by their last message.
+`extension:setup` adds the new columns, and the entrypoint runs the upgrade
+wizard `nrMcpAgent_lastMessageTime`, which fills the time for older
+conversations. The dashboard widget "Recent chats" is full width now; a backend
+user who already arranged the dashboard keeps the old, narrow size until the
+widget is removed and added again.
+
 ## Backend languages
 
 The backend is available in German as well as English. The entrypoint adds the
