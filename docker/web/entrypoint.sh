@@ -847,6 +847,12 @@ vendor/bin/typo3 upgrade:run nrMcpAgent_lastMessageTime --no-interaction 2>&1 \
 echo "Running upgrade wizard nrMcpAgent_recentChatsWidgetSize..."
 vendor/bin/typo3 upgrade:run nrMcpAgent_recentChatsWidgetSize --no-interaction 2>&1 \
     || echo "WARNING: upgrade wizard nrMcpAgent_recentChatsWidgetSize failed" >&2
+# From 0.27.1: the same for every widget of nr_mcp_agent. 0.27.0 changed several
+# registered sizes, and "Website prüfen" stayed one row high on dashboards
+# arranged before, which cuts off its second row. Marked done after its first run.
+echo "Running upgrade wizard nrMcpAgent_dashboardWidgetSizes..."
+vendor/bin/typo3 upgrade:run nrMcpAgent_dashboardWidgetSizes --no-interaction 2>&1 \
+    || echo "WARNING: upgrade wizard nrMcpAgent_dashboardWidgetSizes failed" >&2
 # ---------------------------------------------------------------------------
 # Demo records for contexts and nr_textdb.
 # ---------------------------------------------------------------------------
