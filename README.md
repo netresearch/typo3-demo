@@ -306,8 +306,10 @@ From 3.21 the field suggestion button appears on all descriptive page fields
 and on the header and subheader of content elements, and the record's document
 header offers "Suggest values for all fields with AI". From 3.22 every
 Cowriter dialog ends with "About this suggestion": the nr-llm configuration and
-model, which context sources were sent, and the current settings. No entrypoint
-change is needed for either.
+model, which context sources were sent, and the current settings. 3.22 also
+sends more page context with field suggestions: the descriptive page fields the
+editor may read, the parent page title and up to five neighbouring page titles,
+capped at 16,000 characters. No entrypoint change is needed for either.
 
 From nr-mcp-agent 0.26 the chat lists order conversations by their last message.
 `extension:setup` adds the new columns, and the entrypoint runs the upgrade
