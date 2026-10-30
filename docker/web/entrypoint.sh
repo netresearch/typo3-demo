@@ -615,6 +615,13 @@ if [ -f config/system/settings.php ]; then
         // delay, minChars and configuration keep their defaults.
         $cfg["EXTENSIONS"]["t3_cowriter"]["inlineSuggestions"]["enable"] = "1";
 
+        // Cowriter (3.20+): "Present as tabs or accordion" next to the rich
+        // text of text elements. It creates a hidden bootstrap_package Tabs or
+        // Accordion element after the original; a switch in the dialog shows
+        // it and hides the original. Splitting a text without headings is one
+        // request against the editor budget. Only the string "1" is on.
+        $cfg["EXTENSIONS"]["t3_cowriter"]["presentation"]["enable"] = "1";
+
         // Write to a sibling and rename. file_put_contents() truncates in place,
         // and settings.php is the one file whose corruption bricks the instance:
         // a partial write (full volume) leaves a parse error, the
@@ -639,7 +646,8 @@ if [ -f config/system/settings.php ]; then
             || ($check["EXTCONF"]["ai_filemetadata"]["falLanguageMappings"]["1:/"][1] ?? null) !== "de_DE.UTF-8"
             || ($check["EXTENSIONS"]["t3_cowriter"]["translation"]["polish"] ?? null) !== "1"
             || ($check["EXTENSIONS"]["t3_cowriter"]["image"]["enable"] ?? null) !== "1"
-            || ($check["EXTENSIONS"]["t3_cowriter"]["inlineSuggestions"]["enable"] ?? null) !== "1") {
+            || ($check["EXTENSIONS"]["t3_cowriter"]["inlineSuggestions"]["enable"] ?? null) !== "1"
+            || ($check["EXTENSIONS"]["t3_cowriter"]["presentation"]["enable"] ?? null) !== "1") {
             @unlink($tmp);
             fwrite(STDERR, "the new settings.php did not parse back - settings.php left untouched" . PHP_EOL);
             exit(1);
@@ -653,10 +661,10 @@ if [ -f config/system/settings.php ]; then
             fwrite(STDERR, "failed to rename " . $tmp . " over settings.php - settings.php left untouched" . PHP_EOL);
             exit(1);
         }
-        echo "settings.php: t3_cowriter translation polish, image generation and inline suggestions on; ai_filemetadata configured (alt texts on upload: en_US, de_DE), OpenAI key "
+        echo "settings.php: t3_cowriter translation polish, image generation, inline suggestions and tabs/accordion on; ai_filemetadata configured (alt texts on upload: en_US, de_DE), OpenAI key "
             . ($key !== "" ? $origin : "NOT set - alt-text generation will fail")
             . "." . PHP_EOL;
-    ' || echo "WARNING: ai_filemetadata and t3_cowriter are NOT configured - settings.php was left untouched, so alt-text generation runs on the extension's fail-open defaults (no image downscaling, frontend generation on) and DeepL translations are not revised and image generation and inline suggestions stay off" >&2
+    ' || echo "WARNING: ai_filemetadata and t3_cowriter are NOT configured - settings.php was left untouched, so alt-text generation runs on the extension's fail-open defaults (no image downscaling, frontend generation on) and DeepL translations are not revised and image generation, inline suggestions and tabs/accordion stay off" >&2
 fi
 
 # Configure autotranslate (DeepL).
@@ -823,6 +831,14 @@ vendor/bin/typo3 upgrade:run nrMcpAgent_clearStoredApprovalNotice --no-interacti
 echo "Running upgrade wizard nrMcpAgent_migrateMessagesToTable..."
 vendor/bin/typo3 upgrade:run nrMcpAgent_migrateMessagesToTable --no-interaction 2>&1 \
     || echo "WARNING: upgrade wizard nrMcpAgent_migrateMessagesToTable failed" >&2
+
+# From 0.26, the chat lists order conversations by last_message_at, which every
+# message save writes. extension:setup above adds the column; this wizard fills
+# it for conversations saved before, from their last message (else tstamp). It
+# is marked done after its first run.
+echo "Running upgrade wizard nrMcpAgent_lastMessageTime..."
+vendor/bin/typo3 upgrade:run nrMcpAgent_lastMessageTime --no-interaction 2>&1 \
+    || echo "WARNING: upgrade wizard nrMcpAgent_lastMessageTime failed" >&2
 # ---------------------------------------------------------------------------
 # Demo records for contexts and nr_textdb.
 # ---------------------------------------------------------------------------

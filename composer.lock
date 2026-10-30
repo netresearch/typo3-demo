@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "aa2995c3003808c49aa90c796631f231",
+    "content-hash": "b479b9b019f4dd17345cb1676bb908d3",
     "packages": [
         {
             "name": "b13/ai-label",
@@ -3221,16 +3221,16 @@
         },
         {
             "name": "netresearch/nr-mcp-agent",
-            "version": "v0.25.0",
+            "version": "v0.26.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/t3x-nr-mcp-agent.git",
-                "reference": "15e7493346b44213b233b616d7f41c5be40aa118"
+                "reference": "a39cc4333075526178f0768cec141b018ce31523"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/t3x-nr-mcp-agent/zipball/15e7493346b44213b233b616d7f41c5be40aa118",
-                "reference": "15e7493346b44213b233b616d7f41c5be40aa118",
+                "url": "https://api.github.com/repos/netresearch/t3x-nr-mcp-agent/zipball/a39cc4333075526178f0768cec141b018ce31523",
+                "reference": "a39cc4333075526178f0768cec141b018ce31523",
                 "shasum": ""
             },
             "require": {
@@ -3298,7 +3298,7 @@
                 "issues": "https://github.com/netresearch/t3x-nr-mcp-agent/issues",
                 "source": "https://github.com/netresearch/t3x-nr-mcp-agent"
             },
-            "time": "2026-10-27T19:50:26+00:00"
+            "time": "2026-10-30T02:47:38+00:00"
         },
         {
             "name": "netresearch/nr-passkeys-be",
@@ -4086,19 +4086,20 @@
         },
         {
             "name": "netresearch/t3-cowriter",
-            "version": "v3.19.0",
+            "version": "v3.20.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/t3x-cowriter.git",
-                "reference": "0333701ff58307eac98a13ca12ef0fb276649435"
+                "reference": "a200b4d03e4337c078f4ceec8ee62a8dba3ab03e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/t3x-cowriter/zipball/0333701ff58307eac98a13ca12ef0fb276649435",
-                "reference": "0333701ff58307eac98a13ca12ef0fb276649435",
+                "url": "https://api.github.com/repos/netresearch/t3x-cowriter/zipball/a200b4d03e4337c078f4ceec8ee62a8dba3ab03e",
+                "reference": "a200b4d03e4337c078f4ceec8ee62a8dba3ab03e",
                 "shasum": ""
             },
             "require": {
+                "masterminds/html5": "^2.9",
                 "netresearch/nr-llm": "^0.41.14",
                 "php": "^8.2",
                 "typo3/cms-backend": "^13.4 || ^14.3",
@@ -4106,6 +4107,7 @@
                 "typo3/cms-rte-ckeditor": "^13.4 || ^14.3"
             },
             "require-dev": {
+                "bk2k/bootstrap-package": "^16.0.1",
                 "netresearch/rte-ckeditor-image": "^13.10.3",
                 "netresearch/typo3-ci-workflows": "^2.0.3",
                 "typo3/cms-seo": "^13.4 || ^14.3",
@@ -4174,7 +4176,7 @@
                 "issues": "https://github.com/netresearch/t3x-cowriter/issues",
                 "source": "https://github.com/netresearch/t3x-cowriter"
             },
-            "time": "2026-10-29T18:38:48+00:00"
+            "time": "2026-10-30T02:34:20+00:00"
         },
         {
             "name": "netresearch/typo3-demo-site",
