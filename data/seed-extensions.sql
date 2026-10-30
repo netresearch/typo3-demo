@@ -1035,10 +1035,10 @@ SELECT 0, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), u.uid,
                     WHERE d.cruser_id = u.uid AND d.title = 'Netresearch Demo');
 
 -- Third dashboard: the 'nrMcpAgent' preset of nr_mcp_agent ("KI-Assistent"),
--- in the preset's order: the "AI Assistant" question box, "Eine Seite
--- verbessern", "Häufige Aufgaben", the recent chats and "Für deine Website
--- empfohlen", the entry points of the guided tours, then "Website prüfen",
--- the site-wide checks (nr_mcp_agent 0.21.0, ADR-026). Same reasoning
+-- in the preset's order (nr_mcp_agent 0.27.0): the "AI Assistant" question box,
+-- "Seite bearbeiten", "Inhalte erstellen", the recent chats, "Für deine Website
+-- empfohlen", "Eine Seite verbessern" (the entry points of the guided tours),
+-- then "Website prüfen", the site-wide checks (ADR-026). Same reasoning
 -- as the 'Netresearch Demo' rows above: existing users are past the one-time
 -- preset branch, new users get it from user.tsconfig.
 --
@@ -1054,7 +1054,7 @@ INSERT INTO be_dashboards (pid, tstamp, crdate, cruser_id, identifier, title, wi
 SELECT 0, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), u.uid,
        SHA1(CONCAT('nr-mcp-agent-assistant:', u.uid)),
        'LLL:EXT:nr_mcp_agent/Resources/Private/Language/locallang_dashboard.xlf:preset.title',
- '{"6a1f0c3e9b7d4e2a8c5f1b3d7e9a0c42":{"identifier":"nrMcpAgentPrompt"},"3276c7cc072d8446e5bf490669a34c661a8cbf29":{"identifier":"nrMcpAgentImprovePage"},"b31c9870baf73b1f9d1452c18878ac3be77a8dc8":{"identifier":"nrMcpAgentQuickTasks"},"bf6204214bae3c5ec67439fa057a8f50c85500e8":{"identifier":"nrMcpAgentAiChat"},"997235a272566500f197890a4a78e6926ee78d2b":{"identifier":"nrMcpAgentRecommendations"},"e3f9950b2430e3948d12f8d17c136653f353c6e4":{"identifier":"nrMcpAgentWebsiteCheck"}}'
+ '{"6a1f0c3e9b7d4e2a8c5f1b3d7e9a0c42":{"identifier":"nrMcpAgentPrompt"},"c4e8a1f05b9d3e7a2f6c0b8d4e1a9f37":{"identifier":"nrMcpAgentEditPage"},"8d2b6f0e4a1c9e7b3d5f2a8c6e0b4d19":{"identifier":"nrMcpAgentCreateContent"},"bf6204214bae3c5ec67439fa057a8f50c85500e8":{"identifier":"nrMcpAgentAiChat"},"997235a272566500f197890a4a78e6926ee78d2b":{"identifier":"nrMcpAgentRecommendations"},"3276c7cc072d8446e5bf490669a34c661a8cbf29":{"identifier":"nrMcpAgentImprovePage"},"e3f9950b2430e3948d12f8d17c136653f353c6e4":{"identifier":"nrMcpAgentWebsiteCheck"}}'
   FROM be_users u
  WHERE u.deleted = 0
    AND u.password LIKE '$%'
@@ -3411,6 +3411,27 @@ UPDATE be_dashboards
    AND JSON_VALID(widgets)
    AND (JSON_TYPE(widgets) = 'OBJECT' OR JSON_LENGTH(widgets) = 0)
    AND JSON_SEARCH(widgets, 'one', 'nrMcpAgentWebsiteCheck') IS NULL;
+
+-- "KI-Assistent" dashboard — retrofit the reworked preset (nr_mcp_agent 0.27.0):
+-- "Seite bearbeiten" and "Inhalte erstellen" join, "Häufige Aufgaben" leaves it
+-- (the widget can still be added by hand). Both happen in one statement, guarded
+-- by the absence of "Seite bearbeiten", so the removal runs once per dashboard:
+-- a user who adds "Häufige Aufgaben" back afterwards keeps it. The new widgets
+-- have no stored position, so the dashboard places them by its own algorithm.
+-- JSON_SEARCH returns the path of the identifier value ($."<hash>".identifier);
+-- the widget's own path is that path without its last segment.
+UPDATE be_dashboards
+   SET widgets = JSON_INSERT(
+         IF(JSON_SEARCH(widgets, 'one', 'nrMcpAgentQuickTasks') IS NULL,
+            IF(JSON_TYPE(widgets) = 'ARRAY', JSON_OBJECT(), widgets),
+            JSON_REMOVE(widgets, REPLACE(JSON_UNQUOTE(JSON_SEARCH(widgets, 'one', 'nrMcpAgentQuickTasks')), '.identifier', ''))),
+         '$."c4e8a1f05b9d3e7a2f6c0b8d4e1a9f37"', JSON_OBJECT('identifier', 'nrMcpAgentEditPage'),
+         '$."8d2b6f0e4a1c9e7b3d5f2a8c6e0b4d19"', JSON_OBJECT('identifier', 'nrMcpAgentCreateContent')
+       )
+ WHERE title = 'LLL:EXT:nr_mcp_agent/Resources/Private/Language/locallang_dashboard.xlf:preset.title'
+   AND JSON_VALID(widgets)
+   AND (JSON_TYPE(widgets) = 'OBJECT' OR JSON_LENGTH(widgets) = 0)
+   AND JSON_SEARCH(widgets, 'one', 'nrMcpAgentEditPage') IS NULL;
 
 
 INSERT INTO tt_content (uid, pid, tstamp, crdate, sys_language_uid, l18n_parent, l10n_source, CType, header, bodytext, colPos, sorting, hidden, deleted)
