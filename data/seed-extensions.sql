@@ -3414,24 +3414,53 @@ UPDATE be_dashboards
 
 -- "KI-Assistent" dashboard — retrofit the reworked preset (nr_mcp_agent 0.27.0):
 -- "Seite bearbeiten" and "Inhalte erstellen" join, "Häufige Aufgaben" leaves it
--- (the widget can still be added by hand). Both happen in one statement, guarded
--- by the absence of "Seite bearbeiten", so the removal runs once per dashboard:
--- a user who adds "Häufige Aufgaben" back afterwards keeps it. The new widgets
--- have no stored position, so the dashboard places them by its own algorithm.
--- JSON_SEARCH returns the path of the identifier value ($."<hash>".identifier);
--- the widget's own path is that path without its last segment.
-UPDATE be_dashboards
-   SET widgets = JSON_INSERT(
-         IF(JSON_SEARCH(widgets, 'one', 'nrMcpAgentQuickTasks') IS NULL,
-            IF(JSON_TYPE(widgets) = 'ARRAY', JSON_OBJECT(), widgets),
-            JSON_REMOVE(widgets, REPLACE(JSON_UNQUOTE(JSON_SEARCH(widgets, 'one', 'nrMcpAgentQuickTasks')), '.identifier', ''))),
-         '$."c4e8a1f05b9d3e7a2f6c0b8d4e1a9f37"', JSON_OBJECT('identifier', 'nrMcpAgentEditPage'),
-         '$."8d2b6f0e4a1c9e7b3d5f2a8c6e0b4d19"', JSON_OBJECT('identifier', 'nrMcpAgentCreateContent')
-       )
- WHERE title = 'LLL:EXT:nr_mcp_agent/Resources/Private/Language/locallang_dashboard.xlf:preset.title'
-   AND JSON_VALID(widgets)
-   AND (JSON_TYPE(widgets) = 'OBJECT' OR JSON_LENGTH(widgets) = 0)
-   AND JSON_SEARCH(widgets, 'one', 'nrMcpAgentEditPage') IS NULL;
+-- (the widget can still be added by hand). `make update` applies this file twice
+-- per deploy, and the widgets value is the user's own arrangement, so the
+-- retrofit runs once per dashboard, recorded as a sys_registry row
+-- (netresearch-demo/seed, kiAssistentPreset027:<dashboard uid>). A user who
+-- removes a new widget or adds "Häufige Aufgaben" back afterwards keeps that.
+-- Each new widget is added only where the dashboard lacks it, whatever its key.
+-- The new widgets have no stored position, so the dashboard places them by its
+-- own algorithm. JSON_SEARCH returns the path of the identifier value
+-- ($."<hash>".identifier); the widget's own path is that path without its last
+-- segment. A dashboard stored as `[]` is read as an empty object, any other
+-- array is left alone, as above.
+UPDATE be_dashboards d
+   SET d.widgets = JSON_REMOVE(d.widgets, REPLACE(JSON_UNQUOTE(JSON_SEARCH(d.widgets, 'one', 'nrMcpAgentQuickTasks')), '.identifier', ''))
+ WHERE d.title = 'LLL:EXT:nr_mcp_agent/Resources/Private/Language/locallang_dashboard.xlf:preset.title'
+   AND JSON_VALID(d.widgets)
+   AND JSON_TYPE(d.widgets) = 'OBJECT'
+   AND JSON_SEARCH(d.widgets, 'one', 'nrMcpAgentQuickTasks') IS NOT NULL
+   AND NOT EXISTS (SELECT 1 FROM sys_registry r
+                    WHERE r.entry_namespace = 'netresearch-demo/seed'
+                      AND r.entry_key = CONCAT('kiAssistentPreset027:', d.uid));
+
+UPDATE be_dashboards d
+   SET d.widgets = JSON_INSERT(IF(JSON_TYPE(d.widgets) = 'ARRAY', JSON_OBJECT(), d.widgets),
+         '$."c4e8a1f05b9d3e7a2f6c0b8d4e1a9f37"', JSON_OBJECT('identifier', 'nrMcpAgentEditPage'))
+ WHERE d.title = 'LLL:EXT:nr_mcp_agent/Resources/Private/Language/locallang_dashboard.xlf:preset.title'
+   AND JSON_VALID(d.widgets)
+   AND (JSON_TYPE(d.widgets) = 'OBJECT' OR JSON_LENGTH(d.widgets) = 0)
+   AND JSON_SEARCH(d.widgets, 'one', 'nrMcpAgentEditPage') IS NULL
+   AND NOT EXISTS (SELECT 1 FROM sys_registry r
+                    WHERE r.entry_namespace = 'netresearch-demo/seed'
+                      AND r.entry_key = CONCAT('kiAssistentPreset027:', d.uid));
+
+UPDATE be_dashboards d
+   SET d.widgets = JSON_INSERT(IF(JSON_TYPE(d.widgets) = 'ARRAY', JSON_OBJECT(), d.widgets),
+         '$."8d2b6f0e4a1c9e7b3d5f2a8c6e0b4d19"', JSON_OBJECT('identifier', 'nrMcpAgentCreateContent'))
+ WHERE d.title = 'LLL:EXT:nr_mcp_agent/Resources/Private/Language/locallang_dashboard.xlf:preset.title'
+   AND JSON_VALID(d.widgets)
+   AND (JSON_TYPE(d.widgets) = 'OBJECT' OR JSON_LENGTH(d.widgets) = 0)
+   AND JSON_SEARCH(d.widgets, 'one', 'nrMcpAgentCreateContent') IS NULL
+   AND NOT EXISTS (SELECT 1 FROM sys_registry r
+                    WHERE r.entry_namespace = 'netresearch-demo/seed'
+                      AND r.entry_key = CONCAT('kiAssistentPreset027:', d.uid));
+
+INSERT IGNORE INTO sys_registry (entry_namespace, entry_key, entry_value)
+SELECT 'netresearch-demo/seed', CONCAT('kiAssistentPreset027:', d.uid), 'b:1;'
+  FROM be_dashboards d
+ WHERE d.title = 'LLL:EXT:nr_mcp_agent/Resources/Private/Language/locallang_dashboard.xlf:preset.title';
 
 
 INSERT INTO tt_content (uid, pid, tstamp, crdate, sys_language_uid, l18n_parent, l10n_source, CType, header, bodytext, colPos, sorting, hidden, deleted)

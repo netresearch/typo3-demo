@@ -314,15 +314,15 @@ capped at 16,000 characters. No entrypoint change is needed for either.
 From nr-mcp-agent 0.26 the chat lists order conversations by their last message.
 `extension:setup` adds the new columns, and the entrypoint runs the upgrade
 wizard `nrMcpAgent_lastMessageTime`, which fills the time for older
-conversations. The dashboard widget "Recent chats" is two columns wide from
-0.26.2; the entrypoint runs the wizard `nrMcpAgent_recentChatsWidgetSize`, which
-widens a stored narrow position on dashboards arranged before.
+conversations. The dashboard widget "Recent chats" is full width from 0.26.2;
+the entrypoint runs the wizard `nrMcpAgent_recentChatsWidgetSize`, which widens
+a stored narrow position on dashboards arranged before.
 
 From nr-mcp-agent 0.27 the "KI-Assistent" widgets follow the designer's mockup,
 and page actions open the page module with the chat beside it. The seed adds
 "Seite bearbeiten" and "Inhalte erstellen" to existing "KI-Assistent"
-dashboards and removes "Häufige Aufgaben" from them once; a user who adds it
-back keeps it. The new cache `nrmcpagent_dashboard` gets its tables from
+dashboards and removes "Häufige Aufgaben" from them once, recorded per
+dashboard in `sys_registry`; later edits by the user are kept. The new cache `nrmcpagent_dashboard` gets its tables from
 `extension:setup`, which the entrypoint runs on every start.
 
 ## Backend languages
