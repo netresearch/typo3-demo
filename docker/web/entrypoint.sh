@@ -72,7 +72,7 @@ for t3d in sme-z.t3d sme2-z.t3d; do
         echo "Removed stale import/export dump fileadmin/user_upload/_temp_/importexport/$t3d."
     fi
 done
-MYSQL_PWD="${MARIADB_PASSWORD:-typo3}" mariadb -h"${MARIADB_HOST:-db}" -u"${MARIADB_USER:-typo3}" "${MARIADB_DATABASE:-typo3}" 2>/dev/null <<'SQL' || echo "WARNING: removing the sys_file rows of the stale .t3d dumps failed" >&2
+MYSQL_PWD="${MARIADB_PASSWORD:-typo3}" mariadb -h"${MARIADB_HOST:-db}" -u"${MARIADB_USER:-typo3}" "${MARIADB_DATABASE:-typo3}" <<'SQL' || echo "WARNING: removing the sys_file rows of the stale .t3d dumps failed" >&2
 DELETE m FROM sys_file_metadata m
   JOIN sys_file f ON f.uid = m.file
  WHERE f.storage = 1

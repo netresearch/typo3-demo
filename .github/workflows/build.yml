@@ -351,6 +351,11 @@ jobs:
             echo "$path -> $code"
             [ "$code" = "403" ] || fail "$path answered $code, expected 403"
           done
+          # A file that does not exist: 403 only while the deny precedes the
+          # static-asset regex, 404 if it ever moves below it.
+          code=$(status "$(req /fileadmin/_temp_/ci-probe.svg)")
+          echo "/fileadmin/_temp_/ci-probe.svg -> $code"
+          [ "$code" = "403" ] || fail "an .svg under _temp_ answered $code, expected 403 (deny below the static-asset location?)"
 
           svg=$(req /fileadmin/introduction/images/introduction-package.svg)
           echo "svg -> $(status "$svg") $(csp "$svg")"
