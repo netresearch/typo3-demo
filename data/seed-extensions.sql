@@ -1426,6 +1426,41 @@ WHERE deleted = 0
   AND identifier = (SELECT api_key FROM tx_nrllm_provider WHERE uid = 1 LIMIT 1)
   AND (SELECT api_key FROM tx_nrllm_provider WHERE uid = 1 LIMIT 1) <> '';
 
+-- 3b2) The secret.use operation permission for the same technical user.
+--
+--      nr_vault 1.1 asks an interactive non-admin backend user for secret.use
+--      on every plaintext read (VaultService::assertInteractiveUseGranted),
+--      on top of the per-secret tiers above. The indexing worker is not
+--      affected (actor type cli) and neither is the frontend query (read
+--      without the gate), but the Health check in Reports > Status runs the
+--      embedding probe as 990 inside a backend request. Without this it
+--      reported "Unreachable: Access denied to secret "openai_api_key":
+--      missing secret.use permission".
+--
+--      nr_vault reads the permission from groupData['custom_options'], which
+--      only a group can carry. The group holds exactly this one option, the
+--      way group 991 holds exactly create and rotate. It reaches 990 because
+--      nr_ai_search's BackendUserContext resolves the user's groups since
+--      support/nr-ai-search!116; before that a group grant never arrived.
+--
+--      Fixed uid 993 is above the seed maxima (be_groups 992).
+INSERT IGNORE INTO be_groups (uid, pid, tstamp, crdate, deleted, hidden, title, custom_options, description)
+VALUES (993, 0, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0, 'AI Search vault use',
+     'tx_nrvault:secret.use',
+     'Carries the nr_vault secret.use permission for the nr_ai_search technical user (uid 990). Grants nothing else, and no interactive user belongs in here.');
+
+-- Re-assert the membership: INSERT IGNORE above and for uid 990 skips an
+-- existing row entirely (same reason as uid 991 below). Only when both rows
+-- are the seeded ones: on a live database uid 993 could be a group somebody
+-- created in the backend, and 990 must not be put into that.
+UPDATE be_users SET usergroup = '993'
+WHERE uid = 990 AND username = 'nr_ai_search_technical' AND usergroup <> '993'
+  AND EXISTS (
+    SELECT 1 FROM be_groups
+    WHERE uid = 993 AND deleted = 0
+      AND title = 'AI Search vault use' AND custom_options = 'tx_nrvault:secret.use'
+  );
+
 -- 3c) Give the provisioning group (991) the WRITE tier on that same secret.
 --     Handing ownership to 990 above takes the write access away from the
 --     identity that has to refresh the key: `make provision-llm-key` runs
