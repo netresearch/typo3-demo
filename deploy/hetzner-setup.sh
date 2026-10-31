@@ -24,7 +24,7 @@ apt-get install -y -qq ca-certificates curl gnupg
 
 echo "=== Adding Docker repository ==="
 install -m 0755 -d /etc/apt/keyrings
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+curl -fsSL --proto '=https' --proto-redir '=https' https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
 chmod a+r /etc/apt/keyrings/docker.asc
 echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "$VERSION_CODENAME") stable" > /etc/apt/sources.list.d/docker.list
 apt-get update -qq
@@ -79,7 +79,7 @@ else
 fi
 chown -R deploy:deploy "$DEPLOY_DIR"
 
-SERVER_IP=$(curl -s4 ifconfig.me || echo '<this-server-ip>')
+SERVER_IP=$(curl -s4 --proto '=https' https://ifconfig.me || echo '<this-server-ip>')
 
 echo ""
 echo "=== Setup complete ==="

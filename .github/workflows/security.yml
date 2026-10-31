@@ -22,6 +22,10 @@ jobs:
 
   sast:
     uses: netresearch/typo3-ci-workflows/.github/workflows/security.yml@main
+    # The scopes the reusable documents as its minimum: Opengrep uploads SARIF.
+    permissions:
+      contents: read
+      security-events: write
     # The reusable's own Composer-audit job runs `composer install` on a hosted
     # runner with only the default GitHub token; it has no input/secret to pass
     # COMPOSER_AUTH, so it cannot authenticate to the private git.netresearch.de
