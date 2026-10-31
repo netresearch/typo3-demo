@@ -29,8 +29,11 @@ jobs:
           envs: TYPO3_DOMAIN,MARIADB_ROOT_PASSWORD,MARIADB_PASSWORD,TYPO3_ENCRYPTION_KEY,DHI_USERNAME,DHI_TOKEN,OPENAI_API_KEY,DEEPL_API_KEY
           script: |
             # Without this a failed step is ignored and only the exit status of
-            # the last command (`make update`) reaches the job.
-            set -euo pipefail
+            # the last command (`make update`) reaches the job. No pipefail:
+            # the action does not choose the remote shell, so this stays POSIX
+            # like the other deploy workflows; the one pipe below starts with
+            # an echo that cannot fail.
+            set -eu
             cd /opt/typo3-demo
             git pull --ff-only
             # TYPO3_SITE_BASE is "/": the site answers on whatever host Caddy
