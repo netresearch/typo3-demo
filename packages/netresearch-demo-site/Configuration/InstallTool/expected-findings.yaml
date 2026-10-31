@@ -2,8 +2,8 @@
 # expected on this instance. README.md#install-tool-checks explains the checks.
 #
 # A finding at warning or above that no entry here matches makes the check
-# exit 1, and the deploy and the pull-request build post a warning annotation.
-# A file the command cannot read makes it exit 2, which fails the build.
+# exit 1: the pull-request build fails, the deploy posts a warning annotation.
+# A file the command cannot read makes it exit 2, which fails the build too.
 # Each entry documents one expected finding:
 #
 #   check:          environment | sapi | server-response | directory | database | image
@@ -18,4 +18,68 @@
 # Matching never uses the whole message, which embeds measured values. An
 # entry that matches nothing is printed as stale; remove it once its cause is
 # gone.
-expected: []
+expected:
+  # Directory Status. The image owns the code: /var/www, public/ and config/
+  # (with config/sites/) are root's, only var/, config/system/, fileadmin/ and
+  # typo3temp/ belong to www-data. TYPO3 never writes the first group at
+  # runtime in Composer mode; config/sites/ is written only when a site is
+  # saved in the Sites module, and the site configuration is versioned in
+  # this repository instead.
+  - check: directory
+    severity: error
+    title: 'Directory / is not writable'
+    class: intended
+    reason: Code and site configuration come from the image and are not writable by the web server on purpose.
+    evidence: https://github.com/netresearch/typo3-demo/blob/main/docker/web/Dockerfile
+  - check: directory
+    severity: error
+    title: 'Directory /config is not writable'
+    class: intended
+    reason: Code and site configuration come from the image and are not writable by the web server on purpose.
+    evidence: https://github.com/netresearch/typo3-demo/blob/main/docker/web/Dockerfile
+  - check: directory
+    severity: error
+    title: 'Directory /config/sites is not writable'
+    class: intended
+    reason: Code and site configuration come from the image and are not writable by the web server on purpose.
+    evidence: https://github.com/netresearch/typo3-demo/blob/main/docker/web/Dockerfile
+  - check: directory
+    severity: error
+    title: 'Directory /public is not writable'
+    class: intended
+    reason: Code and site configuration come from the image and are not writable by the web server on purpose.
+    evidence: https://github.com/netresearch/typo3-demo/blob/main/docker/web/Dockerfile
+  # var/ lies next to public/, outside the document root, so no web server can
+  # serve it and the .htaccess core asks for would have no effect. Core only
+  # gates the root .htaccess on the web server type.
+  - check: directory
+    severity: warning
+    title: 'File /var/.htaccess does not exist'
+    class: false-positive
+    reason: var/ is outside the document root; the file would protect nothing, on nginx or anywhere else.
+    evidence: https://github.com/TYPO3/typo3/blob/v14.3.10/typo3/sysext/install/Classes/FolderStructure/DefaultFactory.php#L219-L229
+  # Analyze Database Structure: tables, columns and indexes no installed package
+  # defines any more. Removing them deletes data on the live database, so they
+  # stay until the cleanup in #397 is done. The patterns list each object, so a
+  # new removal suggestion is still reported.
+  - check: database
+    severity: warning
+    title: 'Remove tables (rename with prefix)'
+    messagePattern: '/^ALTER TABLE `(?:cache_hash|cache_hash_tags|cache_nr_mcp_agent_tools|cache_nr_mcp_agent_tools_tags|cache_pages|cache_pages_tags|cache_rootline|cache_rootline_tags|cache_treelist|index_config|index_debug|index_fulltext|index_grlist|index_phash|index_rel|index_section|index_stat_word|index_words|sys_language|sys_note|tx_mcpserver_access_tokens|tx_mcpserver_oauth_clients|tx_mcpserver_oauth_codes|tx_news_domain_model_news_ttcontent_mm|tx_nrllm_prompttemplate)` RENAME TO /'
+    class: defect-tracked
+    reason: Tables of removed extensions and caches, see #397.
+    evidence: https://github.com/netresearch/typo3-demo/issues/397
+  - check: database
+    severity: warning
+    title: 'Remove unused fields (rename with prefix)'
+    messagePattern: '/^ALTER TABLE `(?:backend_layout` CHANGE `(?:cruser_id|t3_origuid)|be_groups` CHANGE `(?:cruser_id|gitlabGroup)|be_users` CHANGE `(?:cruser_id|oauth_identifier)|fe_groups` CHANGE `(?:TSconfig|cruser_id|tx_extbase_type)|fe_users` CHANGE `(?:TSconfig|cruser_id)|pages` CHANGE `(?:cruser_id|fe_login_mode|t3_origuid|url)|sys_category` CHANGE `(?:cruser_id|fe_group|t3_origuid)|sys_file_collection` CHANGE `(?:cruser_id|folder|storage|t3_origuid)|sys_file_metadata` CHANGE `(?:cruser_id|fe_groups|t3_origuid|visible)|sys_file_reference` CHANGE `(?:cruser_id|table_local)|sys_file_storage` CHANGE `(?:cruser_id)|sys_filemounts` CHANGE `(?:base|path)|sys_log` CHANGE `(?:NEWid|details_nr|pid)|sys_news` CHANGE `(?:cruser_id)|sys_template` CHANGE `(?:cruser_id|t3_origuid|t3ver_oid|t3ver_stage|t3ver_state|t3ver_wsid)|tt_content` CHANGE `(?:accessibility_bypass|accessibility_bypass_text|accessibility_title|cruser_id|list_type|t3_origuid)|tx_bootstrappackage_accordion_item` CHANGE `(?:cruser_id|t3ver_count|t3ver_id|t3ver_label|t3ver_move_id|t3ver_tstamp)|tx_bootstrappackage_card_group_item` CHANGE `(?:cruser_id|t3ver_count|t3ver_id|t3ver_label|t3ver_move_id|t3ver_tstamp)|tx_bootstrappackage_carousel_item` CHANGE `(?:cruser_id|t3ver_count|t3ver_id|t3ver_label|t3ver_move_id|t3ver_tstamp)|tx_bootstrappackage_icon_group_item` CHANGE `(?:cruser_id|t3ver_count|t3ver_id|t3ver_label|t3ver_move_id|t3ver_tstamp)|tx_bootstrappackage_tab_item` CHANGE `(?:cruser_id|t3ver_count|t3ver_id|t3ver_label|t3ver_move_id|t3ver_tstamp)|tx_bootstrappackage_timeline_item` CHANGE `(?:cruser_id|sorting|t3ver_count|t3ver_id|t3ver_label|t3ver_move_id|t3ver_tstamp)|tx_extensionmanager_domain_model_extension` CHANGE `(?:repository)|tx_news_domain_model_link` CHANGE `(?:cruser_id|t3ver_count|t3ver_id|t3ver_label|t3ver_move_id|t3ver_tstamp)|tx_news_domain_model_news` CHANGE `(?:cruser_id|media|related_files|t3ver_count|t3ver_id|t3ver_label|t3ver_move_id|t3ver_tstamp)|tx_news_domain_model_tag` CHANGE `(?:cruser_id|sorting|t3_origuid|t3ver_count|t3ver_id|t3ver_label|t3ver_move_id|t3ver_tstamp)|tx_nrpasskeysfe_recovery_code` CHANGE `(?:site_identifier)|tx_scheduler_task_group` CHANGE `(?:cruser_id))` `zzz_deleted_/'
+    class: defect-tracked
+    reason: Columns core and extensions dropped in earlier versions, see #397.
+    evidence: https://github.com/netresearch/typo3-demo/issues/397
+  - check: database
+    severity: warning
+    title: 'Drop fields (really!)'
+    messagePattern: '/^DROP INDEX `(?:(?:parent)` ON `sys_log|(?:lookup_uid)` ON `sys_refindex|(?:t3ver_oid)` ON `sys_template|(?:parent)` ON `tx_extensionmanager_domain_model_extension|(?:sys_language_uid_l10n_parent)` ON `tx_news_domain_model_news)`$/'
+    class: defect-tracked
+    reason: Indexes core and extensions dropped in earlier versions, see #397.
+    evidence: https://github.com/netresearch/typo3-demo/issues/397

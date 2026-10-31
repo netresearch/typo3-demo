@@ -99,7 +99,7 @@ update: ## Update code without purging data
 	@rc=0; $(TYPO3) demo:install-tool:check || rc=$$?; \
 	case $$rc in \
 		0) ;; \
-		1) echo "::warning title=Install Tool checks::Unexpected Install Tool findings on this deploy - see the output above and README.md#install-tool-checks" ;; \
+		1) echo "::warning title=Install Tool checks::Unexpected Install Tool findings on this run - see the output above and README.md#install-tool-checks" ;; \
 		*) echo "::error title=Install Tool checks::The Install Tool check did not run (exit $$rc) - see the output above" ;; \
 	esac
 	$(MAKE) prune

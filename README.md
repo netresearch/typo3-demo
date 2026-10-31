@@ -140,11 +140,27 @@ of the headers the probe evaluates.
 the deploy, which has replaced the containers by then: unexpected findings
 give the run a warning annotation, a check that did not run an error
 annotation, and the full list is in the job log. The pull-request build runs
-the same check on the image under test.
+the same check on the image under test and fails on any unexpected finding.
 
 A finding at warning or above counts as unexpected unless
 [`expected-findings.yaml`](packages/netresearch-demo-site/Configuration/InstallTool/expected-findings.yaml)
 lists it with the reason it is expected here.
+
+### Expected Install Tool findings
+
+What the four views show on this instance, and why. Entries marked
+*listed* are in `expected-findings.yaml`; notices and information are below
+the floor and listed here only.
+
+| View | Severity | Finding | Class | Why |
+|------|----------|---------|-------|-----|
+| Directory Status | error | `/`, `/public`, `/config`, `/config/sites` not writable | intended, listed | The image owns the code and the site configuration; only `var/`, `config/system/`, `fileadmin/` and `typo3temp/` belong to `www-data`. Site configuration is versioned in `config/sites/` here, not edited in the backend. |
+| Directory Status | warning | `/var/.htaccess` does not exist | false positive, listed | `var/` lies outside the document root, so the file would protect nothing. Core gates only the root `.htaccess` on the web server type. |
+| Directory Status | notice | permissions mismatch (`0755`/`0644` instead of `2775`/`0664`) | intended | The image and the entrypoint create directories with the default umask; nginx reads `fileadmin/` and `typo3temp/` as another user, which these modes allow. |
+| Directory Status | notice | `fileadmin/.htaccess` and `user_upload/_temp_/importexport/index.html` content differs | intended | The seed's copies; nginx ignores `.htaccess`, and `nginx.conf` denies the temp folders itself. |
+| Directory Status | notice | create masks readable by anyone (`0664`, `2775`) | intended | nginx serves `fileadmin/` and `typo3temp/` as user `nginx`, not `www-data`; core's recommended `0660`/`2770` would make those files unreadable for it. |
+| Environment Status | information | empty `systemLocale` | intended | No UTF-8 file names are in use (`UTF8filesystem` is off). |
+| Analyze Database Structure | warning | 24 tables (25 on the live instance), 109 columns and 5 indexes to remove | defect, tracked in [#397](https://github.com/netresearch/typo3-demo/issues/397), listed | Left over from extensions and core versions no longer installed; removing them deletes data, so it needs a backup and a decision first. The patterns name each object, so a new suggestion is still reported. |
 
 ## The OpenAI key
 
