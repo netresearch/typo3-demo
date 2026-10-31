@@ -18,8 +18,15 @@ echo "Database ready."
 TABLE_COUNT=$(MYSQL_PWD="${MARIADB_PASSWORD:-typo3}" mariadb -h"${MARIADB_HOST:-db}" -u"${MARIADB_USER:-typo3}" "${MARIADB_DATABASE:-typo3}" -N -e 'SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = DATABASE()' 2>/dev/null || echo "0")
 echo "Database has $TABLE_COUNT tables."
 
+# typo3temp/ is part of the image, not a volume, and the Install Tool's
+# Directory Status expects all of this layout (DefaultFactory): index.html and
+# assets/{css,js,images,_processed_}. TYPO3 creates the folders on demand, but
+# without them Directory Status lists one warning each.
 mkdir -p var/log var/cache var/lock var/charset var/labels \
-    public/fileadmin public/typo3temp/assets/_processed_ config/system
+    public/fileadmin config/system \
+    public/typo3temp/assets/_processed_ public/typo3temp/assets/css \
+    public/typo3temp/assets/js public/typo3temp/assets/images
+[ -e public/typo3temp/index.html ] || : > public/typo3temp/index.html
 chown -R www-data:www-data var public/fileadmin public/typo3temp
 
 # fileadmin lives in a volume that outlives the image, so a file added to
