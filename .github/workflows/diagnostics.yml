@@ -113,6 +113,13 @@ jobs:
             }
             ipv6
 
+            # Open upgrade wizards, in plain text: identifiers and titles
+            # only. Reports > Status names no wizard, and the Upgrade module
+            # sits behind sudo mode, so this is the read-only way to see which
+            # one keeps "Remaining updates" open. upgrade:list runs nothing.
+            echo "===== upgrade wizards (upgrade:list)"
+            docker compose exec -T -u www-data web vendor/bin/typo3 upgrade:list 2>&1 || true
+
             echo "DIAG-BEGIN"
             collect | gzip | enc
             echo
