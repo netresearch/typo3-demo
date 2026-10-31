@@ -64,8 +64,10 @@ fi
 # puts into _temp_ is Apache-only. The seed no longer carries them and nginx
 # now denies _temp_; this removes the copies an existing volume and database
 # still hold. Idempotent: rm -f and a DELETE that matches nothing once done.
-# A sys_file row that a record references is left alone, so a reference never
-# points at a deleted row.
+# The files go in every case: they are the exposure, and an import/export dump
+# is nothing a record should embed (the seed references neither). A sys_file
+# row that a record does reference is left alone, so that reference shows a
+# missing file in the backend instead of pointing at a deleted row.
 for t3d in sme-z.t3d sme2-z.t3d; do
     if [ -e "public/fileadmin/user_upload/_temp_/importexport/$t3d" ]; then
         rm -f "public/fileadmin/user_upload/_temp_/importexport/$t3d"
