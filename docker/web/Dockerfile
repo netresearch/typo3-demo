@@ -72,6 +72,10 @@ FROM php:8.5-fpm-alpine@sha256:4c2818074ec49f6abe46620f3965e0cb75bc3a5f2b417edd1
 # ImageMagick through the HEIF coder, hence imagemagick-heic. Without a working
 # AVIF delegate ImageMagick writes empty .avif files instead of failing.
 #
+# Ghostscript is ImageMagick's PDF and PostScript delegate. Without it the
+# Install Tool's "Read pdf" and "Read ai" tests fail and FAL renders no preview
+# for an uploaded PDF, although GFX/imagefile_ext lists both formats.
+#
 # The encoders were originally added for nr_image_optimize. They stay after its
 # removal because core's conversion needs exactly the same thing — the WebP
 # delivery the build asserts comes from core.
@@ -82,7 +86,7 @@ RUN --mount=type=bind,from=ghcr.io/php/pie:1.5.2-bin@sha256:a254c78b51ca34daef05
     && apk add --no-cache \
         nginx mariadb-client openssl freetype libjpeg-turbo libpng libzip icu-libs \
         imagemagick imagemagick-webp imagemagick-heic libwebp libavif \
-        ffmpeg poppler-utils chromium font-liberation nodejs \
+        ffmpeg poppler-utils chromium font-liberation nodejs ghostscript \
     && docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp --with-avif \
     && docker-php-ext-install -j$(nproc) gd intl mysqli pdo_mysql zip exif \
     && pie install --no-interaction phpredis/phpredis imagick/imagick \
@@ -104,6 +108,7 @@ RUN { \
     echo 'post_max_size=50M'; \
     echo 'memory_limit=512M'; \
     echo 'max_execution_time=240'; \
+    echo 'max_input_vars=1500'; \
     echo 'error_reporting=E_ALL & ~E_DEPRECATED'; \
     echo 'display_errors=Off'; \
     echo 'expose_php=Off'; \
