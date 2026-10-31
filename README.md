@@ -198,8 +198,8 @@ nothing to do and prints `Nothing to do`. `--dry-run` prints the statements
 that could run now without executing them; the drop of a renamed copy appears
 only once the rename has run.
 
-The run fails (exit 1) when a statement fails, when a listed object is still
-there afterwards, or when core suggests a removal statement the command cannot
+The run fails (exit 1) when a statement fails, when an object it removed (or
+its `zzz_deleted_` copy) is still there afterwards, or when core suggests a removal statement the command cannot
 read, because that statement could name a listed object.
 
 On the live instance, before the first run, the tables held: `index_rel` 8,855
