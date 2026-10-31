@@ -57,6 +57,33 @@ if [ -d /seed/fileadmin ]; then
     echo "Fileadmin synced."
 fi
 
+# Two import/export dumps (.t3d files of pages and records) that an export run
+# left in fileadmin/user_upload/_temp_/importexport/ before the March seed was
+# taken. They came in with data/fileadmin/ and data/db.sql.gz (sys_file uids
+# 255 and 256), and nginx served them to anyone, because the .htaccess TYPO3
+# puts into _temp_ is Apache-only. The seed no longer carries them and nginx
+# now denies _temp_; this removes the copies an existing volume and database
+# still hold. Idempotent: rm -f and a DELETE that matches nothing once done.
+# A sys_file row that a record references is left alone, so a reference never
+# points at a deleted row.
+for t3d in sme-z.t3d sme2-z.t3d; do
+    if [ -e "public/fileadmin/user_upload/_temp_/importexport/$t3d" ]; then
+        rm -f "public/fileadmin/user_upload/_temp_/importexport/$t3d"
+        echo "Removed stale import/export dump fileadmin/user_upload/_temp_/importexport/$t3d."
+    fi
+done
+MYSQL_PWD="${MARIADB_PASSWORD:-typo3}" mariadb -h"${MARIADB_HOST:-db}" -u"${MARIADB_USER:-typo3}" "${MARIADB_DATABASE:-typo3}" 2>/dev/null <<'SQL' || echo "WARNING: removing the sys_file rows of the stale .t3d dumps failed" >&2
+DELETE m FROM sys_file_metadata m
+  JOIN sys_file f ON f.uid = m.file
+ WHERE f.storage = 1
+   AND f.identifier IN ('/user_upload/_temp_/importexport/sme-z.t3d', '/user_upload/_temp_/importexport/sme2-z.t3d')
+   AND NOT EXISTS (SELECT 1 FROM sys_file_reference r WHERE r.uid_local = f.uid AND r.deleted = 0);
+DELETE f FROM sys_file f
+ WHERE f.storage = 1
+   AND f.identifier IN ('/user_upload/_temp_/importexport/sme-z.t3d', '/user_upload/_temp_/importexport/sme2-z.t3d')
+   AND NOT EXISTS (SELECT 1 FROM sys_file_reference r WHERE r.uid_local = f.uid AND r.deleted = 0);
+SQL
+
 if [ ! -f config/system/settings.php ]; then
     ENCRYPTION_KEY="${TYPO3_ENCRYPTION_KEY:-$(openssl rand -hex 48)}"
 
