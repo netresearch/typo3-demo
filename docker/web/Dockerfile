@@ -88,11 +88,17 @@ RUN --mount=type=bind,from=ghcr.io/php/pie:1.5.2-bin@sha256:a254c78b51ca34daef05
     && pie install --no-interaction phpredis/phpredis imagick/imagick \
     && docker-php-ext-enable redis imagick \
     && apk del .build-deps
+# opcache.validate_timestamps stays at PHP's default (on, every 2 s). php-fpm
+# keeps running while `make update` rewrites PHP files it includes from the
+# CLI: cache:flush and cache:warmup regenerate var/cache/code, extension:setup
+# may rewrite config/system/settings.php. The CLI cannot reset php-fpm's
+# opcache, so without the timestamp check those changes would stay invisible
+# until the next container restart. The published image ran with the check on
+# from the start, because it was built from the dev stage.
 RUN { \
     echo 'opcache.memory_consumption=256'; \
     echo 'opcache.interned_strings_buffer=16'; \
     echo 'opcache.max_accelerated_files=20000'; \
-    echo 'opcache.validate_timestamps=0'; \
     echo 'opcache.jit=off'; \
     echo 'upload_max_filesize=50M'; \
     echo 'post_max_size=50M'; \
