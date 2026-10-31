@@ -336,6 +336,45 @@ jobs:
             || { echo 'ERROR: robots.txt names no sitemap'; exit 1; }
           echo "robots.txt and llms.txt served."
 
+      # nginx ignores the .htaccess files TYPO3 writes into fileadmin, so both
+      # the deny for its temporary folders and the CSP for uploaded documents
+      # live in nginx.conf, where only a real request shows whether a location
+      # block matches. _temp_/index.html is a placeholder the seed carries.
+      - name: Verify fileadmin temp folders are denied and fileadmin carries a CSP
+        run: |
+          req() { local path="$1"; curl -sS -o /dev/null -D - --proto '=https' --proto-redir '=https' --cacert "$RUNNER_TEMP/caddy-root.crt" "https://localhost$path"; }
+          status() { local headers="$1"; head -1 <<<"$headers" | awk '{print $2}'; }
+          csp() { local headers="$1"; grep -i '^content-security-policy:' <<<"$headers" | tr -d '\r' || true; }
+          fail() { local message="$1"; echo "ERROR: $message" >&2; exit 1; }
+
+          for path in /fileadmin/_temp_/index.html /fileadmin/user_upload/_temp_/index.html /fileadmin/user_upload/_temp_/importexport/index.html; do
+            code=$(status "$(req "$path")")
+            echo "$path -> $code"
+            [ "$code" = "403" ] || fail "$path answered $code, expected 403"
+          done
+          # A file that does not exist: 403 only while the deny precedes the
+          # static-asset regex, 404 if it ever moves below it.
+          code=$(status "$(req /fileadmin/_temp_/ci-probe.svg)")
+          echo "/fileadmin/_temp_/ci-probe.svg -> $code"
+          [ "$code" = "403" ] || fail "an .svg under _temp_ answered $code, expected 403 (deny below the static-asset location?)"
+
+          svg=$(req /fileadmin/introduction/images/introduction-package.svg)
+          echo "svg -> $(status "$svg") $(csp "$svg")"
+          [ "$(status "$svg")" = "200" ] || fail "the seeded svg answered $(status "$svg")"
+          for directive in "script-src 'none'" "object-src 'none'" "sandbox"; do
+            grep -qiF "$directive" <<<"$(csp "$svg")" || fail "fileadmin svg CSP lacks $directive"
+          done
+
+          pdf=$(req /fileadmin/user_upload/images/Downloads/TYPO3_Demo_Download.pdf)
+          echo "pdf -> $(status "$pdf") $(csp "$pdf")"
+          grep -qiF "script-src 'none'" <<<"$(csp "$pdf")" || fail "fileadmin pdf CSP lacks script-src 'none'"
+
+          page=$(req /)
+          if [ -n "$(csp "$page")" ] && grep -qiF "script-src 'none'" <<<"$(csp "$page")"; then
+            fail "the fileadmin CSP leaked onto the home page: $(csp "$page")"
+          fi
+          echo "fileadmin temp folders denied, fileadmin CSP present, pages unaffected."
+
       # The seed carries no `pages` translation, which is exactly the state in
       # which the core language menu marks German unavailable and bootstrap_package
       # would render a dead span. The site runs fallbackType: fallback, so the link

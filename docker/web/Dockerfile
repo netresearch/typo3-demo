@@ -114,6 +114,16 @@ COPY docker/web/security-headers.conf /etc/nginx/security-headers.conf
 COPY docker/web/php-fpm.conf /usr/local/etc/php-fpm.d/zz-typo3.conf
 COPY docker/web/entrypoint.sh /entrypoint.sh
 COPY data/fileadmin/ /seed/fileadmin/
+# _temp_ and _recycler_ hold what TYPO3 writes on the fly (import/export dumps,
+# deleted files). In the seed they would be copied into every instance on every
+# boot, which is how two .t3d dumps of the demo's records became public. Only
+# the placeholder files TYPO3 creates there itself may be committed.
+RUN stray=$(find /seed/fileadmin \( -path '*/_temp_/*' -o -path '*/_recycler_/*' \) \
+        -type f ! -name index.html ! -name .htaccess) \
+    && if [ -n "$stray" ]; then \
+        printf 'data/fileadmin/ carries files in a _temp_ or _recycler_ folder:\n%s\n' "$stray" >&2; \
+        exit 1; \
+    fi
 COPY data/seed-*.sql data/
 COPY --from=composer-builder /app/vendor/ vendor/
 COPY --from=composer-builder /app/public/ public/
