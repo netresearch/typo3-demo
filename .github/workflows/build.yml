@@ -341,10 +341,10 @@ jobs:
       # block matches. _temp_/index.html is a placeholder the seed carries.
       - name: Verify fileadmin temp folders are denied and fileadmin carries a CSP
         run: |
-          req() { curl -sS -o /dev/null -D - --proto '=https' --proto-redir '=https' --cacert "$RUNNER_TEMP/caddy-root.crt" "https://localhost$1"; }
-          status() { head -1 <<<"$1" | awk '{print $2}'; }
-          csp() { grep -i '^content-security-policy:' <<<"$1" | tr -d '\r' || true; }
-          fail() { echo "ERROR: $1"; exit 1; }
+          req() { local path="$1"; curl -sS -o /dev/null -D - --proto '=https' --proto-redir '=https' --cacert "$RUNNER_TEMP/caddy-root.crt" "https://localhost$path"; }
+          status() { local headers="$1"; head -1 <<<"$headers" | awk '{print $2}'; }
+          csp() { local headers="$1"; grep -i '^content-security-policy:' <<<"$headers" | tr -d '\r' || true; }
+          fail() { local message="$1"; echo "ERROR: $message" >&2; exit 1; }
 
           for path in /fileadmin/_temp_/index.html /fileadmin/user_upload/_temp_/index.html /fileadmin/user_upload/_temp_/importexport/index.html; do
             code=$(status "$(req "$path")")
