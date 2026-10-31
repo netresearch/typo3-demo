@@ -1,0 +1,80 @@
+# Tables, columns and indexes that `make remove-schema-leftovers`
+# (demo:schema:remove-leftovers) deletes from the database. README.md#schema-leftovers
+# explains the command.
+#
+# Every object here was a removal suggestion of Maintenance > Analyze Database
+# Structure on the live instance (Deploy (Update) run 41196474472, see #397):
+# left over from extensions and core versions this project no longer
+# installs. No ext_tables.sql and no TCA of the locked packages defines any of
+# them.
+#
+# The list is explicit on purpose. The command never removes an object that is
+# not named here, and it removes a named one only while the core schema
+# comparison still suggests removing it; otherwise it logs the object and
+# leaves it alone. A future removal suggestion is therefore reported by
+# `make install-tool-check` instead of disappearing on the next deploy.
+#
+#   tables:  table names
+#   columns: table name => column names
+#   indexes: table name => index names
+tables:
+  - cache_hash
+  - cache_hash_tags
+  - cache_nr_mcp_agent_tools
+  - cache_nr_mcp_agent_tools_tags
+  - cache_pages
+  - cache_pages_tags
+  - cache_rootline
+  - cache_rootline_tags
+  - cache_treelist
+  - index_config
+  - index_debug
+  - index_fulltext
+  - index_grlist
+  - index_phash
+  - index_rel
+  - index_section
+  - index_stat_word
+  - index_words
+  - sys_language
+  - sys_note
+  - tx_mcpserver_access_tokens
+  - tx_mcpserver_oauth_clients
+  - tx_mcpserver_oauth_codes
+  - tx_news_domain_model_news_ttcontent_mm
+  - tx_nrllm_prompttemplate
+columns:
+  backend_layout: [cruser_id, t3_origuid]
+  be_groups: [cruser_id, gitlabGroup]
+  be_users: [cruser_id, oauth_identifier]
+  fe_groups: [cruser_id, TSconfig, tx_extbase_type]
+  fe_users: [cruser_id, TSconfig]
+  pages: [cruser_id, fe_login_mode, t3_origuid, url]
+  sys_category: [cruser_id, fe_group, t3_origuid]
+  sys_file_collection: [cruser_id, folder, storage, t3_origuid]
+  sys_file_metadata: [cruser_id, fe_groups, t3_origuid, visible]
+  sys_file_reference: [cruser_id, table_local]
+  sys_file_storage: [cruser_id]
+  sys_filemounts: [base, path]
+  sys_log: [details_nr, NEWid, pid]
+  sys_news: [cruser_id]
+  sys_template: [cruser_id, t3_origuid, t3ver_oid, t3ver_stage, t3ver_state, t3ver_wsid]
+  tt_content: [accessibility_bypass, accessibility_bypass_text, accessibility_title, cruser_id, list_type, t3_origuid]
+  tx_bootstrappackage_accordion_item: [cruser_id, t3ver_count, t3ver_id, t3ver_label, t3ver_move_id, t3ver_tstamp]
+  tx_bootstrappackage_card_group_item: [cruser_id, t3ver_count, t3ver_id, t3ver_label, t3ver_move_id, t3ver_tstamp]
+  tx_bootstrappackage_carousel_item: [cruser_id, t3ver_count, t3ver_id, t3ver_label, t3ver_move_id, t3ver_tstamp]
+  tx_bootstrappackage_icon_group_item: [cruser_id, t3ver_count, t3ver_id, t3ver_label, t3ver_move_id, t3ver_tstamp]
+  tx_bootstrappackage_tab_item: [cruser_id, t3ver_count, t3ver_id, t3ver_label, t3ver_move_id, t3ver_tstamp]
+  tx_bootstrappackage_timeline_item: [cruser_id, sorting, t3ver_count, t3ver_id, t3ver_label, t3ver_move_id, t3ver_tstamp]
+  tx_extensionmanager_domain_model_extension: [repository]
+  tx_news_domain_model_link: [cruser_id, t3ver_count, t3ver_id, t3ver_label, t3ver_move_id, t3ver_tstamp]
+  tx_news_domain_model_news: [cruser_id, media, related_files, t3ver_count, t3ver_id, t3ver_label, t3ver_move_id, t3ver_tstamp]
+  tx_news_domain_model_tag: [cruser_id, sorting, t3_origuid, t3ver_count, t3ver_id, t3ver_label, t3ver_move_id, t3ver_tstamp]
+  tx_nrpasskeysfe_recovery_code: [site_identifier]
+  tx_scheduler_task_group: [cruser_id]
+indexes:
+  sys_log: [parent]
+  sys_refindex: [lookup_uid]
+  sys_template: [t3ver_oid]
+  tx_extensionmanager_domain_model_extension: [parent]
+  tx_news_domain_model_news: [sys_language_uid_l10n_parent]
