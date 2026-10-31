@@ -26,9 +26,20 @@ jobs:
           host: ${{ secrets.HETZNER_SSH_HOST }}
           username: ${{ secrets.HETZNER_SSH_USER }}
           key: ${{ secrets.HETZNER_SSH_KEY }}
-          envs: DHI_USERNAME,DHI_TOKEN,OPENAI_API_KEY,DEEPL_API_KEY
+          envs: DHI_USERNAME,DHI_TOKEN,OPENAI_API_KEY,DEEPL_API_KEY,DEPLOY_SHA
           script: |
             cd /opt/typo3-demo
+
+            # Deploy one commit: its code AND the image built from it. The job
+            # used to `git pull` the newest main and then pull :latest, which
+            # is whatever the most recent push to main published - so a deploy
+            # triggered by one Build could run the next commit's Makefile and
+            # entrypoint against the previous image, or the other way round.
+            # Build tags every image it publishes as sha-<commit>.
+            case "$DEPLOY_SHA" in
+              *[!0-9a-f]*|'') echo "::error::DEPLOY_SHA is not a commit id: $DEPLOY_SHA"; exit 1 ;;
+            esac
+            echo "deploying commit $DEPLOY_SHA"
 
             # The db service runs the MariaDB Docker Hardened Image and dhi.io
             # serves no anonymous pulls, so `make update` cannot pull without a
@@ -57,9 +68,30 @@ jobs:
               exit 1
             fi
 
-            git pull --ff-only
+            git fetch origin || { echo "::error::git fetch failed"; exit 1; }
+            # A Build that finishes after a newer one has already deployed must
+            # not take the instance back: its commit is then an ancestor of
+            # the checkout, and the run stops here.
+            if [ "$(git rev-parse HEAD)" != "$DEPLOY_SHA" ] && git merge-base --is-ancestor "$DEPLOY_SHA" HEAD; then
+              echo "::notice::$DEPLOY_SHA is older than the deployed $(git rev-parse --short HEAD) - nothing to do."
+              exit 0
+            fi
+            # Fast-forward to exactly this commit, not to whatever main is now.
+            git merge --ff-only "$DEPLOY_SHA" || { echo "::error::cannot fast-forward the checkout to $DEPLOY_SHA"; exit 1; }
+            # Fails loudly when Build published no image for this commit (a
+            # failed or skipped Build): run Build for it, then deploy.
+            export TYPO3_DEMO_IMAGE_TAG="sha-$DEPLOY_SHA"
+            docker pull "ghcr.io/netresearch/typo3-demo:$TYPO3_DEMO_IMAGE_TAG" \
+              || { echo "::error::no image ghcr.io/netresearch/typo3-demo:$TYPO3_DEMO_IMAGE_TAG - run Build for this commit"; exit 1; }
+            # compose.yml reads the tag from .env, so a later `compose up` -
+            # after a reboot or from the Maintenance workflow - keeps this
+            # image instead of switching to whatever :latest is by then.
+            make persist-env-secret SECRET_NAME=TYPO3_DEMO_IMAGE_TAG || exit 1
             make update
         env:
+          # The commit to deploy: the one the triggering Build built, or for a
+          # manual run the commit the run was dispatched on (main's head).
+          DEPLOY_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
           DHI_USERNAME: ${{ secrets.DHI_USERNAME }}
           DHI_TOKEN: ${{ secrets.DHI_TOKEN }}
           # Consumed by `make provision-llm-key` inside `make update`. Absent or
