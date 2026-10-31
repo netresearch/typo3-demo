@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d3c072f33dd75f7e5fc33643d08b70ca",
+    "content-hash": "8ee2e9db8a8ca14729e6b6655808077f",
     "packages": [
         {
             "name": "b13/ai-label",
@@ -3843,16 +3843,16 @@
         },
         {
             "name": "netresearch/nr-vault",
-            "version": "v1.1.0",
+            "version": "v1.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/t3x-nr-vault.git",
-                "reference": "4273018c17f1812ad50337fccd03afc63f859890"
+                "reference": "3df1442855469b5fe08c6358b207137362e15243"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/t3x-nr-vault/zipball/4273018c17f1812ad50337fccd03afc63f859890",
-                "reference": "4273018c17f1812ad50337fccd03afc63f859890",
+                "url": "https://api.github.com/repos/netresearch/t3x-nr-vault/zipball/3df1442855469b5fe08c6358b207137362e15243",
+                "reference": "3df1442855469b5fe08c6358b207137362e15243",
                 "shasum": ""
             },
             "require": {
@@ -3867,7 +3867,7 @@
             },
             "require-dev": {
                 "mikey179/vfsstream": "^1.6.11",
-                "netresearch/typo3-ci-workflows": "^1.3",
+                "netresearch/typo3-ci-workflows": "^2.0.3",
                 "roave/security-advisories": "dev-latest",
                 "typo3/cms-dashboard": "^13.4 || ^14.3",
                 "typo3/cms-install": "^13.4 || ^14.3",
@@ -3885,7 +3885,7 @@
                     "Package": {
                         "providesPackages": []
                     },
-                    "version": "1.1.0",
+                    "version": "1.2.0",
                     "web-dir": ".Build/web",
                     "extension-key": "nr_vault"
                 },
@@ -3910,7 +3910,7 @@
                     "role": "Developer"
                 }
             ],
-            "description": "Secure secrets management for TYPO3 with envelope encryption, access control, and audit logging",
+            "description": "Secrets Vault - Central, secure storage for API keys, credentials and other secrets with envelope encryption, access control, audit logging and a secure HTTP client.",
             "homepage": "https://github.com/netresearch/t3x-nr-vault",
             "keywords": [
                 "api-keys",
@@ -3931,7 +3931,7 @@
                 "issues": "https://github.com/netresearch/t3x-nr-vault/issues",
                 "source": "https://github.com/netresearch/t3x-nr-vault"
             },
-            "time": "2026-09-29T20:42:00+00:00"
+            "time": "2026-10-31T21:55:36+00:00"
         },
         {
             "name": "netresearch/rte-ckeditor-image",
