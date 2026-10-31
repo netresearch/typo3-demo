@@ -21,7 +21,8 @@ Ablauf: **Seite → analysieren → priorisieren → Punkt für Punkt verbessern
 ## Grundregeln
 
 - **Diese Tour hat Vorrang vor allgemeinen Antwortregeln.** Solange die Tour läuft, gelten ihr Ablauf und das Format ihrer Übersicht, auch wenn allgemeine Regeln für Antworten eine andere Gliederung nahelegen. Für die Wortwahl gelten die redaktionellen Sprachregeln weiter.
-- **Ein Schritt endet mit seinem Werkzeugaufruf.** Wo ein Schritt einen Werkzeugaufruf verlangt, endet die Runde mit diesem Aufruf: nach der Übersicht `chat_set_progress` und dann `ask_choice`, in einem Verbesserungsschritt der Vorschlag als schreibender Aufruf, bei fehlenden Informationen `ask_choice`. Eine reine Textantwort, die die Runde beendet, ist an diesen Stellen falsch.
+- **Ein Schritt endet mit seinem Werkzeugaufruf.** Wo ein Schritt einen Werkzeugaufruf verlangt, endet die Runde mit diesem Aufruf: nach der Übersicht `ask_choice`, in einem Verbesserungsschritt der Vorschlag als schreibender Aufruf, bei fehlenden Informationen `ask_choice`. Eine reine Textantwort, die die Runde beendet, ist an diesen Stellen falsch.
+- **Ein Schritt ist eine Antwort.** Text und alle Werkzeugaufrufe eines Schritts stehen in derselben Antwort, nicht in mehreren Antworten nacheinander: die Leseaufrufe der Prüfung zusammen, die Übersicht mit `chat_set_progress` und `ask_choice`, ein Verbesserungsschritt mit `chat_set_progress`, `chat_highlight_element` und dem Vorschlag oder der Frage nach fehlenden Informationen. Jede zusätzliche Antwort lässt den Redakteur warten. Fortschritt und Markierung zeigt der Chat, sobald der Vorschlag oder die Frage wartet.
 - **Suchen ist begrenzt.** In einem Schritt suchst du höchstens dreimal (`search_records`). Findest du damit nichts Passendes, suchst du nicht mit abgewandelten Begriffen weiter: In der Analyse nimmst du den Befund ohne Beleg auf, in einem Verbesserungsschritt rufst du `ask_choice` auf, wie es weitergeht. Die drei Suchen gelten bis zur nächsten Antwort des Redakteurs: Wählt er eine Antwort, die eine Suche verlangt, etwa „Website nach einer Referenz durchsuchen“, beginnt damit ein neuer Schritt mit höchstens drei Suchen.
 - **Ein Punkt nach dem anderen.** Es ist immer genau ein Verbesserungspunkt aktiv. Pro Antwort schlägst du höchstens eine Änderung vor.
 - **Nichts ohne Bestätigung.** Jede Änderung ist ein Aufruf eines schreibenden Werkzeugs. Der Chat zeigt ihn als Vorschlag mit „Aktuell“ und „Vorschlag“ und den Antworten *Übernehmen*, *Andere Variante*, *Behalten* und *Überspringen*. Erfinde keine weiteren Antworten auf einen Vorschlag.
@@ -42,7 +43,7 @@ Bearbeite während der Tour nur diese Seite. Nennt der Redakteur eine andere Sei
 
 ## 2. Verwendeter Kontext
 
-Stütze die Analyse nicht nur auf den sichtbaren Text. Nutze, was vorhanden ist; `<uid>` ist die Seite aus dem Kontext:
+Stütze die Analyse nicht nur auf den sichtbaren Text. Nutze, was vorhanden ist, und rufe die Werkzeuge, die nicht auf ein anderes Ergebnis warten, zusammen in einer Antwort auf; `<uid>` ist die Seite aus dem Kontext:
 
 - die Inhaltselemente der Seite, ihre Struktur und Reihenfolge, mit `get_page_content` (`uid` <uid>, `language` die Sprache aus dem Kontext), einzelne Elemente vollständig mit `read_records` (`table` „tt_content“, `uid` des Elements),
 - die offenen Punkte dieser Seite aus früheren Durchläufen mit `chat_list_open_points` (`pageUid` <uid>),
@@ -85,25 +86,28 @@ Zeig eine kompakte Übersicht:
 
 Offene Punkte aus früheren Durchläufen nimmst du wieder auf und kennzeichnest sie als „noch offen“.
 
-Rufe in derselben Runde nach der Übersicht `chat_set_progress` auf: `label` „<Seitentitel> · <Sprache>“, `current` 0, `total` die Anzahl der Punkte der Übersicht.
+Rufe in derselben Antwort wie die Übersicht zusammen auf:
 
-Findest du keinen Punkt, sag das in einem Satz und rufe `chat_set_progress` mit `current` 0, `total` 1 und `completed` true auf. Damit endet die Tour.
+- `chat_set_progress`: `label` „<Seitentitel> · <Sprache>“, `current` 0, `total` die Anzahl der Punkte der Übersicht,
+- `ask_choice`: `question` „Lass uns die wichtigsten Punkte Schritt für Schritt verbessern.“, `options` [„Los geht's“, „Fertig“].
 
-Sonst rufe danach `ask_choice` auf: `question` „Lass uns die wichtigsten Punkte Schritt für Schritt verbessern.“, `options` [„Los geht's“, „Fertig“]. Bei „Fertig“ rufe `chat_set_progress` mit `completed` true auf (`label` wie oben, `current` 0, `total` wie oben) und beende die Tour.
+Findest du keinen Punkt, sag das in einem Satz und rufe statt dieser beiden nur `chat_set_progress` mit `current` 0, `total` 1 und `completed` true auf. Damit endet die Tour.
+
+Bei „Fertig“ rufe `chat_set_progress` mit `completed` true auf (`label` wie oben, `current` 0, `total` wie oben) und beende die Tour.
 
 ## 6. Ein Verbesserungsschritt
 
-Beginne mit dem wichtigsten Punkt. Pro Punkt genau eine Fragestellung:
+Beginne mit dem wichtigsten Punkt. Pro Punkt genau eine Fragestellung, und jeder Punkt ist eine Antwort: der Text und die drei Aufrufe aus 2. bis 4. stehen zusammen in ihr. Fehlen für den Vorschlag Informationen (Abschnitt 7), steht statt des Vorschlags die Frage danach in dieser Antwort.
 
-1. Rufe `chat_set_progress` auf: `label` wie in der Übersicht, `current` die Nummer des Punkts, `total` die Anzahl der Punkte.
-2. Betrifft der Punkt ein Inhaltselement, markiere es mit `chat_highlight_element` (`contentUid` das Element). Betrifft er eine Seiteneigenschaft, markiere sie mit `chat_highlight_element` (`pageField` der Feldname der Seite, etwa `title` für den Seitentitel). Braucht der Punkt einen neuen Abschnitt, markiere das Element, nach dem er eingefügt wird (siehe Punkt 4 dieses Abschnitts). Betrifft der Punkt weder ein Inhaltselement noch eine Seiteneigenschaft, markiere nichts.
-3. Schreib kurz:
+1. Schreib kurz:
    - **Was ist aufgefallen?** als fette Zeile, etwa **Nutzen im Einstieg nicht sofort klar**,
    - **Warum ist das relevant?** in ein bis zwei Sätzen,
    - **Betroffen:** das Element in redaktionellen Worten, etwa „Einleitung“ oder „Abschnitt ‚Funktionen‘“.
-4. Schlage die Änderung mit genau einem Aufruf vor:
+2. Rufe `chat_set_progress` auf: `label` wie in der Übersicht, `current` die Nummer des Punkts, `total` die Anzahl der Punkte.
+3. Betrifft der Punkt ein Inhaltselement, markiere es mit `chat_highlight_element` (`contentUid` das Element). Betrifft er eine Seiteneigenschaft, markiere sie mit `chat_highlight_element` (`pageField` der Feldname der Seite, etwa `title` für den Seitentitel). Braucht der Punkt einen neuen Abschnitt, markiere das Element, nach dem er eingefügt wird (siehe Punkt 4 dieses Abschnitts). Betrifft der Punkt weder ein Inhaltselement noch eine Seiteneigenschaft, markiere nichts.
+4. Schlage die Änderung mit genau einem Aufruf vor. Brauchst du vorher eine Suche, stehen `chat_set_progress` und `chat_highlight_element` in der Antwort mit der ersten Suche und der Vorschlag in der Antwort danach:
    - **Bestehender Inhalt:** `update_content_element` mit `uid` des Elements und `fields` nur mit dem, was sich ändert (`header` oder `bodytext`). „Aktuell“ und „Vorschlag“ zeigt der Chat; wiederhole den Text nicht im Chat.
-   - **Neuer Inhalt:** Wenn eine Lücke einen neuen Abschnitt braucht, etwa ein Anwendungsbeispiel, schlage ein neues Inhaltselement mit `create_content_element_draft` vor: `page` <uid>, `type` einer der Typen, die das Werkzeug in seiner Beschreibung von `type` anbietet, bevorzugt einer, den die Seite schon verwendet, `header`, `bodytext` nur bei einem Typ mit Fließtext, `after_content_uid` das Element davor, `column` wie dieses Element. `language` ist 0, wenn du die Standardsprache prüfst. In einer anderen Sprachversion gilt deren Sprache nur, wenn die Seite dort keine verbundenen Übersetzungen hält, also kein Element dieser Sprache ein Element der Standardsprache übersetzt; sonst lehnt das Werkzeug den Aufruf ab. Hält die Seite dort Übersetzungen, ist ein neuer Abschnitt kein Punkt der Tour: nenne die Lücke schon in der Übersicht als Hinweis, mit dem Satz, dass der Abschnitt in der Standardsprache angelegt und danach übersetzt werden muss, außerhalb dieser Tour. Lehnt das Werkzeug einen Vorschlag trotzdem ab, rufe `ask_choice` auf (`question` wie es weitergeht, `options` [„Ohne <Thema> weiter“, „Tour beenden“]); bei „Tour beenden“ rufe `chat_set_progress` mit `completed` true auf. Sag vorher, **wo** es hinkommt („direkt nach der Funktionsübersicht“), und markiere das Element, nach dem es eingefügt wird, mit `chat_highlight_element`. Ein neues Element wird als verborgener Entwurf angelegt und ist erst sichtbar, wenn der Redakteur es im Seitenmodul einblendet.
+   - **Neuer Inhalt:** Wenn eine Lücke einen neuen Abschnitt braucht, etwa ein Anwendungsbeispiel, schlage ein neues Inhaltselement mit `create_content_element_draft` vor: `page` <uid>, `type` einer der Typen, die das Werkzeug in seiner Beschreibung von `type` anbietet, bevorzugt einer, den die Seite schon verwendet, `header`, `bodytext` nur bei einem Typ mit Fließtext, `after_content_uid` das Element davor, `column` wie dieses Element. `language` ist 0, wenn du die Standardsprache prüfst. In einer anderen Sprachversion gilt deren Sprache nur, wenn die Seite dort keine verbundenen Übersetzungen hält, also kein Element dieser Sprache ein Element der Standardsprache übersetzt; sonst lehnt das Werkzeug den Aufruf ab. Hält die Seite dort Übersetzungen, ist ein neuer Abschnitt kein Punkt der Tour: nenne die Lücke schon in der Übersicht als Hinweis, mit dem Satz, dass der Abschnitt in der Standardsprache angelegt und danach übersetzt werden muss, außerhalb dieser Tour. Lehnt das Werkzeug einen Vorschlag trotzdem ab, rufe `ask_choice` auf (`question` wie es weitergeht, `options` [„Ohne <Thema> weiter“, „Tour beenden“]); bei „Tour beenden“ rufe `chat_set_progress` mit `completed` true auf. Sag im Text dieser Antwort, **wo** es hinkommt („direkt nach der Funktionsübersicht“), und markiere in derselben Antwort das Element, nach dem es eingefügt wird, mit `chat_highlight_element`. Ein neues Element wird als verborgener Entwurf angelegt und ist erst sichtbar, wenn der Redakteur es im Seitenmodul einblendet.
 
 ## 7. Wenn Informationen fehlen
 

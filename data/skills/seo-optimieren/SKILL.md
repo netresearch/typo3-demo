@@ -17,7 +17,8 @@ Leitgedanke: Du erklärst nicht nur, was an der Seite verbessert werden könnte,
 ## Grundregeln
 
 - **Diese Tour hat Vorrang vor allgemeinen Antwortregeln.** Solange die Tour läuft, gelten ihr Ablauf und das Format ihrer Übersicht, auch wenn allgemeine Regeln für Antworten eine andere Gliederung nahelegen. Für die Wortwahl gelten die redaktionellen Sprachregeln weiter.
-- **Ein Schritt endet mit seinem Werkzeugaufruf.** Wo ein Schritt einen Werkzeugaufruf verlangt, endet die Runde mit diesem Aufruf: nach der Übersicht `chat_set_progress` und dann `ask_choice`, in einem Optimierungsschritt der Vorschlag als schreibender Aufruf. Eine reine Textantwort, die die Runde beendet, ist an diesen Stellen falsch.
+- **Ein Schritt endet mit seinem Werkzeugaufruf.** Wo ein Schritt einen Werkzeugaufruf verlangt, endet die Runde mit diesem Aufruf: nach der Übersicht `ask_choice`, in einem Optimierungsschritt der Vorschlag als schreibender Aufruf. Eine reine Textantwort, die die Runde beendet, ist an diesen Stellen falsch.
+- **Ein Schritt ist eine Antwort.** Text und alle Werkzeugaufrufe eines Schritts stehen in derselben Antwort, nicht in mehreren Antworten nacheinander: die Leseaufrufe der Prüfung zusammen, die Übersicht mit `chat_set_progress` und `ask_choice`, ein Optimierungsschritt mit `chat_set_progress`, `chat_highlight_element` und dem Vorschlag. Jede zusätzliche Antwort lässt den Redakteur warten. Fortschritt und Markierung zeigt der Chat, sobald der Vorschlag oder die Frage wartet.
 - **Suchen ist begrenzt.** In einem Schritt suchst du höchstens dreimal (`search_records`, `search_fal_files`). Findest du damit nichts Passendes, suchst du nicht mit abgewandelten Begriffen weiter: In der Analyse nimmst du den Befund ohne Beleg auf, in einem Optimierungsschritt rufst du `ask_choice` auf, wie es weitergeht. Die drei Suchen gelten bis zur nächsten Antwort des Redakteurs: Wählt er eine Antwort, die eine Suche verlangt, etwa „Ich nenne einen Suchbegriff“, beginnt damit ein neuer Schritt mit höchstens drei Suchen.
 - **Ein Punkt nach dem anderen.** Es ist immer genau ein Optimierungspunkt aktiv. Pro Antwort schlägst du höchstens eine Änderung vor.
 - **Nichts ohne Bestätigung.** Jede Änderung ist ein Aufruf eines schreibenden Werkzeugs. Der Chat zeigt ihn als Vorschlag mit „Aktuell“ und „Vorschlag“ und den Antworten *Übernehmen*, *Andere Variante*, *Behalten* und *Überspringen*. Erfinde keine weiteren Antworten auf einen Vorschlag.
@@ -39,7 +40,7 @@ Bearbeite während der Tour nur diese Seite. Nennt der Redakteur eine andere Sei
 
 Schreib zuerst eine kurze Statuszeile: **Prüfe „<Seitentitel>“ …**
 
-Lies dann die Seite, `<uid>` ist die Seite aus dem Kontext:
+Lies dann die Seite, mit diesen drei Aufrufen zusammen in einer Antwort; `<uid>` ist die Seite aus dem Kontext:
 
 - die Seiteneigenschaften (Titel, SEO-Titel, Meta Description, Social-Media-Titel und -Beschreibungen, Vorschaubilder, Indexierung, URL) mit `read_records` (`table` „pages“, `uid` <uid>),
 - die Inhaltselemente in ihrer Reihenfolge mit `get_page_content` (`uid` <uid>, `language` die Sprache aus dem Kontext), einzelne Elemente vollständig mit `read_records` (`table` „tt_content“, `uid` des Elements),
@@ -68,20 +69,23 @@ Zeig zuerst eine kompakte Übersicht in drei Gruppen:
 
 Ein Punkt der Übersicht ist alles, wofür du in dieser Tour eine konkrete Änderung vorschlagen kannst. Sortiere die Punkte nach Relevanz, Probleme vor Empfehlungen. Ein Befund, den die Tour nicht ändern kann – etwa eine Seite, die nicht indexiert werden darf –, steht als Hinweis in der Übersicht und zählt nicht als Punkt. Punkte zu den Social-Media-Feldern nennen schon in der Übersicht das Netzwerk, wie in Schritt 4 beschrieben: „Social-Media-Vorschau für Facebook und LinkedIn (Open Graph)“ für die Open-Graph-Felder, „Vorschau für X (Twitter)“ für die twitter-Felder. Offene Punkte aus früheren Durchläufen nimmst du wieder auf und kennzeichnest sie als „noch offen“.
 
-Rufe in derselben Runde nach der Übersicht `chat_set_progress` auf: `label` „<Seitentitel> · <Sprache>“, `current` 0, `total` die Anzahl der Punkte der Übersicht.
+Rufe in derselben Antwort wie die Übersicht zusammen auf:
 
-Findest du keinen Punkt, sag das in einem Satz und rufe `chat_set_progress` mit `current` 0, `total` 1 und `completed` true auf. Damit endet die Tour.
+- `chat_set_progress`: `label` „<Seitentitel> · <Sprache>“, `current` 0, `total` die Anzahl der Punkte der Übersicht,
+- `ask_choice`: `question` „Lass uns das Schritt für Schritt gemeinsam optimieren.“, `options` [„Los geht's“, „Fertig“].
 
-Sonst rufe danach `ask_choice` auf: `question` „Lass uns das Schritt für Schritt gemeinsam optimieren.“, `options` [„Los geht's“, „Fertig“]. Bei „Fertig“ rufe `chat_set_progress` mit `completed` true auf (`label` wie oben, `current` 0, `total` wie oben) und beende die Tour.
+Findest du keinen Punkt, sag das in einem Satz und rufe statt dieser beiden nur `chat_set_progress` mit `current` 0, `total` 1 und `completed` true auf. Damit endet die Tour.
+
+Bei „Fertig“ rufe `chat_set_progress` mit `completed` true auf (`label` wie oben, `current` 0, `total` wie oben) und beende die Tour.
 
 ## 4. Schrittweise Optimierung
 
-Beginne mit dem wichtigsten Punkt. Für jeden Punkt:
+Beginne mit dem wichtigsten Punkt. Jeder Punkt ist eine Antwort: der Text und die drei Aufrufe aus 2. bis 4. stehen zusammen in ihr. Für jeden Punkt:
 
-1. Rufe `chat_set_progress` auf: `label` wie in der Übersicht, `current` die Nummer des Punkts, `total` die Anzahl der Punkte.
-2. Betrifft der Punkt ein Inhaltselement, etwa die Hauptüberschrift oder einen Textabschnitt, markiere es mit `chat_highlight_element` (`contentUid` das Element). Betrifft er eine Seiteneigenschaft, markiere sie mit `chat_highlight_element` (`pageField` der Feldname der Seite): Seitentitel `title`, SEO-Titel `seo_title`, Meta Description `description`, Social-Media-Titel und -Beschreibung für Facebook und LinkedIn `og_title` und `og_description`, für X (Twitter) `twitter_title` und `twitter_description`, Vorschaubild `og_image` oder `twitter_image`. Betrifft der Punkt weder ein Inhaltselement noch eine Seiteneigenschaft, markiere nichts.
-3. Nenne den Punkt als fette Zeile (zum Beispiel **Meta Description fehlt**) und in höchstens zwei Sätzen, warum er wichtig ist. Betrifft der Punkt die Open-Graph-Felder (`og_title`, `og_description`), nennt die fette Zeile das Netzwerk: **Social-Media-Vorschau für Facebook und LinkedIn (Open Graph): Beschreibung fehlt**. Betrifft er die Felder `twitter_title` oder `twitter_description`, lautet sie zum Beispiel **Vorschau für X (Twitter): Titel fehlt**. Das sind die Bezeichnungen für den Redakteur; die Feldnamen nennst du ihm nicht.
-4. Schlage die Änderung mit genau einem Aufruf des passenden schreibenden Werkzeugs vor:
+1. Nenne den Punkt als fette Zeile (zum Beispiel **Meta Description fehlt**) und in höchstens zwei Sätzen, warum er wichtig ist. Betrifft der Punkt die Open-Graph-Felder (`og_title`, `og_description`), nennt die fette Zeile das Netzwerk: **Social-Media-Vorschau für Facebook und LinkedIn (Open Graph): Beschreibung fehlt**. Betrifft er die Felder `twitter_title` oder `twitter_description`, lautet sie zum Beispiel **Vorschau für X (Twitter): Titel fehlt**. Das sind die Bezeichnungen für den Redakteur; die Feldnamen nennst du ihm nicht.
+2. Rufe `chat_set_progress` auf: `label` wie in der Übersicht, `current` die Nummer des Punkts, `total` die Anzahl der Punkte.
+3. Betrifft der Punkt ein Inhaltselement, etwa die Hauptüberschrift oder einen Textabschnitt, markiere es mit `chat_highlight_element` (`contentUid` das Element). Betrifft er eine Seiteneigenschaft, markiere sie mit `chat_highlight_element` (`pageField` der Feldname der Seite): Seitentitel `title`, SEO-Titel `seo_title`, Meta Description `description`, Social-Media-Titel und -Beschreibung für Facebook und LinkedIn `og_title` und `og_description`, für X (Twitter) `twitter_title` und `twitter_description`, Vorschaubild `og_image` oder `twitter_image`. Betrifft der Punkt weder ein Inhaltselement noch eine Seiteneigenschaft, markiere nichts.
+4. Schlage die Änderung mit genau einem Aufruf des passenden schreibenden Werkzeugs vor. Braucht der Vorschlag vorher eine Suche, etwa nach einem Vorschaubild, stehen `chat_set_progress` und `chat_highlight_element` in der Antwort mit der ersten Suche und der Vorschlag in der Antwort danach.
    - Seitentitel, SEO-Titel, Meta Description, Social-Media-Titel und -Beschreibung: `update_page_metadata` mit `uid` <uid> und nur dem Feld, das der Punkt betrifft (`title`, `seo_title`, `description`, `og_title`, `og_description`, `twitter_title` oder `twitter_description`). Eine Meta Description hat 140 bis 160 Zeichen.
    - Vorschaubild für soziale Medien: Suche mit `search_fal_files` (`query` ein Begriff zum Thema der Seite) ein vorhandenes, passendes Bild und schlage es mit `set_page_social_image` vor (`page` <uid>, `field` „og_image“ oder „twitter_image“, `file` die Datei). Ein Vorschaubild lässt sich nur auf der Standardsprache setzen. Prüfst du eine andere Sprachversion, ist ein fehlendes Vorschaubild kein Punkt der Tour, sondern ein Hinweis in der Übersicht: ob die Übersetzung ein eigenes Bild hat, legt der Redakteur in den Seiteneigenschaften fest. Findest du kein passendes Bild, rufe `ask_choice` auf (`question` wie es weitergeht, `options` [„Ohne Vorschaubild weiter“, „Ich nenne einen Suchbegriff“]).
    - Hauptüberschrift oder Text eines Inhaltselements: `update_content_element` mit `uid` des Elements und `fields` nur mit dem, was sich ändert (`header` oder `bodytext`). Andere Elemente änderst du nicht.
