@@ -1,4 +1,4 @@
-.PHONY: up down reset update logs shell db-shell seed seed-extensions provision-llm-key provision-deepl-key install-usecase-packs persist-env-secret export-seed build clean dev dev-down prune help
+.PHONY: up down reset update logs shell db-shell seed seed-extensions provision-llm-key provision-deepl-key install-usecase-packs persist-env-secret install-tool-check export-seed build clean dev dev-down prune help
 
 COMPOSE     := docker compose
 COMPOSE_DEV := docker compose -f compose.yml -f compose.dev.yml
@@ -90,6 +90,10 @@ update: ## Update code without purging data
 	$(MAKE) install-usecase-packs
 	$(TYPO3) cache:flush
 	$(TYPO3) cache:warmup
+	@# After the warmup, so the schema comparison reads the TCA of this release.
+	@# An unexpected finding must not abort a deploy that has already replaced
+	@# the containers; it is reported as a warning annotation on the run instead.
+	@$(MAKE) install-tool-check || echo "::warning title=Install Tool checks::Unexpected Install Tool findings on this deploy - see the install-tool-check output above and README.md#install-tool-checks"
 	$(MAKE) prune
 
 install-usecase-packs: ## Install the nr-llm use-case packs this instance demonstrates
@@ -305,6 +309,14 @@ persist-env-secret: ## Write $$SECRET_NAME from the environment into .env (usage
 	mv "$$tmp" .env; \
 	trap - EXIT INT TERM; \
 	echo "$(SECRET_NAME) written to .env (length $${#value}), file mode 600."
+install-tool-check: ## Report Environment/Directory Status, Analyze Database and Image Processing findings (applies nothing)
+	@# The checks behind four Install Tool views, run through the site package's
+	@# demo:install-tool:check command; README.md#install-tool-checks explains
+	@# the output and Configuration/InstallTool/expected-findings.yaml lists the
+	@# findings that are expected here and why. Exits non-zero for any finding
+	@# at warning or above that the list does not cover.
+	$(TYPO3) demo:install-tool:check
+
 prune: ## Remove dangling images left behind by image pulls (keeps volumes + in-use images)
 	docker image prune -f
 

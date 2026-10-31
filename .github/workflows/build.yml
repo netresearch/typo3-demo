@@ -717,6 +717,14 @@ jobs:
           check Resources/Private/Templates/Widget/DemoExtensionCard.html 'alternativeMarkupIdentifier="inline"'
           exit $failed
 
+      # The checks behind the Install Tool's Environment Status, Directory
+      # Status, Analyze Database Structure and Image Processing views, on the
+      # image under test. Before the collation step below, which rewrites the
+      # schema this compares. Reports only for now: the expected findings are
+      # not listed yet, see README.md#install-tool-checks.
+      - name: Install Tool checks
+        run: make install-tool-check || echo "::warning title=Install Tool checks::Unexpected Install Tool findings - see this step's output"
+
       # The web entrypoint imports data/seed-extensions.sql on first boot and
       # swallows any error, so a seed that dies half-way still leaves this job
       # green. Apply it here the way a deploy does (`make seed-extensions` fails

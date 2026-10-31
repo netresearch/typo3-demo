@@ -105,6 +105,41 @@ Merging to `main` triggers, in order:
 
 Never SSH in to edit files by hand; change the repo and let the pipeline deploy.
 
+## Install Tool checks
+
+`make install-tool-check` runs the checks behind four views of the Install
+Tool and prints every finding with its severity, check and message:
+
+| Install Tool view | What runs | Check name in the output |
+|-------------------|-----------|--------------------------|
+| Environment › Environment Status | core's `Check`, `SetupCheck`, `DatabaseCheck` and `ServerResponseCheck` | `environment`, `sapi`, `server-response` |
+| Environment › Directory Status | the `DefaultFactory` folder structure (nginx counts as "other web server") and the two create-mask checks | `directory` |
+| Maintenance › Analyze Database Structure | `SchemaMigrator::getUpdateSuggestions()` with and without removals | `database` |
+| Environment › Image Processing | the read, write, scale and convert tests, on core's own test images | `image` |
+
+It runs the site package's `demo:install-tool:check`. Core ships no command for
+any of these views, and `database:updateschema` belongs to typo3-console, which
+this project does not install. The command applies nothing: the schema
+comparison only lists statements. Like the backend, the server response probe
+and the image tests write temporary files and delete them again.
+
+The backend runs these checks under php-fpm; the command runs under the CLI.
+Core skips the trusted-hosts comparison on the CLI and accepts the CLI's
+unlimited `max_execution_time`, so the command evaluates both for php-fpm
+(check `sapi`), and it reports any php.ini directive or PHP extension the
+checks read that differs between the two. The server response probe requests
+its test files from the nginx in the `web` container: Caddy in front adds none
+of the headers the probe evaluates.
+
+`make update` runs the check after the cache warmup. An unexpected finding
+does not stop the deploy, which has replaced the containers by then; the run
+gets a warning annotation instead and the full list is in the job log. The
+pull-request build runs the same check on the image under test.
+
+A finding at warning or above counts as unexpected unless
+[`expected-findings.yaml`](packages/netresearch-demo-site/Configuration/InstallTool/expected-findings.yaml)
+lists it with the reason it is expected here.
+
 ## The OpenAI key
 
 Every AI module on this instance resolves its key through nr-vault, and the

@@ -1,0 +1,20 @@
+# Findings of `make install-tool-check` (demo:install-tool:check) that are
+# expected on this instance. README.md#install-tool-checks explains the checks.
+#
+# A finding at warning or above that no entry here matches makes the check
+# exit 1: the deploy then posts a warning annotation, the pull-request build
+# fails. Each entry documents one expected finding:
+#
+#   check:          environment | sapi | server-response | directory | database | image
+#   severity:       ok | info | notice | warning | error, exactly as reported
+#   title:          the finding's title, exactly as printed
+#   messagePattern: optional regular expression the message must match, for a
+#                   title that stands for several findings (schema statements)
+#   class:          intended | false-positive | defect-tracked
+#   reason:         why it is expected here
+#   evidence:       link to the code, measurement or issue behind the reason
+#
+# Matching never uses the whole message, which embeds measured values. An
+# entry that matches nothing is printed as stale; remove it once its cause is
+# gone.
+expected: []
