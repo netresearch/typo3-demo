@@ -168,8 +168,9 @@ the floor and listed here only.
 
 Analyze Database Structure has no expected finding. `make update` and the
 pull-request build remove the schema leftovers it used to list before the
-check runs (next section), so every suggestion they report is new.
-`data/db.sql.gz` still carries the leftovers
+check runs (next section), so every suggestion they report is new, unless the
+removal failed: `make update` then adds an error annotation and still runs the
+check. `data/db.sql.gz` still carries the leftovers
 ([#412](https://github.com/netresearch/typo3-demo/issues/412)): on a stack
 started with `make up` alone, run `make remove-schema-leftovers` first, or the
 check reports them as unexpected.
