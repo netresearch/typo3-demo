@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Provision a fresh Hetzner CX23 (Ubuntu 24.04) for the TYPO3 demo.
+# Provision a fresh Hetzner CX23 (Debian 13 "trixie") for the TYPO3 demo.
 # Run once as root after server creation.
 #
 # Usage:
@@ -24,9 +24,9 @@ apt-get install -y -qq ca-certificates curl gnupg
 
 echo "=== Adding Docker repository ==="
 install -m 0755 -d /etc/apt/keyrings
-curl -fsSL --proto '=https' --proto-redir '=https' https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+curl -fsSL --proto '=https' --proto-redir '=https' https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc
 chmod a+r /etc/apt/keyrings/docker.asc
-echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "$VERSION_CODENAME") stable" > /etc/apt/sources.list.d/docker.list
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian $(. /etc/os-release && echo "$VERSION_CODENAME") stable" > /etc/apt/sources.list.d/docker.list
 apt-get update -qq
 apt-get install -y -qq docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin git make ufw fail2ban
 
@@ -63,9 +63,23 @@ sed -i 's/^#\?PermitRootLogin.*/PermitRootLogin no/' /etc/ssh/sshd_config
 sed -i 's/^#\?PasswordAuthentication.*/PasswordAuthentication no/' /etc/ssh/sshd_config
 systemctl reload sshd
 
+echo "=== Setting the time zone ==="
+# Automatic-Reboot-Time below is read in host-local time, and the Hetzner
+# image runs in UTC. Europe/Berlin keeps the reboot at 03:00 local across DST.
+timedatectl set-timezone Europe/Berlin
+
 echo "=== Enabling automatic security updates ==="
+# Debian's default origins include the debian-security archive, and its
+# 20auto-upgrades enables the daily run. A new kernel is only used after a
+# reboot, so unattended-upgrades reboots the host when an upgrade wrote
+# /var/run/reboot-required. The containers come back through their
+# restart policy.
 apt-get install -y -qq unattended-upgrades
-echo 'Unattended-Upgrade::Automatic-Reboot "false";' > /etc/apt/apt.conf.d/51auto-upgrades
+cat > /etc/apt/apt.conf.d/51auto-upgrades <<'EOF'
+Unattended-Upgrade::Automatic-Reboot "true";
+Unattended-Upgrade::Automatic-Reboot-WithUsers "true";
+Unattended-Upgrade::Automatic-Reboot-Time "03:00";
+EOF
 dpkg-reconfigure -f noninteractive unattended-upgrades
 
 echo "=== Cloning repository ==="
