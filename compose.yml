@@ -231,7 +231,9 @@ services:
   # Scheduler task for this, but this stack runs no scheduler, so the CLI
   # command runs in a loop like chat-cleanup above. Compaction holds the
   # store's exclusive lock and blocks searches while it runs; at the demo's
-  # size that is seconds. The first run starts after every deploy.
+  # size that is seconds. The first run starts after every deploy. After a
+  # host reboot Docker restarts this container without waiting for web, so a
+  # failed run retries after five minutes instead of a day.
   vector-compact:
     image: ghcr.io/netresearch/typo3-demo:${TYPO3_DEMO_IMAGE_TAG:-latest}
     logging: *default-logging
@@ -244,10 +246,9 @@ services:
       - >
         while true;
         do if timeout -k 30 1800 vendor/bin/typo3 nr-ai-search:vektor:compact;
-        then touch /tmp/vector-compact.ok;
-        else echo "nr-ai-search:vektor:compact failed with exit $$?";
+        then touch /tmp/vector-compact.ok; sleep 86400;
+        else echo "nr-ai-search:vektor:compact failed with exit $$?"; sleep 300;
         fi;
-        sleep 86400;
         done
     environment:
       HOME: /tmp
