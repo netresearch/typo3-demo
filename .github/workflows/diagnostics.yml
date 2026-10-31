@@ -82,6 +82,37 @@ jobs:
                   openssl enc -aes-256-cbc -pbkdf2 -pass env:DIAG_PASSPHRASE -a -A
               fi
             }
+            # IPv6 reachability, in plain text: nothing here is secret (the
+            # address is in public DNS, the firewall rules are the ones
+            # deploy/hetzner-setup.sh writes), and no network we can reach
+            # has IPv6 egress, so this is the only place to test it from.
+            # Listening sockets are limited to :80 and :443. Each probe may
+            # fail without ending the run; a failure is the finding.
+            ipv6() {
+              echo "===== ipv6: addresses"
+              ip -6 addr show scope global 2>&1 || true
+              echo "===== ipv6: routes"
+              ip -6 route show 2>&1 || true
+              echo "===== ipv6: listeners on :80 and :443"
+              ss -ltnH 2>&1 | awk "\$4 ~ /:(80|443)\$/" || true
+              echo "===== ipv6: own address, Host typo3-demo.netresearch.de"
+              aaaa=$(ip -6 addr show scope global | awk "/inet6/ {sub(/\/.*/, \"\", \$2); print \$2; exit}")
+              echo "address: ${aaaa:-none}"
+              if [ -n "$aaaa" ]; then
+                curl -6 -sS -o /dev/null --max-time 15 -w "HTTP %{http_code}\n" \
+                  --resolve "typo3-demo.netresearch.de:443:[$aaaa]" https://typo3-demo.netresearch.de/ 2>&1 || true
+              fi
+              echo "===== ipv6: egress control (www.google.com)"
+              curl -6 -sS -o /dev/null --max-time 15 -w "HTTP %{http_code}\n" https://www.google.com/ 2>&1 || true
+              echo "===== ipv6: ufw"
+              grep IPV6 /etc/default/ufw 2>&1 || true
+              sudo -n ufw status verbose 2>&1 || echo "(ufw status needs root)"
+              echo "===== ipv6: docker"
+              grep -s -i ipv6 /etc/docker/daemon.json || echo "(no ipv6 key in /etc/docker/daemon.json)"
+              docker network inspect typo3-demo_default --format "typo3-demo_default EnableIPv6={{.EnableIPv6}}" 2>&1 || true
+            }
+            ipv6
+
             echo "DIAG-BEGIN"
             collect | gzip | enc
             echo
