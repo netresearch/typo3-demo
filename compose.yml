@@ -224,6 +224,60 @@ services:
         limits:
           memory: 256M
 
+  # Compacts nr_ai_search's vector store once a day. Every re-index appends a
+  # new row per chunk and only soft-deletes the old one, so the store grows by
+  # a full corpus generation per run: Reports > Status measured 4209 physical
+  # rows for 102 live chunks ("Compaction overdue"). nr_ai_search ships a
+  # Scheduler task for this, but this stack runs no scheduler, so the CLI
+  # command runs in a loop like chat-cleanup above. Compaction holds the
+  # store's exclusive lock and blocks searches while it runs; at the demo's
+  # size that is seconds. The first run starts after every deploy.
+  vector-compact:
+    image: ghcr.io/netresearch/typo3-demo:latest
+    logging: *default-logging
+    depends_on:
+      web:
+        condition: service_healthy
+    user: www-data
+    entrypoint: ["sh", "-c"]
+    command:
+      - >
+        while true;
+        do if timeout -k 30 1800 vendor/bin/typo3 nr-ai-search:vektor:compact;
+        then touch /tmp/vector-compact.ok;
+        else echo "nr-ai-search:vektor:compact failed with exit $$?";
+        fi;
+        sleep 86400;
+        done
+    environment:
+      HOME: /tmp
+      MARIADB_HOST: db
+      MARIADB_DATABASE: ${MARIADB_DATABASE:-typo3}
+      MARIADB_USER: ${MARIADB_USER:-typo3}
+      MARIADB_PASSWORD: ${MARIADB_PASSWORD:-typo3}
+      TYPO3_CONTEXT: ${TYPO3_CONTEXT:-Development/Docker}
+      TYPO3_DOMAIN: ${TYPO3_DOMAIN:-localhost}
+      TYPO3_SITE_BASE: ${TYPO3_SITE_BASE:-/}
+    volumes:
+      - typo3-var:/var/www/var
+      - typo3-config:/var/www/config/system
+    # Healthy while the last successful run is younger than 25 hours: one day
+    # of sleep plus the run itself, so a compaction that keeps failing turns
+    # the service unhealthy on the following day.
+    healthcheck:
+      test: ["CMD-SHELL", "test $$(( $$(date +%s) - $$(stat -c %Y /tmp/vector-compact.ok) )) -lt 90000"]
+      interval: 60s
+      timeout: 5s
+      retries: 3
+      start_period: 120s
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+
   # MariaDB as a Docker Hardened Image: minimal debian-13 base, no package
   # manager and no shell tooling beyond what the server itself needs. Pulling it
   # requires a Docker Hub account with DHI entitlement (`docker login dhi.io`) —
