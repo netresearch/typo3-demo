@@ -8,7 +8,7 @@ x-logging: &default-logging
 
 services:
   web:
-    image: ghcr.io/netresearch/typo3-demo:latest
+    image: ghcr.io/netresearch/typo3-demo:${TYPO3_DEMO_IMAGE_TAG:-latest}
     build:
       context: .
       dockerfile: docker/web/Dockerfile
@@ -68,7 +68,7 @@ services:
   # after its time/memory limits and on fatal errors — the restart policy
   # recycles it either way, with Docker-visible backoff on crash loops.
   worker:
-    image: ghcr.io/netresearch/typo3-demo:latest
+    image: ghcr.io/netresearch/typo3-demo:${TYPO3_DEMO_IMAGE_TAG:-latest}
     logging: *default-logging
     depends_on:
       web:
@@ -131,7 +131,7 @@ services:
   # task, so a loop runs the command every 15 minutes. Each run is killed after
   # ten minutes, so a blocked database call cannot stop all later runs.
   chat-cleanup:
-    image: ghcr.io/netresearch/typo3-demo:latest
+    image: ghcr.io/netresearch/typo3-demo:${TYPO3_DEMO_IMAGE_TAG:-latest}
     logging: *default-logging
     depends_on:
       web:
@@ -179,7 +179,7 @@ services:
   # Sends the approved social posts whose time has come (nr_repurpose). Without
   # socialWebhookUrl in the extension configuration it only logs how many are due.
   social-publish:
-    image: ghcr.io/netresearch/typo3-demo:latest
+    image: ghcr.io/netresearch/typo3-demo:${TYPO3_DEMO_IMAGE_TAG:-latest}
     logging: *default-logging
     depends_on:
       web:
@@ -233,7 +233,7 @@ services:
   # store's exclusive lock and blocks searches while it runs; at the demo's
   # size that is seconds. The first run starts after every deploy.
   vector-compact:
-    image: ghcr.io/netresearch/typo3-demo:latest
+    image: ghcr.io/netresearch/typo3-demo:${TYPO3_DEMO_IMAGE_TAG:-latest}
     logging: *default-logging
     depends_on:
       web:

@@ -99,9 +99,13 @@ different resolutions.
 Merging to `main` triggers, in order:
 
 1. **Build** (`.github/workflows/build.yml`) — builds and pushes the multi-arch
-   image to GHCR; a `validate` job brings the stack up on push to `main`.
-2. **Deploy (Update)** (`update.yml`) — SSHes into the host and runs
-   `git pull && make update`.
+   image to GHCR as `:latest` and `:sha-<commit>`; a `validate` job brings the
+   stack up on push to `main`.
+2. **Deploy (Update)** (`update.yml`) — SSHes into the host, fast-forwards the
+   checkout to the commit that Build built (a manual run: `main`'s head),
+   stores `TYPO3_DEMO_IMAGE_TAG=sha-<commit>` in `.env` and runs `make update`,
+   so code and image always come from the same commit. A Build older than the
+   deployed commit deploys nothing; a commit without an image fails the run.
 
 Never SSH in to edit files by hand; change the repo and let the pipeline deploy.
 
