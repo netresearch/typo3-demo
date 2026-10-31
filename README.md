@@ -166,9 +166,13 @@ the floor and listed here only.
 | Directory Status | notice | create masks readable by anyone (`0664`, `2775`) | intended | nginx serves `fileadmin/` and `typo3temp/` as user `nginx`, not `www-data`; core's recommended `0660`/`2770` would make those files unreadable for it. |
 | Environment Status | information | empty `systemLocale` | intended | No UTF-8 file names are in use (`UTF8filesystem` is off). |
 
-Analyze Database Structure has no expected finding. The schema leftovers it
-used to list are removed before the check runs (next section), so every
-suggestion it reports now is new.
+Analyze Database Structure has no expected finding. `make update` and the
+pull-request build remove the schema leftovers it used to list before the
+check runs (next section), so every suggestion they report is new.
+`data/db.sql.gz` still carries the leftovers
+([#412](https://github.com/netresearch/typo3-demo/issues/412)): on a stack
+started with `make up` alone, run `make remove-schema-leftovers` first, or the
+check reports them as unexpected.
 
 ## Schema leftovers
 
