@@ -1,4 +1,4 @@
-.PHONY: up down reset update logs shell db-shell seed seed-extensions provision-llm-key provision-deepl-key install-usecase-packs persist-env-secret install-tool-check export-seed build clean dev dev-down prune help
+.PHONY: up down reset update logs shell db-shell seed seed-extensions provision-llm-key provision-deepl-key install-usecase-packs persist-env-secret install-tool-check remove-schema-leftovers export-seed build clean dev dev-down prune help
 
 COMPOSE     := docker compose
 COMPOSE_DEV := docker compose -f compose.yml -f compose.dev.yml
@@ -90,6 +90,17 @@ update: ## Update code without purging data
 	$(MAKE) install-usecase-packs
 	$(TYPO3) cache:flush
 	$(TYPO3) cache:warmup
+	@# Removes the schema leftovers listed in schema-leftovers.yaml (#397) while
+	@# core still suggests removing them; a second run does nothing and says so.
+	@# After the warmup, so the comparison reads the TCA of this release, and
+	@# before the check below, which then reports what is left. A failure is
+	@# reported, not fatal, for the same reason as the check.
+	@rc=0; $(TYPO3) demo:schema:remove-leftovers || rc=$$?; \
+	case $$rc in \
+		0) ;; \
+		1) echo "::error title=Schema leftovers::Removing a listed schema leftover failed - see the output above and README.md#schema-leftovers" ;; \
+		*) echo "::error title=Schema leftovers::The schema leftover removal did not run (exit $$rc) - see the output above" ;; \
+	esac
 	@# After the warmup, so the schema comparison reads the TCA of this release.
 	@# A finding must not abort a deploy that has already replaced the
 	@# containers, so the result becomes an annotation on the run: exit 1 means
@@ -325,6 +336,14 @@ install-tool-check: ## Report Environment/Directory Status, Analyze Database and
 	@# finding at warning or above that the list does not cover and 2 when it
 	@# cannot read the list.
 	$(TYPO3) demo:install-tool:check
+
+remove-schema-leftovers: ## Remove the schema leftovers listed in schema-leftovers.yaml (DELETES DATA; idempotent)
+	@# Drops the tables, columns and indexes that
+	@# packages/netresearch-demo-site/Configuration/InstallTool/schema-leftovers.yaml
+	@# names, through core's own rename-then-drop statements, and only while
+	@# core still suggests removing them. `make update` runs it on every
+	@# deploy; README.md#schema-leftovers explains it.
+	$(TYPO3) demo:schema:remove-leftovers
 
 prune: ## Remove dangling images left behind by image pulls (keeps volumes + in-use images)
 	docker image prune -f

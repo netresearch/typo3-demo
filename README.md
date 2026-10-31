@@ -140,7 +140,8 @@ that differs between the two SAPIs. The server response probe requests
 its test files from the nginx in the `web` container: Caddy in front adds none
 of the headers the probe evaluates.
 
-`make update` runs the check after the cache warmup. A finding does not stop
+`make update` runs the check after the cache warmup and the removal of the
+schema leftovers ([below](#schema-leftovers)). A finding does not stop
 the deploy, which has replaced the containers by then: unexpected findings
 give the run a warning annotation, a check that did not run an error
 annotation, and the full list is in the job log. The pull-request build runs
@@ -164,7 +165,41 @@ the floor and listed here only.
 | Directory Status | notice | `fileadmin/.htaccess` and `user_upload/_temp_/importexport/index.html` content differs | intended | The seed's copies; nginx ignores `.htaccess`, and `nginx.conf` denies the temp folders itself. |
 | Directory Status | notice | create masks readable by anyone (`0664`, `2775`) | intended | nginx serves `fileadmin/` and `typo3temp/` as user `nginx`, not `www-data`; core's recommended `0660`/`2770` would make those files unreadable for it. |
 | Environment Status | information | empty `systemLocale` | intended | No UTF-8 file names are in use (`UTF8filesystem` is off). |
-| Analyze Database Structure | warning | 24 tables (25 on the live instance), 109 columns and 5 indexes to remove | defect, tracked in [#397](https://github.com/netresearch/typo3-demo/issues/397), listed | Left over from extensions and core versions no longer installed; removing them deletes data, so it needs a backup and a decision first. The patterns name each object, so a new suggestion is still reported. |
+
+Analyze Database Structure has no expected finding. The schema leftovers it
+used to list are removed before the check runs (next section), so every
+suggestion it reports now is new.
+
+## Schema leftovers
+
+`make remove-schema-leftovers` removes the tables, columns and indexes that
+[`schema-leftovers.yaml`](packages/netresearch-demo-site/Configuration/InstallTool/schema-leftovers.yaml)
+lists: 25 tables, 109 columns and 5 indexes that Analyze Database Structure
+suggested removing on the live instance, left over from extensions and core
+versions this project no longer installs
+([#397](https://github.com/netresearch/typo3-demo/issues/397)). It deletes the
+data in them; the repository holds everything the demo needs, so no backup is
+taken. `make update` runs it on every deploy, after the cache warmup and
+before the Install Tool checks.
+
+It runs the site package's `demo:schema:remove-leftovers` and uses core's own
+statements, the ones the Install Tool offers:
+
+1. drop the listed indexes,
+2. rename the listed tables and columns with the `zzz_deleted_` prefix,
+3. drop those renamed copies, and no other `zzz_deleted_` object.
+
+Before each step it asks core's schema comparison again and executes a
+statement only when it is a removal suggestion of core and names an object on
+the list. So nothing that is not listed is ever removed, and a listed object
+that a package defines again is kept and reported as `kept`. Every executed
+statement is printed, with the row count of each table. A second run finds
+nothing to do and prints `Nothing to do`; `--dry-run` prints the statements
+without executing them.
+
+A new removal suggestion, for example from an extension that is uninstalled
+later, is not removed: `make install-tool-check` reports it, and removing it
+means adding it to the list.
 
 ## The OpenAI key
 

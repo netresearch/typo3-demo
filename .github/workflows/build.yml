@@ -757,6 +757,22 @@ jobs:
           check Resources/Private/Templates/Widget/DemoExtensionCard.html 'alternativeMarkupIdentifier="inline"'
           exit $failed
 
+      # The seed carries the schema leftovers that schema-leftovers.yaml lists
+      # (#397), so this stack shows what a deploy does with them: the first
+      # run removes them, the second must find nothing to do. Before the
+      # Install Tool checks, which no longer allowlist any of them.
+      - name: Remove the schema leftovers, twice
+        run: |
+          run() { docker compose exec -T -u www-data web vendor/bin/typo3 demo:schema:remove-leftovers; }
+          first=$(run) || { echo "$first"; echo "::error title=Schema leftovers::the first run failed"; exit 1; }
+          echo "$first"
+          second=$(run) || { echo "$second"; echo "::error title=Schema leftovers::the second run failed"; exit 1; }
+          echo "$second"
+          if ! grep -q '^Nothing to do' <<<"$second"; then
+            echo "::error title=Schema leftovers::the second run was not a no-op"
+            exit 1
+          fi
+
       # The checks behind the Install Tool's Environment Status, Directory
       # Status, Analyze Database Structure and Image Processing views, on the
       # image under test. Before the collation step below, which rewrites the
