@@ -91,9 +91,17 @@ update: ## Update code without purging data
 	$(TYPO3) cache:flush
 	$(TYPO3) cache:warmup
 	@# After the warmup, so the schema comparison reads the TCA of this release.
-	@# An unexpected finding must not abort a deploy that has already replaced
-	@# the containers; it is reported as a warning annotation on the run instead.
-	@$(MAKE) install-tool-check || echo "::warning title=Install Tool checks::Unexpected Install Tool findings on this deploy - see the install-tool-check output above and README.md#install-tool-checks"
+	@# A finding must not abort a deploy that has already replaced the
+	@# containers, so the result becomes an annotation on the run: exit 1 means
+	@# unexpected findings, anything else that the check itself did not run.
+	@# The command is called directly, not through `make install-tool-check`:
+	@# a sub-make exits 2 for every failure and would hide that difference.
+	@rc=0; $(TYPO3) demo:install-tool:check || rc=$$?; \
+	case $$rc in \
+		0) ;; \
+		1) echo "::warning title=Install Tool checks::Unexpected Install Tool findings on this deploy - see the output above and README.md#install-tool-checks" ;; \
+		*) echo "::error title=Install Tool checks::The Install Tool check did not run (exit $$rc) - see the output above" ;; \
+	esac
 	$(MAKE) prune
 
 install-usecase-packs: ## Install the nr-llm use-case packs this instance demonstrates
@@ -313,8 +321,9 @@ install-tool-check: ## Report Environment/Directory Status, Analyze Database and
 	@# The checks behind four Install Tool views, run through the site package's
 	@# demo:install-tool:check command; README.md#install-tool-checks explains
 	@# the output and Configuration/InstallTool/expected-findings.yaml lists the
-	@# findings that are expected here and why. Exits non-zero for any finding
-	@# at warning or above that the list does not cover.
+	@# findings that are expected here and why. The command exits 1 for any
+	@# finding at warning or above that the list does not cover and 2 when it
+	@# cannot read the list.
 	$(TYPO3) demo:install-tool:check
 
 prune: ## Remove dangling images left behind by image pulls (keeps volumes + in-use images)

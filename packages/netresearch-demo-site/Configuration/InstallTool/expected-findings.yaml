@@ -2,8 +2,9 @@
 # expected on this instance. README.md#install-tool-checks explains the checks.
 #
 # A finding at warning or above that no entry here matches makes the check
-# exit 1: the deploy then posts a warning annotation, the pull-request build
-# fails. Each entry documents one expected finding:
+# exit 1, and the deploy and the pull-request build post a warning annotation.
+# A file the command cannot read makes it exit 2, which fails the build.
+# Each entry documents one expected finding:
 #
 #   check:          environment | sapi | server-response | directory | database | image
 #   severity:       ok | info | notice | warning | error, exactly as reported

@@ -720,10 +720,18 @@ jobs:
       # The checks behind the Install Tool's Environment Status, Directory
       # Status, Analyze Database Structure and Image Processing views, on the
       # image under test. Before the collation step below, which rewrites the
-      # schema this compares. Reports only for now: the expected findings are
-      # not listed yet, see README.md#install-tool-checks.
+      # schema this compares. Unexpected findings (exit 1) only warn until the
+      # expected findings are listed, see README.md#install-tool-checks; a
+      # check that cannot run, or an unreadable list, fails the step.
       - name: Install Tool checks
-        run: make install-tool-check || echo "::warning title=Install Tool checks::Unexpected Install Tool findings - see this step's output"
+        run: |
+          rc=0
+          docker compose exec -T -u www-data web vendor/bin/typo3 demo:install-tool:check || rc=$?
+          case $rc in
+            0) ;;
+            1) echo "::warning title=Install Tool checks::Unexpected Install Tool findings - see this step's output" ;;
+            *) echo "::error title=Install Tool checks::The Install Tool check did not run (exit $rc)"; exit 1 ;;
+          esac
 
       # The web entrypoint imports data/seed-extensions.sql on first boot and
       # swallows any error, so a seed that dies half-way still leaves this job

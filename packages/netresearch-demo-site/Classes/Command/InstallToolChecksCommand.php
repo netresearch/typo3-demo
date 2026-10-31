@@ -53,16 +53,24 @@ use TYPO3\CMS\Install\WebserverType;
  * typo3-console, which this project does not install), hence this one.
  *
  * Nothing is changed: the schema comparison never calls migrate() or
- * install(). Two checks write temporary files and remove them again, exactly
+ * install(). Three checks write temporary files and remove them again, exactly
  * as they do in the backend: the server response probe (typo3temp/assets and
- * fileadmin) and the image tests (typo3temp/assets/images).
+ * fileadmin), the directory check (an installToolTest_* file in every
+ * directory it tests for writability) and the image tests
+ * (typo3temp/assets/images).
+ *
+ * Image Processing covers the ImageMagick read, write, scale and convert tests.
+ * The view's TrueType, combine-mask and GDlib tests are not run: they produce
+ * images that only a person comparing them with the reference can judge, and
+ * Environment Status already checks GD and FreeType.
  *
  * The backend runs these checks under php-fpm, this command under the CLI SAPI.
  * Core skips the trusted-hosts comparison on the CLI and treats the CLI's
  * forced max_execution_time=0 as fine, so both are evaluated here for the FPM
  * side, and every php.ini directive the checks read is compared between the
  * two SAPIs. A difference is reported, because then this output and the
- * backend can disagree.
+ * backend can disagree. `php-fpm -i` does not show pool-level php_value or
+ * php_admin_value settings; docker/web/php-fpm.conf sets none.
  *
  * A finding at or above the severity floor that the allowlist does not cover
  * makes the command exit 1. The allowlist documents each expected finding.
@@ -81,6 +89,14 @@ final class InstallToolChecksCommand extends Command
         'allow_url_fopen', 'disable_functions', 'doc_root', 'file_uploads', 'include_path',
         'max_input_vars', 'memory_limit', 'opcache.enable', 'open_basedir', 'post_max_size',
         'upload_max_filesize', 'xdebug.max_nesting_level',
+    ];
+
+    /** In the order of ContextualFeedbackSeverity's values: NOTICE -2 … ERROR 2. */
+    private const FLOORS = [
+        'notice' => ContextualFeedbackSeverity::NOTICE,
+        'info' => ContextualFeedbackSeverity::INFO,
+        'warning' => ContextualFeedbackSeverity::WARNING,
+        'error' => ContextualFeedbackSeverity::ERROR,
     ];
 
     private const SEVERITIES = [
@@ -116,7 +132,7 @@ final class InstallToolChecksCommand extends Command
                 'floor',
                 null,
                 InputOption::VALUE_REQUIRED,
-                'Lowest severity that fails the run unless allowlisted (ok, info, notice, warning, error)',
+                'Lowest severity that fails the run unless allowlisted (notice, info, warning, error); OK never does',
                 'warning',
             )
             ->addOption(
@@ -132,9 +148,9 @@ final class InstallToolChecksCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $floor = self::SEVERITIES[strtolower((string)$input->getOption('floor'))] ?? null;
+        $floor = self::FLOORS[strtolower((string)$input->getOption('floor'))] ?? null;
         if ($floor === null) {
-            $output->writeln('<error>--floor must be one of: ' . implode(', ', array_keys(self::SEVERITIES)) . '</error>');
+            $output->writeln('<error>--floor must be one of: ' . implode(', ', array_keys(self::FLOORS)) . '</error>');
             return Command::INVALID;
         }
         try {
@@ -170,8 +186,10 @@ final class InstallToolChecksCommand extends Command
             if ($entry !== null) {
                 $matchedEntries[$entry] = true;
             }
-            $belowFloor = $finding['severity']->value < $floor->value;
+            // OK (0) sits between INFO (-1) and WARNING (1), so it needs its own case.
+            $belowFloor = !$isOk && $finding['severity']->value < $floor->value;
             $status = match (true) {
+                $isOk => 'ok',
                 $entry !== null => 'expected',
                 $belowFloor => 'below floor',
                 default => 'UNEXPECTED',
@@ -469,8 +487,9 @@ final class InstallToolChecksCommand extends Command
             } else {
                 $this->add('image', ContextualFeedbackSeverity::OK, $label, basename($outputFile) . ', ' . filesize($outputFile) . ' bytes');
             }
-            if ($outputFile !== null && str_contains(basename($outputFile), 'demo-check') && is_file($outputFile)) {
-                unlink($outputFile);
+            // Removes only files below typo3temp/ (or var/).
+            if ($outputFile !== null && str_contains(basename($outputFile), 'demo-check')) {
+                GeneralUtility::unlink_tempfile($outputFile);
             }
         }
     }

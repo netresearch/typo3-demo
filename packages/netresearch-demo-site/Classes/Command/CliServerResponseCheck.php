@@ -18,7 +18,9 @@ use TYPO3\CMS\Install\SystemEnvironment\ServerResponse\ServerResponseCheck;
  * ("fileadmin/x.tmp/"). Every probe URL then reads
  * "http://127.0.0.1fileadmin/...", no request ever leaves the process, and the
  * check reports OK because it ignores requests that got no response. The
- * probes, their expectations and the evaluation stay core's.
+ * probes, their expectations and the evaluation stay core's, including that
+ * gap: a single probe that times out still counts as passed. The command only
+ * guards against the probe base not answering at all.
  *
  * @internal Builds on @internal core classes; re-check on every TYPO3 update.
  */
