@@ -120,10 +120,12 @@ jobs:
             echo "===== upgrade wizards (upgrade:list)"
             docker compose exec -T -u www-data web vendor/bin/typo3 upgrade:list 2>&1 || true
             # rteImageReferenceValidation stays listed while ANY issue remains,
-            # including the ones it cannot fix. The validator's own report is
-            # a dry run by default and names each issue, record and field.
+            # including the ones it cannot fix. The validator's dry-run report
+            # is cut to type, table, uid, field and fixable: enough to name the
+            # issue, without the image paths of possibly unpublished content.
             echo "===== RTE image references (rte_ckeditor_image:validate, dry run)"
-            docker compose exec -T -u www-data web vendor/bin/typo3 rte_ckeditor_image:validate 2>&1 || true
+            docker compose exec -T -u www-data web vendor/bin/typo3 rte_ckeditor_image:validate 2>&1 \
+              | awk -F"|" "NF >= 9 {print \$2 \"|\" \$3 \"|\" \$4 \"|\" \$5 \"|\" \$9; next} !/\|/ {print}" || true
 
             echo "DIAG-BEGIN"
             collect | gzip | enc
