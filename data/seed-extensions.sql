@@ -1450,8 +1450,16 @@ VALUES (993, 0, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0, 'AI Search vault use',
      'Carries the nr_vault secret.use permission for the nr_ai_search technical user (uid 990). Grants nothing else, and no interactive user belongs in here.');
 
 -- Re-assert the membership: INSERT IGNORE above and for uid 990 skips an
--- existing row entirely (same reason as uid 991 below).
-UPDATE be_users SET usergroup = '993' WHERE uid = 990 AND usergroup <> '993';
+-- existing row entirely (same reason as uid 991 below). Only when both rows
+-- are the seeded ones: on a live database uid 993 could be a group somebody
+-- created in the backend, and 990 must not be put into that.
+UPDATE be_users SET usergroup = '993'
+WHERE uid = 990 AND username = 'nr_ai_search_technical' AND usergroup <> '993'
+  AND EXISTS (
+    SELECT 1 FROM be_groups
+    WHERE uid = 993 AND deleted = 0
+      AND title = 'AI Search vault use' AND custom_options = 'tx_nrvault:secret.use'
+  );
 
 -- 3c) Give the provisioning group (991) the WRITE tier on that same secret.
 --     Handing ownership to 990 above takes the write access away from the
