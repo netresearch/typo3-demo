@@ -38,7 +38,7 @@ jobs:
             'cd /opt/typo3-demo && git pull --ff-only >/dev/null && bash scripts/export-seed-sanitized.sh'
         env:
           SSH_HOST: ${{ secrets.HETZNER_SSH_HOST }}
-          SSH_USER: ${{ secrets.HETZNER_SSH_USER }}
+          SSH_USER: ${{ vars.HETZNER_SSH_USER }}
 
       - name: Fetch dump and clean up remote
         run: |
@@ -48,7 +48,7 @@ jobs:
             "$SSH_USER@$SSH_HOST" 'rm -f /tmp/typo3-demo-seed.sql.gz'
         env:
           SSH_HOST: ${{ secrets.HETZNER_SSH_HOST }}
-          SSH_USER: ${{ secrets.HETZNER_SSH_USER }}
+          SSH_USER: ${{ vars.HETZNER_SSH_USER }}
 
       - name: Verify and summarize
         run: |
