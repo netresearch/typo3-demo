@@ -26,14 +26,22 @@ jobs:
           host: ${{ secrets.HETZNER_SSH_HOST }}
           username: ${{ secrets.HETZNER_SSH_USER }}
           key: ${{ secrets.HETZNER_SSH_KEY }}
-          envs: TYPO3_DOMAIN,TYPO3_SITE_BASE,MARIADB_ROOT_PASSWORD,MARIADB_PASSWORD,TYPO3_ENCRYPTION_KEY,DHI_USERNAME,DHI_TOKEN,OPENAI_API_KEY,DEEPL_API_KEY
+          envs: TYPO3_DOMAIN,MARIADB_ROOT_PASSWORD,MARIADB_PASSWORD,TYPO3_ENCRYPTION_KEY,DHI_USERNAME,DHI_TOKEN,OPENAI_API_KEY,DEEPL_API_KEY
           script: |
+            # Without this a failed step is ignored and only the exit status of
+            # the last command (`make update`) reaches the job.
+            set -euo pipefail
             cd /opt/typo3-demo
             git pull --ff-only
+            # TYPO3_SITE_BASE is "/": the site answers on whatever host Caddy
+            # serves (TYPO3_DOMAIN), and setup.typoscript builds the absolute
+            # Open Graph URLs from TYPO3_SITE_URL for that reason. It used to
+            # come from a TYPO3_SITE_BASE secret that does not exist, so the
+            # line was empty and compose.yml's default "/" applied anyway.
             printf '%s\n' \
               "COMPOSE_PROJECT_NAME=typo3-demo" \
               "TYPO3_DOMAIN=${TYPO3_DOMAIN}" \
-              "TYPO3_SITE_BASE=${TYPO3_SITE_BASE}" \
+              "TYPO3_SITE_BASE=/" \
               "MARIADB_ROOT_PASSWORD=${MARIADB_ROOT_PASSWORD}" \
               "MARIADB_DATABASE=typo3" \
               "MARIADB_USER=typo3" \
@@ -56,7 +64,6 @@ jobs:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           DEEPL_API_KEY: ${{ secrets.DEEPL_API_KEY }}
           TYPO3_DOMAIN: ${{ secrets.TYPO3_DOMAIN }}
-          TYPO3_SITE_BASE: ${{ secrets.TYPO3_SITE_BASE }}
           MARIADB_ROOT_PASSWORD: ${{ secrets.MARIADB_ROOT_PASSWORD }}
           MARIADB_PASSWORD: ${{ secrets.MARIADB_PASSWORD }}
           TYPO3_ENCRYPTION_KEY: ${{ secrets.TYPO3_ENCRYPTION_KEY }}
