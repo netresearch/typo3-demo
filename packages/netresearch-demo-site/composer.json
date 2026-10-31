@@ -4,8 +4,10 @@
     "license": "GPL-2.0-or-later",
     "type": "typo3-cms-extension",
     "require": {
+        "typo3/cms-backend": "^14.1",
         "typo3/cms-core": "^14.1",
         "typo3/cms-dashboard": "^14.1",
+        "typo3/cms-install": "^14.1",
         "bk2k/bootstrap-package": "^16.0",
         "georgringer/news": "^14.0",
         "b13/ai-label": "^1.3"
