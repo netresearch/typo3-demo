@@ -5847,7 +5847,7 @@ Bei „Fertig“ rufe `chat_set_progress` mit `completed` true auf (`label` wie 
 
 ## 4. Schrittweise Optimierung
 
-Beginne mit dem wichtigsten Punkt. Jeder Punkt ist eine Antwort: der Text und die drei Aufrufe aus 2. bis 4. stehen zusammen in ihr. Für jeden Punkt:
+Beginne mit dem wichtigsten Punkt. Jeder Punkt ist eine Antwort: der Text und die Aufrufe aus 2. bis 4. stehen zusammen in ihr. Für jeden Punkt:
 
 1. Nenne den Punkt als fette Zeile (zum Beispiel **Meta Description fehlt**) und in höchstens zwei Sätzen, warum er wichtig ist. Betrifft der Punkt die Open-Graph-Felder (`og_title`, `og_description`), nennt die fette Zeile das Netzwerk: **Social-Media-Vorschau für Facebook und LinkedIn (Open Graph): Beschreibung fehlt**. Betrifft er die Felder `twitter_title` oder `twitter_description`, lautet sie zum Beispiel **Vorschau für X (Twitter): Titel fehlt**. Das sind die Bezeichnungen für den Redakteur; die Feldnamen nennst du ihm nicht.
 2. Rufe `chat_set_progress` auf: `label` wie in der Übersicht, `current` die Nummer des Punkts, `total` die Anzahl der Punkte.
@@ -5966,7 +5966,7 @@ Bei „Fertig“ rufe `chat_set_progress` mit `completed` true auf (`label` wie 
 
 ## 6. Ein Verbesserungsschritt
 
-Beginne mit dem wichtigsten Punkt. Pro Punkt genau eine Fragestellung, und jeder Punkt ist eine Antwort: der Text und die drei Aufrufe aus 2. bis 4. stehen zusammen in ihr. Fehlen für den Vorschlag Informationen (Abschnitt 7), steht statt des Vorschlags die Frage danach in dieser Antwort.
+Beginne mit dem wichtigsten Punkt. Pro Punkt genau eine Fragestellung, und jeder Punkt ist eine Antwort: der Text und die Aufrufe aus 2. bis 4. stehen zusammen in ihr. Fehlen für den Vorschlag Informationen (Abschnitt 7), steht statt des Vorschlags die Frage danach in dieser Antwort.
 
 1. Schreib kurz:
    - **Was ist aufgefallen?** als fette Zeile, etwa **Nutzen im Einstieg nicht sofort klar**,
@@ -6029,7 +6029,7 @@ INSERT IGNORE INTO tx_nrllm_skill
      tstamp, crdate, deleted, hidden)
 VALUES
     (9422, 0, 9404, ''9404:seo-optimieren'', ''seo-optimieren'', ''Geführte Tour: eine Seite auf SEO prüfen und die gefundenen Punkte nacheinander mit dem Redakteur verbessern – Seitentitel, Meta Description, Social-Media-Vorschau, Hauptüberschrift, interne Links. Jede Änderung erst nach Bestätigung.'',
-     @tour_seo_body, ''0ab0060473c478d8fa98f44dd25aace051fc268b35f4a4badc976fa98d51d7b5'', '''', ''full'', ''["ask_choice","chat_highlight_element","chat_list_open_points","chat_set_progress","get_page_content","get_pagetree","read_records","search_fal_files","search_records","set_page_social_image","update_content_element","update_page_metadata"]'', 1, ''first_party'', 1,
+     @tour_seo_body, ''a42289da6d6292495033387703f3412bff2828ae9c61f010ba58b825f43d82b9'', '''', ''full'', ''["ask_choice","chat_highlight_element","chat_list_open_points","chat_set_progress","get_page_content","get_pagetree","read_records","search_fal_files","search_records","set_page_social_image","update_content_element","update_page_metadata"]'', 1, ''first_party'', 1,
      UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0)', 'DO 0');
 PREPARE seed_stmt FROM @seed_sql;
 EXECUTE seed_stmt;
@@ -6040,7 +6040,7 @@ DEALLOCATE PREPARE seed_stmt;
 -- and reported by the probe below.
 SET @seed_sql = IF(@nrllm_tours, '
 UPDATE tx_nrllm_skill SET name = ''seo-optimieren'', description = ''Geführte Tour: eine Seite auf SEO prüfen und die gefundenen Punkte nacheinander mit dem Redakteur verbessern – Seitentitel, Meta Description, Social-Media-Vorschau, Hauptüberschrift, interne Links. Jede Änderung erst nach Bestätigung.'',
-       body = @tour_seo_body, body_checksum = ''0ab0060473c478d8fa98f44dd25aace051fc268b35f4a4badc976fa98d51d7b5'',
+       body = @tour_seo_body, body_checksum = ''a42289da6d6292495033387703f3412bff2828ae9c61f010ba58b825f43d82b9'',
        allowed_tools = ''["ask_choice","chat_highlight_element","chat_list_open_points","chat_set_progress","get_page_content","get_pagetree","read_records","search_fal_files","search_records","set_page_social_image","update_content_element","update_page_metadata"]'', process = 1, support_status = ''full'', trust_level = ''first_party'',
        identifier = ''9404:seo-optimieren'',
        enabled = 1, disabled_by = '''', orphaned = 0, hidden = 0, deleted = 0 WHERE uid = 9422 AND source = 9404', 'DO 0');
@@ -6088,7 +6088,7 @@ INSERT IGNORE INTO tx_nrllm_skill
      tstamp, crdate, deleted, hidden)
 VALUES
     (9423, 0, 9404, ''9404:inhalt-verbessern'', ''inhalt-verbessern'', ''Geführte Tour: eine Seite inhaltlich prüfen – Einstieg, Nutzen, Zielgruppe, Vollständigkeit, Beispiele, Belege, Aufbau, nächster Schritt – und die Verbesserungen nacheinander mit dem Redakteur umsetzen. Erfindet keine Fakten; jede Änderung erst nach Bestätigung.'',
-     @tour_content_body, ''5a7cca9c2a8a55b51a0f584baa179a747bf9f43f55424acf263883ebd37415d4'', '''', ''full'', ''["ask_choice","chat_highlight_element","chat_list_open_points","chat_set_progress","create_content_element_draft","get_page_content","get_pagetree","read_records","search_records","update_content_element"]'', 1, ''first_party'', 1,
+     @tour_content_body, ''33135aba7cb62ef7ddd7383472adb7addf49f95a8bf025013ba825003d13a5a9'', '''', ''full'', ''["ask_choice","chat_highlight_element","chat_list_open_points","chat_set_progress","create_content_element_draft","get_page_content","get_pagetree","read_records","search_records","update_content_element"]'', 1, ''first_party'', 1,
      UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0)', 'DO 0');
 PREPARE seed_stmt FROM @seed_sql;
 EXECUTE seed_stmt;
@@ -6099,7 +6099,7 @@ DEALLOCATE PREPARE seed_stmt;
 -- and reported by the probe below.
 SET @seed_sql = IF(@nrllm_tours, '
 UPDATE tx_nrllm_skill SET name = ''inhalt-verbessern'', description = ''Geführte Tour: eine Seite inhaltlich prüfen – Einstieg, Nutzen, Zielgruppe, Vollständigkeit, Beispiele, Belege, Aufbau, nächster Schritt – und die Verbesserungen nacheinander mit dem Redakteur umsetzen. Erfindet keine Fakten; jede Änderung erst nach Bestätigung.'',
-       body = @tour_content_body, body_checksum = ''5a7cca9c2a8a55b51a0f584baa179a747bf9f43f55424acf263883ebd37415d4'',
+       body = @tour_content_body, body_checksum = ''33135aba7cb62ef7ddd7383472adb7addf49f95a8bf025013ba825003d13a5a9'',
        allowed_tools = ''["ask_choice","chat_highlight_element","chat_list_open_points","chat_set_progress","create_content_element_draft","get_page_content","get_pagetree","read_records","search_records","update_content_element"]'', process = 1, support_status = ''full'', trust_level = ''first_party'',
        identifier = ''9404:inhalt-verbessern'',
        enabled = 1, disabled_by = '''', orphaned = 0, hidden = 0, deleted = 0 WHERE uid = 9423 AND source = 9404', 'DO 0');

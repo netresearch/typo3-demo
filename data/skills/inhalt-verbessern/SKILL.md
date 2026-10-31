@@ -97,7 +97,7 @@ Bei „Fertig“ rufe `chat_set_progress` mit `completed` true auf (`label` wie 
 
 ## 6. Ein Verbesserungsschritt
 
-Beginne mit dem wichtigsten Punkt. Pro Punkt genau eine Fragestellung, und jeder Punkt ist eine Antwort: der Text und die drei Aufrufe aus 2. bis 4. stehen zusammen in ihr. Fehlen für den Vorschlag Informationen (Abschnitt 7), steht statt des Vorschlags die Frage danach in dieser Antwort.
+Beginne mit dem wichtigsten Punkt. Pro Punkt genau eine Fragestellung, und jeder Punkt ist eine Antwort: der Text und die Aufrufe aus 2. bis 4. stehen zusammen in ihr. Fehlen für den Vorschlag Informationen (Abschnitt 7), steht statt des Vorschlags die Frage danach in dieser Antwort.
 
 1. Schreib kurz:
    - **Was ist aufgefallen?** als fette Zeile, etwa **Nutzen im Einstieg nicht sofort klar**,

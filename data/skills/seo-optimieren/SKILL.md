@@ -80,7 +80,7 @@ Bei „Fertig“ rufe `chat_set_progress` mit `completed` true auf (`label` wie 
 
 ## 4. Schrittweise Optimierung
 
-Beginne mit dem wichtigsten Punkt. Jeder Punkt ist eine Antwort: der Text und die drei Aufrufe aus 2. bis 4. stehen zusammen in ihr. Für jeden Punkt:
+Beginne mit dem wichtigsten Punkt. Jeder Punkt ist eine Antwort: der Text und die Aufrufe aus 2. bis 4. stehen zusammen in ihr. Für jeden Punkt:
 
 1. Nenne den Punkt als fette Zeile (zum Beispiel **Meta Description fehlt**) und in höchstens zwei Sätzen, warum er wichtig ist. Betrifft der Punkt die Open-Graph-Felder (`og_title`, `og_description`), nennt die fette Zeile das Netzwerk: **Social-Media-Vorschau für Facebook und LinkedIn (Open Graph): Beschreibung fehlt**. Betrifft er die Felder `twitter_title` oder `twitter_description`, lautet sie zum Beispiel **Vorschau für X (Twitter): Titel fehlt**. Das sind die Bezeichnungen für den Redakteur; die Feldnamen nennst du ihm nicht.
 2. Rufe `chat_set_progress` auf: `label` wie in der Übersicht, `current` die Nummer des Punkts, `total` die Anzahl der Punkte.
