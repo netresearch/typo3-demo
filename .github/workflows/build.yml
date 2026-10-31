@@ -760,16 +760,17 @@ jobs:
       # The checks behind the Install Tool's Environment Status, Directory
       # Status, Analyze Database Structure and Image Processing views, on the
       # image under test. Before the collation step below, which rewrites the
-      # schema this compares. Unexpected findings (exit 1) only warn until the
-      # expected findings are listed, see README.md#install-tool-checks; a
-      # check that cannot run, or an unreadable list, fails the step.
+      # schema this compares. A finding that expected-findings.yaml does not
+      # list (exit 1) fails the step, and so does a check that cannot run or
+      # an unreadable list; see README.md#install-tool-checks. The deploy only
+      # warns, because it runs after the containers are replaced.
       - name: Install Tool checks
         run: |
           rc=0
           docker compose exec -T -u www-data web vendor/bin/typo3 demo:install-tool:check || rc=$?
           case $rc in
             0) ;;
-            1) echo "::warning title=Install Tool checks::Unexpected Install Tool findings - see this step's output" ;;
+            1) echo "::error title=Install Tool checks::Install Tool findings that expected-findings.yaml does not list - see this step's output"; exit 1 ;;
             *) echo "::error title=Install Tool checks::The Install Tool check did not run (exit $rc)"; exit 1 ;;
           esac
 
