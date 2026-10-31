@@ -119,6 +119,11 @@ jobs:
             # one keeps "Remaining updates" open. upgrade:list runs nothing.
             echo "===== upgrade wizards (upgrade:list)"
             docker compose exec -T -u www-data web vendor/bin/typo3 upgrade:list 2>&1 || true
+            # rteImageReferenceValidation stays listed while ANY issue remains,
+            # including the ones it cannot fix. The validator's own report is
+            # a dry run by default and names each issue, record and field.
+            echo "===== RTE image references (rte_ckeditor_image:validate, dry run)"
+            docker compose exec -T -u www-data web vendor/bin/typo3 rte_ckeditor_image:validate 2>&1 || true
 
             echo "DIAG-BEGIN"
             collect | gzip | enc

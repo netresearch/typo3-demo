@@ -905,11 +905,15 @@ vendor/bin/typo3 upgrade:run nrMcpAgent_dashboardWidgetSizes --no-interaction 2>
 #   FrameClassToOptionsUpdate: bootstrap_package's frame_class migration.
 #   rteImageReferenceValidation: repeatable; repairs stale RTE image
 #     references and reports nothing to do when there are none.
+#   nrVaultAuditHmacMigration: re-hashes the vault audit log to the configured
+#     HMAC epoch (nr_vault's documented step after an epoch change). Listed
+#     on the live instance; a fresh stack from the seed did not list it.
 # A done wizard answers "already marked as done", so a reboot costs a lookup each.
 for wizard in backendUserLanguageMigration setup_userSettingsMigration \
     setup_userSettingsScrubbingMigration mediaFieldsZeroToNullUpdateWizard \
     nrLlm_providerApiTimeout120 nrLlm_stampProviderTrustZone \
-    'BK2K\BootstrapPackage\Updates\FrameClassToOptionsUpdate' rteImageReferenceValidation; do
+    'BK2K\BootstrapPackage\Updates\FrameClassToOptionsUpdate' rteImageReferenceValidation \
+    nrVaultAuditHmacMigration; do
     echo "Running upgrade wizard $wizard..."
     vendor/bin/typo3 upgrade:run "$wizard" --no-interaction 2>&1 \
         || echo "WARNING: upgrade wizard $wizard failed" >&2
