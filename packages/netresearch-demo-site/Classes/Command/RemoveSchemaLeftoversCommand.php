@@ -46,6 +46,9 @@ final class RemoveSchemaLeftoversCommand extends Command
 {
     private const PREFIX = 'zzz_deleted_';
 
+    /** @var array<string, true> removal statements parse() could not read, collected over every comparison */
+    private array $unrecognised = [];
+
     public function __construct(
         private readonly SchemaMigrator $schemaMigrator,
         private readonly SqlReader $sqlReader,
@@ -76,11 +79,29 @@ final class RemoveSchemaLeftoversCommand extends Command
             return Command::INVALID;
         }
         $dryRun = (bool)$input->getOption('dry-run');
+        try {
+            return $this->removeLeftovers($list, $dryRun, $output);
+        } catch (Throwable $e) {
+            // Earlier steps may have changed the schema already; the next run
+            // continues from wherever this one stopped.
+            $output->writeln('<error>FAILED: the run stopped with ' . $e::class . ': ' . $e->getMessage() . '</error>');
+            return Command::FAILURE;
+        }
+    }
+
+    /**
+     * @param array{tables: array<string, true>, columns: array<string, array<string, true>>, indexes: array<string, array<string, true>>} $list
+     */
+    private function removeLeftovers(array $list, bool $dryRun, OutputInterface $output): int
+    {
         $statements = $this->sqlReader->getCreateTableStatementArray($this->sqlReader->getTablesDefinitionString());
 
-        /** @var array<string, string> $removed object key => what happened */
+        /** @var array<string, string> $removed object key => last step that succeeded */
         $removed = [];
+        /** @var array<string, true> $failedObjects */
+        $failedObjects = [];
         $failed = 0;
+        $initial = $this->listedSuggestions($statements, $list);
         $steps = [
             'drop index' => fn(array $p): bool => $p['kind'] === 'drop-index',
             'rename' => fn(array $p): bool => $p['kind'] === 'rename-table' || $p['kind'] === 'rename-column',
@@ -89,7 +110,7 @@ final class RemoveSchemaLeftoversCommand extends Command
         foreach ($steps as $step => $belongsToStep) {
             // In a dry run the third step lists only zzz_deleted_ copies that
             // exist already: the others appear once the rename has run.
-            $selected = array_filter($this->listedSuggestions($statements, $list), $belongsToStep);
+            $selected = array_filter($step === 'drop index' ? $initial : $this->listedSuggestions($statements, $list), $belongsToStep);
             foreach ($selected as $hash => $suggestion) {
                 $output->writeln(sprintf(
                     '%s %s: %s%s',
@@ -106,6 +127,7 @@ final class RemoveSchemaLeftoversCommand extends Command
             foreach ($selected as $hash => $suggestion) {
                 if (isset($errors[$hash])) {
                     $failed++;
+                    $failedObjects[$suggestion['object']] = true;
                     $output->writeln(sprintf('<error>FAILED %s: %s -- %s</error>', $step, $suggestion['statement'], $errors[$hash]));
                     continue;
                 }
@@ -113,44 +135,63 @@ final class RemoveSchemaLeftoversCommand extends Command
             }
         }
 
-        // Every listed object that is not acted on above is accounted for here:
-        // gone already, or still there and no longer a removal suggestion.
-        $remaining = $dryRun ? [] : $this->listedSuggestions($statements, $list);
-        $stillSuggested = [];
-        foreach ($remaining as $suggestion) {
-            $stillSuggested[$suggestion['object']] = true;
-        }
-        $wouldRemove = [];
-        if ($dryRun) {
-            foreach ($this->listedSuggestions($statements, $list) as $suggestion) {
-                $wouldRemove[$suggestion['object']] = true;
+        // migrate() reports nothing for a selected statement it did not find,
+        // so a removal counts only once the object is really gone.
+        $objects = $this->listedObjects($list);
+        foreach ($removed as $object => $step) {
+            if (isset($failedObjects[$object])) {
+                unset($removed[$object]);
+                continue;
             }
+            [$type, $table, $name] = $objects[$object];
+            if ($step === 'rename' || $this->exists($type, $table, $name)) {
+                $failed++;
+                $failedObjects[$object] = true;
+                unset($removed[$object]);
+                $output->writeln(sprintf('<error>FAILED %s: no statement reported an error, but it or its zzz_deleted_ copy is still in the database</error>', $object));
+            }
+        }
+
+        // Every other listed object is accounted for here: gone already, or
+        // still there and no longer a removal suggestion of core.
+        $stillSuggested = [];
+        foreach ($dryRun ? $initial : $this->listedSuggestions($statements, $list) as $suggestion) {
+            $stillSuggested[$suggestion['object']] = true;
         }
         $absent = 0;
         $kept = 0;
-        foreach ($this->listedObjects($list) as $object => [$type, $table, $name]) {
-            if (isset($removed[$object]) || isset($wouldRemove[$object])) {
+        foreach ($objects as $object => [$type, $table, $name]) {
+            if (isset($removed[$object]) || isset($failedObjects[$object])) {
                 continue;
             }
             if (isset($stillSuggested[$object])) {
-                $failed++;
-                $output->writeln(sprintf('<error>FAILED %s is still a removal suggestion after the run</error>', $object));
+                if (!$dryRun) {
+                    $failed++;
+                    $output->writeln(sprintf('<error>FAILED %s is still a removal suggestion after the run</error>', $object));
+                }
                 continue;
             }
             if ($this->exists($type, $table, $name)) {
                 $kept++;
-                $output->writeln(sprintf('WARNING kept %s: it is on the list, but the core schema comparison does not suggest removing it (an installed package defines it)', $object));
+                $output->writeln(sprintf('WARNING kept %s: it is on the list, but core does not suggest removing it, so a loaded package defines it again', $object));
                 continue;
             }
             $absent++;
         }
 
-        $dropped = $dryRun ? count($wouldRemove) : count(array_filter($removed, static fn(string $step): bool => $step !== 'rename'));
+        // A removal statement this command cannot read might name a listed
+        // object, and the object would then look "kept" above. Fail instead.
+        foreach (array_keys($this->unrecognised) as $statement) {
+            $failed++;
+            $output->writeln(sprintf('<error>FAILED cannot read the removal suggestion "%s", so whether it names a listed object is unknown</error>', $statement));
+        }
+
+        $dropped = $dryRun ? count($stillSuggested) : count($removed);
         $output->writeln(sprintf(
             '%s: %d of %d listed objects %s, %d already absent, %d kept, %d failed.',
             $dryRun ? 'Dry run' : 'Schema leftovers',
             $dropped,
-            count($this->listedObjects($list)),
+            count($objects),
             $dryRun ? 'would be removed' : 'removed',
             $absent,
             $kept,
@@ -178,7 +219,11 @@ final class RemoveSchemaLeftoversCommand extends Command
             foreach (['change', 'change_table', 'drop', 'drop_table'] as $category) {
                 foreach ($suggestions[$category] ?? [] as $hash => $statement) {
                     $parsed = $this->parse((string)$statement);
-                    if ($parsed === null || !$this->isListed($list, $parsed['type'], $parsed['table'], $parsed['name'])) {
+                    if ($parsed === null) {
+                        $this->unrecognised[(string)$statement] = true;
+                        continue;
+                    }
+                    if (!$this->isListed($list, $parsed['type'], $parsed['table'], $parsed['name'])) {
                         continue;
                     }
                     $selected[$hash] = [

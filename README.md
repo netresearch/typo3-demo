@@ -194,8 +194,21 @@ statement only when it is a removal suggestion of core and names an object on
 the list. So nothing that is not listed is ever removed, and a listed object
 that a package defines again is kept and reported as `kept`. Every executed
 statement is printed, with the row count of each table. A second run finds
-nothing to do and prints `Nothing to do`; `--dry-run` prints the statements
-without executing them.
+nothing to do and prints `Nothing to do`. `--dry-run` prints the statements
+that could run now without executing them; the drop of a renamed copy appears
+only once the rename has run.
+
+The run fails (exit 1) when a statement fails, when a listed object is still
+there afterwards, or when core suggests a removal statement the command cannot
+read, because that statement could name a listed object.
+
+On the live instance, before the first run, the tables held: `index_rel` 8,855
+rows, `index_words` 2,231, four more `index_*` tables 105 to 129 each,
+`sys_language` 2, every other table 0.
+
+A git revert of the change that added the command does not bring the dropped
+objects back. It would restore seed statements that write to dropped columns,
+and `make seed-extensions`, and with it the deploy, would then fail.
 
 A new removal suggestion, for example from an extension that is uninstalled
 later, is not removed: `make install-tool-check` reports it, and removing it

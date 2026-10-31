@@ -766,6 +766,12 @@ jobs:
           run() { docker compose exec -T -u www-data web vendor/bin/typo3 demo:schema:remove-leftovers; }
           first=$(run) || { echo "$first"; echo "::error title=Schema leftovers::the first run failed"; exit 1; }
           echo "$first"
+          # A listed object that a package defines again is kept; the list
+          # must then lose that entry, so this fails too.
+          if ! grep -qE ', 0 kept, 0 failed\.$' <<<"$first"; then
+            echo "::error title=Schema leftovers::the first run kept or failed to remove a listed object"
+            exit 1
+          fi
           second=$(run) || { echo "$second"; echo "::error title=Schema leftovers::the second run failed"; exit 1; }
           echo "$second"
           if ! grep -q '^Nothing to do' <<<"$second"; then
