@@ -13,9 +13,10 @@ on:
   # netresearch/nr-ai-search) are re-resolved without a code change on main.
   workflow_dispatch:
 
+# Workflow default for the jobs that set none (seed-skills, validate): read
+# only. The two jobs that publish or attest grant packages: write themselves.
 permissions:
   contents: read
-  packages: write
 
 jobs:
   build:
