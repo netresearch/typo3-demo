@@ -195,7 +195,7 @@ VALUES (400, 102, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'RTE CKEditor Imag
 <p><img src="/fileadmin/user_upload/images/Home/CH5_7354.jpg" alt="Team photo demo" width="800" data-htmlarea-file-uid="190" data-htmlarea-file-table="sys_file"></p>
 
 <h3 class="fw-bold mb-2 mt-4" style="font-size: 1rem;">Inline Image in Text</h3>
-<p style="font-size: 1rem;">Text can contain inline images like this <img class="image image-inline" src="/fileadmin/user_upload/images/netresearch-typo3-demo.png" alt="inline logo" width="60" data-htmlarea-file-uid="1" data-htmlarea-file-table="sys_file"> logo that flows naturally within the paragraph.</p>
+<p style="font-size: 1rem;">Text can contain inline images like this <img class="image image-inline" src="/fileadmin/user_upload/images/netresearch-typo3-demo.png" alt="inline logo" width="60" data-htmlarea-file-uid="235" data-htmlarea-file-table="sys_file"> logo that flows naturally within the paragraph.</p>
 
 <div class="alert alert-light border mt-4" role="alert" style="font-size: 1rem;">
   <strong style="color: #2F99A4;">For integrators:</strong> Edit this page in the TYPO3 backend to see the CKEditor image toolbar button in action. All images above are inserted via CKEditor, not the standard image content element.
@@ -2501,7 +2501,7 @@ VALUES (9201, 102, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 400, 400, 'html', 'RTE
 <p><img src="/fileadmin/user_upload/images/Home/CH5_7354.jpg" alt="Teamfoto (Demo)" width="800" data-htmlarea-file-uid="190" data-htmlarea-file-table="sys_file"></p>
 
 <h3 class="fw-bold mb-2 mt-4" style="font-size: 1rem;">Inline-Bild im Text</h3>
-<p style="font-size: 1rem;">Text kann Inline-Bilder enthalten, etwa dieses <img class="image image-inline" src="/fileadmin/user_upload/images/netresearch-typo3-demo.png" alt="Inline-Logo" width="60" data-htmlarea-file-uid="1" data-htmlarea-file-table="sys_file"> Logo, das ganz normal im Absatz mitläuft.</p>
+<p style="font-size: 1rem;">Text kann Inline-Bilder enthalten, etwa dieses <img class="image image-inline" src="/fileadmin/user_upload/images/netresearch-typo3-demo.png" alt="Inline-Logo" width="60" data-htmlarea-file-uid="235" data-htmlarea-file-table="sys_file"> Logo, das ganz normal im Absatz mitläuft.</p>
 
 <div class="alert alert-light border mt-4" role="alert" style="font-size: 1rem;">
   <strong style="color: #2F99A4;">Für Integratoren:</strong> Diese Seite im TYPO3-Backend öffnen — dann zeigt sich die Bild-Schaltfläche in der CKEditor-Toolbar. Alle Bilder oben stecken im Rich Text, nicht in einem Bild-Inhaltselement.
