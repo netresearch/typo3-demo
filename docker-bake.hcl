@@ -17,6 +17,10 @@ variable "GIT_SHA" {
 target "web" {
   context    = "."
   dockerfile = "docker/web/Dockerfile"
+  # Without a target, bake builds the Dockerfile's last stage, which is `dev`:
+  # every published image carried zz-dev.ini (display_errors=On,
+  # error_reporting=E_ALL) on top of the production settings.
+  target     = "runtime"
   # A secret, never an arg: buildx writes build args verbatim into the SLSA
   # provenance of the pushed image, and this image is public. Passing the
   # Composer credential as `args` published a working git.netresearch.de token
