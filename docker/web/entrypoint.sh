@@ -889,6 +889,43 @@ vendor/bin/typo3 upgrade:run nrMcpAgent_recentChatsWidgetSize --no-interaction 2
 echo "Running upgrade wizard nrMcpAgent_dashboardWidgetSizes..."
 vendor/bin/typo3 upgrade:run nrMcpAgent_dashboardWidgetSizes --no-interaction 2>&1 \
     || echo "WARNING: upgrade wizard nrMcpAgent_dashboardWidgetSizes failed" >&2
+
+# The wizards Reports > Status listed as open ("Remaining updates: upgrade not
+# complete"), each run once on a local stack from this image and the seed
+# before being listed here. Named one by one, never `upgrade:run` without an
+# argument: that would also run nrllmAdr214SkillVersionDigest, see below.
+#   backendUserLanguageMigration, setup_userSettingsMigration,
+#   setup_userSettingsScrubbingMigration, mediaFieldsZeroToNullUpdateWizard:
+#     core data migrations of TYPO3 14 (the scrubbing one removes stored
+#     password fields from the user settings).
+#   nrLlm_providerApiTimeout120: providers still at the old 30 s default get
+#     the enforced 120 s, so long generations are not cut off.
+#   nrLlm_stampProviderTrustZone: without a declared zone a provider gets the
+#     strictest one, which strips tools from runs that used them.
+#   FrameClassToOptionsUpdate: bootstrap_package's frame_class migration.
+#   rteImageReferenceValidation: repeatable; repairs stale RTE image
+#     references and reports nothing to do when there are none.
+# A done wizard answers "already marked as done", so a reboot costs a lookup each.
+for wizard in backendUserLanguageMigration setup_userSettingsMigration \
+    setup_userSettingsScrubbingMigration mediaFieldsZeroToNullUpdateWizard \
+    nrLlm_providerApiTimeout120 nrLlm_stampProviderTrustZone \
+    'BK2K\BootstrapPackage\Updates\FrameClassToOptionsUpdate' rteImageReferenceValidation; do
+    echo "Running upgrade wizard $wizard..."
+    vendor/bin/typo3 upgrade:run "$wizard" --no-interaction 2>&1 \
+        || echo "WARNING: upgrade wizard $wizard failed" >&2
+done
+
+# nrllmAdr214SkillVersionDigest is marked done instead of run. It verifies each
+# skill row against its stored raw_frontmatter before writing a version digest,
+# and disables every row that does not verify. The seeded skills in
+# data/seed-extensions.sql carry no raw_frontmatter, so on a local stack from
+# this image the wizard disabled all three. They keep working without a digest
+# (the body checksum check stays), which is the state they have been in since
+# nr-llm introduced the digest. INSERT IGNORE: the key is unique, and a wizard
+# somebody marked done or undone by hand keeps that state.
+MYSQL_PWD="${MARIADB_PASSWORD:-typo3}" mariadb -h"${MARIADB_HOST:-db}" -u"${MARIADB_USER:-typo3}" "${MARIADB_DATABASE:-typo3}" \
+    -e "INSERT IGNORE INTO sys_registry (entry_namespace, entry_key, entry_value) VALUES ('installUpdate', 'Netresearch\\\\NrLlm\\\\Updates\\\\SkillVersionDigestUpdateWizard', 'i:1;');" \
+    2>/dev/null || echo "WARNING: marking nrllmAdr214SkillVersionDigest done failed" >&2
 # ---------------------------------------------------------------------------
 # Demo records for contexts and nr_textdb.
 # ---------------------------------------------------------------------------

@@ -1,6 +1,6 @@
 {
     "name": "netresearch/typo3-demo-site",
-    "description": "Netresearch TYPO3 Demo — Site Package",
+    "description": "Netresearch Demo Site - Site package for the Netresearch TYPO3 Demo",
     "license": "GPL-2.0-or-later",
     "type": "typo3-cms-extension",
     "require": {
