@@ -826,6 +826,14 @@ jobs:
           fi
           make seed-extensions
 
+      # The seed re-asserts its RTE content on every deploy, after the boot-time
+      # upgrade wizard rteImageReferenceValidation has run. An <img> whose
+      # data-htmlarea-file-uid names another file than its src therefore comes
+      # back on every deploy, and the wizard's "fix" would rewrite the src to
+      # that other file. The validator exits 1 on any issue in its dry run.
+      - name: Verify the seeded RTE images reference their own files
+        run: docker compose exec -T -u www-data web vendor/bin/typo3 rte_ckeditor_image:validate
+
       - name: Cleanup
         if: always()
         run: docker compose down -v
