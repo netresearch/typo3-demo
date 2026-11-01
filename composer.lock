@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8ee2e9db8a8ca14729e6b6655808077f",
+    "content-hash": "afd581b819a430c644204a169b38ea8c",
     "packages": [
         {
             "name": "b13/ai-label",
@@ -3303,16 +3303,16 @@
         },
         {
             "name": "netresearch/nr-passkeys-be",
-            "version": "v1.0.2",
+            "version": "v1.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/t3x-nr-passkeys-be.git",
-                "reference": "095411c7039fa4954f26e68afb987ed4bdbc9f84"
+                "reference": "f34a6ef7ac0ff5fd9c610e9ab23879b00caba23d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/t3x-nr-passkeys-be/zipball/095411c7039fa4954f26e68afb987ed4bdbc9f84",
-                "reference": "095411c7039fa4954f26e68afb987ed4bdbc9f84",
+                "url": "https://api.github.com/repos/netresearch/t3x-nr-passkeys-be/zipball/f34a6ef7ac0ff5fd9c610e9ab23879b00caba23d",
+                "reference": "f34a6ef7ac0ff5fd9c610e9ab23879b00caba23d",
                 "shasum": ""
             },
             "require": {
@@ -3381,7 +3381,7 @@
                 "issues": "https://github.com/netresearch/t3x-nr-passkeys-be/issues",
                 "source": "https://github.com/netresearch/t3x-nr-passkeys-be"
             },
-            "time": "2026-10-31T14:25:28+00:00"
+            "time": "2026-11-01T02:31:10+00:00"
         },
         {
             "name": "netresearch/nr-passkeys-fe",
@@ -3617,16 +3617,16 @@
         },
         {
             "name": "netresearch/nr-temporal-cache",
-            "version": "v1.0.3",
+            "version": "v1.0.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/t3x-nr-temporal-cache.git",
-                "reference": "0378c29912137fb06c5e97527b7ab7850068f5cb"
+                "reference": "2888a9831aed3d77d85402785791e0a2ee182824"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/t3x-nr-temporal-cache/zipball/0378c29912137fb06c5e97527b7ab7850068f5cb",
-                "reference": "0378c29912137fb06c5e97527b7ab7850068f5cb",
+                "url": "https://api.github.com/repos/netresearch/t3x-nr-temporal-cache/zipball/2888a9831aed3d77d85402785791e0a2ee182824",
+                "reference": "2888a9831aed3d77d85402785791e0a2ee182824",
                 "shasum": ""
             },
             "require": {
@@ -3651,7 +3651,7 @@
                 "typo3/cms": {
                     "extension-key": "nr_temporal_cache",
                     "web-dir": ".Build/public",
-                    "version": "1.0.3",
+                    "version": "1.0.4",
                     "Package": {
                         "providesPackages": {
                             "netresearch/nr-temporal-cache": "nr_temporal_cache"
@@ -3737,7 +3737,7 @@
                 "issues": "https://github.com/netresearch/t3x-nr-temporal-cache/issues",
                 "source": "https://github.com/netresearch/t3x-nr-temporal-cache"
             },
-            "time": "2026-10-31T13:47:51+00:00"
+            "time": "2026-11-01T02:28:03+00:00"
         },
         {
             "name": "netresearch/nr-textdb",
@@ -13018,7 +13018,6 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "netresearch/nr-ai-search": 20,
-        "netresearch/nr-temporal-cache": 20,
         "netresearch/typo3-demo-site": 20
     },
     "prefer-stable": true,
