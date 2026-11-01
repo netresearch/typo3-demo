@@ -24,7 +24,7 @@
         "netresearch/nr-mcp-agent": "^0.28.1",
         "netresearch/nr-passkeys-be": "^1.0.3",
         "netresearch/nr-passkeys-fe": "^2.0.1",
-        "netresearch/nr-repurpose": "^0.11.5",
+        "netresearch/nr-repurpose": "^0.12",
         "netresearch/nr-scheduler": "^2.0.1",
         "netresearch/nr-temporal-cache": "^1.0.4",
         "netresearch/nr-textdb": "^4.1.0",

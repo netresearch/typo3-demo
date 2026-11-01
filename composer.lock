@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "21d4326eecde37904fb80dd691f298ce",
+    "content-hash": "5be2892381459f110152f344c780cf9b",
     "packages": [
         {
             "name": "b13/ai-label",
@@ -3460,16 +3460,16 @@
         },
         {
             "name": "netresearch/nr-repurpose",
-            "version": "v0.11.5",
+            "version": "v0.12.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/t3x-nr-repurpose.git",
-                "reference": "61facdc9599dcd77dd7dad70ad8101f14f9da2fc"
+                "reference": "169f0b548f72879bf442494866fe75d2fc2d3248"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/t3x-nr-repurpose/zipball/61facdc9599dcd77dd7dad70ad8101f14f9da2fc",
-                "reference": "61facdc9599dcd77dd7dad70ad8101f14f9da2fc",
+                "url": "https://api.github.com/repos/netresearch/t3x-nr-repurpose/zipball/169f0b548f72879bf442494866fe75d2fc2d3248",
+                "reference": "169f0b548f72879bf442494866fe75d2fc2d3248",
                 "shasum": ""
             },
             "require": {
@@ -3485,6 +3485,7 @@
                 "typo3/cms-backend": "^14.3",
                 "typo3/cms-core": "^14.3",
                 "typo3/cms-extbase": "^14.3",
+                "typo3/cms-filelist": "^14.3",
                 "typo3/cms-fluid": "^14.3",
                 "typo3/cms-frontend": "^14.3",
                 "typo3/html-sanitizer": "^2.3.2"
@@ -3495,7 +3496,6 @@
                 "sabberworm/php-css-parser": "^9.5",
                 "typo3/cms-belog": "^14.3",
                 "typo3/cms-beuser": "^14.3",
-                "typo3/cms-filelist": "^14.3",
                 "typo3/cms-install": "^14.3",
                 "typo3/cms-lowlevel": "^14.3",
                 "typo3/cms-setup": "^14.3",
@@ -3509,7 +3509,7 @@
                             "smalot/pdfparser": ""
                         }
                     },
-                    "version": "0.11.5",
+                    "version": "0.12.0",
                     "web-dir": ".Build/Web",
                     "extension-key": "nr_repurpose"
                 },
@@ -3540,7 +3540,7 @@
                 "issues": "https://github.com/netresearch/t3x-nr-repurpose/issues",
                 "source": "https://github.com/netresearch/t3x-nr-repurpose"
             },
-            "time": "2026-11-01T12:09:30+00:00"
+            "time": "2026-11-01T16:19:06+00:00"
         },
         {
             "name": "netresearch/nr-scheduler",
