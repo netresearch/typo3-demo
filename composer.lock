@@ -3460,16 +3460,16 @@
         },
         {
             "name": "netresearch/nr-repurpose",
-            "version": "v0.12.0",
+            "version": "v0.12.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/t3x-nr-repurpose.git",
-                "reference": "169f0b548f72879bf442494866fe75d2fc2d3248"
+                "reference": "bc9f851b828ccf5e3e566dae5276ef988dae673c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/t3x-nr-repurpose/zipball/169f0b548f72879bf442494866fe75d2fc2d3248",
-                "reference": "169f0b548f72879bf442494866fe75d2fc2d3248",
+                "url": "https://api.github.com/repos/netresearch/t3x-nr-repurpose/zipball/bc9f851b828ccf5e3e566dae5276ef988dae673c",
+                "reference": "bc9f851b828ccf5e3e566dae5276ef988dae673c",
                 "shasum": ""
             },
             "require": {
@@ -3509,7 +3509,7 @@
                             "smalot/pdfparser": ""
                         }
                     },
-                    "version": "0.12.0",
+                    "version": "0.12.1",
                     "web-dir": ".Build/Web",
                     "extension-key": "nr_repurpose"
                 },
@@ -3540,7 +3540,7 @@
                 "issues": "https://github.com/netresearch/t3x-nr-repurpose/issues",
                 "source": "https://github.com/netresearch/t3x-nr-repurpose"
             },
-            "time": "2026-11-01T16:19:06+00:00"
+            "time": "2026-11-01T19:34:53+00:00"
         },
         {
             "name": "netresearch/nr-scheduler",
