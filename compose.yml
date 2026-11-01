@@ -298,10 +298,12 @@ services:
     command:
       - >
         while true;
-        do if timeout -k 30 600 vendor/bin/typo3 nrllm:agent:work --limit=20 --time-limit=240
-        && timeout -k 30 120 vendor/bin/typo3 nrllm:agent:reap --limit=50;
+        do rc=0;
+        timeout -k 30 600 vendor/bin/typo3 nrllm:agent:work --limit=20 --time-limit=240 || rc=$$?;
+        timeout -k 30 120 vendor/bin/typo3 nrllm:agent:reap --limit=50 || rc=$$?;
+        if [ "$$rc" -eq 0 ];
         then touch /tmp/llm-agent-worker.ok;
-        else echo "nrllm:agent:work or nrllm:agent:reap failed with exit $$?";
+        else echo "nrllm:agent:work or nrllm:agent:reap failed with exit $$rc";
         fi;
         sleep 60;
         done
