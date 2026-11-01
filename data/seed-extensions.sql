@@ -1595,6 +1595,72 @@ WHERE s.deleted = 0
   AND s.identifier = (SELECT api_key FROM tx_nrllm_provider WHERE uid = 1 LIMIT 1)
   AND (SELECT api_key FROM tx_nrllm_provider WHERE uid = 1 LIMIT 1) <> '';
 
+-- 3e) The identity of the scheduled alternative-text batch (nr_llm 0.42).
+--
+--     nrllm:editor-action:batch refuses _cli_, and the rights of --user decide
+--     which files a run reaches. No account here fits: the admin accounts
+--     bypass exactly those rights, nasa-redakteur has no group and no mount, and
+--     its one-dollar budget is a figure the Analytics page shows on purpose.
+--     So a non-admin identity of its own, in the shape of 990-992: it never logs
+--     in, and the cards its runs wait at are decided by an admin in AI > Agent
+--     Runs. Fixed uids 994 are above the seed maxima (be_users 992, be_groups 993).
+--
+--     The one file mount is the whole reach of this user. read_only = 0 because
+--     nr_llm asks for editMeta, which core grants only inside a writable mount.
+--     The group may read files and change their metadata, and nothing else:
+--     setting the text on an approved card writes sys_file_metadata.
+--
+--     options = 3 is what makes the user take the group's mount:
+--     BackendUserAuthentication reads file mounts from a group only with bit 2.
+INSERT IGNORE INTO sys_filemounts (uid, pid, tstamp, deleted, hidden, title, description, identifier, read_only)
+VALUES (994, 0, UNIX_TIMESTAMP(), 0, 0, 'AI alternative texts',
+     'The one folder the scheduled alternative-text batch works on.',
+     '1:/introduction/images/unsplash/', 0);
+
+INSERT IGNORE INTO be_groups
+    (uid, pid, tstamp, crdate, deleted, hidden, title, description,
+     file_mountpoints, file_permissions, tables_select, tables_modify)
+VALUES (994, 0, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0, 'AI alternative texts',
+     'Read access to one file mount and to the file metadata, and read access to the OpenAI provider secret. No interactive members.',
+     '994', 'readFolder,readFile', 'sys_file,sys_file_metadata', 'sys_file_metadata');
+
+INSERT IGNORE INTO be_users
+    (uid, pid, tstamp, crdate, deleted, disable, admin, username, password, usergroup, options, realName, description)
+VALUES (994, 0, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0, 0,
+     'nr_llm_worker', '!nr_llm_worker_no_login', '994', 3,
+     'AI background runs',
+     'Synthetic non-admin identity: the user of the scheduled alternative-text batch, and the user nrllm:agent:work reads the provider key as. Not for interactive login.');
+
+-- Re-assert the membership, only while both rows are the seeded ones: on a live
+-- database uid 994 could be a group somebody created in the backend.
+UPDATE be_users SET usergroup = '994'
+WHERE uid = 994 AND username = 'nr_llm_worker' AND usergroup <> '994'
+  AND EXISTS (SELECT 1 FROM be_groups WHERE uid = 994 AND deleted = 0 AND title = 'AI alternative texts');
+
+-- Read tier on the provider secret. A queued run asks for it on the command line,
+-- where nr_vault knows no logged-in user: worker.technicalBeUserUid = 994 opens a
+-- technical actor scope, which grants secret.use by itself and leaves this tier
+-- to the secret. Same MM caveat as step 3c.
+INSERT IGNORE INTO tx_nrvault_secret_begroups_mm (uid_local, uid_foreign, sorting, sorting_foreign)
+SELECT s.uid, 994, 2, 0
+FROM tx_nrvault_secret s
+WHERE s.deleted = 0
+  AND s.identifier = (SELECT api_key FROM tx_nrllm_provider WHERE uid = 1 LIMIT 1)
+  AND (SELECT api_key FROM tx_nrllm_provider WHERE uid = 1 LIMIT 1) <> '';
+
+UPDATE tx_nrvault_secret s
+SET s.allowed_groups = (
+    SELECT COUNT(*) FROM tx_nrvault_secret_begroups_mm mm WHERE mm.uid_local = s.uid
+)
+WHERE s.deleted = 0
+  AND s.identifier = (SELECT api_key FROM tx_nrllm_provider WHERE uid = 1 LIMIT 1)
+  AND (SELECT api_key FROM tx_nrllm_provider WHERE uid = 1 LIMIT 1) <> '';
+
+-- A writing tool ships switched off, and the tool state lives in the database.
+-- IGNORE keeps a decision an admin made in AI > Tools.
+INSERT IGNORE INTO tx_nrllm_tool_state (pid, tool_name, enabled)
+VALUES (0, 'set_file_alternative_text', 1);
+
 -- 4) Frontend showcase page under "Extensions" (uid 101) carrying the two
 --    nr_ai_search plugin content elements. Page uid 158 and tt_content uids
 --    602-604 are above the seed maxima (pages 157, tt_content 601). Both plugins
@@ -7830,6 +7896,15 @@ SELECT 'SEED-PROBLEM: be_users 990 nr_ai_search_technical missing or foreign' FR
 UNION ALL
 SELECT 'SEED-PROBLEM: be_users 992 nr_repurpose_technical missing or foreign' FROM DUAL
  WHERE NOT EXISTS (SELECT 1 FROM be_users WHERE uid = 992 AND username = 'nr_repurpose_technical' AND deleted = 0)
+UNION ALL
+SELECT 'SEED-PROBLEM: be_users 994 nr_llm_worker missing, foreign, admin or outside group 994' FROM DUAL
+ WHERE NOT EXISTS (SELECT 1 FROM be_users WHERE uid = 994 AND username = 'nr_llm_worker' AND deleted = 0 AND admin = 0 AND usergroup = '994')
+UNION ALL
+SELECT 'SEED-PROBLEM: sys_filemounts 994 is missing, foreign or read-only' FROM DUAL
+ WHERE NOT EXISTS (SELECT 1 FROM sys_filemounts WHERE uid = 994 AND identifier = '1:/introduction/images/unsplash/' AND deleted = 0 AND hidden = 0 AND read_only = 0)
+UNION ALL
+SELECT 'SEED-PROBLEM: be_groups 994 does not carry file mount 994' FROM DUAL
+ WHERE NOT EXISTS (SELECT 1 FROM be_groups WHERE uid = 994 AND deleted = 0 AND hidden = 0 AND file_mountpoints = '994')
 UNION ALL
 SELECT 'SEED-PROBLEM: tx_nrllm_model 90 text-embedding-3-small missing or foreign' FROM DUAL
  WHERE NOT EXISTS (SELECT 1 FROM tx_nrllm_model WHERE uid = 90 AND identifier = 'text-embedding-3-small' AND deleted = 0)
