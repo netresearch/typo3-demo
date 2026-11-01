@@ -325,6 +325,33 @@ non-admin needs modify access to `sys_file_metadata` and access to language 1
 to get a German alt text; without it the upload keeps only the English text
 and logs the warning. All seeded accounts that can upload are admins.
 
+## Background AI runs
+
+nr-llm stores a background run and leaves it there, and this stack has no
+scheduler, so two loop services do the work, in the style of `chat-cleanup`:
+
+- `llm-agent-worker` runs `nrllm:agent:work` and `nrllm:agent:reap` once a minute.
+  Without it a queued run stays queued.
+- `alt-text-batch` runs `nrllm:editor-action:batch set_file_alternative_text` over
+  `1:/introduction/images/unsplash/` once a day and after every deploy. Each of the
+  five images without a text becomes one run, which sends the image to the model
+  and stops at its approval card. Nothing is written before an admin approves the
+  card in **AI > Agent Runs**.
+
+A repeat costs nothing: a file with an open or decided card, or with a text, is
+skipped. The run history is **Background runs** in the same module.
+
+Both act as `nr_llm_worker` (be_user 994), seeded in
+`data/seed-extensions.sql`. It is not an admin and cannot log in. Its one file mount
+is that folder, because the rights of `--user` decide which files a run reaches. On
+the command line nr_vault refuses the provider key to a process without a logged-in
+user, and `allowCliAccess` stays off here, so `worker.technicalBeUserUid = 994`
+(written by the entrypoint) makes the worker read the key as this user, whose group
+holds the read tier on that one secret.
+
+`fieldFill.fields` stays empty on purpose: a save does not start a background run
+here.
+
 ## The DeepL key
 
 The key travels as the `DEEPL_API_KEY` repository secret and reaches two places.

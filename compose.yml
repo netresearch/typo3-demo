@@ -279,6 +279,121 @@ services:
         limits:
           memory: 512M
 
+  # Executes the agent runs nr_llm has queued. nr_llm 0.42 stores a background
+  # run and leaves it there: without a sweep it stays queued for ever, and the
+  # stack has no scheduler, so a loop runs the sweep once a minute. A run that
+  # started finishes after --time-limit, so `timeout` is well above it. The reaper
+  # hands back a run whose worker was killed, which is what a deploy does to a
+  # container in the middle of a run. These commands read the provider key as be_user 994
+  # (worker.technicalBeUserUid, written by entrypoint.sh). fileadmin is mounted
+  # because a vision run reads and scales the image here.
+  llm-agent-worker:
+    image: ghcr.io/netresearch/typo3-demo:${TYPO3_DEMO_IMAGE_TAG:-latest}
+    logging: *default-logging
+    depends_on:
+      web:
+        condition: service_healthy
+    user: www-data
+    entrypoint: ["sh", "-c"]
+    command:
+      - >
+        while true;
+        do if timeout -k 30 600 vendor/bin/typo3 nrllm:agent:work --limit=20 --time-limit=240
+        && timeout -k 30 120 vendor/bin/typo3 nrllm:agent:reap --limit=50;
+        then touch /tmp/llm-agent-worker.ok;
+        else echo "nrllm:agent:work or nrllm:agent:reap failed with exit $$?";
+        fi;
+        sleep 60;
+        done
+    environment:
+      HOME: /tmp
+      MARIADB_HOST: db
+      MARIADB_DATABASE: ${MARIADB_DATABASE:-typo3}
+      MARIADB_USER: ${MARIADB_USER:-typo3}
+      MARIADB_PASSWORD: ${MARIADB_PASSWORD:-typo3}
+      TYPO3_CONTEXT: ${TYPO3_CONTEXT:-Development/Docker}
+      TYPO3_DOMAIN: ${TYPO3_DOMAIN:-localhost}
+      TYPO3_SITE_BASE: ${TYPO3_SITE_BASE:-/}
+    volumes:
+      - typo3-fileadmin:/var/www/public/fileadmin
+      - typo3-var:/var/www/var
+      - typo3-config:/var/www/config/system
+    # Healthy while the last successful tick is younger than 20 minutes: the two
+    # commands take at most twelve, so a sweep that keeps failing turns the
+    # service unhealthy.
+    healthcheck:
+      test: ["CMD-SHELL", "test $$(( $$(date +%s) - $$(stat -c %Y /tmp/llm-agent-worker.ok) )) -lt 1200"]
+      interval: 60s
+      timeout: 5s
+      retries: 3
+      start_period: 60s
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+
+  # Queues alternative texts for the images of one folder from what each image
+  # shows (nr_llm 0.42). Each file without a text becomes a run that stops at its
+  # approval card; nothing is written before somebody approves. A file with an
+  # open or decided card or with a text is skipped, so a repeat costs nothing and
+  # the folder of five images can never show more than five cards. The folder and
+  # the user are seeded in data/seed-extensions.sql; on the first deploy they
+  # do not exist yet when this starts, so a failed run retries after five minutes.
+  # The stack has no scheduler, so a loop runs the command once a day and after
+  # every deploy, the way vector-compact does.
+  alt-text-batch:
+    image: ghcr.io/netresearch/typo3-demo:${TYPO3_DEMO_IMAGE_TAG:-latest}
+    logging: *default-logging
+    depends_on:
+      web:
+        condition: service_healthy
+    user: www-data
+    entrypoint: ["sh", "-c"]
+    command:
+      # Backdating the file gives a fresh container one hour to succeed. `up
+      # --wait` would otherwise wait for a command that can only succeed once the
+      # seed has run, and the seed runs after `up`.
+      - >
+        touch -d "@$$(( $$(date +%s) - 86400 ))" /tmp/alt-text-batch.ok;
+        while true;
+        do if timeout -k 30 300 vendor/bin/typo3 nrllm:editor-action:batch set_file_alternative_text
+        --user=nr_llm_worker --folder=1:/introduction/images/unsplash/;
+        then touch /tmp/alt-text-batch.ok; sleep 86400;
+        else echo "nrllm:editor-action:batch failed with exit $$?"; sleep 300;
+        fi;
+        done
+    environment:
+      HOME: /tmp
+      MARIADB_HOST: db
+      MARIADB_DATABASE: ${MARIADB_DATABASE:-typo3}
+      MARIADB_USER: ${MARIADB_USER:-typo3}
+      MARIADB_PASSWORD: ${MARIADB_PASSWORD:-typo3}
+      TYPO3_CONTEXT: ${TYPO3_CONTEXT:-Development/Docker}
+      TYPO3_DOMAIN: ${TYPO3_DOMAIN:-localhost}
+      TYPO3_SITE_BASE: ${TYPO3_SITE_BASE:-/}
+    volumes:
+      - typo3-fileadmin:/var/www/public/fileadmin
+      - typo3-var:/var/www/var
+      - typo3-config:/var/www/config/system
+    # Healthy while the last successful run is younger than 25 hours, so a batch
+    # that keeps failing turns the service unhealthy.
+    healthcheck:
+      test: ["CMD-SHELL", "test $$(( $$(date +%s) - $$(stat -c %Y /tmp/alt-text-batch.ok) )) -lt 90000"]
+      interval: 60s
+      timeout: 5s
+      retries: 3
+      start_period: 60s
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+
   # MariaDB as a Docker Hardened Image: minimal debian-13 base, no package
   # manager and no shell tooling beyond what the server itself needs. Pulling it
   # requires a Docker Hub account with DHI entitlement (`docker login dhi.io`) —

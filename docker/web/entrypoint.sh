@@ -540,6 +540,11 @@ if [ -f config/system/settings.php ]; then
             // tts-1 is the nr_llm default and answers with real audio here.
             // Set explicitly so the value is visible rather than implicit.
             . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"nr_llm\"][\"speech\"][\"tts\"][\"defaultModel\"] = \"tts-1\";\n"
+            // The backend user nrllm:agent:work reads the provider key as.
+            // Without it the worker has the unauthenticated CLI user, nr_vault
+            // denies the key, and every queued run fails on its first model
+            // call. Seeded with read access to that secret and one file mount.
+            . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"nr_llm\"][\"worker\"][\"technicalBeUserUid\"] = \"994\";\n"
             // nr_repurpose 0.4.2 runs its generation job as this backend user.
             // Without it the setting stays 0, the job keeps booting an
             // unauthenticated CLI user, and nr_vault denies the provider key --

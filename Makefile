@@ -113,6 +113,12 @@ update: ## Update code without purging data
 		1) echo "::warning title=Install Tool checks::Unexpected Install Tool findings on this run - see the output above and README.md#install-tool-checks" ;; \
 		*) echo "::error title=Install Tool checks::The Install Tool check did not run (exit $$rc) - see the output above" ;; \
 	esac
+	@# The two background services report only to their container logs, and the
+	@# host has no other reader than this job. A bad queue state must not abort a
+	@# deploy that has already replaced the containers, for the same reason as above.
+	@$(COMPOSE) logs --tail=5 alt-text-batch llm-agent-worker || true
+	@$(TYPO3) nrllm:agent:status --minimum-workers=0 || \
+		echo "::warning title=Agent queue::nrllm:agent:status reports an unhealthy queue - see the output above"
 	$(MAKE) prune
 
 install-usecase-packs: ## Install the nr-llm use-case packs this instance demonstrates
