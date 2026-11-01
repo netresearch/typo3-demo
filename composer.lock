@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "05610fccf1e59e0be4e77d48a01069ff",
+    "content-hash": "4549c07c62e09e1624da3772304c4301",
     "packages": [
         {
             "name": "b13/ai-label",
@@ -3460,16 +3460,16 @@
         },
         {
             "name": "netresearch/nr-repurpose",
-            "version": "v0.12.2",
+            "version": "v0.13.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/t3x-nr-repurpose.git",
-                "reference": "09ee6f43a6f00626190e28d96fa923aee03d19fe"
+                "reference": "77b996ca721b0791144fd48ef704e5e57126285c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/t3x-nr-repurpose/zipball/09ee6f43a6f00626190e28d96fa923aee03d19fe",
-                "reference": "09ee6f43a6f00626190e28d96fa923aee03d19fe",
+                "url": "https://api.github.com/repos/netresearch/t3x-nr-repurpose/zipball/77b996ca721b0791144fd48ef704e5e57126285c",
+                "reference": "77b996ca721b0791144fd48ef704e5e57126285c",
                 "shasum": ""
             },
             "require": {
@@ -3509,7 +3509,7 @@
                             "smalot/pdfparser": ""
                         }
                     },
-                    "version": "0.12.2",
+                    "version": "0.13.0",
                     "web-dir": ".Build/Web",
                     "extension-key": "nr_repurpose"
                 },
@@ -3540,7 +3540,7 @@
                 "issues": "https://github.com/netresearch/t3x-nr-repurpose/issues",
                 "source": "https://github.com/netresearch/t3x-nr-repurpose"
             },
-            "time": "2026-11-01T20:44:54+00:00"
+            "time": "2026-11-01T23:32:42+00:00"
         },
         {
             "name": "netresearch/nr-scheduler",
