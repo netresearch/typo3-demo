@@ -140,13 +140,20 @@ services:
     entrypoint: ["sh", "-c"]
     command:
       - >
+        trap 'kill -TERM $$! 2>/dev/null; wait; exit 0' TERM INT;
         while true;
-        do if timeout -k 30 600 vendor/bin/typo3 ai-chat:cleanup --delete-after-days=0;
+        do timeout -k 30 600 vendor/bin/typo3 ai-chat:cleanup --delete-after-days=0 &
+        if wait $$!;
         then touch /tmp/chat-cleanup.ok;
         else echo "ai-chat:cleanup failed with exit $$?";
         fi;
-        sleep 900;
+        sleep 900 & wait $$!;
         done
+    # SIGTERM, not the image's SIGQUIT: see chat-worker. The shell traps TERM,
+    # and every command and sleep runs in the background under `wait`, which a
+    # trapped signal interrupts; a foreground child would hold the trap until it
+    # ended, and the stop would wait out the grace period and end in SIGKILL.
+    stop_signal: SIGTERM
     environment:
       HOME: /tmp
       MARIADB_HOST: db
@@ -251,13 +258,20 @@ services:
     entrypoint: ["sh", "-c"]
     command:
       - >
+        trap 'kill -TERM $$! 2>/dev/null; wait; exit 0' TERM INT;
         while true;
-        do if timeout -k 30 240 vendor/bin/typo3 nr_repurpose:publish-due;
+        do timeout -k 30 240 vendor/bin/typo3 nr_repurpose:publish-due &
+        if wait $$!;
         then touch /tmp/social-publish.ok;
         else echo "nr_repurpose:publish-due failed with exit $$?";
         fi;
-        sleep 300;
+        sleep 300 & wait $$!;
         done
+    # SIGTERM, not the image's SIGQUIT: see chat-worker. The shell traps TERM,
+    # and every command and sleep runs in the background under `wait`, which a
+    # trapped signal interrupts; a foreground child would hold the trap until it
+    # ended, and the stop would wait out the grace period and end in SIGKILL.
+    stop_signal: SIGTERM
     environment:
       HOME: /tmp
       MARIADB_HOST: db
@@ -307,12 +321,19 @@ services:
     entrypoint: ["sh", "-c"]
     command:
       - >
+        trap 'kill -TERM $$! 2>/dev/null; wait; exit 0' TERM INT;
         while true;
-        do if timeout -k 30 1800 vendor/bin/typo3 nr-ai-search:vektor:compact;
-        then touch /tmp/vector-compact.ok; sleep 86400;
-        else echo "nr-ai-search:vektor:compact failed with exit $$?"; sleep 300;
+        do timeout -k 30 1800 vendor/bin/typo3 nr-ai-search:vektor:compact &
+        if wait $$!;
+        then touch /tmp/vector-compact.ok; sleep 86400 & wait $$!;
+        else echo "nr-ai-search:vektor:compact failed with exit $$?"; sleep 300 & wait $$!;
         fi;
         done
+    # SIGTERM, not the image's SIGQUIT: see chat-worker. The shell traps TERM,
+    # and every command and sleep runs in the background under `wait`, which a
+    # trapped signal interrupts; a foreground child would hold the trap until it
+    # ended, and the stop would wait out the grace period and end in SIGKILL.
+    stop_signal: SIGTERM
     environment:
       HOME: /tmp
       MARIADB_HOST: db
@@ -360,16 +381,24 @@ services:
     entrypoint: ["sh", "-c"]
     command:
       - >
+        trap 'kill -TERM $$! 2>/dev/null; wait; exit 0' TERM INT;
         while true;
         do rc=0;
-        timeout -k 30 600 vendor/bin/typo3 nrllm:agent:work --limit=20 --time-limit=240 || rc=$$?;
-        timeout -k 30 120 vendor/bin/typo3 nrllm:agent:reap --limit=50 || rc=$$?;
+        timeout -k 30 600 vendor/bin/typo3 nrllm:agent:work --limit=20 --time-limit=240 &
+        wait $$! || rc=$$?;
+        timeout -k 30 120 vendor/bin/typo3 nrllm:agent:reap --limit=50 &
+        wait $$! || rc=$$?;
         if [ "$$rc" -eq 0 ];
         then touch /tmp/llm-agent-worker.ok;
         else echo "nrllm:agent:work or nrllm:agent:reap failed with exit $$rc";
         fi;
-        sleep 60;
+        sleep 60 & wait $$!;
         done
+    # SIGTERM, not the image's SIGQUIT: see chat-worker. The shell traps TERM,
+    # and every command and sleep runs in the background under `wait`, which a
+    # trapped signal interrupts; a foreground child would hold the trap until it
+    # ended, and the stop would wait out the grace period and end in SIGKILL.
+    stop_signal: SIGTERM
     environment:
       HOME: /tmp
       MARIADB_HOST: db
@@ -422,14 +451,21 @@ services:
       # --wait` would otherwise wait for a command that can only succeed once the
       # seed has run, and the seed runs after `up`.
       - >
+        trap 'kill -TERM $$! 2>/dev/null; wait; exit 0' TERM INT;
         touch -d "@$$(( $$(date +%s) - 86400 ))" /tmp/alt-text-batch.ok;
         while true;
-        do if timeout -k 30 300 vendor/bin/typo3 nrllm:editor-action:batch set_file_alternative_text
-        --user=nr_llm_worker --folder=1:/introduction/images/unsplash/;
-        then touch /tmp/alt-text-batch.ok; sleep 86400;
-        else echo "nrllm:editor-action:batch failed with exit $$?"; sleep 300;
+        do timeout -k 30 300 vendor/bin/typo3 nrllm:editor-action:batch set_file_alternative_text
+        --user=nr_llm_worker --folder=1:/introduction/images/unsplash/ &
+        if wait $$!;
+        then touch /tmp/alt-text-batch.ok; sleep 86400 & wait $$!;
+        else echo "nrllm:editor-action:batch failed with exit $$?"; sleep 300 & wait $$!;
         fi;
         done
+    # SIGTERM, not the image's SIGQUIT: see chat-worker. The shell traps TERM,
+    # and every command and sleep runs in the background under `wait`, which a
+    # trapped signal interrupts; a foreground child would hold the trap until it
+    # ended, and the stop would wait out the grace period and end in SIGKILL.
+    stop_signal: SIGTERM
     environment:
       HOME: /tmp
       MARIADB_HOST: db
