@@ -895,7 +895,9 @@ jobs:
       # stops them before it replaces web, and each one that ignores the stop
       # signal holds that stop for its grace period and ends in SIGKILL. Their
       # shell traps TERM and runs every command and sleep under `wait`, so a
-      # stop ends them in about a second whether a command or a sleep is running.
+      # stop ends them in about a second, unless the command is waiting on a
+      # database or HTTP call: PHP handles the signal after that call returns.
+      # Here the commands are done within a second, so the stop meets a sleep.
       - name: Verify the shell-loop services stop on the stop signal
         run: |
           for s in chat-cleanup social-publish vector-compact llm-agent-worker alt-text-batch; do
