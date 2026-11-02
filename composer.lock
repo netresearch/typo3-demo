@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9d2b1da3525dee5ae0285ecb78fc55a1",
+    "content-hash": "99a04d7cb917fd1adde55b5b4481add8",
     "packages": [
         {
             "name": "b13/ai-label",
@@ -2983,16 +2983,16 @@
         },
         {
             "name": "netresearch/nr-landingpage",
-            "version": "v0.3.23",
+            "version": "v0.3.24",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/nr-landingpage.git",
-                "reference": "b536a70192745f1577476a7b3cb2c7c0dc1f05d3"
+                "reference": "2f1d36922f6e96ef988502099c7acf63f061af09"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/nr-landingpage/zipball/b536a70192745f1577476a7b3cb2c7c0dc1f05d3",
-                "reference": "b536a70192745f1577476a7b3cb2c7c0dc1f05d3",
+                "url": "https://api.github.com/repos/netresearch/nr-landingpage/zipball/2f1d36922f6e96ef988502099c7acf63f061af09",
+                "reference": "2f1d36922f6e96ef988502099c7acf63f061af09",
                 "shasum": ""
             },
             "require": {
@@ -3033,9 +3033,9 @@
             "description": "Landing Page Generator - Generate landing pages with an LLM in a step-by-step backend wizard.",
             "support": {
                 "issues": "https://github.com/netresearch/nr-landingpage/issues",
-                "source": "https://github.com/netresearch/nr-landingpage/tree/v0.3.23"
+                "source": "https://github.com/netresearch/nr-landingpage/tree/v0.3.24"
             },
-            "time": "2026-11-01T20:45:04+00:00"
+            "time": "2026-11-02T18:37:25+00:00"
         },
         {
             "name": "netresearch/nr-llm",
