@@ -61,10 +61,14 @@ update: ## Update code without purging data
 	# whole stop_grace_period (610s), and the site answered 502 for that long.
 	# Stopping the workers up front keeps the old release from running against
 	# the schema and the shared var/cache the new web container rewrites at
-	# boot. Chat turns meanwhile run in the web container (nr_mcp_agent
-	# ADR-029); queued jobs wait. A failed stop must not end the target: the two
-	# `up` calls below are what start the workers again.
-	-$(COMPOSE) stop $$($(COMPOSE) config --services | grep -vxE 'web|caddy|db|valkey|db-init')
+	# boot; queued jobs wait. chat-worker is the exception and keeps running
+	# until the last `up`: with no idle worker a chat turn starts a process in
+	# the web container (nr_mcp_agent ADR-029), and in the old one that process
+	# would die with it. A failed stop must not end the target, since the `up`
+	# calls below start the workers again; an empty list must not reach `stop`,
+	# which would then stop every service.
+	-svcs=$$($(COMPOSE) config --services | grep -vxE 'web|caddy|db|valkey|db-init|chat-worker'); \
+	[ -z "$$svcs" ] || $(COMPOSE) stop $$svcs
 	$(COMPOSE) up -d --wait --wait-timeout 180 web caddy || $(COMPOSE) up -d web caddy
 	# --remove-orphans: a service deleted from compose.yml otherwise keeps running
 	# forever. The reverted EXT:solr spike kept its container alive for 8 days and
