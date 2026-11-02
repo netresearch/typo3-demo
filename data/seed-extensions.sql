@@ -5961,7 +5961,7 @@ Beginne mit dem wichtigsten Punkt. Jeder Punkt ist eine Antwort mit dem Text und
    - Hauptüberschrift oder Text eines Inhaltselements: `update_content_element` mit `uid` des Elements und `fields` nur mit dem, was sich ändert (`header` oder `bodytext`). Andere Elemente änderst du nicht.
    - Interne Links: Suche mit `get_pagetree` (`rootUid`, `depth`) oder `search_records` (`query`, `table` „pages“) passende Zielseiten und schlage mit `update_content_element` einen Link im Text **eines** Elements dieser Seite vor. Links auf anderen Seiten setzt die Tour nicht.
 3. Beginnt der Punkt nicht mit dem Vorschlag, sondern mit einer Suche oder einer Frage, rufe in der Antwort mit der ersten Suche oder der Frage `chat_set_progress` auf (`label` wie in der Übersicht, `current` die Nummer des Punkts, `total` die Anzahl der Punkte) und markiere, worum es geht: ein Inhaltselement mit `chat_highlight_element` (`contentUid` das Element), eine Seiteneigenschaft mit `chat_highlight_element` (`pageField` der Feldname der Seite: Seitentitel `title`, SEO-Titel `seo_title`, Meta Description `description`, Social-Media-Titel und -Beschreibung für Facebook und LinkedIn `og_title` und `og_description`, für X (Twitter) `twitter_title` und `twitter_description`, Vorschaubild `og_image` oder `twitter_image`).
-4. Gehst du nach einer Antwort auf eine Frage ohne Vorschlag zum nächsten Punkt über, etwa bei „Ohne Vorschaubild weiter“, rufe `chat_set_progress` mit der Nummer des neuen Punkts auf.
+4. Gehst du nach einer Antwort auf eine Frage ohne Vorschlag zum nächsten Punkt über, etwa bei „Ohne Vorschaubild weiter“, rufe `chat_set_progress` mit der Nummer des neuen Punkts auf. Sag dabei in einem Satz, was geschieht: Was der Punkt betrifft, bleibt unverändert, und gespeichert wird nichts, etwa „Die Seite bleibt ohne Vorschaubild; gespeichert wird nichts.“ Eine Antwort auf eine Frage merkt keinen offenen Punkt vor; nenne den Punkt deshalb nicht „offen“, „vorerst offen“, „vorgemerkt“ oder „übersprungen“.
 
 Zeig den vorgeschlagenen Text nicht zusätzlich im Chat; der Vorschlag mit „Aktuell“ und „Vorschlag“ ist die Darstellung.
 
@@ -6081,7 +6081,7 @@ Beginne mit dem wichtigsten Punkt. Pro Punkt genau eine Fragestellung, und jeder
    - **Bestehender Inhalt:** `update_content_element` mit `uid` des Elements und `fields` nur mit dem, was sich ändert (`header` oder `bodytext`). „Aktuell“ und „Vorschlag“ zeigt der Chat; wiederhole den Text nicht im Chat.
    - **Neuer Inhalt:** Wenn eine Lücke einen neuen Abschnitt braucht, etwa ein Anwendungsbeispiel, schlage ein neues Inhaltselement mit `create_content_element_draft` vor: `page` <uid>, `type` einer der Typen, die das Werkzeug in seiner Beschreibung von `type` anbietet, bevorzugt einer, den die Seite schon verwendet, `header`, `bodytext` nur bei einem Typ mit Fließtext, `after_content_uid` das Element davor, `column` wie dieses Element. `language` ist 0, wenn du die Standardsprache prüfst. In einer anderen Sprachversion gilt deren Sprache nur, wenn die Seite dort keine verbundenen Übersetzungen hält, also kein Element dieser Sprache ein Element der Standardsprache übersetzt; sonst lehnt das Werkzeug den Aufruf ab. Hält die Seite dort Übersetzungen, ist ein neuer Abschnitt kein Punkt der Tour: nenne die Lücke schon in der Übersicht als Hinweis, mit dem Satz, dass der Abschnitt in der Standardsprache angelegt und danach übersetzt werden muss, außerhalb dieser Tour. Lehnt das Werkzeug einen Vorschlag trotzdem ab, rufe `ask_choice` auf (`question` wie es weitergeht, `options` [„Ohne <Thema> weiter“, „Tour beenden“]); bei „Tour beenden“ rufe `chat_set_progress` mit `completed` true auf. Sag im Text dieser Antwort, **wo** es hinkommt („direkt nach der Funktionsübersicht“), und markiere in derselben Antwort das Element, nach dem es eingefügt wird, mit `chat_highlight_element`. Ein neues Element wird als verborgener Entwurf angelegt und ist erst sichtbar, wenn der Redakteur es im Seitenmodul einblendet.
 3. Beginnt der Punkt nicht mit dem Vorschlag, sondern mit einer Suche oder einer Frage nach fehlenden Informationen (Abschnitt 7), rufe in der Antwort mit der ersten Suche oder der Frage `chat_set_progress` auf (`label` wie in der Übersicht, `current` die Nummer des Punkts, `total` die Anzahl der Punkte) und markiere, worum es geht: ein Inhaltselement mit `chat_highlight_element` (`contentUid` das Element), eine Seiteneigenschaft mit `chat_highlight_element` (`pageField` der Feldname der Seite, etwa `title` für den Seitentitel).
-4. Gehst du nach einer Antwort auf eine Frage ohne Vorschlag zum nächsten Punkt über, etwa bei „Ohne Beispiel weiter“, rufe `chat_set_progress` mit der Nummer des neuen Punkts auf.
+4. Gehst du nach einer Antwort auf eine Frage ohne Vorschlag zum nächsten Punkt über, etwa bei „Ohne Beispiel weiter“, rufe `chat_set_progress` mit der Nummer des neuen Punkts auf. Sag dabei in einem Satz, was geschieht: Was der Punkt betrifft, bleibt unverändert, und gespeichert wird nichts, etwa „Die Seite bleibt ohne Beispiel; gespeichert wird nichts.“ Eine Antwort auf eine Frage merkt keinen offenen Punkt vor; nenne den Punkt deshalb nicht „offen“, „vorerst offen“, „vorgemerkt“ oder „übersprungen“.
 
 ## 7. Wenn Informationen fehlen
 
@@ -6094,7 +6094,7 @@ Rufe dann `ask_choice` auf: `question` wie es weitergeht, `options` etwa [„Web
 
 - Bei „durchsuchen“ suchst du mit `search_records` in den Inhalten der Website und schlägst nur vor, was du dort gefunden hast, mit Angabe der Seite.
 - Bei „selbst ergänzen“ wartest du auf die Angaben des Redakteurs und formulierst daraus den Vorschlag.
-- Bei „Ohne … weiter“ gehst du zum nächsten Punkt.
+- Bei „Ohne … weiter“ gehst du zum nächsten Punkt, wie in Abschnitt 6, Schritt 4 beschrieben.
 
 ## 8. Nach der Entscheidung
 
@@ -6134,7 +6134,7 @@ INSERT IGNORE INTO tx_nrllm_skill
      tstamp, crdate, deleted, hidden)
 VALUES
     (9422, 0, 9404, ''9404:seo-optimieren'', ''seo-optimieren'', ''Geführte Tour: eine Seite auf SEO prüfen und die gefundenen Punkte nacheinander mit dem Redakteur verbessern – Seitentitel, Meta Description, Social-Media-Vorschau, Hauptüberschrift, interne Links. Jede Änderung erst nach Bestätigung.'',
-     @tour_seo_body, ''8c1cb2a9ccc7079e2d344e19796cd9108b896e26bae07f48d4c59082ddcc0fef'', '''', ''full'', ''["ask_choice","chat_highlight_element","chat_list_open_points","chat_set_progress","get_page_content","get_pagetree","read_records","search_fal_files","search_records","set_page_social_image","update_content_element","update_page_metadata"]'', 1, ''first_party'', 1,
+     @tour_seo_body, ''37746aecc7fffabcf56d3e6174e096fe1506ab17c4138f462b555615f5f4d93d'', '''', ''full'', ''["ask_choice","chat_highlight_element","chat_list_open_points","chat_set_progress","get_page_content","get_pagetree","read_records","search_fal_files","search_records","set_page_social_image","update_content_element","update_page_metadata"]'', 1, ''first_party'', 1,
      UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0)', 'DO 0');
 PREPARE seed_stmt FROM @seed_sql;
 EXECUTE seed_stmt;
@@ -6145,7 +6145,7 @@ DEALLOCATE PREPARE seed_stmt;
 -- and reported by the probe below.
 SET @seed_sql = IF(@nrllm_tours, '
 UPDATE tx_nrllm_skill SET name = ''seo-optimieren'', description = ''Geführte Tour: eine Seite auf SEO prüfen und die gefundenen Punkte nacheinander mit dem Redakteur verbessern – Seitentitel, Meta Description, Social-Media-Vorschau, Hauptüberschrift, interne Links. Jede Änderung erst nach Bestätigung.'',
-       body = @tour_seo_body, body_checksum = ''8c1cb2a9ccc7079e2d344e19796cd9108b896e26bae07f48d4c59082ddcc0fef'',
+       body = @tour_seo_body, body_checksum = ''37746aecc7fffabcf56d3e6174e096fe1506ab17c4138f462b555615f5f4d93d'',
        allowed_tools = ''["ask_choice","chat_highlight_element","chat_list_open_points","chat_set_progress","get_page_content","get_pagetree","read_records","search_fal_files","search_records","set_page_social_image","update_content_element","update_page_metadata"]'', process = 1, support_status = ''full'', trust_level = ''first_party'',
        identifier = ''9404:seo-optimieren'',
        enabled = 1, disabled_by = '''', orphaned = 0, hidden = 0, deleted = 0 WHERE uid = 9422 AND source = 9404', 'DO 0');
@@ -6193,7 +6193,7 @@ INSERT IGNORE INTO tx_nrllm_skill
      tstamp, crdate, deleted, hidden)
 VALUES
     (9423, 0, 9404, ''9404:inhalt-verbessern'', ''inhalt-verbessern'', ''Geführte Tour: eine Seite inhaltlich prüfen – Einstieg, Nutzen, Zielgruppe, Vollständigkeit, Beispiele, Belege, Aufbau, nächster Schritt – und die Verbesserungen nacheinander mit dem Redakteur umsetzen. Erfindet keine Fakten; jede Änderung erst nach Bestätigung.'',
-     @tour_content_body, ''fdd801124be477c65058af4ea98fc1628e9f69696ee6540b4a091d193e45ee27'', '''', ''full'', ''["ask_choice","chat_highlight_element","chat_list_open_points","chat_set_progress","create_content_element_draft","get_page_content","get_pagetree","read_records","search_records","update_content_element"]'', 1, ''first_party'', 1,
+     @tour_content_body, ''4429732237d34cf8f924e4895717cac522cd4fc0956309d2df9f7bc5f84360f6'', '''', ''full'', ''["ask_choice","chat_highlight_element","chat_list_open_points","chat_set_progress","create_content_element_draft","get_page_content","get_pagetree","read_records","search_records","update_content_element"]'', 1, ''first_party'', 1,
      UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0)', 'DO 0');
 PREPARE seed_stmt FROM @seed_sql;
 EXECUTE seed_stmt;
@@ -6204,7 +6204,7 @@ DEALLOCATE PREPARE seed_stmt;
 -- and reported by the probe below.
 SET @seed_sql = IF(@nrllm_tours, '
 UPDATE tx_nrllm_skill SET name = ''inhalt-verbessern'', description = ''Geführte Tour: eine Seite inhaltlich prüfen – Einstieg, Nutzen, Zielgruppe, Vollständigkeit, Beispiele, Belege, Aufbau, nächster Schritt – und die Verbesserungen nacheinander mit dem Redakteur umsetzen. Erfindet keine Fakten; jede Änderung erst nach Bestätigung.'',
-       body = @tour_content_body, body_checksum = ''fdd801124be477c65058af4ea98fc1628e9f69696ee6540b4a091d193e45ee27'',
+       body = @tour_content_body, body_checksum = ''4429732237d34cf8f924e4895717cac522cd4fc0956309d2df9f7bc5f84360f6'',
        allowed_tools = ''["ask_choice","chat_highlight_element","chat_list_open_points","chat_set_progress","create_content_element_draft","get_page_content","get_pagetree","read_records","search_records","update_content_element"]'', process = 1, support_status = ''full'', trust_level = ''first_party'',
        identifier = ''9404:inhalt-verbessern'',
        enabled = 1, disabled_by = '''', orphaned = 0, hidden = 0, deleted = 0 WHERE uid = 9423 AND source = 9404', 'DO 0');
