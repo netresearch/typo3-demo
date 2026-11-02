@@ -54,16 +54,17 @@ update: ## Update code without purging data
 	$(MAKE) persist-env-secret SECRET_NAME=OPENAI_API_KEY
 	$(MAKE) persist-env-secret SECRET_NAME=DEEPL_API_KEY
 	$(COMPOSE) pull
-	# web and caddy first, then the rest. A single `up` recreates web together
-	# with every service that depends on it, and Compose starts the new web
-	# container only after all of those have stopped: a chat worker in a turn
-	# may take its whole stop_grace_period (610s), and the site answered 502 for
-	# that long. Naming the two services leaves the dependents alone; they are
-	# recreated by the second `up` while the new web container serves. Until
-	# then the old workers run the previous release against the schema the new
-	# web container has already updated (add-only), and may take its messages
-	# and chat turns; a release that changes a message or turn format would
-	# have to stop them first.
+	# Workers first, while the old web container still serves; then web and
+	# caddy; then the rest. A single `up` recreates web together with every
+	# service that depends on it, and Compose starts the new web container only
+	# after all of those have stopped: a chat worker in a turn may take its
+	# whole stop_grace_period (610s), and the site answered 502 for that long.
+	# Stopping the workers up front keeps the old release from running against
+	# the schema and the shared var/cache the new web container rewrites at
+	# boot. Chat turns meanwhile run in the web container (nr_mcp_agent
+	# ADR-029); queued jobs wait. A failed stop must not end the target: the two
+	# `up` calls below are what start the workers again.
+	-$(COMPOSE) stop $$($(COMPOSE) config --services | grep -vxE 'web|caddy|db|valkey|db-init')
 	$(COMPOSE) up -d --wait --wait-timeout 180 web caddy || $(COMPOSE) up -d web caddy
 	# --remove-orphans: a service deleted from compose.yml otherwise keeps running
 	# forever. The reverted EXT:solr spike kept its container alive for 8 days and

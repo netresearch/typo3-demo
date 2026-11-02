@@ -192,15 +192,14 @@ services:
     user: www-data
     entrypoint: ["sh", "-c"]
     # The trap is set before the first worker starts, so a stop that comes
-    # during the first boot is not lost.
+    # during the first boot is not lost, and it signals $! - the worker just
+    # started - so no variable can lag behind it.
     command:
       - >
-        pid=;
-        trap 'kill -TERM $$pid 2>/dev/null; wait $$pid; exit 0' TERM INT;
+        trap 'kill -TERM $$! 2>/dev/null; wait; exit 0' TERM INT;
         while true;
         do vendor/bin/typo3 ai-chat:worker --poll-interval=100 --max-turns=1 --time-limit=3600 --turn-limit=600 &
-        pid=$$!;
-        wait $$pid || sleep 2;
+        wait $$! || sleep 2;
         done
     # The image inherits STOPSIGNAL SIGQUIT from php-fpm. The shell above is PID
     # 1 and traps TERM, not QUIT, and the kernel drops a signal PID 1 has no
