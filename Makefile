@@ -54,6 +54,13 @@ update: ## Update code without purging data
 	$(MAKE) persist-env-secret SECRET_NAME=OPENAI_API_KEY
 	$(MAKE) persist-env-secret SECRET_NAME=DEEPL_API_KEY
 	$(COMPOSE) pull
+	# web and caddy first, then the rest. A single `up` recreates web together
+	# with every service that depends on it, and Compose starts the new web
+	# container only after all of those have stopped: a chat worker in a turn
+	# may take its whole stop_grace_period (610s), and the site answered 502 for
+	# that long. Naming the two services leaves the dependents alone; they are
+	# recreated by the second `up` while the new web container serves.
+	$(COMPOSE) up -d --wait --wait-timeout 180 web caddy || $(COMPOSE) up -d web caddy
 	# --remove-orphans: a service deleted from compose.yml otherwise keeps running
 	# forever. The reverted EXT:solr spike kept its container alive for 8 days and
 	# grew a 29.6GB writable layer, which filled the disk and broke the deploy.
