@@ -88,7 +88,7 @@ RUN --mount=type=bind,from=ghcr.io/php/pie:1.5.2-bin@sha256:a254c78b51ca34daef05
         imagemagick imagemagick-webp imagemagick-heic libwebp libavif \
         ffmpeg poppler-utils chromium font-liberation nodejs ghostscript \
     && docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp --with-avif \
-    && docker-php-ext-install -j$(nproc) gd intl mysqli pdo_mysql zip exif \
+    && docker-php-ext-install -j$(nproc) gd intl mysqli pcntl pdo_mysql zip exif \
     && pie install --no-interaction phpredis/phpredis imagick/imagick \
     && docker-php-ext-enable redis imagick \
     && apk del .build-deps

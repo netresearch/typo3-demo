@@ -325,6 +325,14 @@ non-admin needs modify access to `sys_file_metadata` and access to language 1
 to get a German alt text; without it the upload keeps only the English text
 and logs the warning. All seeded accounts that can upload are admins.
 
+## AI Chat turns
+
+`chat-worker` runs the turns of the AI Chat, in two replicas. A booted process waits
+for a turn, runs it and ends, and the loop in the service starts the next one, so a
+reader does not wait for TYPO3 to boot. A turn that finds no free worker starts a
+process of its own in the web container (nr_mcp_agent ADR-029). The strategy is set
+in `docker/web/entrypoint.sh`.
+
 ## Background AI runs
 
 nr-llm stores a background run and leaves it there, and this stack has no

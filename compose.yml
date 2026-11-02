@@ -176,6 +176,61 @@ services:
         limits:
           memory: 256M
 
+  # Runs the AI Chat's turns. A booted process waits for a turn, runs it and
+  # ends, and the loop starts the next one, so the reader does not wait for TYPO3
+  # to boot and nothing of a turn reaches the next (nr_mcp_agent ADR-029). Two
+  # replicas: one runs a turn while the other waits. A turn that finds no free
+  # worker starts a process of its own in the web container, so this service
+  # being down costs a boot and nothing else. A deploy lets a running turn finish
+  # within stop_grace_period.
+  chat-worker:
+    image: ghcr.io/netresearch/typo3-demo:${TYPO3_DEMO_IMAGE_TAG:-latest}
+    logging: *default-logging
+    depends_on:
+      web:
+        condition: service_healthy
+    user: www-data
+    entrypoint: ["sh", "-c"]
+    command:
+      - >
+        while true;
+        do vendor/bin/typo3 ai-chat:worker --poll-interval=100 --max-turns=1 --time-limit=3600 --turn-limit=600 &
+        pid=$$!;
+        trap 'kill -TERM $$pid; wait $$pid; exit 0' TERM INT;
+        wait $$pid || sleep 2;
+        done
+    # Above --turn-limit: a deployment waits for a running turn rather than kill it.
+    stop_grace_period: 610s
+    environment:
+      HOME: /tmp
+      MARIADB_HOST: db
+      MARIADB_DATABASE: ${MARIADB_DATABASE:-typo3}
+      MARIADB_USER: ${MARIADB_USER:-typo3}
+      MARIADB_PASSWORD: ${MARIADB_PASSWORD:-typo3}
+      TYPO3_CONTEXT: ${TYPO3_CONTEXT:-Development/Docker}
+      TYPO3_DOMAIN: ${TYPO3_DOMAIN:-localhost}
+      TYPO3_SITE_BASE: ${TYPO3_SITE_BASE:-/}
+    volumes:
+      - typo3-fileadmin:/var/www/public/fileadmin
+      - typo3-var:/var/www/var
+      - typo3-config:/var/www/config/system
+    # Replaces the web image's nginx HEALTHCHECK; `up --wait` needs one. Anchored
+    # on php, because the shell loop above carries the command in its own line.
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep -f '^[^ ]*php[^ ]* [^ ]*typo3 ai-chat:worker' || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      replicas: 2
+      resources:
+        limits:
+          memory: 512M
+
   # Sends the approved social posts whose time has come (nr_repurpose). Without
   # socialWebhookUrl in the extension configuration it only logs how many are due.
   social-publish:
