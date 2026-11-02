@@ -92,6 +92,9 @@ jobs:
             # after a reboot or from the Maintenance workflow - keeps this
             # image instead of switching to whatever :latest is by then.
             make persist-env-secret SECRET_NAME=TYPO3_DEMO_IMAGE_TAG || exit 1
+            # `make update` relies on how Compose orders a recreate when only
+            # web and caddy are named; the log shows which Compose did it.
+            docker compose version
             make update
         env:
           # The commit to deploy: the one the triggering Build built, or for a

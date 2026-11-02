@@ -856,6 +856,41 @@ jobs:
       - name: Verify the seeded RTE images reference their own files
         run: docker compose exec -T -u www-data web vendor/bin/typo3 rte_ckeditor_image:validate
 
+      # A deploy stops the chat workers before it replaces them. An idle worker
+      # has to end within seconds; one that ignores the stop signal waits out its
+      # stop_grace_period of 610s and is then killed (exit 137). The image's
+      # STOPSIGNAL is SIGQUIT, which the worker's shell loop never saw. Runs
+      # after the steps above because it takes the workers down.
+      - name: Verify an idle chat worker stops on the stop signal
+        run: |
+          start=$(date +%s)
+          since=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+          # -t 30: a worker that ignores the signal is killed (exit 137) and
+          # reported below instead of holding the job for the 610s grace period.
+          docker compose stop -t 30 chat-worker
+          took=$(( $(date +%s) - start ))
+          echo "chat-worker stopped in ${took}s"
+          if [ "$took" -gt 15 ]; then
+            echo "::error::chat-worker took ${took}s to stop; an idle worker must end within 15s"
+            exit 1
+          fi
+          for c in $(docker compose ps -a -q chat-worker); do
+            code=$(docker inspect -f '{{.State.ExitCode}}' "$c")
+            echo "$c exit $code"
+            if [ "$code" != 0 ]; then
+              echo "::error::chat-worker $c ended with exit $code instead of stopping cleanly"
+              exit 1
+            fi
+          done
+          # Both replicas must have stopped through the worker's own handler,
+          # in this stop: --since leaves out lines of an earlier exit.
+          stopped=$(docker compose logs --since "$since" chat-worker | grep -cE 'stopped after [0-9]+ turns' || true)
+          echo "$stopped workers reported their stop"
+          if [ "$stopped" -lt 2 ]; then
+            echo "::error::only $stopped of 2 chat workers reported their stop"
+            exit 1
+          fi
+
       - name: Cleanup
         if: always()
         run: docker compose down -v

@@ -10,6 +10,13 @@
 
 {$TYPO3_DOMAIN:localhost} {
     reverse_proxy web:80 {
+        # A deploy replaces the web container, and the new one accepts
+        # connections only when its entrypoint is done (about 10-30s). Caddy
+        # keeps dialling for up to a minute instead of answering 502: the
+        # visitor waits, and nothing has been sent yet, so a retry of any
+        # method is safe.
+        lb_try_duration 60s
+        lb_try_interval 250ms
         transport http {
             keepalive 30s
             keepalive_idle_conns 16

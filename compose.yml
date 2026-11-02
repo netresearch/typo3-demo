@@ -191,14 +191,22 @@ services:
         condition: service_healthy
     user: www-data
     entrypoint: ["sh", "-c"]
+    # The trap is set before the first worker starts, so a stop that comes
+    # during the first boot is not lost, and it signals $! - the worker just
+    # started - so no variable can lag behind it.
     command:
       - >
+        trap 'kill -TERM $$! 2>/dev/null; wait; exit 0' TERM INT;
         while true;
         do vendor/bin/typo3 ai-chat:worker --poll-interval=100 --max-turns=1 --time-limit=3600 --turn-limit=600 &
-        pid=$$!;
-        trap 'kill -TERM $$pid; wait $$pid; exit 0' TERM INT;
-        wait $$pid || sleep 2;
+        wait $$! || sleep 2;
         done
+    # The image inherits STOPSIGNAL SIGQUIT from php-fpm. The shell above is PID
+    # 1 and traps TERM, not QUIT, and the kernel drops a signal PID 1 has no
+    # handler for: every stop waited out the grace period and ended in SIGKILL.
+    # With SIGTERM an idle worker stops within a second and a running turn
+    # finishes first.
+    stop_signal: SIGTERM
     # Above --turn-limit: a deployment waits for a running turn rather than kill it.
     stop_grace_period: 610s
     environment:
@@ -565,14 +573,21 @@ services:
       - "${CADDY_HTTPS_PORT:-443}:443"
       - "${CADDY_HTTPS_PORT:-443}:443/udp"
     volumes:
-      - ./docker/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      # The directory, not the file: git replaces a changed Caddyfile with a new
+      # inode, and a file mount keeps showing the old one until the container
+      # is recreated. The healthcheck's `caddy reload` applies a change.
+      - ./docker/caddy:/etc/caddy:ro
       - caddy-data-v2:/data
       - caddy-config-v2:/config
     environment:
       TYPO3_DOMAIN: ${TYPO3_DOMAIN:-localhost}
+    # service_started, not service_healthy: when caddy itself is recreated (a
+    # new dhi.io/caddy:2 digest, a changed mount) it starts with the new web
+    # container instead of after its boot, and the reverse_proxy retry in the
+    # Caddyfile holds the requests until web listens.
     depends_on:
       web:
-        condition: service_healthy
+        condition: service_started
     healthcheck:
       test: ["CMD", "/usr/local/bin/caddy", "reload", "--config", "/etc/caddy/Caddyfile", "--adapter", "caddyfile"]
       interval: 30s
