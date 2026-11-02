@@ -127,8 +127,8 @@ jobs:
             docker compose exec -T -u www-data web vendor/bin/typo3 rte_ckeditor_image:validate 2>&1 \
               | awk -F"|" "NF >= 9 {print \$2 \"|\" \$3 \"|\" \$4 \"|\" \$5 \"|\" \$9; next} !/\|/ {print}" || true
             # Which configuration the latest LLM calls asked for and which one
-            # answered, in plain text: identifiers the seed already publishes,
-            # no prompt, no answer, no user. This is how a site's own
+            # answered, in plain text: configuration identifiers and model
+            # names, no prompt, no answer, no user. This is how a site's own
             # configuration (nr-llm ADR-244) is seen on a real call.
             q "nr-llm telemetry (latest 15 calls)" "SELECT uid, FROM_UNIXTIME(crdate) t, source_extension, source_operation, operation, configuration_identifier, served_configuration_identifier, served_model, success FROM tx_nrllm_telemetry ORDER BY uid DESC LIMIT 15;"
 
