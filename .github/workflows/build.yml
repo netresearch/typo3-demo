@@ -891,6 +891,34 @@ jobs:
             exit 1
           fi
 
+      # The same for the services that run a command in a shell loop: a deploy
+      # stops them before it replaces web, and each one that ignores the stop
+      # signal holds that stop for its grace period and ends in SIGKILL. Their
+      # shell traps TERM and runs every command and sleep under `wait`, so a
+      # stop ends them in about a second whether a command or a sleep is running.
+      - name: Verify the shell-loop services stop on the stop signal
+        run: |
+          for s in chat-cleanup social-publish vector-compact llm-agent-worker alt-text-batch; do
+            start=$(date +%s)
+            # -t 30: a service that ignores the signal is killed (exit 137) and
+            # reported below; its default grace period is 10s.
+            docker compose stop -t 30 "$s"
+            took=$(( $(date +%s) - start ))
+            echo "$s stopped in ${took}s"
+            if [ "$took" -gt 15 ]; then
+              echo "::error::$s took ${took}s to stop; it must end within 15s"
+              exit 1
+            fi
+            for c in $(docker compose ps -a -q "$s"); do
+              code=$(docker inspect -f '{{.State.ExitCode}}' "$c")
+              echo "$s $c exit $code"
+              if [ "$code" != 0 ]; then
+                echo "::error::$s $c ended with exit $code instead of stopping cleanly"
+                exit 1
+              fi
+            done
+          done
+
       - name: Cleanup
         if: always()
         run: docker compose down -v
