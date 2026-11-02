@@ -27,6 +27,11 @@ jobs:
           username: ${{ vars.HETZNER_SSH_USER }}
           key: ${{ secrets.HETZNER_SSH_KEY }}
           envs: DHI_USERNAME,DHI_TOKEN,OPENAI_API_KEY,DEEPL_API_KEY,DEPLOY_SHA
+          # The default of 10m is shorter than one chat worker's stop: compose.yml
+          # gives it 610s to finish a running turn. A recreate that waits for it
+          # outlived the session, which ended with the new web container created
+          # and not started, and the site answering 502 until the next deploy.
+          command_timeout: 30m
           script: |
             cd /opt/typo3-demo
 
