@@ -864,7 +864,10 @@ jobs:
       - name: Verify an idle chat worker stops on the stop signal
         run: |
           start=$(date +%s)
-          timeout 120 docker compose stop chat-worker
+          since=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+          # -t 30: a worker that ignores the signal is killed (exit 137) and
+          # reported below instead of holding the job for the 610s grace period.
+          docker compose stop -t 30 chat-worker
           took=$(( $(date +%s) - start ))
           echo "chat-worker stopped in ${took}s"
           if [ "$took" -gt 15 ]; then
@@ -879,10 +882,14 @@ jobs:
               exit 1
             fi
           done
-          docker compose logs chat-worker | grep -E 'stopped after [0-9]+ turns' || {
-            echo "::error::no chat worker reported its stop"
+          # Both replicas must have stopped through the worker's own handler,
+          # in this stop: --since leaves out lines of an earlier exit.
+          stopped=$(docker compose logs --since "$since" chat-worker | grep -cE 'stopped after [0-9]+ turns' || true)
+          echo "$stopped workers reported their stop"
+          if [ "$stopped" -lt 2 ]; then
+            echo "::error::only $stopped of 2 chat workers reported their stop"
             exit 1
-          }
+          fi
 
       - name: Cleanup
         if: always()

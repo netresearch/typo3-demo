@@ -582,9 +582,13 @@ services:
       - caddy-config-v2:/config
     environment:
       TYPO3_DOMAIN: ${TYPO3_DOMAIN:-localhost}
+    # service_started, not service_healthy: when caddy itself is recreated (a
+    # new dhi.io/caddy:2 digest, a changed mount) it starts with the new web
+    # container instead of after its boot, and the reverse_proxy retry in the
+    # Caddyfile holds the requests until web listens.
     depends_on:
       web:
-        condition: service_healthy
+        condition: service_started
     healthcheck:
       test: ["CMD", "/usr/local/bin/caddy", "reload", "--config", "/etc/caddy/Caddyfile", "--adapter", "caddyfile"]
       interval: 30s

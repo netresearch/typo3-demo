@@ -59,7 +59,11 @@ update: ## Update code without purging data
 	# container only after all of those have stopped: a chat worker in a turn
 	# may take its whole stop_grace_period (610s), and the site answered 502 for
 	# that long. Naming the two services leaves the dependents alone; they are
-	# recreated by the second `up` while the new web container serves.
+	# recreated by the second `up` while the new web container serves. Until
+	# then the old workers run the previous release against the schema the new
+	# web container has already updated (add-only), and may take its messages
+	# and chat turns; a release that changes a message or turn format would
+	# have to stop them first.
 	$(COMPOSE) up -d --wait --wait-timeout 180 web caddy || $(COMPOSE) up -d web caddy
 	# --remove-orphans: a service deleted from compose.yml otherwise keeps running
 	# forever. The reverted EXT:solr spike kept its container alive for 8 days and
