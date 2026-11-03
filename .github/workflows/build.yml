@@ -856,6 +856,58 @@ jobs:
       - name: Verify the seeded RTE images reference their own files
         run: docker compose exec -T -u www-data web vendor/bin/typo3 rte_ckeditor_image:validate
 
+      # The two seeded EXT:form forms are moved from fileadmin into the
+      # database on the first boot (entrypoint.sh, #411); while they sat in
+      # fileadmin, Reports > Status said the update was incomplete. A second
+      # boot must neither bring the YAML files back nor store the forms again
+      # as "<identifier>_1", and both pages must still render their form.
+      - name: Verify the seeded forms move into the database once
+        run: |
+          get() {
+            local url="$1"
+            curl -sSfL --proto '=https' --proto-redir '=https' --cacert "$RUNNER_TEMP/caddy-root.crt" "$url"
+          }
+          check() {
+            local boot="$1" rows foreign files left
+            rows=$(docker compose exec -T db sh -c \
+              'MYSQL_PWD="$MARIADB_PASSWORD" mariadb -N -u "$MARIADB_USER" "$MARIADB_DATABASE" -e "SELECT identifier FROM form_definition WHERE deleted = 0 ORDER BY identifier;"' \
+              | tr '\n' ' ')
+            echo "$boot boot, database forms: $rows"
+            if [ "$rows" != "contactformcustom demoanfordern " ]; then
+              echo "::error title=Seeded forms::$boot boot: expected the database forms contactformcustom and demoanfordern, once each, got: $rows"
+              exit 1
+            fi
+            # The move runs as root and creates fileadmin/_processed_ when it is
+            # missing; a root-owned one keeps php-fpm from writing any image.
+            foreign=$(docker compose exec -T web find public/fileadmin -type d ! -user www-data)
+            if [ -n "$foreign" ]; then
+              echo "::error title=Seeded forms::$boot boot: directories in fileadmin not owned by www-data: $foreign"
+              exit 1
+            fi
+            files=$(docker compose exec -T web sh -c 'ls public/fileadmin/form_definitions/ 2>/dev/null | grep -c "\.form\.yaml$" || true')
+            if [ "$files" != "0" ]; then
+              echo "::error title=Seeded forms::$boot boot: $files form YAML file(s) still in fileadmin/form_definitions/"
+              exit 1
+            fi
+            left=$(docker compose exec -T -u www-data web vendor/bin/typo3 form:definition:transfer \
+              --source=filemount --target=database --dry-run 2>&1)
+            if ! grep -q 'No forms found in "filemount" storage' <<<"$left"; then
+              echo "$left"
+              echo "::error title=Seeded forms::$boot boot: forms are left in file mounts"
+              exit 1
+            fi
+            # Here-strings, not pipes: under pipefail an early exit of grep -q
+            # would fail the step through curl's SIGPIPE.
+            grep -q '<form[^>]*id="contactformcustom-270"' <<<"$(get https://localhost/content-examples/default-title)" \
+              || { echo "::error title=Seeded forms::$boot boot: /content-examples/default-title renders no contactformcustom form"; exit 1; }
+            grep -q '<form[^>]*id="demoanfordern-272"' <<<"$(get https://localhost/page-examples/landingape)" \
+              || { echo "::error title=Seeded forms::$boot boot: /page-examples/landingape renders no demoanfordern form"; exit 1; }
+          }
+          check first
+          docker compose restart web
+          docker compose up -d --wait --timeout 300 web
+          check second
+
       # A deploy stops the chat workers before it replaces them. An idle worker
       # has to end within seconds; one that ignores the stop signal waits out its
       # stop_grace_period of 610s and is then killed (exit 137). The image's
