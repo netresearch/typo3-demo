@@ -6,6 +6,13 @@
             <f:if condition="{data.abstract}">
                 <p class="hero-lead">{data.abstract}</p>
             </f:if>
+            <f:if condition="{falkenquell.search.pageUid}">
+                <form class="hero-search" action="{f:uri.page(pageUid: falkenquell.search.pageUid)}" method="post" role="search">
+                    <label class="visually-hidden" for="hero-search-query"><f:translate key="LLL:EXT:falkenquell_site/Resources/Private/Language/locallang.xlf:search.label" /></label>
+                    <input class="hero-search-input" type="search" id="hero-search-query" name="tx_nraisearch_search[query]" placeholder="{f:translate(key: 'LLL:EXT:falkenquell_site/Resources/Private/Language/locallang.xlf:search.placeholder')}" autocomplete="off">
+                    <button class="hero-search-submit" type="submit"><f:translate key="LLL:EXT:falkenquell_site/Resources/Private/Language/locallang.xlf:search.submit" /></button>
+                </form>
+            </f:if>
         </div>
     </div>
 </f:if>
