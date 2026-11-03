@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8b85b256d925f8be141fd4ca9e4dfb34",
+    "content-hash": "b3d5977763d9db4ec88022512e19db4e",
     "packages": [
         {
             "name": "b13/ai-label",
@@ -3039,16 +3039,16 @@
         },
         {
             "name": "netresearch/nr-llm",
-            "version": "v0.43.5",
+            "version": "v0.43.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/t3x-nr-llm.git",
-                "reference": "cac112aacaca0049bc61ca93f06998145213e1bc"
+                "reference": "73e001d58dc34d2381ada1f3eea222084690aeea"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/t3x-nr-llm/zipball/cac112aacaca0049bc61ca93f06998145213e1bc",
-                "reference": "cac112aacaca0049bc61ca93f06998145213e1bc",
+                "url": "https://api.github.com/repos/netresearch/t3x-nr-llm/zipball/73e001d58dc34d2381ada1f3eea222084690aeea",
+                "reference": "73e001d58dc34d2381ada1f3eea222084690aeea",
                 "shasum": ""
             },
             "require": {
@@ -3089,7 +3089,7 @@
                     "Package": {
                         "providesPackages": []
                     },
-                    "version": "0.43.5",
+                    "version": "0.43.6",
                     "web-dir": ".Build/Web",
                     "extension-key": "nr_llm"
                 },
@@ -3134,7 +3134,7 @@
                 "issues": "https://github.com/netresearch/t3x-nr-llm/issues",
                 "source": "https://github.com/netresearch/t3x-nr-llm"
             },
-            "time": "2026-11-02T22:13:54+00:00"
+            "time": "2026-11-03T00:07:37+00:00"
         },
         {
             "name": "netresearch/nr-llm-compat",
