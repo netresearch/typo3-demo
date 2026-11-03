@@ -16,6 +16,7 @@ page.theme.copyright.text: '© Stadt Falkenquell'
 
 page.fluidtemplate.templateRootPath: 'EXT:falkenquell_site/Resources/Private/Templates/Page/'
 page.fluidtemplate.partialRootPath: 'EXT:falkenquell_site/Resources/Private/Partials/Page/'
+sf_event_mgt.view.templateRootPath: 'EXT:falkenquell_site/Resources/Private/Extensions/SfEventMgt/Templates/'
 
 plugin.bootstrap_package.settings.scss.primary: '#094277'
 plugin.bootstrap_package.settings.scss.secondary: '#38a1e1'
