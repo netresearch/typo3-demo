@@ -1,0 +1,336 @@
+# Image plan for the Falkenquell site (NRMARKETING-1485).
+#
+# One entry per image slot. Targets name the page by its path and the content
+# element by its header, not by uid: the uids change when the records move into
+# the seed band. A generator script reads this file, sends `style.prompt` plus
+# the entry's `prompt` to the image model, stores the result under
+# fileadmin/falkenquell/bilder/<id>.jpg and attaches it with `alt` as
+# alternative text. Entries with `reuse` attach the image of another entry.
+#
+# Source of the style: "Design-Briefing Stadt Falkenquell", section 06 Bildstil.
+
+style:
+  format: landscape 3:2, 1536x1024
+  prompt: >-
+    Editorial photograph of a modern mid-sized German town, natural daylight,
+    bright and friendly colours, realistic everyday scene, people interacting
+    naturally rather than posing, clean modern composition, calm eye-level
+    perspective, slightly warm but neutral colour balance, no strong filters,
+    no HDR look, no oversaturated colours, no cinematic drama, not stock-photo
+    styled. No readable text, no signs with names, no logos, no recognisable
+    real landmarks or real brands.
+
+images:
+  # Start page
+  - id: start-thema-gruen
+    target: { page: /, element: Aktuelle Themen, item: Falkenquell wird grün }
+    motif: Junge Straßenbäume in einer Innenstadtstraße, frisch gepflanzt
+    prompt: Freshly planted young street trees with tree guards along a renovated inner-city street, wide pavement, a few people walking by.
+    alt: Frisch gepflanzte junge Bäume an einer Innenstadtstraße
+  - id: start-thema-stadtfest
+    target: { page: /, element: Aktuelle Themen, item: Stadtfest 2027 }
+    motif: Stadtfest auf dem Marktplatz am frühen Abend
+    prompt: Town festival on a historic market square in early evening light, small stage with a band in the background, families and friends standing and talking, string lights above.
+    alt: Stadtfest auf dem Marktplatz mit Bühne und vielen Menschen
+  - id: start-thema-willkommen
+    target: { page: /, element: Aktuelle Themen, item: "Neu in Falkenquell?" }
+    motif: Familie mit Umzugskartons vor einem Wohnhaus
+    prompt: Young family carrying moving boxes into a modern apartment building with balconies, a child holding a small plant, friendly atmosphere.
+    alt: Familie trägt Umzugskartons in ein Wohnhaus
+
+  # Familie, Bildung & Soziales
+  - id: familie-intro
+    target: { page: /leben-in-falkenquell/familie-bildung-soziales, element: "Familie, Bildung & Soziales" }
+    motif: Eltern mit Kindern auf einem Spielplatz im Park
+    prompt: Parents with two children on a modern playground in a green park, children climbing, parents chatting on a bench.
+    alt: Eltern und Kinder auf einem Spielplatz im Park
+  - id: familie-kitas
+    target: { page: /leben-in-falkenquell/familie-bildung-soziales, element: Angebote, item: Kitas }
+    motif: Kinder malen in einer hellen Kita
+    prompt: Small children painting at a low table in a bright daycare room, an educator kneeling beside them, colourful but tidy room.
+    alt: Kinder malen gemeinsam mit einer Erzieherin in einer Kita
+  - id: familie-schulen
+    target: { page: /leben-in-falkenquell/familie-bildung-soziales, element: Angebote, item: Schulen }
+    motif: Schulhof einer modernen Grundschule
+    prompt: Schoolyard of a modern primary school with children playing during break, school building with large windows in the background.
+    alt: Kinder spielen auf dem Schulhof einer Grundschule
+  - id: familie-jugend
+    target: { page: /leben-in-falkenquell/familie-bildung-soziales, element: Angebote, item: Jugend & Freizeit }
+    motif: Jugendliche im Jugendtreff
+    prompt: Group of teenagers in a youth centre, playing table football and talking, relaxed atmosphere, simple modern interior.
+    alt: Jugendliche spielen Tischkicker in einem Jugendtreff
+  - id: familie-senioren
+    target: { page: /leben-in-falkenquell/familie-bildung-soziales, element: Angebote, item: Seniorinnen und Senioren }
+    motif: Ältere Menschen beim gemeinsamen Kaffee im Seniorentreff
+    prompt: Older women and men having coffee and talking at a table in a bright community centre, natural smiles.
+    alt: Ältere Menschen sitzen bei Kaffee in einem Seniorentreff zusammen
+  - id: familie-familienpass
+    target: { page: /leben-in-falkenquell/familie-bildung-soziales, element: Angebote, item: Familienpass }
+    motif: Familie am Eingang eines Freibads
+    prompt: Family with two children arriving at the entrance of an outdoor natural swimming pool on a sunny day, towels under their arms.
+    alt: Familie mit Kindern am Eingang eines Naturbads
+  - id: familie-beratung
+    target: { page: /leben-in-falkenquell/familie-bildung-soziales, element: Angebote, item: Soziale Beratung }
+    motif: Beratungsgespräch in einem hellen Büro
+    prompt: Counselling conversation between a social worker and a woman at a small round table in a bright office, documents on the table, calm and respectful.
+    alt: Beratungsgespräch an einem Tisch in einem hellen Büro
+
+  # Freizeit & Kultur
+  - id: freizeit-bibliothek
+    target: { page: /leben-in-falkenquell/freizeit-kultur, element: Orte zum Entdecken, item: Stadtbibliothek }
+    motif: Lesebereich einer modernen Stadtbibliothek
+    prompt: Reading area of a modern public library with wooden shelves and large windows, people of different ages reading.
+    alt: Lesebereich der Stadtbibliothek mit Regalen und Lesenden
+  - id: freizeit-kulturhaus
+    target: { page: /leben-in-falkenquell/freizeit-kultur, element: Orte zum Entdecken, item: Kulturhaus am Markt }
+    motif: Konzertsaal im Kulturhaus mit Publikum
+    prompt: Small concert hall in a renovated historic building, chamber ensemble on stage, audience seen from behind.
+    alt: Konzert im Kulturhaus, Publikum von hinten gesehen
+  - id: freizeit-museum
+    target: { page: /leben-in-falkenquell/freizeit-kultur, element: Orte zum Entdecken, item: Stadtmuseum }
+    motif: Ausstellung zur Mühlengeschichte
+    prompt: Exhibition room of a local history museum showing an old wooden mill wheel and historic tools, a visitor looking closely.
+    alt: Besucherin betrachtet ein altes Mühlrad im Stadtmuseum
+  - id: freizeit-naturbad
+    target: { page: /leben-in-falkenquell/freizeit-kultur, element: Orte zum Entdecken, item: Naturbad Falkensee }
+    motif: Naturbad mit Liegewiese im Sommer
+    prompt: Natural swimming lake with a wooden jetty and a lawn for sunbathing on a summer afternoon, swimmers in the water, trees around.
+    alt: Naturbad mit Holzsteg und Liegewiese im Sommer
+  - id: freizeit-falkenwald
+    target: { page: /leben-in-falkenquell/freizeit-kultur, element: Orte zum Entdecken, item: Falkenwald }
+    motif: Waldweg zu einer Quelle
+    prompt: Forest path through a mixed deciduous forest leading to a small spring with clear water between stones, two hikers in the distance.
+    alt: Waldweg im Falkenwald mit einer kleinen Quelle
+  - id: freizeit-vereine
+    target: { page: /leben-in-falkenquell/freizeit-kultur, element: Orte zum Entdecken, item: Vereine und Sport }
+    motif: Jugendfußball auf dem Vereinssportplatz
+    prompt: Youth football training on a local club pitch, coach giving instructions, parents watching from the side.
+    alt: Jugendfußballtraining auf einem Vereinssportplatz
+
+  # Stadtportrait
+  - id: portrait-falkenbach
+    target: { page: /stadt-entwicklung/stadtportrait, element: Leben am Falkenbach }
+    motif: Ufer des Falkenbachs mit Weg und Sitzbänken
+    prompt: Small river flowing through a town centre, renovated bank with a walking path, benches and young trees, people strolling and cycling.
+    alt: Ufer des Falkenbachs mit Spazierweg, Bänken und Bäumen
+  - id: portrait-rathaus
+    target: { page: /stadt-entwicklung/stadtportrait, element: Sehenswürdigkeiten, item: Rathaus }
+    motif: Rathaus aus dem späten 19. Jahrhundert
+    prompt: Late 19th century town hall in a German town, sandstone facade with a small clock tower, market square in front, a few people crossing.
+    alt: Rathaus aus dem 19. Jahrhundert am Marktplatz
+  - id: portrait-alter-markt
+    target: { page: /stadt-entwicklung/stadtportrait, element: Sehenswürdigkeiten, item: Alter Markt }
+    motif: Historischer Marktplatz mit Fachwerkhäusern
+    prompt: Historic market square with half-timbered houses and cafés with outdoor seating, people sitting and talking.
+    alt: Alter Markt mit Fachwerkhäusern und Cafés
+  - id: portrait-muehlenbruecke
+    target: { page: /stadt-entwicklung/stadtportrait, element: Sehenswürdigkeiten, item: Historische Mühlenbrücke }
+    motif: Alte Steinbrücke über einen kleinen Fluss
+    prompt: Old arched stone bridge over a small river, an old mill building next to it, cyclists crossing the bridge.
+    alt: Historische Steinbrücke über den Falkenbach
+  - id: portrait-falkenpark
+    target: { page: /stadt-entwicklung/stadtportrait, element: Sehenswürdigkeiten, item: Falkenpark }
+    motif: Stadtpark mit Wiese und Open-Air-Bühne
+    prompt: Large town park with old trees, open lawn and a small open-air stage, people on picnic blankets.
+    alt: Falkenpark mit Wiese, alten Bäumen und Open-Air-Bühne
+  - id: portrait-quellenpromenade
+    target: { page: /stadt-entwicklung/stadtportrait, element: Sehenswürdigkeiten, item: Quellenpromenade }
+    motif: Promenade am Waldrand mit Quellbecken
+    prompt: Promenade at the edge of a forest with a stone spring basin, benches and lanterns, people walking.
+    alt: Quellenpromenade mit Quellbecken am Waldrand
+  - id: portrait-stadtmuseum
+    target: { page: /stadt-entwicklung/stadtportrait, element: Sehenswürdigkeiten, item: Stadtmuseum }
+    reuse: freizeit-museum
+    alt: Besucherin betrachtet ein altes Mühlrad im Stadtmuseum
+  - id: portrait-impression-markt
+    target: { page: /stadt-entwicklung/stadtportrait, element: "Impressionen (neues Element Images)" }
+    motif: Marktplatz am Samstagvormittag
+    prompt: Saturday morning farmers market on a historic town square, stalls with vegetables and flowers, people shopping.
+    alt: Wochenmarkt auf dem Marktplatz am Samstagvormittag
+  - id: portrait-impression-falkenbach
+    target: { page: /stadt-entwicklung/stadtportrait, element: "Impressionen (neues Element Images)" }
+    motif: Falkenbach im Abendlicht
+    prompt: Small river in a town in soft evening light, footbridge and green banks, a couple sitting on the bank.
+    alt: Falkenbach im Abendlicht mit Fußgängerbrücke
+  - id: portrait-impression-park
+    target: { page: /stadt-entwicklung/stadtportrait, element: "Impressionen (neues Element Images)" }
+    motif: Stadtpark im Herbst
+    prompt: Town park in autumn with colourful leaves, a path with people walking dogs and a child on a scooter.
+    alt: Stadtpark im Herbst mit buntem Laub und Spaziergängern
+
+  # Klimaschutz & Stadtentwicklung
+  - id: klima-intro
+    target: { page: /stadt-entwicklung/klimaschutz-stadtentwicklung, element: "Klimaschutz & Stadtentwicklung" }
+    motif: Solaranlage auf einem Schuldach mit Stadtblick
+    prompt: Solar panels on the flat roof of a school building, view over the roofs of a German town with green trees.
+    alt: Solaranlage auf einem Schuldach über den Dächern der Stadt
+  - id: klima-projekt-gruen
+    target: { page: /stadt-entwicklung/klimaschutz-stadtentwicklung, element: Aktuelle Projekte, item: Falkenquell wird grün }
+    reuse: start-thema-gruen
+    alt: Frisch gepflanzte junge Bäume an einer Innenstadtstraße
+  - id: klima-projekt-solar
+    target: { page: /stadt-entwicklung/klimaschutz-stadtentwicklung, element: Aktuelle Projekte, item: Solaroffensive }
+    motif: Montage einer Solaranlage auf einer Sporthalle
+    prompt: Two technicians installing solar panels on the roof of a sports hall, safety equipment, clear sky.
+    alt: Zwei Monteure installieren Solarmodule auf einer Sporthalle
+  - id: klima-projekt-rad
+    target: { page: /stadt-entwicklung/klimaschutz-stadtentwicklung, element: Aktuelle Projekte, item: Neue Radverbindungen }
+    motif: Neuer breiter Radweg mit Radfahrenden
+    prompt: New wide cycle path separated from the road, people of different ages cycling, young trees along the path.
+    alt: Radfahrende auf einem neuen, breiten Radweg
+
+  # Wirtschaftsstandort
+  - id: wirtschaft-ost
+    target: { page: /stadt-entwicklung/wirtschaftsstandort, element: Flächen und Angebote, item: Gewerbegebiet Falkenquell-Ost }
+    motif: Gewerbegebiet mit mittelständischen Betrieben
+    prompt: Tidy business park with modern medium-sized company buildings, green strips and trees, a delivery van and employees walking.
+    alt: Gewerbegebiet mit modernen Firmengebäuden und Grünstreifen
+  - id: wirtschaft-innovationspark
+    target: { page: /stadt-entwicklung/wirtschaftsstandort, element: Flächen und Angebote, item: Innovationspark Quellenhöhe }
+    motif: Modernes Technologiegebäude am Stadtrand
+    prompt: Modern technology building with a timber and glass facade on the edge of a town, landscaped grounds, people talking outside.
+    alt: Modernes Gebäude im Innovationspark am Stadtrand
+  - id: wirtschaft-gruendung
+    target: { page: /stadt-entwicklung/wirtschaftsstandort, element: Flächen und Angebote, item: Gründungsberatung }
+    motif: Beratungsgespräch mit zwei Gründerinnen
+    prompt: Two young founders discussing a business plan with an adviser at a table in a bright meeting room, laptop and notes.
+    alt: Zwei Gründerinnen im Gespräch mit einem Berater
+
+  # Bürgerbeteiligung
+  - id: beteiligung-marktplatz
+    target: { page: /mitmachen/buergerbeteiligung, element: Laufende Beteiligungen, item: Neugestaltung Marktplatz }
+    motif: Workshop mit Plänen auf dem Tisch
+    prompt: Citizens' workshop in a town hall meeting room, people of different ages standing around a table with a large site plan, pointing and discussing.
+    alt: Bürgerinnen und Bürger diskutieren über einem Lageplan
+  - id: beteiligung-mobilitaet
+    target: { page: /mitmachen/buergerbeteiligung, element: Laufende Beteiligungen, item: Mobilitätskonzept 2035 }
+    motif: Bushaltestelle mit wartenden Menschen
+    prompt: Modern bus stop with a green roof, a city bus arriving, people waiting, cyclists passing.
+    alt: Moderne Bushaltestelle mit begrüntem Dach und ankommendem Bus
+  - id: beteiligung-baeume
+    target: { page: /mitmachen/buergerbeteiligung, element: Laufende Beteiligungen, item: Neue Bäume im Quellenviertel }
+    motif: Anwohner gießen einen jungen Straßenbaum
+    prompt: Neighbours watering a young street tree with watering cans in a residential street, friendly atmosphere.
+    alt: Anwohner gießen einen jungen Straßenbaum
+
+  # Landingpage Stadtfest 2027 has no image slot yet (no card group)
+
+  # Landingpage Falkenquell wird grün
+  - id: gruen-baeume
+    target: { page: /falkenquell-wird-gruen, element: Projekte, item: 300 neue Bäume }
+    reuse: start-thema-gruen
+    alt: Frisch gepflanzte junge Bäume an einer Innenstadtstraße
+  - id: gruen-marktplatz
+    target: { page: /falkenquell-wird-gruen, element: Projekte, item: Grüner Marktplatz }
+    motif: Begrünter Platz mit Wasserspiel
+    prompt: Redesigned town square with trees, planted beds, benches and a ground-level water feature with children playing.
+    alt: Begrünter Platz mit Bäumen, Beeten und Wasserspiel
+  - id: gruen-haltestellen
+    target: { page: /falkenquell-wird-gruen, element: Projekte, item: Grüne Haltestellen }
+    reuse: beteiligung-mobilitaet
+    alt: Moderne Bushaltestelle mit begrüntem Dach und ankommendem Bus
+
+  # Landingpage Willkommen in Falkenquell
+  - id: willkommen-intro
+    target: { page: /willkommen, element: Willkommen in Falkenquell }
+    motif: Blick über die Stadt mit Fluss und Wald
+    prompt: View over a mid-sized German town from a hill, historic centre with church and town hall, small river, forest on the horizon.
+    alt: Blick über Falkenquell mit Altstadt, Fluss und Wald
+  - id: willkommen-anmelden
+    target: { page: /willkommen, element: Erste Schritte, item: Wohnsitz anmelden }
+    motif: Bürgerbüro mit Mitarbeiterin am Schalter
+    prompt: Bright citizens' service office, a staff member at a counter helping a young man with a form, modern furniture.
+    alt: Mitarbeiterin im Bürgerbüro hilft einem Mann mit einem Formular
+  - id: willkommen-kita
+    target: { page: /willkommen, element: Erste Schritte, item: Kita und Schule }
+    reuse: familie-kitas
+    alt: Kinder malen gemeinsam mit einer Erzieherin in einer Kita
+  - id: willkommen-mobil
+    target: { page: /willkommen, element: Erste Schritte, item: Bus und Rad }
+    reuse: klima-projekt-rad
+    alt: Radfahrende auf einem neuen, breiten Radweg
+  - id: willkommen-freizeit
+    target: { page: /willkommen, element: Erste Schritte, item: Freizeit }
+    reuse: freizeit-naturbad
+    alt: Naturbad mit Holzsteg und Liegewiese im Sommer
+
+  # News (field fal_media of the news record, target by title)
+  - id: news-radweg
+    target: { news: Neuer Radweg entlang des Falkenbachs eröffnet }
+    motif: Eröffnung des Radwegs am Fluss
+    prompt: Opening of a new cycle path along a small river, a group of cyclists riding off, a few people clapping at the side.
+    alt: Radfahrende auf dem neuen Radweg am Falkenbach
+  - id: news-online-termin
+    target: { news: Bürgerbüro erweitert Online-Terminangebot }
+    motif: Person bucht Termin am Smartphone
+    prompt: Woman at a kitchen table booking an appointment on her smartphone, coffee cup beside her, morning light, screen not readable.
+    alt: Frau bucht am Smartphone einen Termin
+  - id: news-baeume
+    target: { news: Neue Bäume für das Quellenviertel }
+    motif: Gärtner pflanzen einen Straßenbaum
+    prompt: Municipal gardeners planting a young street tree in a residential street, small excavator, wheelbarrow with soil.
+    alt: Gärtner der Stadt pflanzen einen jungen Straßenbaum
+  - id: news-muehlenbruecke
+    target: { news: Baumaßnahmen an der Mühlenbrücke beginnen }
+    motif: Baustelle an einer alten Steinbrücke
+    prompt: Restoration works on an old stone bridge, scaffolding on one side, construction fence, a pedestrian walking across.
+    alt: Baustelle mit Gerüst an der historischen Mühlenbrücke
+  - id: news-marktplatz
+    target: { news: Stadt sucht Ideen für die Neugestaltung des Marktplatzes }
+    reuse: beteiligung-marktplatz
+    alt: Bürgerinnen und Bürger diskutieren über einem Lageplan
+  - id: news-ferienprogramm
+    target: { news: Anmeldung für das Ferienprogramm startet }
+    motif: Kinder bei einer Theaterwerkstatt
+    prompt: Children in a theatre workshop in a community hall, wearing simple costumes, a youth worker guiding them, joyful.
+    alt: Kinder in einer Theaterwerkstatt im Ferienprogramm
+  - id: news-bibliothek
+    target: { news: Stadtbibliothek verlängert Öffnungszeiten }
+    motif: Bibliothek am frühen Abend
+    prompt: Public library in the early evening, warm interior light visible through large windows, people reading inside.
+    alt: Stadtbibliothek am frühen Abend mit Lesenden hinter den Fenstern
+  - id: news-kultursommer
+    target: { news: Kultursommer startet mit Open-Air-Konzert im Falkenpark }
+    motif: Open-Air-Konzert im Park
+    prompt: Open-air concert of a town orchestra in a park on a summer evening, audience on blankets on the lawn.
+    alt: Open-Air-Konzert im Falkenpark mit Publikum auf der Wiese
+
+  # Events (field image of the event record, target by title)
+  - id: event-wochenmarkt
+    target: { event: Wochenmarkt auf dem Alten Markt }
+    reuse: portrait-impression-markt
+    alt: Wochenmarkt auf dem Marktplatz am Samstagvormittag
+  - id: event-lesung
+    target: { event: Lesung in der Stadtbibliothek }
+    motif: Lesung vor kleinem Publikum
+    prompt: Author reading from a book at a small table in a library, audience seated in rows, warm light.
+    alt: Autorin liest vor Publikum in der Stadtbibliothek
+  - id: event-fuehrung
+    target: { event: Führung durch die historische Altstadt }
+    motif: Stadtführung durch die Altstadt
+    prompt: Guided town tour in a historic old town, guide pointing at a half-timbered house, small group listening.
+    alt: Stadtführerin zeigt einer Gruppe ein Fachwerkhaus
+  - id: event-stadtrat
+    target: { event: Stadtratssitzung }
+    motif: Sitzungssaal im Rathaus
+    prompt: Council chamber in a historic town hall with tables arranged in a horseshoe, people seated, wood panelling, no flags or symbols.
+    alt: Sitzungssaal im Rathaus während einer Sitzung
+  - id: event-weihnachtsmarkt
+    target: { event: Weihnachtsmarkt }
+    motif: Weihnachtsmarkt in der Altstadt am Abend
+    prompt: Christmas market on a historic town square at dusk, wooden stalls with lights, people with warm drinks.
+    alt: Weihnachtsmarkt auf dem Alten Markt in der Abenddämmerung
+  - id: event-ausbildungsmesse
+    target: { event: Ausbildungsmesse }
+    motif: Schülerinnen und Schüler an Messeständen
+    prompt: Apprenticeship fair in a cultural centre hall, teenagers talking with company representatives at simple stands.
+    alt: Jugendliche im Gespräch an einem Stand der Ausbildungsmesse
+  - id: event-kinderfest
+    target: { event: Kinderfest im Lindenpark }
+    motif: Kinderfest mit Spielstationen im Park
+    prompt: Children's festival in a park, play stations, a small circus workshop, face painting, families on the lawn.
+    alt: Kinder an Spielstationen beim Kinderfest im Park
+  - id: event-stadtfest
+    target: { event: Stadtfest Falkenquell 2027 }
+    reuse: start-thema-stadtfest
+    alt: Stadtfest auf dem Marktplatz mit Bühne und vielen Menschen
