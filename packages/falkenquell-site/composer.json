@@ -1,0 +1,17 @@
+{
+    "name": "netresearch/falkenquell-site",
+    "description": "Falkenquell - Site package for the fictional town Falkenquell in the Netresearch TYPO3 Demo",
+    "license": "GPL-2.0-or-later",
+    "type": "typo3-cms-extension",
+    "require": {
+        "typo3/cms-core": "^14.3",
+        "bk2k/bootstrap-package": "^16.0",
+        "georgringer/news": "^14.0",
+        "derhansen/sf_event_mgt": "^9.0"
+    },
+    "extra": {
+        "typo3/cms": {
+            "extension-key": "falkenquell_site"
+        }
+    }
+}

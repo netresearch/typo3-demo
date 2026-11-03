@@ -1,0 +1,16 @@
+base: 'https://ai-demo.netresearch.de/'
+baseVariants:
+  - base: 'https://falkenquell.netresearch.local/'
+    condition: 'applicationContext matches "#^Development#"'
+rootPageId: 10000
+dependencies:
+  - netresearch/falkenquell
+languages:
+  - title: Deutsch
+    enabled: true
+    languageId: 0
+    base: /
+    locale: de_DE.UTF-8
+    navigationTitle: Deutsch
+    flag: de
+websiteTitle: 'Stadt Falkenquell'

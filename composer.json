@@ -10,6 +10,7 @@
         "brotkrueml/schema": "^4.4",
         "causal/extractor": "^2.6",
         "cweagans/composer-patches": "^2.0",
+        "derhansen/sf_event_mgt": "^9.0",
         "friendsoftypo3/content-blocks": "^2.0",
         "friendsoftypo3/visual-editor": "^1.10.4",
         "georgringer/news": "^14.0",
@@ -18,6 +19,7 @@
         "lochmueller/index": "^3.0.1",
         "mfd/ai-filemetadata": "^1.6",
         "netresearch/contexts": "^5.1.1",
+        "netresearch/falkenquell-site": "@dev",
         "netresearch/nr-ai-search": "dev-main",
         "netresearch/nr-browser-ai": "^0.8.0",
         "netresearch/nr-bug-reporter": "^0.1.2",
@@ -69,7 +71,8 @@
             "url": "packages/*",
             "options": {
                 "versions": {
-                    "netresearch/typo3-demo-site": "1.0.0"
+                    "netresearch/typo3-demo-site": "1.0.0",
+                    "netresearch/falkenquell-site": "1.0.0"
                 }
             }
         },
