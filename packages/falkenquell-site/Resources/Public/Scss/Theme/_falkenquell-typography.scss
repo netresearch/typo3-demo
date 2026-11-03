@@ -1,0 +1,43 @@
+h1,
+.h1 {
+    font-size: 2rem;
+    line-height: 1.25;
+    @include media-breakpoint-up(md) {
+        font-size: $h1-font-size;
+        line-height: 1.1818;
+    }
+}
+
+h2,
+.h2 {
+    font-size: 1.625rem;
+    line-height: 1.2308;
+    @include media-breakpoint-up(md) {
+        font-size: $h2-font-size;
+        line-height: 1.25;
+    }
+}
+
+h3,
+.h3 {
+    font-size: $h3-font-size;
+    font-weight: 600;
+    line-height: 1.3333;
+}
+
+a {
+    text-underline-offset: 3px;
+}
+
+.ce-bodytext {
+    max-width: 70ch;
+}
+
+small,
+.small,
+figcaption,
+.caption {
+    font-size: .9375rem;
+    line-height: 1.4667;
+    color: #56616d;
+}

@@ -1,0 +1,33 @@
+page.favicon.file: 'EXT:falkenquell_site/Resources/Public/Icons/favicon.svg'
+
+page.logo.file: 'EXT:falkenquell_site/Resources/Public/Images/stadt-falkenquell-logo.svg'
+page.logo.fileInverted: 'EXT:falkenquell_site/Resources/Public/Images/stadt-falkenquell-logo-negativ.svg'
+page.logo.width: 200
+page.logo.height: 100
+
+page.theme.googleFont.enable: false
+page.theme.cookieconsent.enable: false
+page.theme.breadcrumb.enable: true
+page.theme.meta.enable: false
+page.theme.language.enable: false
+page.theme.copyright.enable: true
+page.theme.copyright.text: '© Stadt Falkenquell'
+
+page.fluidtemplate.templateRootPath: 'EXT:falkenquell_site/Resources/Private/Templates/Page/'
+page.fluidtemplate.partialRootPath: 'EXT:falkenquell_site/Resources/Private/Partials/Page/'
+
+plugin.bootstrap_package.settings.scss.primary: '#094277'
+plugin.bootstrap_package.settings.scss.secondary: '#38a1e1'
+plugin.bootstrap_package.settings.scss.tertiary: '#7cb35b'
+plugin.bootstrap_package.settings.scss.quaternary: '#1a6fa3'
+plugin.bootstrap_package.settings.scss.success: '#4a7f2c'
+plugin.bootstrap_package.settings.scss.lighter: '#f3f6f9'
+plugin.bootstrap_package.settings.scss.light: '#f3f6f9'
+plugin.bootstrap_package.settings.scss.dark: '#094277'
+plugin.bootstrap_package.settings.scss.darker: '#1c2733'
+plugin.bootstrap_package.settings.scss.body-color: '#1c2733'
+plugin.bootstrap_package.settings.scss.link-color: '#094277'
+plugin.bootstrap_package.settings.scss.link-hover-color: '#1a6fa3'
+plugin.bootstrap_package.settings.scss.font-family-sans-serif: '"Source Sans 3", sans-serif'
+plugin.bootstrap_package.settings.scss.enable-shadows: false
+plugin.bootstrap_package.settings.scss.enable-gradients: false
