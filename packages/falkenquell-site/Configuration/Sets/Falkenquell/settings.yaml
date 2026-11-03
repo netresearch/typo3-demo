@@ -8,7 +8,8 @@ page.logo.height: 100
 page.theme.googleFont.enable: false
 page.theme.cookieconsent.enable: false
 page.theme.breadcrumb.enable: true
-page.theme.meta.enable: false
+page.theme.meta.enable: true
+page.theme.meta.navigationType: 'directory'
 page.theme.language.enable: false
 page.theme.copyright.enable: true
 page.theme.copyright.text: '© Stadt Falkenquell'
