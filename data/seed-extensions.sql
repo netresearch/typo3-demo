@@ -1223,6 +1223,72 @@ UPDATE tx_nrllm_task e
                                         ORDER BY uid ASC LIMIT 1), e.configuration_uid)
  WHERE e.deleted = 0;
 
+-- 5) Image prompts for the landing page wizard (nr-llm ADR-245).
+--
+--    The template field "Bilder: Mediathek oder KI-Bild-Prompt" of nr-landingpage
+--    lists only tasks marked 'landingpage_image' (and the one a template already
+--    holds). A chosen task switches AI image generation on; its prompt_template
+--    is the image prompt for a section the content model returned without one,
+--    {{input}} becoming the section heading. The image model comes from nr-llm's
+--    image model records, not from the task, so configuration_uid stays 0.
+--
+--    Category 'general', not 'content': the cowriter lists every 'content' task,
+--    and an image prompt is no text action. The mark 'landingpage_image' alone
+--    also keeps them out of the editors' AI tasks module, which leaves out a
+--    task marked for other places only.
+--
+--    Keyed on `identifier` like the cowriter tasks above; the UPDATE re-asserts
+--    the mark and the prompt on an instance seeded by an earlier run.
+--    The column `placements` arrives with nr-llm 0.43.5 through the schema
+--    update. On a fresh install the entrypoint imports this file BEFORE
+--    extension:setup, so the column can be missing then; a plain statement
+--    would abort the import and drop every block below it. Both statements run
+--    through PREPARE only when the column exists; the next `make seed-extensions`
+--    of the deploy, which runs after the schema update, applies them.
+SET @seed_has_placements = (SELECT COUNT(*) FROM information_schema.columns
+                             WHERE table_schema = DATABASE()
+                               AND table_name = 'tx_nrllm_task'
+                               AND column_name = 'placements');
+
+SET @seed_sql = IF(@seed_has_placements = 1, 'INSERT INTO tx_nrllm_task
+    (pid, identifier, name, description, category, placements, configuration_uid, prompt_template,
+     input_type, output_format, is_active, is_system, sorting, tstamp, crdate, deleted, hidden)
+SELECT 0, t.identifier, t.name, t.description, ''general'', ''landingpage_image'', 0,
+       t.prompt_template, ''manual'', ''plain'', 1, 0, t.sorting,
+       UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0
+  FROM (
+        SELECT ''landingpage-image-photo'' AS identifier, ''Landingpage: Foto'' AS name,
+               ''Bildprompt für fotografische Section-Bilder auf Landingpages.'' AS description,
+               ''Professional photograph for a landing page section about "{{input}}". Modern, clean, bright natural light, shallow depth of field. No text, no logos, no watermarks.'' AS prompt_template,
+               110 AS sorting
+        UNION ALL SELECT ''landingpage-image-illustration'', ''Landingpage: Illustration'',
+               ''Bildprompt für flache, grafische Illustrationen auf Landingpages.'',
+               ''Flat vector illustration for a landing page section about "{{input}}". Calm palette in teal and orange, generous white space, simple shapes. No text, no logos.'', 120
+       ) AS t
+ WHERE NOT EXISTS (
+       SELECT 1 FROM tx_nrllm_task e
+        WHERE e.identifier = t.identifier AND e.deleted = 0)', 'DO 0');
+PREPARE seed_stmt FROM @seed_sql;
+EXECUTE seed_stmt;
+DEALLOCATE PREPARE seed_stmt;
+
+SET @seed_sql = IF(@seed_has_placements = 1, 'UPDATE tx_nrllm_task e
+  JOIN (
+        SELECT ''landingpage-image-photo'' AS identifier,
+               ''Professional photograph for a landing page section about "{{input}}". Modern, clean, bright natural light, shallow depth of field. No text, no logos, no watermarks.'' AS prompt_template
+        UNION ALL SELECT ''landingpage-image-illustration'',
+               ''Flat vector illustration for a landing page section about "{{input}}". Calm palette in teal and orange, generous white space, simple shapes. No text, no logos.''
+       ) AS owned ON owned.identifier = e.identifier
+   SET e.placements = ''landingpage_image'',
+       e.category = ''general'',
+       e.prompt_template = owned.prompt_template,
+       e.is_active = 1,
+       e.hidden = 0
+ WHERE e.deleted = 0', 'DO 0');
+PREPARE seed_stmt FROM @seed_sql;
+EXECUTE seed_stmt;
+DEALLOCATE PREPARE seed_stmt;
+
 -- Give unpriced demo models cost metrics so the LLM cost module + Monthly-Cost
 -- widget show non-zero figures (cents per 1M tokens). Idempotent: the WHERE stops
 -- matching once set, so re-running make seed-extensions is a no-op.
