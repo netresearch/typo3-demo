@@ -119,6 +119,21 @@ jobs:
             # one keeps "Remaining updates" open. upgrade:list runs nothing.
             echo "===== upgrade wizards (upgrade:list)"
             docker compose exec -T -u www-data web vendor/bin/typo3 upgrade:list 2>&1 || true
+            # EXT:form's formFileFormsToDatabaseMigration answers only in a web
+            # request: on the CLI no request exists, the Extbase configuration
+            # manager throws NoServerRequestGivenException, and the wizard turns
+            # that into "nothing to migrate" plus a log warning (TYPO3 14.3.10).
+            # So upgrade:list cannot show it (#411). form:definition:transfer
+            # builds a request of its own; --dry-run only lists. Form
+            # identifiers, file paths, uids and counts only.
+            echo "===== EXT:form forms in file mounts (form:definition:transfer --dry-run)"
+            docker compose exec -T -u www-data web vendor/bin/typo3 form:definition:transfer \
+              --source=filemount --target=database --dry-run 2>&1 || true
+            echo "===== EXT:form wizard warnings in var/log (count, newest)"
+            docker compose exec -T web sh -c \
+              'grep -h "Could not list file-based forms" var/log/*.log 2>/dev/null | wc -l; grep -h "Could not list file-based forms" var/log/*.log 2>/dev/null | tail -n 1 | cut -c1-300' || true
+            q "EXT:form database forms" "SELECT uid, pid, deleted, identifier, label FROM form_definition ORDER BY uid;"
+            q "EXT:form content elements" "SELECT uid, pid, hidden, deleted, SUBSTRING(pi_flexform, LOCATE('settings.persistenceIdentifier', pi_flexform) + 31, 90) persistence_identifier FROM tt_content WHERE CType = 'form_formframework' ORDER BY uid;"
             # rteImageReferenceValidation stays listed while ANY issue remains,
             # including the ones it cannot fix. The validator's dry-run report
             # is cut to type, table, uid, field and fixable: enough to name the
