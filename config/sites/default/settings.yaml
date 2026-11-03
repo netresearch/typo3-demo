@@ -1,0 +1,6 @@
+# Test override for the per-site LLM configuration (nr-llm ADR-244): calls on
+# this site that choose no configuration run on "Backend AI Chat" instead of
+# the installation default. Set for one live check of nr-landingpage and
+# nr-repurpose; removed again once that check is done.
+nrllm:
+  configuration: backend-ai-chat
