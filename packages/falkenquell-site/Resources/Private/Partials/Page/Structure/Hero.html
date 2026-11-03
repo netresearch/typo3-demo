@@ -1,0 +1,12 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" data-namespace-typo3-fluid="true">
+<f:if condition="{data.subtitle}">
+    <div class="hero">
+        <div class="container">
+            <h1 class="hero-title">{data.subtitle}</h1>
+            <f:if condition="{data.abstract}">
+                <p class="hero-lead">{data.abstract}</p>
+            </f:if>
+        </div>
+    </div>
+</f:if>
+</html>

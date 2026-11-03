@@ -1,0 +1,18 @@
+.navbar-mainnavigation {
+    --mainnavigation-hightlight: #094277;
+    --mainnavigation-link-font-size: 1.0625rem;
+    --#{$prefix}navbar-color: #094277;
+    --#{$prefix}navbar-hover-color: #1a6fa3;
+    --#{$prefix}navbar-active-color: #094277;
+    box-shadow: 0 1px 0 0 #dbe2e9;
+    .nav-link {
+        font-weight: 600;
+    }
+    .navbar-brand-image img {
+        height: 80px;
+        max-height: none;
+        @media (min-width: $grid-float-breakpoint) {
+            height: 100px;
+        }
+    }
+}
