@@ -1,4 +1,10 @@
 page {
+    10.dataProcessing.1730 = BK2K\BootstrapPackage\DataProcessing\ConstantsProcessor
+    10.dataProcessing.1730 {
+        key = falkenquell
+        as = falkenquell
+    }
+
     includeCSSLibs {
         falkenquellFonts = EXT:falkenquell_site/Resources/Public/Css/fonts.css
     }
