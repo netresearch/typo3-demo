@@ -131,6 +131,15 @@ jobs:
             # names, no prompt, no answer, no user. This is how a site's own
             # configuration (nr-llm ADR-244) is seen on a real call.
             q "nr-llm telemetry (latest 15 calls)" "SELECT uid, FROM_UNIXTIME(crdate) t, source_extension, source_operation, operation, configuration_identifier, served_configuration_identifier, served_model, success FROM tx_nrllm_telemetry ORDER BY uid DESC LIMIT 15;"
+            # Rows whose served_model came out empty, by configuration and
+            # caller: identifiers and counts only.
+            q "nr-llm telemetry: empty served_model" "SELECT configuration_identifier, source_extension, source_operation, COUNT(*) calls, FROM_UNIXTIME(MAX(crdate)) newest FROM tx_nrllm_telemetry WHERE served_model = '' GROUP BY configuration_identifier, source_extension, source_operation ORDER BY calls DESC LIMIT 30;"
+            # How tool calls of agent runs ended, by tool and by the class of
+            # error text: tool names and counts only, never the text itself,
+            # which can name a record. argument = the tool refused a value of
+            # its arguments; generic_failed = the tool threw and the model was
+            # told only that it failed.
+            q "nr-llm tool calls by outcome (all runs)" "SELECT JSON_VALUE(payload, '$.toolName') tool, CASE WHEN COALESCE(JSON_VALUE(payload, '$.toolIsError'), '0') NOT IN ('1', 'true') THEN 'ok' WHEN JSON_VALUE(payload, '$.toolResult') IS NULL THEN 'error_no_text' WHEN JSON_VALUE(payload, '$.toolResult') LIKE 'Error: tool % failed.' THEN 'generic_failed' WHEN JSON_VALUE(payload, '$.toolResult') REGEXP '^(Refused|Error): (.[a-z_]+. (must|is required|is longer)|the value for)' THEN 'argument' WHEN JSON_VALUE(payload, '$.toolResult') LIKE 'Error: unknown tool%' OR JSON_VALUE(payload, '$.toolResult') LIKE 'Error: tool % not permitted%' OR JSON_VALUE(payload, '$.toolResult') LIKE 'Error: invocation denied%' THEN 'not_permitted' WHEN JSON_VALUE(payload, '$.toolResult') LIKE 'Refused:%' THEN 'refused_other' ELSE 'error_other' END outcome, COUNT(*) calls, FROM_UNIXTIME(MAX(crdate)) newest FROM tx_nrllm_agentrun_event WHERE kind = 'tool' GROUP BY tool, outcome ORDER BY tool, outcome;"
 
             echo "DIAG-BEGIN"
             collect | gzip | enc
