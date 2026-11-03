@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8b2d061ce4c58b87238d223b2619a29d",
+    "content-hash": "d89428a6b09b151f312c44dc5230e30b",
     "packages": [
         {
             "name": "b13/ai-label",
@@ -962,6 +962,71 @@
                 "source": "https://github.com/DeepL/deepl-php/tree/v1.21.0"
             },
             "time": "2026-11-02T11:35:00+00:00"
+        },
+        {
+            "name": "derhansen/sf_event_mgt",
+            "version": "9.0.6",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/derhansen/sf_event_mgt.git",
+                "reference": "fa924c82cd2f0b68e5c9cf8659b8d4edafe1e80a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/derhansen/sf_event_mgt/zipball/fa924c82cd2f0b68e5c9cf8659b8d4edafe1e80a",
+                "reference": "fa924c82cd2f0b68e5c9cf8659b8d4edafe1e80a",
+                "shasum": ""
+            },
+            "require": {
+                "typo3/cms-core": "^14.3"
+            },
+            "type": "typo3-cms-extension",
+            "extra": {
+                "typo3/cms": {
+                    "Package": {
+                        "providesPackages": []
+                    },
+                    "version": "9.0.6",
+                    "extension-key": "sf_event_mgt"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "DERHANSEN\\SfEventMgt\\": "Classes"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "Torben Hansen",
+                    "email": "derhansen@gmail.com",
+                    "homepage": "https://www.derhansen.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Event management and registration - Configurable event management and registration extension based on ExtBase and Fluid",
+            "homepage": "https://github.com/derhansen/sf_event_mgt",
+            "keywords": [
+                "TYPO3 CMS",
+                "event management",
+                "event registration",
+                "extbase",
+                "fluid"
+            ],
+            "support": {
+                "issues": "https://github.com/derhansen/sf_event_mgt/issues",
+                "source": "https://github.com/derhansen/sf_event_mgt/tree/9.0.6"
+            },
+            "funding": [
+                {
+                    "url": "https://www.paypal.me/derhansen",
+                    "type": "custom"
+                }
+            ],
+            "time": "2026-10-09T17:28:57+00:00"
         },
         {
             "name": "dflydev/dot-access-data",
@@ -2740,6 +2805,34 @@
             "time": "2026-10-31T14:04:49+00:00"
         },
         {
+            "name": "netresearch/falkenquell-site",
+            "version": "1.0.0",
+            "dist": {
+                "type": "path",
+                "url": "packages/falkenquell-site",
+                "reference": "145cc37e5464d76f19f12545f36330833bab87db"
+            },
+            "require": {
+                "bk2k/bootstrap-package": "^16.0",
+                "derhansen/sf_event_mgt": "^9.0",
+                "georgringer/news": "^14.0",
+                "typo3/cms-core": "^14.3"
+            },
+            "type": "typo3-cms-extension",
+            "extra": {
+                "typo3/cms": {
+                    "extension-key": "falkenquell_site"
+                }
+            },
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "description": "Falkenquell - Site package for the fictional town Falkenquell in the Netresearch TYPO3 Demo",
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
             "name": "netresearch/nr-ai-search",
             "version": "dev-main",
             "source": {
@@ -4261,7 +4354,7 @@
             "dist": {
                 "type": "path",
                 "url": "packages/netresearch-demo-site",
-                "reference": "1d23636c5571a9aba7bc2b5b327a3ef4ae0b8a38"
+                "reference": "d95284970a2f269035173eb658b0587e2d1c2528"
             },
             "require": {
                 "b13/ai-label": "^1.3",
@@ -13172,6 +13265,7 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
+        "netresearch/falkenquell-site": 20,
         "netresearch/nr-ai-search": 20,
         "netresearch/typo3-demo-site": 20
     },
