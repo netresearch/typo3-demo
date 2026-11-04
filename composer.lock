@@ -2983,20 +2983,20 @@
         },
         {
             "name": "netresearch/nr-landingpage",
-            "version": "v0.3.25",
+            "version": "v0.3.26",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/nr-landingpage.git",
-                "reference": "9bd47276caf356b6778320587912ce87e747800f"
+                "reference": "b525520cd9176e2910bb4089056c32c34b4ec6cf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/nr-landingpage/zipball/9bd47276caf356b6778320587912ce87e747800f",
-                "reference": "9bd47276caf356b6778320587912ce87e747800f",
+                "url": "https://api.github.com/repos/netresearch/nr-landingpage/zipball/b525520cd9176e2910bb4089056c32c34b4ec6cf",
+                "reference": "b525520cd9176e2910bb4089056c32c34b4ec6cf",
                 "shasum": ""
             },
             "require": {
-                "netresearch/nr-llm": "^0.43.5",
+                "netresearch/nr-llm": "^0.43.10",
                 "php": "^8.2",
                 "typo3/cms-backend": "^13.4 || ^14.3",
                 "typo3/cms-core": "^13.4 || ^14.3",
@@ -3033,22 +3033,22 @@
             "description": "Landing Page Generator - Generate landing pages with an LLM in a step-by-step backend wizard.",
             "support": {
                 "issues": "https://github.com/netresearch/nr-landingpage/issues",
-                "source": "https://github.com/netresearch/nr-landingpage/tree/v0.3.25"
+                "source": "https://github.com/netresearch/nr-landingpage/tree/v0.3.26"
             },
-            "time": "2026-11-02T23:24:00+00:00"
+            "time": "2026-11-04T02:10:39+00:00"
         },
         {
             "name": "netresearch/nr-llm",
-            "version": "v0.43.9",
+            "version": "v0.43.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/t3x-nr-llm.git",
-                "reference": "348c65615b56f2c3893b010d6d5b875f7e44134b"
+                "reference": "6201f3243f11eec9564f638533073a0238019afb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/t3x-nr-llm/zipball/348c65615b56f2c3893b010d6d5b875f7e44134b",
-                "reference": "348c65615b56f2c3893b010d6d5b875f7e44134b",
+                "url": "https://api.github.com/repos/netresearch/t3x-nr-llm/zipball/6201f3243f11eec9564f638533073a0238019afb",
+                "reference": "6201f3243f11eec9564f638533073a0238019afb",
                 "shasum": ""
             },
             "require": {
@@ -3089,7 +3089,7 @@
                     "Package": {
                         "providesPackages": []
                     },
-                    "version": "0.43.9",
+                    "version": "0.43.10",
                     "web-dir": ".Build/Web",
                     "extension-key": "nr_llm"
                 },
@@ -3134,7 +3134,7 @@
                 "issues": "https://github.com/netresearch/t3x-nr-llm/issues",
                 "source": "https://github.com/netresearch/t3x-nr-llm"
             },
-            "time": "2026-11-03T22:33:32+00:00"
+            "time": "2026-11-04T00:43:52+00:00"
         },
         {
             "name": "netresearch/nr-llm-compat",
