@@ -181,12 +181,15 @@ jobs:
             # Latency and actual cost per served model over 30 days, the
             # signals a router could rank on: model names and numbers only.
             q "nr-llm latency and cost by served model (30 days)" "SELECT served_provider, served_model, operation, COUNT(*) calls, SUM(success = 0) failed, ROUND(AVG(latency_ms)) avg_ms, MAX(latency_ms) max_ms, SUM(actual_cost IS NOT NULL) costed, ROUND(SUM(actual_cost), 8) cost_usd, ROUND(AVG(actual_cost), 8) avg_cost_usd FROM tx_nrllm_telemetry WHERE crdate > UNIX_TIMESTAMP() - 30 * 86400 AND served_model <> '' GROUP BY served_provider, served_model, operation ORDER BY calls DESC LIMIT 40;"
-            # How much of what tools hand the model is JSON, the input a
-            # TOON converter would shorten: per tool, calls, result bytes,
-            # JSON results (a valid object or array) and their bytes, and
-            # arrays of two or more objects (TOON's tabular case). Tool
-            # names and counts only, never the result text.
-            q "nr-llm tool results: JSON share (all runs)" "SELECT tool, COUNT(*) calls, SUM(LENGTH(r)) result_bytes, SUM(j) json_results, SUM(IF(j, LENGTH(r), 0)) json_bytes, SUM(IF(j AND JSON_TYPE(r) = 'ARRAY' AND JSON_LENGTH(r) >= 2 AND JSON_TYPE(JSON_EXTRACT(r, '\$[0]')) = 'OBJECT', 1, 0)) object_arrays, SUM(IF(j AND JSON_TYPE(r) = 'ARRAY' AND JSON_LENGTH(r) >= 2 AND JSON_TYPE(JSON_EXTRACT(r, '\$[0]')) = 'OBJECT', LENGTH(r), 0)) object_array_bytes FROM (SELECT JSON_VALUE(payload, '$.toolName') tool, JSON_UNQUOTE(JSON_EXTRACT(payload, '$.toolResult')) r, COALESCE(JSON_UNQUOTE(JSON_EXTRACT(payload, '$.toolResult')) REGEXP '^[[:space:]]*[[{]' AND JSON_VALID(JSON_UNQUOTE(JSON_EXTRACT(payload, '$.toolResult'))), 0) j FROM tx_nrllm_agentrun_event WHERE kind = 'tool') t GROUP BY tool WITH ROLLUP;"
+            # What prompt data could be JSON, the input a TOON converter would
+            # shorten. The demo stores run steps at privacy level "metadata",
+            # so tool results are kept as a length only (toolResultLength);
+            # the built-in tools answer in text lines, not JSON. The one path
+            # that sends JSON is a task whose input source is a table
+            # (TaskInputResolver), so tasks are counted by input type. Tool
+            # names, input types and counts only.
+            q "nr-llm tool result sizes (all runs)" "SELECT JSON_VALUE(payload, '$.toolName') tool, COUNT(*) calls, SUM(JSON_VALUE(payload, '$.toolResultLength')) result_chars, ROUND(AVG(JSON_VALUE(payload, '$.toolResultLength'))) avg_chars, SUM(JSON_EXISTS(payload, '$.toolResult')) stored_results FROM tx_nrllm_agentrun_event WHERE kind = 'tool' GROUP BY tool WITH ROLLUP;"
+            q "nr-llm tasks by input type" "SELECT input_type, COUNT(*) tasks, SUM(deleted = 0 AND hidden = 0) active FROM tx_nrllm_task GROUP BY input_type;"
 
             echo "DIAG-BEGIN"
             collect | gzip | enc
