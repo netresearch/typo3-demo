@@ -1596,13 +1596,43 @@ WHERE s.deleted = 0
 --
 --      Idempotent by construction: a DELETE with this WHERE is a no-op once the
 --      rows are gone.
-DELETE FROM pages       WHERE t3ver_wsid <> 0;
-DELETE FROM tt_content  WHERE t3ver_wsid <> 0;
-DELETE FROM sys_refindex WHERE workspace <> 0;
-DELETE FROM sys_preview;
-UPDATE be_users SET workspace_id = 0 WHERE workspace_id <> 0;
-DELETE FROM sys_workspace_stage WHERE 1;
-DELETE FROM sys_workspace WHERE 1;
+--
+--      Narrowed since: the demo now keeps one workspace of its own (step
+--      3c3), where editors and the AI chat leave drafts on purpose. The purge
+--      therefore removes what belongs to NO existing workspace -- the leftover
+--      rows of the discarded one, on a database that still carries them -- and
+--      leaves the drafts of the seeded workspace alone. On the live demo the
+--      leftovers were already gone (the purge ran on every deploy since), so
+--      this changes nothing there except that drafts now survive a deploy.
+--      Step 3c3 creates the workspace before this runs, so its rows count as
+--      belonging to one.
+-- 3c3) The demo workspace "Entwurf".
+--
+--      An editor -- or the AI chat on their behalf -- changes content there,
+--      reviews it in the Workspaces module and publishes or discards it; live
+--      stays as it was until then. Fixed uid 9001 from the seed band, so the
+--      row is idempotent on its primary key and an editor can never create
+--      over it. Owned by nobody and with no members: administrators reach
+--      every workspace, and who else may work in it is a decision for the
+--      backend, not for the seed. Stage-change mails are off: a demo has
+--      nobody to send them to.
+--
+--      sys_workspace exists because typo3/cms-workspaces is required in
+--      composer.json; export-seed-sanitized.sh truncates it for the fresh-install
+--      dump, so this INSERT is what creates the workspace on both paths.
+INSERT IGNORE INTO sys_workspace
+    (uid, pid, tstamp, deleted, title, description, adminusers, members, db_mountpoints, file_mountpoints,
+     publish_time, live_edit, publish_access, previewlink_lifetime, stagechg_notification, custom_stages)
+VALUES (9001, 0, UNIX_TIMESTAMP(), 0, 'Entwurf',
+     'Demo workspace: changes made here wait for review and stay out of the live site until published.',
+     '', '', '', '', 0, 0, 0, 48, 0, 0);
+
+DELETE FROM pages       WHERE t3ver_wsid <> 0 AND t3ver_wsid NOT IN (SELECT uid FROM sys_workspace WHERE deleted = 0);
+DELETE FROM tt_content  WHERE t3ver_wsid <> 0 AND t3ver_wsid NOT IN (SELECT uid FROM sys_workspace WHERE deleted = 0);
+DELETE FROM sys_refindex WHERE workspace <> 0 AND workspace NOT IN (SELECT uid FROM sys_workspace WHERE deleted = 0);
+UPDATE be_users SET workspace_id = 0
+ WHERE workspace_id <> 0 AND workspace_id NOT IN (SELECT uid FROM sys_workspace WHERE deleted = 0);
+DELETE FROM sys_workspace_stage WHERE parentid NOT IN (SELECT uid FROM sys_workspace WHERE deleted = 0);
 
 -- 3d) Identity for the nr_repurpose generation job (release 0.4.2).
 --
@@ -8039,15 +8069,20 @@ SELECT 'SEED-PROBLEM: step 1 of the skill repair did not remove the attachment t
   FROM DUAL
  WHERE COALESCE(@seed_wrong_attachment_left, 1) > 0
 UNION ALL
--- Workspace records survived the purge in step 3c2. Either a table outside the
--- explicit list above grew them, or something re-created a workspace between
--- the purge and here. Both mean the "Broken rootline" of NEXT-127 can come
--- back, so say so rather than let it reappear quietly.
-SELECT CONCAT('SEED-PROBLEM: ', n, ' workspace record(s) survived the purge')
-  FROM (SELECT (SELECT COUNT(*) FROM pages      WHERE t3ver_wsid <> 0)
-             + (SELECT COUNT(*) FROM tt_content WHERE t3ver_wsid <> 0)
-             + (SELECT COUNT(*) FROM sys_workspace) AS n) w
+-- Records of a workspace that does not exist survived the purge in step 3c2.
+-- Either a table outside the explicit list above grew them, or a workspace was
+-- deleted between the purge and here. Both mean the "Broken rootline" of
+-- NEXT-127 can come back, so say so rather than let it reappear quietly. The
+-- drafts of an existing workspace -- the demo workspace of step 3c3 -- are
+-- intended.
+SELECT CONCAT('SEED-PROBLEM: ', n, ' record(s) of a workspace that does not exist survived the purge')
+  FROM (SELECT (SELECT COUNT(*) FROM pages      WHERE t3ver_wsid <> 0 AND t3ver_wsid NOT IN (SELECT uid FROM sys_workspace WHERE deleted = 0))
+             + (SELECT COUNT(*) FROM tt_content WHERE t3ver_wsid <> 0 AND t3ver_wsid NOT IN (SELECT uid FROM sys_workspace WHERE deleted = 0)) AS n) w
  WHERE n > 0
+UNION ALL
+SELECT 'SEED-PROBLEM: the demo workspace 9001 "Entwurf" is missing'
+  FROM DUAL
+ WHERE NOT EXISTS (SELECT 1 FROM sys_workspace WHERE uid = 9001 AND deleted = 0)
 UNION ALL
 -- Every versioned '*-chat-latest' alias OpenAI ever served to this account is
 -- deprecated and answers 404, so a chat model still carrying one is a dead
