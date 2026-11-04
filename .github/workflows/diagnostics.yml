@@ -73,6 +73,19 @@ jobs:
               # it. bodytext_len distinguishes a stale/empty body (element renders as
               # an empty frame) from a rendering problem (frame absent entirely).
               q "seeded demo content" "SELECT uid, pid, CType, sys_language_uid lang, l18n_parent, colPos, sorting, hidden, deleted, LENGTH(bodytext) bodytext_len, header FROM tt_content WHERE uid BETWEEN 600 AND 630 ORDER BY uid;"
+              # EXT:form details behind the counts printed in plain text below:
+              # form names and file paths, and a log line, which can name
+              # anything the wizard logs.
+              echo "===== EXT:form forms in file mounts (form:definition:transfer --dry-run)"
+              docker compose exec -T -u www-data web vendor/bin/typo3 form:definition:transfer \
+                --source=filemount --target=database --dry-run 2>&1 || true
+              # Newest warning: the last match in the most recently written log
+              # file that has one. Within a file, records are appended in order.
+              echo "===== EXT:form wizard warning, newest"
+              docker compose exec -T web sh -c \
+                'for f in $(ls -t var/log/*.log 2>/dev/null); do m=$(grep -h "Could not list file-based forms" "$f" | tail -n 1); if [ -n "$m" ]; then echo "$f: $m" | cut -c1-400; break; fi; done' || true
+              q "EXT:form database forms" "SELECT uid, pid, deleted, identifier, label FROM form_definition ORDER BY uid;"
+              q "EXT:form content elements" "SELECT uid, pid, hidden, deleted, SUBSTRING(pi_flexform, LOCATE('settings.persistenceIdentifier', pi_flexform) + 31, 90) persistence_identifier FROM tt_content WHERE CType = 'form_formframework' ORDER BY uid;"
             }
             enc() {
               if command -v openssl >/dev/null 2>&1; then
@@ -124,16 +137,16 @@ jobs:
             # manager throws NoServerRequestGivenException, and the wizard turns
             # that into "nothing to migrate" plus a log warning (TYPO3 14.3.10).
             # So upgrade:list cannot show it (#411). form:definition:transfer
-            # builds a request of its own; --dry-run only lists. Form
-            # identifiers, file paths, uids and counts only.
-            echo "===== EXT:form forms in file mounts (form:definition:transfer --dry-run)"
+            # builds a request of its own; --dry-run only lists. Counts only
+            # here: names, paths and the log line are in the encrypted report.
+            echo "===== EXT:form forms left in file mounts (count)"
             docker compose exec -T -u www-data web vendor/bin/typo3 form:definition:transfer \
-              --source=filemount --target=database --dry-run 2>&1 || true
-            echo "===== EXT:form wizard warnings in var/log (count, newest)"
+              --source=filemount --target=database --dry-run 2>&1 \
+              | grep -o -E 'Found [0-9]+ form\(s\)|No forms found' || true
+            echo "===== EXT:form wizard warnings in var/log (count)"
             docker compose exec -T web sh -c \
-              'grep -h "Could not list file-based forms" var/log/*.log 2>/dev/null | wc -l; grep -h "Could not list file-based forms" var/log/*.log 2>/dev/null | tail -n 1 | cut -c1-300' || true
-            q "EXT:form database forms" "SELECT uid, pid, deleted, identifier, label FROM form_definition ORDER BY uid;"
-            q "EXT:form content elements" "SELECT uid, pid, hidden, deleted, SUBSTRING(pi_flexform, LOCATE('settings.persistenceIdentifier', pi_flexform) + 31, 90) persistence_identifier FROM tt_content WHERE CType = 'form_formframework' ORDER BY uid;"
+              'cat var/log/*.log 2>/dev/null | grep -c "Could not list file-based forms"' || true
+            q "EXT:form counts" "SELECT (SELECT COUNT(*) FROM form_definition WHERE deleted = 0) database_forms, (SELECT COUNT(*) FROM tt_content WHERE CType = 'form_formframework' AND deleted = 0 AND hidden = 0 AND pi_flexform REGEXP '>[0-9]+:/[^<]*[.]form[.]yaml<') visible_form_elements_on_file_mounts;"
             # rteImageReferenceValidation stays listed while ANY issue remains,
             # including the ones it cannot fix. The validator's dry-run report
             # is cut to type, table, uid, field and fixable: enough to name the
