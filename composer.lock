@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "27a3c4dd4ff65bf7f63e56524b835948",
+    "content-hash": "436f5d33fd5820dd115fe094dd06ff46",
     "packages": [
         {
             "name": "b13/ai-label",
@@ -3039,16 +3039,16 @@
         },
         {
             "name": "netresearch/nr-llm",
-            "version": "v0.43.11",
+            "version": "v0.43.12",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/t3x-nr-llm.git",
-                "reference": "89ad76b3096538d14efcd96d8247d08faa5e192d"
+                "reference": "29f6e6b7463c883c86840da03cfa808b724bb77b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/t3x-nr-llm/zipball/89ad76b3096538d14efcd96d8247d08faa5e192d",
-                "reference": "89ad76b3096538d14efcd96d8247d08faa5e192d",
+                "url": "https://api.github.com/repos/netresearch/t3x-nr-llm/zipball/29f6e6b7463c883c86840da03cfa808b724bb77b",
+                "reference": "29f6e6b7463c883c86840da03cfa808b724bb77b",
                 "shasum": ""
             },
             "require": {
@@ -3089,7 +3089,7 @@
                     "Package": {
                         "providesPackages": []
                     },
-                    "version": "0.43.11",
+                    "version": "0.43.12",
                     "web-dir": ".Build/Web",
                     "extension-key": "nr_llm"
                 },
@@ -3134,7 +3134,7 @@
                 "issues": "https://github.com/netresearch/t3x-nr-llm/issues",
                 "source": "https://github.com/netresearch/t3x-nr-llm"
             },
-            "time": "2026-11-04T02:26:26+00:00"
+            "time": "2026-11-04T08:09:23+00:00"
         },
         {
             "name": "netresearch/nr-llm-compat",
@@ -3222,16 +3222,16 @@
         },
         {
             "name": "netresearch/nr-mcp-agent",
-            "version": "v0.31.0",
+            "version": "v0.31.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/t3x-nr-mcp-agent.git",
-                "reference": "a2c934196d4654cfe584f56dbdfdd5dfc176fee4"
+                "reference": "6ab51c42b6600e90fee42b97f60a27b6c6c9ece2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/t3x-nr-mcp-agent/zipball/a2c934196d4654cfe584f56dbdfdd5dfc176fee4",
-                "reference": "a2c934196d4654cfe584f56dbdfdd5dfc176fee4",
+                "url": "https://api.github.com/repos/netresearch/t3x-nr-mcp-agent/zipball/6ab51c42b6600e90fee42b97f60a27b6c6c9ece2",
+                "reference": "6ab51c42b6600e90fee42b97f60a27b6c6c9ece2",
                 "shasum": ""
             },
             "require": {
@@ -3299,7 +3299,7 @@
                 "issues": "https://github.com/netresearch/t3x-nr-mcp-agent/issues",
                 "source": "https://github.com/netresearch/t3x-nr-mcp-agent"
             },
-            "time": "2026-11-04T00:51:09+00:00"
+            "time": "2026-11-04T05:14:16+00:00"
         },
         {
             "name": "netresearch/nr-passkeys-be",
