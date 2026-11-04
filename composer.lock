@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a2f33da69b64d6b0f5c4707935d89086",
+    "content-hash": "c4ea2173c851d7f399b1df9b3f8fe97a",
     "packages": [
         {
             "name": "b13/ai-label",
@@ -4161,16 +4161,16 @@
         },
         {
             "name": "netresearch/t3-cowriter",
-            "version": "v3.25.0",
+            "version": "v3.26.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/t3x-cowriter.git",
-                "reference": "56391a600a2ce1587da016eab4eb1548be3593b8"
+                "reference": "9d1b9b3934d931b0fd9ef34117f25b9515b854df"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/t3x-cowriter/zipball/56391a600a2ce1587da016eab4eb1548be3593b8",
-                "reference": "56391a600a2ce1587da016eab4eb1548be3593b8",
+                "url": "https://api.github.com/repos/netresearch/t3x-cowriter/zipball/9d1b9b3934d931b0fd9ef34117f25b9515b854df",
+                "reference": "9d1b9b3934d931b0fd9ef34117f25b9515b854df",
                 "shasum": ""
             },
             "require": {
@@ -4251,7 +4251,7 @@
                 "issues": "https://github.com/netresearch/t3x-cowriter/issues",
                 "source": "https://github.com/netresearch/t3x-cowriter"
             },
-            "time": "2026-11-04T00:59:05+00:00"
+            "time": "2026-11-04T23:14:46+00:00"
         },
         {
             "name": "netresearch/typo3-demo-site",
