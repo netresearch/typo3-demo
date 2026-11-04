@@ -65,6 +65,17 @@ RUN sha256sum -c /tmp/bootstrap-image-partial.sha256 \
          echo "and record the new checksum in docker/web/bootstrap-image-partial.sha256." >&2; \
          exit 1; }
 
+# Same guard for the copies of the Text, Textpic* and Textmedia* templates the
+# site package carries so the Visual Editor can edit their bodytext
+# (f:render.text instead of f:format.html).
+COPY docker/web/bootstrap-text-templates.sha256 /tmp/bootstrap-text-templates.sha256
+RUN sha256sum -c /tmp/bootstrap-text-templates.sha256 \
+    || { echo "bootstrap_package changed a Text, Textpic or Textmedia template." >&2; \
+         echo "Carry the change into the site package's copy of that template," >&2; \
+         echo "update the version in the copy's comment," >&2; \
+         echo "and record the new checksum in docker/web/bootstrap-text-templates.sha256." >&2; \
+         exit 1; }
+
 FROM php:8.5-fpm-alpine@sha256:4c2818074ec49f6abe46620f3965e0cb75bc3a5f2b417edd1aacaba6f091c40e AS runtime
 # Both imagick and GD are built with WebP and AVIF: TYPO3 picks its processor
 # from the install-wide setting, and core's imageFileConversionFormats can only

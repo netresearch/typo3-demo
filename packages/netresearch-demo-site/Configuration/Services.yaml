@@ -196,6 +196,7 @@ services:
           - 'Select some text in the rich text editor and click the Cowriter button in the toolbar.'
           - 'Pick a task from the dropdown, or choose "Custom instruction" and type what should happen.'
           - 'The suggestion appears as a preview — confirm it with "Insert", or use "Retry".'
+          - 'The same buttons work in the Visual Editor: open Content > Edit on the same page, click into a text and use the toolbar above it; "Save" stores the change.'
     tags:
       - name: 'dashboard.widget'
         identifier: 'nrdemo.cowriter'
