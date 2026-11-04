@@ -143,17 +143,17 @@ images:
     reuse: freizeit-museum
     alt: Besucherin betrachtet ein altes Mühlrad im Stadtmuseum
   - id: portrait-impression-markt
-    target: { page: /stadt-entwicklung/stadtportrait, element: "Impressionen (neues Element Images)" }
+    target: { page: /stadt-entwicklung/stadtportrait, element: Impressionen }
     motif: Marktplatz am Samstagvormittag
     prompt: Saturday morning farmers market on a historic town square, stalls with vegetables and flowers, people shopping.
     alt: Wochenmarkt auf dem Marktplatz am Samstagvormittag
   - id: portrait-impression-falkenbach
-    target: { page: /stadt-entwicklung/stadtportrait, element: "Impressionen (neues Element Images)" }
+    target: { page: /stadt-entwicklung/stadtportrait, element: Impressionen }
     motif: Falkenbach im Abendlicht
     prompt: Small river in a town in soft evening light, footbridge and green banks, a couple sitting on the bank.
     alt: Falkenbach im Abendlicht mit Fußgängerbrücke
   - id: portrait-impression-park
-    target: { page: /stadt-entwicklung/stadtportrait, element: "Impressionen (neues Element Images)" }
+    target: { page: /stadt-entwicklung/stadtportrait, element: Impressionen }
     motif: Stadtpark im Herbst
     prompt: Town park in autumn with colourful leaves, a path with people walking dogs and a child on a scooter.
     alt: Stadtpark im Herbst mit buntem Laub und Spaziergängern
@@ -334,3 +334,35 @@ images:
     target: { event: Stadtfest Falkenquell 2027 }
     reuse: start-thema-stadtfest
     alt: Stadtfest auf dem Marktplatz mit Bühne und vielen Menschen
+
+  # Falkenquell Brunnen & Brauerei (page below Wirtschaftsstandort, teaser and news)
+  - id: brauerei-quelle
+    target: { page: /stadt-entwicklung/wirtschaftsstandort/brunnen-brauerei, element: Wasser aus der Falkenquelle }
+    motif: Historisches Brunnenhaus am Waldrand mit Wasserprobe
+    prompt: Small historic sandstone spring house at the edge of a mixed forest, a stone basin with clear spring water in the foreground, a technician in work clothes taking a water sample into a glass bottle, soft morning light.
+    alt: Historisches Brunnenhaus am Waldrand, ein Mitarbeiter nimmt eine Wasserprobe
+  - id: brauerei-mineralwasser
+    target: { page: /stadt-entwicklung/wirtschaftsstandort/brunnen-brauerei, element: Was in Falkenquell entsteht, item: Mineralwasser }
+    motif: Abfüllanlage mit Mehrweg-Glasflaschen
+    prompt: Clean, bright bottling hall with returnable glass bottles moving on a conveyor, a female employee in a hairnet and work clothes checking the bottles. The bottles carry no labels.
+    alt: Mitarbeiterin kontrolliert Glasflaschen an der Abfüllanlage
+  - id: brauerei-bier
+    target: { page: /stadt-entwicklung/wirtschaftsstandort/brunnen-brauerei, element: Was in Falkenquell entsteht, item: Bier }
+    motif: Sudhaus mit Kupferkesseln, Brauer nimmt eine Probe
+    prompt: Traditional brewhouse with large copper brewing kettles and tiled floor, a brewer in work clothes holding a small glass with a sample against the daylight from tall windows.
+    alt: Brauer prüft im Sudhaus eine Probe vor den Kupferkesseln
+  - id: brauerei-ausbildung
+    target: { page: /stadt-entwicklung/wirtschaftsstandort/brunnen-brauerei, element: Was in Falkenquell entsteht, item: Ausbildung }
+    motif: Auszubildende mit Ausbilder an einer kleinen Lernbrauerei
+    prompt: Two young apprentices and an experienced trainer at a small stainless steel training brewery, reading a measurement together on a tablet, focused and friendly atmosphere.
+    alt: Zwei Auszubildende und ein Ausbilder an einer kleinen Lernbrauerei
+  - id: wirtschaft-brauerei
+    target: { page: /stadt-entwicklung/wirtschaftsstandort, element: Arbeitgeber mit Tradition }
+    motif: Backstein-Brauerei neben moderner Logistikhalle
+    prompt: Historic red brick brewery building with a tall brick chimney next to a modern logistics hall, stacks of crates with returnable bottles in the yard, two employees crossing the yard, a plain unbranded delivery truck.
+    alt: Historisches Brauereigebäude aus Backstein neben einer modernen Logistikhalle
+  - id: news-brauerei-ausbildung
+    target: { news: Brunnen & Brauerei eröffnet neues Ausbildungszentrum }
+    motif: Gruppe Auszubildender im neuen Ausbildungszentrum
+    prompt: Bright new training room with a small brewing installation and a laboratory bench, a group of apprentices in work clothes listening to a trainer who explains the equipment.
+    alt: Auszubildende im neuen Ausbildungszentrum der Brunnen & Brauerei
