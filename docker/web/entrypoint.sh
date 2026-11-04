@@ -938,6 +938,57 @@ done
 MYSQL_PWD="${MARIADB_PASSWORD:-typo3}" mariadb -h"${MARIADB_HOST:-db}" -u"${MARIADB_USER:-typo3}" "${MARIADB_DATABASE:-typo3}" \
     -e "INSERT IGNORE INTO sys_registry (entry_namespace, entry_key, entry_value) VALUES ('installUpdate', 'Netresearch\\\\NrLlm\\\\Updates\\\\SkillVersionDigestUpdateWizard', 'i:1;');" \
     2>/dev/null || echo "WARNING: marking nrllmAdr214SkillVersionDigest done failed" >&2
+
+# EXT:form keeps form definitions in the database since TYPO3 14.2; storage in
+# file mounts is deprecated (Deprecation-108653) and goes away in 15.0. While
+# the two seeded forms sat in fileadmin/form_definitions/, the core wizard
+# formFileFormsToDatabaseMigration stayed open and Reports > Status said
+# "Remaining updates: Update incomplete" (#411). The wizard cannot be run from
+# here: on the CLI there is no request, the Extbase configuration manager throws
+# NoServerRequestGivenException, and the wizard reports nothing to migrate -
+# which is also why upgrade:list never listed it. form:definition:transfer
+# builds a request of its own.
+#
+# Each seeded form is moved once. If no database form carries its identifier,
+# its YAML is put into fileadmin (unless the volume already has that file, which
+# may hold backend edits) and moved into the database; the move deletes the file
+# and points the form content elements at the new record. A second move of the
+# same form would not be skipped but stored again as "<identifier>_1", so the
+# database check is what makes a reboot a no-op. The files live in data/forms/,
+# not data/fileadmin/, or the fileadmin sync above would bring them back.
+if [ -d /var/www/data/forms ]; then
+    for yaml in /var/www/data/forms/*.form.yaml; do
+        [ -f "$yaml" ] || continue
+        id=$(sed -n 's/^identifier:[[:space:]]*//p' "$yaml" | head -n 1 | tr -d "'\"")
+        case "$id" in
+            '' | *[!A-Za-z0-9_-]*)
+                echo "WARNING: $yaml has no usable top-level identifier, not moved into the database" >&2
+                continue
+                ;;
+            *) ;;
+        esac
+        stored=$(MYSQL_PWD="${MARIADB_PASSWORD:-typo3}" mariadb -h"${MARIADB_HOST:-db}" -u"${MARIADB_USER:-typo3}" "${MARIADB_DATABASE:-typo3}" \
+            -N -e "SELECT COUNT(*) FROM form_definition WHERE identifier = '$id' AND deleted = 0;" 2>/dev/null) || stored=""
+        if [ "$stored" != "0" ]; then
+            [ -n "$stored" ] || echo "WARNING: could not look up form $id in form_definition, not moved into the database" >&2
+            continue
+        fi
+        target="public/fileadmin/form_definitions/$(basename "$yaml")"
+        if [ ! -e "$target" ]; then
+            mkdir -p public/fileadmin/form_definitions
+            cp -a "$yaml" "$target"
+        fi
+        echo "Moving form $id from fileadmin into the database..."
+        vendor/bin/typo3 form:definition:transfer --source=filemount --target=database \
+            --form-identifier="$id" --move --no-interaction 2>&1 \
+            || echo "WARNING: moving form $id into the database failed" >&2
+        # The command runs as root and opens storage 1, which creates
+        # fileadmin/_processed_/ when it is missing - owned by root, so php-fpm
+        # could not write a single processed image and every content element
+        # with an image dropped out of the page. Measured on a fresh volume.
+        chown -R www-data:www-data public/fileadmin
+    done
+fi
 # ---------------------------------------------------------------------------
 # Demo records for contexts and nr_textdb.
 # ---------------------------------------------------------------------------

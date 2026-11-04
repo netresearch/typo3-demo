@@ -136,6 +136,10 @@ RUN stray=$(find /seed/fileadmin \( -path '*/_temp_/*' -o -path '*/_recycler_/*'
         exit 1; \
     fi
 COPY data/seed-*.sql data/
+# The seeded EXT:form definitions, outside /seed/fileadmin on purpose: the
+# fileadmin sync in entrypoint.sh copies back every seed file the volume lacks,
+# and these are deleted from fileadmin once they are moved into the database.
+COPY data/forms/ data/forms/
 COPY --from=composer-builder /app/vendor/ vendor/
 COPY --from=composer-builder /app/public/ public/
 COPY config/ config/
