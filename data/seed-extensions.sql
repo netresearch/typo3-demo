@@ -7396,6 +7396,21 @@ VALUES (0, 'set_file_reference_alternative_text', 1),
 ON DUPLICATE KEY UPDATE
   enabled = VALUES(enabled);
 
+-- 8e. The administrator site tools (nr-llm 0.43.13, ADR-257)
+--
+-- create_redirect, update_redirect and disable_redirect manage the redirects
+-- of EXT:redirects; clear_cache clears one cache group or the page caches by
+-- tag. All four ship disabled, are offered to administrators only, and stop
+-- at a human approval whose card shows exactly what changes; a full flush is
+-- named as one. list_redirects (read-only) ships enabled.
+INSERT INTO tx_nrllm_tool_state (pid, tool_name, enabled)
+VALUES (0, 'create_redirect', 1),
+       (0, 'update_redirect', 1),
+       (0, 'disable_redirect', 1),
+       (0, 'clear_cache', 1)
+ON DUPLICATE KEY UPDATE
+  enabled = VALUES(enabled);
+
 -- The group gate. The runtime is fail-closed: a disabled 'editing' group
 -- leaves every row above enabled and unreachable. A missing group row means
 -- enabled, so this only matters where somebody switched the group off in the

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "436f5d33fd5820dd115fe094dd06ff46",
+    "content-hash": "bc2b03e698393251455e90ead1e66625",
     "packages": [
         {
             "name": "b13/ai-label",
@@ -3039,16 +3039,16 @@
         },
         {
             "name": "netresearch/nr-llm",
-            "version": "v0.43.12",
+            "version": "v0.43.13",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/t3x-nr-llm.git",
-                "reference": "29f6e6b7463c883c86840da03cfa808b724bb77b"
+                "reference": "d06402f4ad876262331624aa92a93f84558084d1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/t3x-nr-llm/zipball/29f6e6b7463c883c86840da03cfa808b724bb77b",
-                "reference": "29f6e6b7463c883c86840da03cfa808b724bb77b",
+                "url": "https://api.github.com/repos/netresearch/t3x-nr-llm/zipball/d06402f4ad876262331624aa92a93f84558084d1",
+                "reference": "d06402f4ad876262331624aa92a93f84558084d1",
                 "shasum": ""
             },
             "require": {
@@ -3072,6 +3072,7 @@
                 "typo3/cms-filemetadata": "^13.4 || ^14.3",
                 "typo3/cms-indexed-search": "^13.4 || ^14.3",
                 "typo3/cms-install": "^13.4 || ^14.3",
+                "typo3/cms-redirects": "^13.4 || ^14.3",
                 "typo3/cms-seo": "^13.4 || ^14.3",
                 "typo3/cms-workspaces": "^13.4 || ^14.3"
             },
@@ -3081,6 +3082,7 @@
                 "tpwd/ke_search": "Site-search RAG tools retrieve evidence from the ke_search index when installed",
                 "typo3/cms-dashboard": "Adds AI usage / cost widgets to the TYPO3 dashboard",
                 "typo3/cms-indexed-search": "Site-search RAG tools retrieve evidence from the indexed_search index when installed",
+                "typo3/cms-redirects": "Provides the redirect records that list_redirects reads and create_redirect, update_redirect and disable_redirect write",
                 "typo3/cms-seo": "Provides the page fields og_image and twitter_image that set_page_social_image writes, and the SEO text fields of update_page_metadata"
             },
             "type": "typo3-cms-extension",
@@ -3089,7 +3091,7 @@
                     "Package": {
                         "providesPackages": []
                     },
-                    "version": "0.43.12",
+                    "version": "0.43.13",
                     "web-dir": ".Build/Web",
                     "extension-key": "nr_llm"
                 },
@@ -3134,7 +3136,7 @@
                 "issues": "https://github.com/netresearch/t3x-nr-llm/issues",
                 "source": "https://github.com/netresearch/t3x-nr-llm"
             },
-            "time": "2026-11-04T08:09:23+00:00"
+            "time": "2026-11-04T12:56:28+00:00"
         },
         {
             "name": "netresearch/nr-llm-compat",
