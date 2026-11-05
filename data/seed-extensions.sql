@@ -1658,8 +1658,8 @@ DELETE FROM sys_workspace_stage WHERE parentid NOT IN (SELECT uid FROM sys_works
 INSERT IGNORE INTO be_groups
     (uid, pid, tstamp, crdate, deleted, hidden, title, description, subgroup, groupMods, custom_options)
 VALUES (995, 0, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0, 'Workspace editors (AI chat)',
-     'Advanced editors plus the Page, Workspaces and AI chat modules and the approval of the chat''s changes to one''s own content.',
-     '3', 'web_layout,workspaces_publish,nr_mcp_agent_chat,user_setup', 'tx_nrmcpagent:approve_own_changes');
+     'Advanced editors plus the Page, Workspaces and AI chat modules, the approval of the chat''s changes to one''s own content, and read access to the AI provider key.',
+     '3', 'web_layout,workspaces_publish,nr_mcp_agent_chat,user_setup', 'tx_nrmcpagent:approve_own_changes,tx_nrvault:secret.use');
 
 INSERT IGNORE INTO be_users
     (uid, pid, tstamp, crdate, deleted, disable, admin, username, password, usergroup, options, lang,
@@ -1683,6 +1683,35 @@ SET members = IF(members = '' OR members IS NULL, 'be_users_995', CONCAT(members
 WHERE uid = 9001 AND deleted = 0 AND title = 'Entwurf'
   AND NOT FIND_IN_SET('be_users_995', COALESCE(members, ''))
   AND EXISTS (SELECT 1 FROM be_users WHERE uid = 995 AND deleted = 0 AND username = 'redakteur_entwurf');
+
+-- The chat calls the model with the provider key as the editor. nr_vault grants
+-- a non-admin, non-owner user a secret only through its read-tier groups, and
+-- without one the editor's first chat message failed with `Access denied to
+-- secret "openai_api_key": insufficient permissions`. Same MM caveat as step
+-- 3c. secret.use covers the same read inside a backend request (step 3b2);
+-- both are re-asserted, as INSERT IGNORE above skipped the existing group.
+UPDATE be_groups
+SET custom_options = 'tx_nrmcpagent:approve_own_changes,tx_nrvault:secret.use',
+    description = 'Advanced editors plus the Page, Workspaces and AI chat modules, the approval of the chat''s changes to one''s own content, and read access to the AI provider key.'
+WHERE uid = 995 AND deleted = 0 AND title = 'Workspace editors (AI chat)'
+  AND (custom_options <> 'tx_nrmcpagent:approve_own_changes,tx_nrvault:secret.use'
+       OR description <> 'Advanced editors plus the Page, Workspaces and AI chat modules, the approval of the chat''s changes to one''s own content, and read access to the AI provider key.');
+
+INSERT IGNORE INTO tx_nrvault_secret_begroups_mm (uid_local, uid_foreign, sorting, sorting_foreign)
+SELECT s.uid, 995, 3, 0
+FROM tx_nrvault_secret s
+WHERE s.deleted = 0
+  AND s.identifier = (SELECT api_key FROM tx_nrllm_provider WHERE uid = 1 LIMIT 1)
+  AND (SELECT api_key FROM tx_nrllm_provider WHERE uid = 1 LIMIT 1) <> ''
+  AND EXISTS (SELECT 1 FROM be_groups WHERE uid = 995 AND deleted = 0 AND title = 'Workspace editors (AI chat)');
+
+UPDATE tx_nrvault_secret s
+SET s.allowed_groups = (
+    SELECT COUNT(*) FROM tx_nrvault_secret_begroups_mm mm WHERE mm.uid_local = s.uid
+)
+WHERE s.deleted = 0
+  AND s.identifier = (SELECT api_key FROM tx_nrllm_provider WHERE uid = 1 LIMIT 1)
+  AND (SELECT api_key FROM tx_nrllm_provider WHERE uid = 1 LIMIT 1) <> '';
 
 -- 3d) Identity for the nr_repurpose generation job (release 0.4.2).
 --
