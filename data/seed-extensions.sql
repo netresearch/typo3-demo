@@ -1612,10 +1612,10 @@ WHERE s.deleted = 0
 --      reviews it in the Workspaces module and publishes or discards it; live
 --      stays as it was until then. Fixed uid 9001 from the seed band, so the
 --      row is idempotent on its primary key and an editor can never create
---      over it. Owned by nobody and with no members: administrators reach
---      every workspace, and who else may work in it is a decision for the
---      backend, not for the seed. Stage-change mails are off: a demo has
---      nobody to send them to.
+--      over it. Owned by nobody. Its one seeded member is the demo editor of
+--      step 3c4; administrators reach every workspace, and who else may work
+--      in it is a decision for the backend, not for the seed. Stage-change
+--      mails are off: a demo has nobody to send them to.
 --
 --      sys_workspace exists because typo3/cms-workspaces is required in
 --      composer.json; export-seed-sanitized.sh truncates it for the fresh-install
@@ -1633,6 +1633,56 @@ DELETE FROM sys_refindex WHERE workspace <> 0 AND workspace NOT IN (SELECT uid F
 UPDATE be_users SET workspace_id = 0
  WHERE workspace_id <> 0 AND workspace_id NOT IN (SELECT uid FROM sys_workspace WHERE deleted = 0);
 DELETE FROM sys_workspace_stage WHERE parentid NOT IN (SELECT uid FROM sys_workspace WHERE deleted = 0);
+
+-- 3c4) A non-admin editor who works in "Entwurf".
+--
+--      Administrators bypass the checks a workspace exists for: membership,
+--      page permissions, field grants. To show the AI chat writing into a
+--      workspace as an ordinary editor, the demo needs one -- and not an
+--      existing account: nasa-redakteur (uid 5) has no group and no mount.
+--
+--      It has no password (a deliberately invalid hash, as for 990-994): an
+--      administrator enters it through Backend Users > "Switch to user", so
+--      no credential is published with this public file.
+--
+--      The group adds only what the chat and the workspace need on top of
+--      "Advanced editors" (uid 3, which brings the page mount 1 and, through
+--      its subgroups, the page group 1 the demo pages are shared with): the
+--      Page, Workspaces and AI chat modules and the right to approve the
+--      chat's changes to one's own content (nr_mcp_agent ADR-021).
+--
+--      The user starts in workspace 9001. Only the INSERT sets it: once the
+--      row exists, the workspace an administrator or the editor switched to
+--      is theirs to keep. Fixed uids 995 are above the seed maxima
+--      (be_users 994, be_groups 994).
+INSERT IGNORE INTO be_groups
+    (uid, pid, tstamp, crdate, deleted, hidden, title, description, subgroup, groupMods, custom_options)
+VALUES (995, 0, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0, 'Workspace editors (AI chat)',
+     'Advanced editors plus the Page, Workspaces and AI chat modules and the approval of the chat''s changes to one''s own content.',
+     '3', 'web_layout,workspaces_publish,nr_mcp_agent_chat,user_setup', 'tx_nrmcpagent:approve_own_changes');
+
+INSERT IGNORE INTO be_users
+    (uid, pid, tstamp, crdate, deleted, disable, admin, username, password, usergroup, options, lang,
+     workspace_id, realName, description)
+VALUES (995, 0, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0, 0,
+     'redakteur_entwurf', '!redakteur_entwurf_no_login', '995', 3, 'de', 9001,
+     'Redakteur Entwurf',
+     'Demo editor (non-admin) who works in the workspace "Entwurf". No password: reached through Backend Users > Switch to user.');
+
+-- Re-assert the membership, only while both rows are the seeded ones: on a live
+-- database uid 995 could be a group somebody created in the backend.
+UPDATE be_users SET usergroup = '995'
+WHERE uid = 995 AND username = 'redakteur_entwurf' AND usergroup <> '995'
+  AND EXISTS (SELECT 1 FROM be_groups WHERE uid = 995 AND deleted = 0 AND title = 'Workspace editors (AI chat)');
+
+-- Make the editor a member of "Entwurf". sys_workspace.members is a group field
+-- with prepend_tname, so a user is stored as "be_users_<uid>". Appended rather
+-- than overwritten, so a member an administrator added stays.
+UPDATE sys_workspace
+SET members = IF(members = '' OR members IS NULL, 'be_users_995', CONCAT(members, ',be_users_995'))
+WHERE uid = 9001 AND deleted = 0 AND title = 'Entwurf'
+  AND NOT FIND_IN_SET('be_users_995', COALESCE(members, ''))
+  AND EXISTS (SELECT 1 FROM be_users WHERE uid = 995 AND deleted = 0 AND username = 'redakteur_entwurf');
 
 -- 3d) Identity for the nr_repurpose generation job (release 0.4.2).
 --
@@ -8083,6 +8133,16 @@ UNION ALL
 SELECT 'SEED-PROBLEM: the demo workspace 9001 "Entwurf" is missing'
   FROM DUAL
  WHERE NOT EXISTS (SELECT 1 FROM sys_workspace WHERE uid = 9001 AND deleted = 0)
+UNION ALL
+-- Step 3c4 skips a row it does not recognise as its own; say so rather than
+-- leaving the workspace without its non-admin editor.
+SELECT 'SEED-PROBLEM: the demo editor 995 is not a member of workspace 9001'
+  FROM DUAL
+ WHERE NOT EXISTS (
+    SELECT 1 FROM sys_workspace w
+      JOIN be_users u ON u.uid = 995 AND u.deleted = 0 AND u.username = 'redakteur_entwurf'
+     WHERE w.uid = 9001 AND w.deleted = 0 AND FIND_IN_SET('be_users_995', COALESCE(w.members, ''))
+ )
 UNION ALL
 -- Every versioned '*-chat-latest' alias OpenAI ever served to this account is
 -- deprecated and answers 404, so a chat model still carrying one is a dead
