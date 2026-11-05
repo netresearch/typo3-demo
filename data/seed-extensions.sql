@@ -1338,6 +1338,26 @@ UPDATE tx_nrllm_model
  WHERE uid = 1 AND deleted = 0
    AND model_id IN ('gpt-5.3-chat-latest', 'chat-latest');
 
+-- The same record, switched to 'gpt-6.1-sol' in the backend on 2026-11-03. The
+-- record history shows that edit also took the capabilities from
+-- "chat,vision,streaming,tools" to "chat": the model form ticks exactly what
+-- provider discovery reports for the picked id, and nr-llm has no catalog entry
+-- for 'gpt-6.1-sol', so discovery reports `chat` and nothing else. The model
+-- does call tools -- the Backend AI Chat ran get_page_content and
+-- update_content_element on it on 2026-11-05 -- but every reader of the record
+-- now believes otherwise: the KI-Chat overview reports the model as not
+-- tool-capable, and the nr_ai_search.chat binding below finds no `tools` model.
+--
+-- Only `tools` is restored, because only `tools` was measured. Guarded on this
+-- one id, so it does not claim tools for a model nobody measured (the
+-- gpt-5.6-* line refuses them), and it is a no-op once the token is present.
+UPDATE tx_nrllm_model
+   SET capabilities = CONCAT_WS(',', NULLIF(capabilities, ''), 'tools'),
+       tstamp       = UNIX_TIMESTAMP()
+ WHERE uid = 1 AND deleted = 0
+   AND model_id = 'gpt-6.1-sol'
+   AND NOT FIND_IN_SET('tools', capabilities);
+
 -- =============================================================================
 -- AI Search & Chat (nr_ai_search) — RAG embeddings + chat configuration
 -- =============================================================================
