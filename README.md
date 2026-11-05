@@ -66,6 +66,66 @@ make dev-down
 `make dev` is the mode to use when editing the site package or an extension
 symlinked into `packages/` — changes are reflected without a rebuild.
 
+### Rendering locally without a dhi.io login
+
+The `db`, `db-init` and `caddy` services need `dhi.io`; the app image and the
+seed do not. To render the frontend, skip Compose: the stock MariaDB entrypoint
+imports `data/db.sql.gz` on first boot, and nginx in the app container answers
+directly (no Caddy, no TLS, no `db-init`).
+
+```bash
+docker network create t3net
+docker run -d --name t3db --network t3net \
+  -e MARIADB_ROOT_PASSWORD=root -e MARIADB_DATABASE=typo3 \
+  -e MARIADB_USER=typo3 -e MARIADB_PASSWORD=typo3 \
+  -v "$PWD/data/db.sql.gz:/docker-entrypoint-initdb.d/db.sql.gz:ro" mariadb:12
+docker exec t3db mariadb-admin --protocol=tcp -h127.0.0.1 -uroot -proot ping --wait=120 --silent
+docker run -d --name t3web --network t3net \
+  -e MARIADB_HOST=t3db -e MARIADB_DATABASE=typo3 -e MARIADB_USER=typo3 -e MARIADB_PASSWORD=typo3 \
+  -e TYPO3_CONTEXT=Production -e TYPO3_DOMAIN=localhost -e TYPO3_SITE_BASE=/ \
+  -e TYPO3_ENCRYPTION_KEY="$(openssl rand -hex 32)" \
+  -p 127.0.0.1:<free port>:80 ghcr.io/netresearch/typo3-demo:latest
+while [ "$(docker inspect -f '{{.State.Health.Status}}' t3web)" = starting ]; do sleep 5; done
+curl -H 'Host: localhost' http://127.0.0.1:<free port>/
+```
+
+`:latest` is the image built from the current `main`. For a checkout of an
+older commit of `main`, use `:sha-<full commit sha>` so the image matches the
+checked-out `data/db.sql.gz`.
+
+Check that the port is free first and that `docker logs t3web` shows your
+request: on a busy port `docker run` fails while `curl` gets an answer from
+whatever already holds the port.
+
+The backend (`/typo3/`) needs four overrides, because the generated
+`settings.php` is written for production behind Caddy. Append the first three
+to the end of `config/system/additional.php` inside the container. The
+entrypoint moves its managed blocks back to the end of that file on every
+boot, and one of them sets `lockSSL`, so append them again after a restart:
+
+- `trustedHostsPattern` must include the port. Keep it strict: with `.*`,
+  `nr-passkeys-be` refuses to derive a WebAuthn RP ID from an unvalidated host
+  (exception 1700000060).
+- Clear `reverseProxySSL` and `reverseProxyIP`. With `reverseProxySSL => '*'`
+  TYPO3 builds `https://` URLs and the login redirects to a port that speaks
+  plain HTTP.
+- Set `$GLOBALS['TYPO3_CONF_VARS']['BE']['lockSSL'] = false;`. The entrypoint
+  locks the backend to HTTPS, and this container answers only plain HTTP.
+- Give a disposable admin a password hash
+  (`php -r 'echo password_hash($argv[1], PASSWORD_ARGON2ID);' <pw>` into
+  `be_users.password`).
+
+Screenshots taken this way must not publish the container's own state: vault
+secrets and audit entries are created at deploy time, not by the seed, so
+their lists are empty; readiness panels report the container's
+misconfiguration; and `nr-passkeys-be` shows the detected RP ID, which names
+your machine. State that comes from the seed is fine to publish.
+
+A script that fetches a backend module directly (rather than through the
+backend shell) gets the shell back unless it sends `Sec-Fetch-Dest: iframe`
+and a `Referer` of `/typo3/main`; module URLs carry a per-session `token`, so
+read them from a rendered page instead of building them.
+
 ## Data lifecycle
 
 The database and fileadmin live in named Docker volumes. Only these commands
@@ -93,6 +153,15 @@ need the private `git.netresearch.de` credential. `composer validate` in the
 `composer-audit` job is the freshness gate and fails the build when the two
 files disagree — the image and the attested SBOM would otherwise describe
 different resolutions.
+
+Raising `netresearch/nr-llm` past a range its consumers admit (for example to
+a new minor in the 0.x series) only resolves once every extension in
+`composer.lock` that requires `netresearch/nr-llm` has a release that admits
+the new version. List them before starting, not after the resolve fails:
+
+```bash
+jq -r '.packages[] | select(.require["netresearch/nr-llm"]) | .name' composer.lock
+```
 
 ## How deployment works
 
