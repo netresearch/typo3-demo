@@ -85,17 +85,23 @@ docker run -d --name t3web --network t3net \
   -e TYPO3_CONTEXT=Production -e TYPO3_DOMAIN=localhost -e TYPO3_SITE_BASE=/ \
   -e TYPO3_ENCRYPTION_KEY="$(openssl rand -hex 32)" \
   -p 127.0.0.1:<free port>:80 ghcr.io/netresearch/typo3-demo:latest
+while [ "$(docker inspect -f '{{.State.Health.Status}}' t3web)" = starting ]; do sleep 5; done
 curl -H 'Host: localhost' http://127.0.0.1:<free port>/
 ```
+
+`:latest` is the image built from the current `main`. For a checkout of an
+older commit of `main`, use `:sha-<full commit sha>` so the image matches the
+checked-out `data/db.sql.gz`.
 
 Check that the port is free first and that `docker logs t3web` shows your
 request: on a busy port `docker run` fails while `curl` gets an answer from
 whatever already holds the port.
 
-The backend (`/typo3/`) needs three overrides, because the generated
-`settings.php` is written for production behind Caddy. Append the first two to
-`config/system/additional.php` inside the container, outside the blocks the
-entrypoint manages there:
+The backend (`/typo3/`) needs four overrides, because the generated
+`settings.php` is written for production behind Caddy. Append the first three
+to the end of `config/system/additional.php` inside the container. The
+entrypoint moves its managed blocks back to the end of that file on every
+boot, and one of them sets `lockSSL`, so append them again after a restart:
 
 - `trustedHostsPattern` must include the port. Keep it strict: with `.*`,
   `nr-passkeys-be` refuses to derive a WebAuthn RP ID from an unvalidated host
@@ -103,6 +109,8 @@ entrypoint manages there:
 - Clear `reverseProxySSL` and `reverseProxyIP`. With `reverseProxySSL => '*'`
   TYPO3 builds `https://` URLs and the login redirects to a port that speaks
   plain HTTP.
+- Set `$GLOBALS['TYPO3_CONF_VARS']['BE']['lockSSL'] = false;`. The entrypoint
+  locks the backend to HTTPS, and this container answers only plain HTTP.
 - Give a disposable admin a password hash
   (`php -r 'echo password_hash($argv[1], PASSWORD_ARGON2ID);' <pw>` into
   `be_users.password`).
