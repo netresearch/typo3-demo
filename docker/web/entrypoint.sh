@@ -869,12 +869,22 @@ if [ -f config/system/settings.php ]; then
         $b = strpos($existing, $begin);
         if ($b !== false) {
             $e = strpos($existing, $end, $b);
-            $existing = $e !== false
-                ? substr($existing, 0, $b) . substr($existing, $e + strlen($end))
-                : substr($existing, 0, $b);
+            if ($e === false) {
+                // Cutting from $begin to the end of the file would also drop every
+                // block written after it; leave the file for a person to repair.
+                fwrite(STDERR, "additional.php: nr_ai_search block has no end marker, file left unchanged" . PHP_EOL);
+                exit(1);
+            }
+            $existing = substr($existing, 0, $b) . substr($existing, $e + strlen($end));
         }
         $existing = rtrim($existing, "\n") . "\n\n" . $block . "\n";
-        file_put_contents($f, $existing);
+        // Written beside the file and renamed: TYPO3 loads it on every request, a
+        // half-written file would stop the site.
+        $tmp = $f . ".nr_ai_search.tmp";
+        if (file_put_contents($tmp, $existing) !== strlen($existing) || !rename($tmp, $f)) {
+            @unlink($tmp);
+            exit(1);
+        }
         echo "additional.php: nr_ai_search deep-link cacheHash exclusions registered." . PHP_EOL;
     ' || echo "WARNING: failed to write nr_ai_search additional.php block" >&2
 fi
