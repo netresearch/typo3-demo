@@ -577,10 +577,10 @@ with `docker/web/bootstrap-text-templates.sha256` and fails when
 bootstrap_package changes one of them, as it does for the image partial.
 
 Visual Editor 1.10.4 cannot render a field whose preset lists an
-`importModules` entry as a plain string, which rte_ckeditor_image's preset
-does: every rich-text field failed with a TypeError. The composer patch
-`patches/friendsoftypo3-visual-editor-string-import-modules.patch` makes it
-accept both forms.
+`importModules` entry as a plain string; every rich-text field then fails
+with a TypeError. Since 13.10.5, rte_ckeditor_image's preset uses the
+`{ module, exports }` form like the other presets in the chain, so no patch
+is needed.
 
 Not editable in the Visual Editor: headers and all other content types
 (their templates are bootstrap_package's own), and dragging content elements

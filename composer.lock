@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "576aeef54b74bb4d8bccdea9b0f80731",
+    "content-hash": "d3036ecd83ebdfee352c929d8725a05e",
     "packages": [
         {
             "name": "b13/ai-label",
@@ -4008,16 +4008,16 @@
         },
         {
             "name": "netresearch/rte-ckeditor-image",
-            "version": "v13.10.4",
+            "version": "v13.10.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/t3x-rte_ckeditor_image.git",
-                "reference": "7d06f063fcdcc2e76d0bb2794acdd557de71c3da"
+                "reference": "634200bd615c5e94e6dc7475e8b59307aa311ce9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/t3x-rte_ckeditor_image/zipball/7d06f063fcdcc2e76d0bb2794acdd557de71c3da",
-                "reference": "7d06f063fcdcc2e76d0bb2794acdd557de71c3da",
+                "url": "https://api.github.com/repos/netresearch/t3x-rte_ckeditor_image/zipball/634200bd615c5e94e6dc7475e8b59307aa311ce9",
+                "reference": "634200bd615c5e94e6dc7475e8b59307aa311ce9",
                 "shasum": ""
             },
             "require": {
@@ -4154,23 +4154,23 @@
             "description": "CKEditor Image Support - Adds FAL image support to CKEditor in the rich text editor.",
             "homepage": "https://github.com/netresearch/t3x-rte_ckeditor_image",
             "support": {
-                "source": "https://github.com/netresearch/t3x-rte_ckeditor_image/tree/v13.10.4",
+                "source": "https://github.com/netresearch/t3x-rte_ckeditor_image/tree/v13.10.5",
                 "issues": "https://github.com/netresearch/t3x-rte_ckeditor_image/issues"
             },
-            "time": "2026-10-31T14:02:37+00:00"
+            "time": "2026-11-05T09:27:33+00:00"
         },
         {
             "name": "netresearch/t3-cowriter",
-            "version": "v3.26.0",
+            "version": "v3.26.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/t3x-cowriter.git",
-                "reference": "9d1b9b3934d931b0fd9ef34117f25b9515b854df"
+                "reference": "39b53157d209efd570bd66abe1a1a31a7425b6e6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/t3x-cowriter/zipball/9d1b9b3934d931b0fd9ef34117f25b9515b854df",
-                "reference": "9d1b9b3934d931b0fd9ef34117f25b9515b854df",
+                "url": "https://api.github.com/repos/netresearch/t3x-cowriter/zipball/39b53157d209efd570bd66abe1a1a31a7425b6e6",
+                "reference": "39b53157d209efd570bd66abe1a1a31a7425b6e6",
                 "shasum": ""
             },
             "require": {
@@ -4251,7 +4251,7 @@
                 "issues": "https://github.com/netresearch/t3x-cowriter/issues",
                 "source": "https://github.com/netresearch/t3x-cowriter"
             },
-            "time": "2026-11-04T23:14:46+00:00"
+            "time": "2026-11-05T10:24:30+00:00"
         },
         {
             "name": "netresearch/typo3-demo-site",

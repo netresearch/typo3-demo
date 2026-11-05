@@ -30,8 +30,8 @@
         "netresearch/nr-temporal-cache": "^1.0.4",
         "netresearch/nr-textdb": "^4.1.0",
         "netresearch/nr-vault": "^1.2.0",
-        "netresearch/rte-ckeditor-image": "^13.10.4",
-        "netresearch/t3-cowriter": "^3.26.0",
+        "netresearch/rte-ckeditor-image": "^13.10.5",
+        "netresearch/t3-cowriter": "^3.26.1",
         "netresearch/typo3-demo-site": "@dev",
         "t3g/analytics": "^1.0",
         "thieleundklose/autotranslate": "^3.2",
@@ -108,9 +108,6 @@
             "mfd/ai-filemetadata": {
                 "Import ApplicationType from TYPO3\\CMS\\Core\\Http (1.6.3+ imports a class that does not exist) and generate alt texts on upload only in a backend request unless generateAltTextInFrontend is on, so CLI jobs that write images to FAL (nr_repurpose) no longer call the vision model; a failed generation is logged as a warning instead of failing the upload": "patches/mfd-ai-filemetadata-application-type.patch",
                 "FalAdapter::localizeFile(): log DataHandler errors as a warning instead of DebuggerUtility::var_dump(), which wrote HTML into the AJAX upload response; the exception stays": "patches/mfd-ai-filemetadata-fal-adapter-log.patch"
-            },
-            "friendsoftypo3/visual-editor": {
-                "TextViewHelper: accept an importModules entry given as a plain module string, which rte_ckeditor accepts and rte_ckeditor_image's preset uses; without it every rich-text field in edit mode fails with a TypeError": "patches/friendsoftypo3-visual-editor-string-import-modules.patch"
             },
             "thieleundklose/autotranslate": {
                 "Local translator hook: route translations through a container-resolved \\DeepL\\Translator subclass (nr-llm bridge) instead of the DeepL client": "patches/thieleundklose-autotranslate-translator-hook.patch"
