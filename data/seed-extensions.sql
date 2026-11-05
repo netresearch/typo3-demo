@@ -8071,8 +8071,8 @@ SELECT 'SEED-PROBLEM: step 1 of the skill repair did not remove the attachment t
 UNION ALL
 -- Records of a workspace that does not exist survived the purge in step 3c2.
 -- Either a table outside the explicit list above grew them, or a workspace was
--- deleted between the purge and here. Both mean the "Broken rootline" of
--- NEXT-127 can come back, so say so rather than let it reappear quietly. The
+-- deleted between the purge and here. Both mean the "Broken rootline" error
+-- can come back, so say so rather than let it reappear quietly. The
 -- drafts of an existing workspace -- the demo workspace of step 3c3 -- are
 -- intended.
 SELECT CONCAT('SEED-PROBLEM: ', n, ' record(s) of a workspace that does not exist survived the purge')
