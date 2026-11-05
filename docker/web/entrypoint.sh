@@ -247,6 +247,10 @@ if [ -f config/system/settings.php ]; then
             // The chat-worker service runs the turns; without a free worker a
             // turn starts a process of its own, as under the default `exec`.
             . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"nr_mcp_agent\"][\"processingStrategy\"] = \"worker\";\n"
+            // Model rounds of an ordinary chat run (nr_mcp_agent 0.32): 8 rather
+            // than the nr-llm default of 5, which cut longer chat answers off
+            // before their last step. nr-llm caps it at agent.maxIterations.
+            . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"nr_mcp_agent\"][\"chatRunMaxIterations\"] = \"8\";\n"
             // Lock the backend to HTTPS. It belongs in this block rather than in
             // the settings.php template beside reverseProxySSL, because that
             // template is written on FIRST BOOT ONLY - an instance that already
