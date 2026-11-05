@@ -211,6 +211,19 @@ lib.contentElement.partialRootPaths {
 # else; every other partial still comes from bootstrap_package.
 lib.contentElement.partialRootPaths.1553 = EXT:netresearch_demo_site/Resources/Private/Partials/ContentElements/
 
+# Visual Editor (friendsoftypo3/visual-editor): a text becomes editable in the
+# frontend preview only where the template renders it with f:render.text,
+# which needs a Record object. bootstrap_package renders the bodytext with
+# f:format.html, so the site package carries copies of bootstrap_package
+# 16.0.1's Text, Textpic* and Textmedia* templates that differ only in that
+# line. Outside the editor f:render.text renders the bodytext with
+# f:format.html, as before. The record processor is added to these three
+# types only: bootstrap_package's container partials loop with as="record".
+lib.contentElement.templateRootPaths.1554 = EXT:netresearch_demo_site/Resources/Private/Templates/ContentElements/
+tt_content.text.dataProcessing.1768551979 = record-transformation
+tt_content.textpic.dataProcessing.1768551979 = record-transformation
+tt_content.textmedia.dataProcessing.1768551979 = record-transformation
+
 config {
     compressJs = 1
     compressCss = 1

@@ -1,5 +1,5 @@
 {
-    "_hash": "822ed56cce63e5e0b45c8ff884153af7b6058862d06a4bd0d27ed3206b361077",
+    "_hash": "6dde86a3609d27ce5dc91f5246a645373c4ab2fa9b6d5d5e48658be1606499b4",
     "patches": {
         "mfd/ai-filemetadata": [
             {
@@ -17,6 +17,18 @@
                 "description": "FalAdapter::localizeFile(): log DataHandler errors as a warning instead of DebuggerUtility::var_dump(), which wrote HTML into the AJAX upload response; the exception stays",
                 "url": "patches/mfd-ai-filemetadata-fal-adapter-log.patch",
                 "sha256": "c1be0f371bdbec1dce6ce7da21de2f2360855612f6f3f2add01386acd09c23bb",
+                "depth": 1,
+                "extra": {
+                    "provenance": "root"
+                }
+            }
+        ],
+        "friendsoftypo3/visual-editor": [
+            {
+                "package": "friendsoftypo3/visual-editor",
+                "description": "TextViewHelper: accept an importModules entry given as a plain module string, which rte_ckeditor accepts and rte_ckeditor_image's preset uses; without it every rich-text field in edit mode fails with a TypeError",
+                "url": "patches/friendsoftypo3-visual-editor-string-import-modules.patch",
+                "sha256": "20507e10f9c349bbda6679f6aefa299482f3c6c131979ce819bf71997c97af98",
                 "depth": 1,
                 "extra": {
                     "provenance": "root"

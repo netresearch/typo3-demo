@@ -1,0 +1,26 @@
+<f:comment>
+    bootstrap_package 16.0.1, Resources/Private/Templates/ContentElements/TextpicAbove.html,
+    with one change: the bodytext is rendered with f:render.text instead of
+    f:format.html, so the Visual Editor (friendsoftypo3/visual-editor) can edit
+    it in the frontend preview. Outside the editor the output is the same.
+    Keep it in step with bootstrap_package: the image build fails when the
+    installed original no longer matches docker/web/bootstrap-text-templates.sha256.
+    Without the original's html wrapper: f and bk2k are global namespaces.
+</f:comment>
+<f:layout name="Default" />
+<f:section name="Header" />
+<f:section name="Main">
+
+    <div class="textpic textpic-above">
+        <f:if condition="{files}">
+            <div class="textpic-item textpic-gallery">
+                <f:render partial="Media/Gallery" arguments="{_all}" />
+            </div>
+        </f:if>
+        <div class="textpic-item textpic-text">
+            <f:render partial="Header/All" arguments="{_all}" />
+            {record -> f:render.text(field: 'bodytext')}
+        </div>
+    </div>
+
+</f:section>

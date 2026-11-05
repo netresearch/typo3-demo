@@ -1,0 +1,13 @@
+--- a/Classes/ViewHelpers/Render/TextViewHelper.php
++++ b/Classes/ViewHelpers/Render/TextViewHelper.php
+@@ -349,7 +349,9 @@
+ 
+         // load required JavaScript modules:
+         foreach ($config['importModules'] as $importModule) {
+-            $this->assetCollector->addJavaScriptModule($importModule['module']);
++            // Patched (typo3-demo): an entry may also be the module name as a
++            // string, as rte_ckeditor accepts it (rte_ckeditor_image's preset uses it).
++            $this->assetCollector->addJavaScriptModule(is_string($importModule) ? $importModule : $importModule['module']);
+         }
+ 
+         $this->assetCollector->addJavaScriptModule('@typo3/ckeditor5/translations/' . $config['language']['ui'] . '.js');

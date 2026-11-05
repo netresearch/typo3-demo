@@ -20,7 +20,7 @@ host pulls and updates itself. There is no manual server editing.
 | `netresearch/nr-repurpose` | Turn a page/PDF into a podcast, diagram and story | Content › Repurpose |
 | `netresearch/nr-landingpage` | AI-generated landing pages from reusable templates | Content › Landing Pages |
 | `netresearch/nr-browser-ai` | On-device page assistant via Chrome's built-in AI, no API key and no server call | (content element on `/extensions/browser-ai`) |
-| `netresearch/t3-cowriter` | AI writing assistant inside CKEditor | Tools › Cowriter Status |
+| `netresearch/t3-cowriter` | AI writing assistant inside CKEditor, in the backend form and in the Visual Editor | Tools › Cowriter Status; Content › Edit |
 | `netresearch/nr-temporal-cache` | Time-based page-cache invalidation | Tools › Temporal Cache |
 | `netresearch/rte-ckeditor-image` | Image support inside the RTE | (RTE toolbar) |
 
@@ -491,6 +491,32 @@ A boot that has to download or refresh a pack needs outbound HTTPS to
 network the boot logs a warning, keeps the labels already present and tries
 again on the next start. The labels an extension ships itself do not depend on
 it.
+
+## Visual Editor
+
+`friendsoftypo3/visual-editor` adds **Content › Edit**: the page opens in its
+frontend preview, and texts are edited in place with CKEditor 5 and the same
+RTE preset as the backend form, so the Cowriter buttons appear there too.
+
+A field is editable only where the template renders it with `f:render.text`.
+bootstrap_package renders the bodytext with `f:format.html`, so the site
+package carries copies of bootstrap_package 16.0.1's `Text`, `Textpic*` and
+`Textmedia*` templates that differ only in that line, plus the
+`record-transformation` processor for these three types. Outside the editor
+the output is unchanged. The image build compares the installed originals
+with `docker/web/bootstrap-text-templates.sha256` and fails when
+bootstrap_package changes one of them, as it does for the image partial.
+
+Visual Editor 1.10.4 cannot render a field whose preset lists an
+`importModules` entry as a plain string, which rte_ckeditor_image's preset
+does: every rich-text field failed with a TypeError. The composer patch
+`patches/friendsoftypo3-visual-editor-string-import-modules.patch` makes it
+accept both forms.
+
+Not editable in the Visual Editor: headers and all other content types
+(their templates are bootstrap_package's own), and dragging content elements
+(bootstrap_package's page templates render the columns with
+`lib.dynamicContent`, which the editor does not mark as content areas).
 
 ## Verifying the image SBOM
 
