@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f2a1468521662b51c415362fb021ef1c",
+    "content-hash": "c67cc8adc54edd6f2a8284fb033fb6a6",
     "packages": [
         {
             "name": "b13/ai-label",
@@ -3295,20 +3295,20 @@
         },
         {
             "name": "netresearch/nr-mcp-agent",
-            "version": "v0.32.0",
+            "version": "v0.33.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/t3x-nr-mcp-agent.git",
-                "reference": "131a588c7400d107f1f30c32ab97125cf1eadcdf"
+                "reference": "45119b3f639bc7a57616f7aa16aca18e245bfc50"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/t3x-nr-mcp-agent/zipball/131a588c7400d107f1f30c32ab97125cf1eadcdf",
-                "reference": "131a588c7400d107f1f30c32ab97125cf1eadcdf",
+                "url": "https://api.github.com/repos/netresearch/t3x-nr-mcp-agent/zipball/45119b3f639bc7a57616f7aa16aca18e245bfc50",
+                "reference": "45119b3f639bc7a57616f7aa16aca18e245bfc50",
                 "shasum": ""
             },
             "require": {
-                "netresearch/nr-llm": "^0.43.15",
+                "netresearch/nr-llm": "^0.43.16",
                 "php": "^8.2",
                 "phpoffice/phpword": "^1.0",
                 "smalot/pdfparser": "^2.0",
@@ -3372,7 +3372,7 @@
                 "issues": "https://github.com/netresearch/t3x-nr-mcp-agent/issues",
                 "source": "https://github.com/netresearch/t3x-nr-mcp-agent"
             },
-            "time": "2026-11-05T10:05:34+00:00"
+            "time": "2026-11-05T13:01:11+00:00"
         },
         {
             "name": "netresearch/nr-passkeys-be",
