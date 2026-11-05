@@ -846,6 +846,49 @@ if [ -f config/system/settings.php ]; then
     ' || echo "WARNING: failed to write contexts additional.php block" >&2
 fi
 
+# Configure nr_ai_search search deep links. The search box writes its question
+# into the address bar (?tx_nraisearch_search[query]=...) so a visitor can share
+# the answer; that link carries no cHash, so with enforceValidation on it answers
+# 404 unless the plugin's parameters are excluded (nr_ai_search Operations manual,
+# "Markup, via Fluid template overrides"). The search action is non-cacheable, so
+# excluding them never serves one cached answer for another question.
+if [ -f config/system/settings.php ]; then
+    php -r '
+        $f = "config/system/additional.php";
+        $begin = "// >>> nr_ai_search deep links (managed by entrypoint, do not edit this block)";
+        $end   = "// <<< nr_ai_search deep links";
+        $block = $begin . "\n";
+        foreach (["query", "element", "action", "controller"] as $name) {
+            $block .= "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"FE\"][\"cacheHash\"][\"excludedParameters\"][] = \"tx_nraisearch_search[" . $name . "]\";\n";
+        }
+        $block .= $end;
+        $existing = is_file($f) ? (string) file_get_contents($f) : "";
+        if (strpos($existing, "<?php") === false) {
+            $existing = "<?php\n" . ($existing === "" ? "" : $existing . "\n");
+        }
+        $b = strpos($existing, $begin);
+        if ($b !== false) {
+            $e = strpos($existing, $end, $b);
+            if ($e === false) {
+                // Cutting from $begin to the end of the file would also drop every
+                // block written after it; leave the file for a person to repair.
+                fwrite(STDERR, "additional.php: nr_ai_search block has no end marker, file left unchanged" . PHP_EOL);
+                exit(1);
+            }
+            $existing = substr($existing, 0, $b) . substr($existing, $e + strlen($end));
+        }
+        $existing = rtrim($existing, "\n") . "\n\n" . $block . "\n";
+        // Written beside the file and renamed: TYPO3 loads it on every request, a
+        // half-written file would stop the site.
+        $tmp = $f . ".nr_ai_search.tmp";
+        if (file_put_contents($tmp, $existing) !== strlen($existing) || !rename($tmp, $f)) {
+            @unlink($tmp);
+            exit(1);
+        }
+        echo "additional.php: nr_ai_search deep-link cacheHash exclusions registered." . PHP_EOL;
+    ' || echo "WARNING: failed to write nr_ai_search additional.php block" >&2
+fi
+
 echo "Running TYPO3 setup..."
 vendor/bin/typo3 extension:setup 2>&1 || echo "WARNING: extension:setup failed" >&2
 
