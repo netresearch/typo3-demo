@@ -1151,6 +1151,28 @@ vendor/bin/typo3 cache:warmup 2>&1 || echo "WARNING: cache:warmup failed" >&2
 # tracked-chunk count self-heals — once the embedding path works end to end (real
 # OpenAI key in Vault, resolvable by the worker's technical BE user 990), the next
 # boot fills the queue and the worker populates the store. `make reset` also works.
+#
+# Both site languages are indexed, so the German chat answers from German
+# content: nr_ai_search filters retrieval by the visitor's site language (its
+# ADR-038), and a language with no indexed content gets no answer at all.
+# Content indexing is off: with it on, lochmueller/index sends every content
+# element as its own page event and nr_ai_search keeps one document per page
+# and language, so only a page's last element survived. The row used to be
+# seeded with English only and content indexing on; this repairs an existing
+# row, the INSERT below covers a fresh install.
+#
+# Page chunks are tracked per page and language since that ADR; chunks from
+# before it sit under the bare page uid and a re-index never replaces them.
+# The command removes them (a no-op once done), which empties the tracking
+# table on this instance (it indexes pages only, no files), so the gate below
+# re-queues the whole index with both languages.
+if [ -f config/system/settings.php ]; then
+    MYSQL_PWD="${MARIADB_PASSWORD:-typo3}" mariadb -h"${MARIADB_HOST:-db}" -u"${MARIADB_USER:-typo3}" "${MARIADB_DATABASE:-typo3}" \
+        -e "UPDATE tx_index_domain_model_configuration SET languages = '0,1', content_indexing = 0, tstamp = UNIX_TIMESTAMP() WHERE deleted = 0 AND (languages = '0' OR content_indexing = 1)" 2>/dev/null \
+        || echo "WARNING: index configuration language update failed" >&2
+    vendor/bin/typo3 nr-ai-search:index:remove-legacy-page-chunks 2>&1 \
+        || echo "WARNING: nr-ai-search:index:remove-legacy-page-chunks failed" >&2
+fi
 CHUNK_COUNT="$(MYSQL_PWD="${MARIADB_PASSWORD:-typo3}" mariadb -h"${MARIADB_HOST:-db}" -u"${MARIADB_USER:-typo3}" "${MARIADB_DATABASE:-typo3}" -N -e "SELECT COUNT(*) FROM tx_nraisearch_chunk" 2>/dev/null || echo 0)"
 if [ -f config/system/settings.php ] && [ "${CHUNK_COUNT:-0}" = "0" ]; then
     echo "nr_ai_search: no embedded chunks yet (tx_nraisearch_chunk empty) — seeding index config and (re)filling the index queue..."
@@ -1160,7 +1182,7 @@ INSERT INTO tx_index_domain_model_configuration
      skip_no_search_pages, levels, languages, configuration, partial_indexing,
      file_mounts, file_types, content_processors)
 SELECT 1, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0, 'Demo content (nr_ai_search)',
-     'database', 1, 0, 30, '0', '{}', 'datamap,cmdmap,clearcache', '', '', ''
+     'database', 0, 0, 30, '0,1', '{}', 'datamap,cmdmap,clearcache', '', '', ''
 FROM DUAL
 WHERE NOT EXISTS (
     SELECT 1 FROM tx_index_domain_model_configuration WHERE pid = 1 AND deleted = 0
