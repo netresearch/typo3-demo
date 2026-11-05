@@ -1690,9 +1690,12 @@ WHERE uid = 9001 AND deleted = 0 AND title = 'Entwurf'
 -- secret "openai_api_key": insufficient permissions`. Same MM caveat as step
 -- 3c. secret.use covers the same read inside a backend request (step 3b2);
 -- both are re-asserted, as INSERT IGNORE above skipped the existing group.
-UPDATE be_groups SET custom_options = 'tx_nrmcpagent:approve_own_changes,tx_nrvault:secret.use'
+UPDATE be_groups
+SET custom_options = 'tx_nrmcpagent:approve_own_changes,tx_nrvault:secret.use',
+    description = 'Advanced editors plus the Page, Workspaces and AI chat modules, the approval of the chat''s changes to one''s own content, and read access to the AI provider key.'
 WHERE uid = 995 AND deleted = 0 AND title = 'Workspace editors (AI chat)'
-  AND custom_options <> 'tx_nrmcpagent:approve_own_changes,tx_nrvault:secret.use';
+  AND (custom_options <> 'tx_nrmcpagent:approve_own_changes,tx_nrvault:secret.use'
+       OR description <> 'Advanced editors plus the Page, Workspaces and AI chat modules, the approval of the chat''s changes to one''s own content, and read access to the AI provider key.');
 
 INSERT IGNORE INTO tx_nrvault_secret_begroups_mm (uid_local, uid_foreign, sorting, sorting_foreign)
 SELECT s.uid, 995, 3, 0
