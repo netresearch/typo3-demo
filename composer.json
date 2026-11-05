@@ -22,7 +22,7 @@
         "netresearch/nr-landingpage": "^0.3.25",
         "netresearch/nr-llm": "^0.43.16",
         "netresearch/nr-llm-compat": "^0.4.3",
-        "netresearch/nr-mcp-agent": "^0.32.0",
+        "netresearch/nr-mcp-agent": "^0.33.0",
         "netresearch/nr-passkeys-be": "^1.0.3",
         "netresearch/nr-passkeys-fe": "^2.0.1",
         "netresearch/nr-repurpose": "^0.14.0",
