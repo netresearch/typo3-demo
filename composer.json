@@ -36,6 +36,7 @@
         "t3g/analytics": "^1.0",
         "thieleundklose/autotranslate": "^3.2",
         "typo3/cms-backend": "^14.3",
+        "typo3/cms-beuser": "^14.3",
         "typo3/cms-core": "^14.3",
         "typo3/cms-dashboard": "^14.3",
         "typo3/cms-extbase": "^14.3",
