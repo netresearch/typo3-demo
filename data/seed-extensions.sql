@@ -1338,6 +1338,26 @@ UPDATE tx_nrllm_model
  WHERE uid = 1 AND deleted = 0
    AND model_id IN ('gpt-5.3-chat-latest', 'chat-latest');
 
+-- The same record, switched to 'gpt-6.1-sol' in the backend on 2026-11-03. The
+-- record history shows that edit also took the capabilities from
+-- "chat,vision,streaming,tools" to "chat": the model form ticks exactly what
+-- provider discovery reports for the picked id, and nr-llm has no catalog entry
+-- for 'gpt-6.1-sol', so discovery reports `chat` and nothing else. The model
+-- does call tools -- the Backend AI Chat ran get_page_content and
+-- update_content_element on it on 2026-11-05 -- but every reader of the record
+-- now believes otherwise: the KI-Chat overview reports the model as not
+-- tool-capable, and the nr_ai_search.chat binding below finds no `tools` model.
+--
+-- Only `tools` is restored, because only `tools` was measured. Guarded on this
+-- one id, so it does not claim tools for a model nobody measured (the
+-- gpt-5.6-* line refuses them), and it is a no-op once the token is present.
+UPDATE tx_nrllm_model
+   SET capabilities = CONCAT_WS(',', NULLIF(capabilities, ''), 'tools'),
+       tstamp       = UNIX_TIMESTAMP()
+ WHERE uid = 1 AND deleted = 0
+   AND model_id = 'gpt-6.1-sol'
+   AND NOT FIND_IN_SET('tools', capabilities);
+
 -- =============================================================================
 -- AI Search & Chat (nr_ai_search) — RAG embeddings + chat configuration
 -- =============================================================================
@@ -1696,6 +1716,16 @@ SET custom_options = 'tx_nrmcpagent:approve_own_changes,tx_nrvault:secret.use',
 WHERE uid = 995 AND deleted = 0 AND title = 'Workspace editors (AI chat)'
   AND (custom_options <> 'tx_nrmcpagent:approve_own_changes,tx_nrvault:secret.use'
        OR description <> 'Advanced editors plus the Page, Workspaces and AI chat modules, the approval of the chat''s changes to one''s own content, and read access to the AI provider key.');
+
+-- The content types the editor may edit. "Advanced editors" carries its list in
+-- the format before TYPO3 12 ("tt_content:CType:texticon:ALLOW"), which TYPO3 14
+-- no longer reads: the edit form refused element 222 with `authMode
+-- "explicitAllow" failed for field "CType" with value "texticon"`, and so did
+-- the chat's card. Group 995 carries the same list in the current format
+-- ("tt_content:CType:texticon"), so the existing groups stay as they are.
+UPDATE be_groups SET explicit_allowdeny = 'tt_content:CType:accordion,tt_content:CType:audio,tt_content:CType:carousel,tt_content:CType:carousel_small,tt_content:CType:carousel_fullscreen,tt_content:CType:listgroup,tt_content:CType:media,tt_content:CType:menu_thumbnail_list,tt_content:CType:menu_thumbnail_dir,tt_content:CType:panel,tt_content:CType:quote,tt_content:CType:tab,tt_content:CType:textcolumn,tt_content:CType:texticon,tt_content:CType:textteaser,tt_content:CType:header,tt_content:CType:text,tt_content:CType:textpic,tt_content:CType:image,tt_content:CType:textmedia,tt_content:CType:bullets,tt_content:CType:table,tt_content:CType:uploads,tt_content:CType:menu_abstract,tt_content:CType:menu_categorized_content,tt_content:CType:menu_categorized_pages,tt_content:CType:menu_pages,tt_content:CType:menu_subpages,tt_content:CType:menu_recently_updated,tt_content:CType:menu_related_pages,tt_content:CType:menu_section,tt_content:CType:menu_section_pages,tt_content:CType:menu_sitemap,tt_content:CType:menu_sitemap_pages,tt_content:CType:shortcut,tt_content:CType:list,tt_content:CType:div,tt_content:CType:html,tt_content:CType:form_formframework,tt_content:CType:login,tt_content:list_type:indexedsearch_pi2,tx_bootstrappackage_carousel_item:item_type:header,tx_bootstrappackage_carousel_item:item_type:html'
+WHERE uid = 995 AND deleted = 0 AND title = 'Workspace editors (AI chat)'
+  AND COALESCE(explicit_allowdeny, '') <> 'tt_content:CType:accordion,tt_content:CType:audio,tt_content:CType:carousel,tt_content:CType:carousel_small,tt_content:CType:carousel_fullscreen,tt_content:CType:listgroup,tt_content:CType:media,tt_content:CType:menu_thumbnail_list,tt_content:CType:menu_thumbnail_dir,tt_content:CType:panel,tt_content:CType:quote,tt_content:CType:tab,tt_content:CType:textcolumn,tt_content:CType:texticon,tt_content:CType:textteaser,tt_content:CType:header,tt_content:CType:text,tt_content:CType:textpic,tt_content:CType:image,tt_content:CType:textmedia,tt_content:CType:bullets,tt_content:CType:table,tt_content:CType:uploads,tt_content:CType:menu_abstract,tt_content:CType:menu_categorized_content,tt_content:CType:menu_categorized_pages,tt_content:CType:menu_pages,tt_content:CType:menu_subpages,tt_content:CType:menu_recently_updated,tt_content:CType:menu_related_pages,tt_content:CType:menu_section,tt_content:CType:menu_section_pages,tt_content:CType:menu_sitemap,tt_content:CType:menu_sitemap_pages,tt_content:CType:shortcut,tt_content:CType:list,tt_content:CType:div,tt_content:CType:html,tt_content:CType:form_formframework,tt_content:CType:login,tt_content:list_type:indexedsearch_pi2,tx_bootstrappackage_carousel_item:item_type:header,tx_bootstrappackage_carousel_item:item_type:html';
 
 INSERT IGNORE INTO tx_nrvault_secret_begroups_mm (uid_local, uid_foreign, sorting, sorting_foreign)
 SELECT s.uid, 995, 3, 0
