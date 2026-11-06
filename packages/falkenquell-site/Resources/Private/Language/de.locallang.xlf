@@ -75,6 +75,22 @@
         <source>Back to all events</source>
         <target>Zurück zu allen Veranstaltungen</target>
       </trans-unit>
+      <trans-unit id="header.language.label">
+        <source>Language</source>
+        <target>Sprache</target>
+      </trans-unit>
+      <trans-unit id="header.search.toggle">
+        <source>Search</source>
+        <target>Suche</target>
+      </trans-unit>
+      <trans-unit id="event.pattern.short">
+        <source>EEE, d MMM yyyy</source>
+        <target>EEE, dd.MM.yyyy</target>
+      </trans-unit>
+      <trans-unit id="event.pattern.long">
+        <source>EEEE, d MMMM yyyy</source>
+        <target>EEEE, d. MMMM yyyy</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
