@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8b2d061ce4c58b87238d223b2619a29d",
+    "content-hash": "618191ca5cd08070754dbca02301193d",
     "packages": [
         {
             "name": "b13/ai-label",
@@ -2745,12 +2745,12 @@
             "source": {
                 "type": "git",
                 "url": "git@git.netresearch.de:support/nr-ai-search.git",
-                "reference": "3efcf6c5739533b86d2bf676fd120167844b8809"
+                "reference": "2d70416ab34af19e85f4a360038c1efaa4a4036c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://git.netresearch.de/api/v4/projects/support%2Fnr-ai-search/repository/archive.zip?sha=3efcf6c5739533b86d2bf676fd120167844b8809",
-                "reference": "3efcf6c5739533b86d2bf676fd120167844b8809",
+                "url": "https://git.netresearch.de/api/v4/projects/support%2Fnr-ai-search/repository/archive.zip?sha=2d70416ab34af19e85f4a360038c1efaa4a4036c",
+                "reference": "2d70416ab34af19e85f4a360038c1efaa4a4036c",
                 "shasum": ""
             },
             "require": {
@@ -2855,7 +2855,7 @@
                 "source": "https://git.netresearch.de/support/nr-ai-search/-/tree/main",
                 "issues": "https://git.netresearch.de/support/nr-ai-search/-/issues"
             },
-            "time": "2026-11-06T12:32:02+01:00"
+            "time": "2026-11-06T13:32:56+01:00"
         },
         {
             "name": "netresearch/nr-browser-ai",
@@ -3112,16 +3112,16 @@
         },
         {
             "name": "netresearch/nr-llm",
-            "version": "v0.43.17",
+            "version": "v0.43.18",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/t3x-nr-llm.git",
-                "reference": "fe3e35fac0833cccd17f0c9814faf4b0d4891382"
+                "reference": "59539fc30a0f12e21f62bd7c934e4009cd5e6afa"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/t3x-nr-llm/zipball/fe3e35fac0833cccd17f0c9814faf4b0d4891382",
-                "reference": "fe3e35fac0833cccd17f0c9814faf4b0d4891382",
+                "url": "https://api.github.com/repos/netresearch/t3x-nr-llm/zipball/59539fc30a0f12e21f62bd7c934e4009cd5e6afa",
+                "reference": "59539fc30a0f12e21f62bd7c934e4009cd5e6afa",
                 "shasum": ""
             },
             "require": {
@@ -3164,7 +3164,7 @@
                     "Package": {
                         "providesPackages": []
                     },
-                    "version": "0.43.17",
+                    "version": "0.43.18",
                     "web-dir": ".Build/Web",
                     "extension-key": "nr_llm"
                 },
@@ -3209,7 +3209,7 @@
                 "issues": "https://github.com/netresearch/t3x-nr-llm/issues",
                 "source": "https://github.com/netresearch/t3x-nr-llm"
             },
-            "time": "2026-11-05T17:48:00+00:00"
+            "time": "2026-11-06T11:51:26+00:00"
         },
         {
             "name": "netresearch/nr-llm-compat",
@@ -3918,16 +3918,16 @@
         },
         {
             "name": "netresearch/nr-vault",
-            "version": "v1.2.0",
+            "version": "v1.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/t3x-nr-vault.git",
-                "reference": "3df1442855469b5fe08c6358b207137362e15243"
+                "reference": "f45901d5fce046113d2238bd0ce8a66aa03bf077"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/t3x-nr-vault/zipball/3df1442855469b5fe08c6358b207137362e15243",
-                "reference": "3df1442855469b5fe08c6358b207137362e15243",
+                "url": "https://api.github.com/repos/netresearch/t3x-nr-vault/zipball/f45901d5fce046113d2238bd0ce8a66aa03bf077",
+                "reference": "f45901d5fce046113d2238bd0ce8a66aa03bf077",
                 "shasum": ""
             },
             "require": {
@@ -3960,7 +3960,7 @@
                     "Package": {
                         "providesPackages": []
                     },
-                    "version": "1.2.0",
+                    "version": "1.3.0",
                     "web-dir": ".Build/web",
                     "extension-key": "nr_vault"
                 },
@@ -4006,7 +4006,7 @@
                 "issues": "https://github.com/netresearch/t3x-nr-vault/issues",
                 "source": "https://github.com/netresearch/t3x-nr-vault"
             },
-            "time": "2026-10-31T21:55:36+00:00"
+            "time": "2026-11-06T12:02:48+00:00"
         },
         {
             "name": "netresearch/rte-ckeditor-image",
