@@ -9,6 +9,17 @@
     flex: 1 0 auto;
 }
 
+.frame-type-textteaser {
+    --frame-background: #e8f0f7;
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+    margin-top: 3rem;
+    margin-bottom: 3rem;
+    .section > &:first-child {
+        margin-top: 0;
+    }
+}
+
 .textteaser {
     display: block;
     max-width: 48rem;
