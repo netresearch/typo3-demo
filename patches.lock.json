@@ -1,6 +1,18 @@
 {
-    "_hash": "822ed56cce63e5e0b45c8ff884153af7b6058862d06a4bd0d27ed3206b361077",
+    "_hash": "081a8fafef5fd6886a4826fe7ea86cfed4a4450336cbb878e97da34b89766074",
     "patches": {
+        "lochmueller/index": [
+            {
+                "package": "lochmueller/index",
+                "description": "Bootstrap Package indexing: read an item's or element's field only where the record's type has it; Record::get() throws for a field outside the type (a carousel item of type \"header\" has no bodytext, one of type \"image\" no subheader), and the throw dropped the whole page from the index",
+                "url": "patches/lochmueller-index-bootstrap-package-optional-fields.patch",
+                "sha256": "b3f11fb9d301bf72691dea7a8840e4295530f8fd02054769625ff737c38de377",
+                "depth": 1,
+                "extra": {
+                    "provenance": "root"
+                }
+            }
+        ],
         "mfd/ai-filemetadata": [
             {
                 "package": "mfd/ai-filemetadata",

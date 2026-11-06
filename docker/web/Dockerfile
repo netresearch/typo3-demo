@@ -42,6 +42,20 @@ RUN listener=vendor/mfd/ai-filemetadata/Classes/EventListener/EnrichFileMetadata
          echo "Check that the patches/mfd-ai-filemetadata-*.patch files still apply." >&2; \
          exit 1; }
 
+# lochmueller/index reads Bootstrap Package fields with Record::get(), which
+# throws for a field outside the record's type (a carousel item of type "header"
+# has no bodytext); the throw drops the whole page from the search index.
+# patches/lochmueller-index-bootstrap-package-optional-fields.patch reads a
+# field only where the type has it. This check fails the build without it.
+RUN dir=vendor/lochmueller/index/Classes/Indexing/Database/ContentType/BootstrapPackage \
+    && grep -qF "\$item->has('bodytext')" "$dir/BootstrapPackageInlineContentType.php" \
+    && grep -qF "\$item->has('subheader')" "$dir/BootstrapPackageInlineContentType.php" \
+    && grep -qF "\$record->has('bodytext')" "$dir/BootstrapPackageSimpleContentType.php" \
+    || { echo "lochmueller/index reads Bootstrap Package fields without checking" >&2; \
+         echo "that the record's type has them." >&2; \
+         echo "Check that patches/lochmueller-index-*.patch still applies." >&2; \
+         exit 1; }
+
 # The site package replaces bootstrap_package's Media/Rendering/Image.html with
 # a copy of the 16.0.1 file that adds the decorative-image branch. The copy wins
 # for every image in Text & Images, Text & Media and Images, so a change upstream
