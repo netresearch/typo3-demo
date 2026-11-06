@@ -1940,6 +1940,15 @@ INSERT INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, pi_fl
 VALUES (9233, 158, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'nraisearch_search', 'AI Search: Secrets Vault only', '', '', 0, 250, 0, 0)
 ON DUPLICATE KEY UPDATE uid = uid;
 
+-- 4c) An element placed by a template (nr_ai_search ADR-043): the AI Search page's
+--     own page template (netresearch_demo_site, Templates/Page/AiSearch/) renders
+--     9241 with <nrai:element uid="9241"/>. It sits on colPos 99, which no layout
+--     renders, so it appears once, where the template puts it. Topic area: the
+--     Secrets Vault page, set below together with its translation 9242.
+INSERT INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, pi_flexform, colPos, sorting, hidden, deleted)
+VALUES (9241, 158, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'nraisearch_search', 'AI Search from the page template', '', '', 99, 100, 0, 0)
+ON DUPLICATE KEY UPDATE uid = uid;
+
 -- =============================================================================
 -- uid budget for everything below (re-derived, not inherited from any document)
 -- =============================================================================
@@ -3435,6 +3444,16 @@ SET pi_flexform = CONCAT(
         COALESCE((SELECT uid FROM tx_nrllm_configuration WHERE identifier = 'nr_ai_search.chat.brief' AND deleted = 0 ORDER BY uid ASC LIMIT 1), 0),
         '</value></field></language></sheet></data></T3FlexForms>')
 WHERE uid IN (9233, 9234) AND pid = 158 AND CType = 'nraisearch_search';
+
+-- Übersetzt tt_content 9241 (KI-Suche aus der Seitenvorlage, ADR-043); das UPDATE
+-- darunter schreibt den Themenbereich für beide Sprachen.
+INSERT INTO tt_content (uid, pid, tstamp, crdate, sys_language_uid, l18n_parent, l10n_source, CType, header, bodytext, pi_flexform, colPos, sorting, hidden, deleted)
+VALUES (9242, 158, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 9241, 9241, 'nraisearch_search', 'KI-Suche aus der Seitenvorlage', '', '', 99, 100, 0, 0)
+ON DUPLICATE KEY UPDATE uid = uid;
+
+UPDATE tt_content
+SET pi_flexform = '<?xml version="1.0" encoding="utf-8" standalone="yes" ?><T3FlexForms><data><sheet index="sDEF"><language index="lDEF"><field index="settings.topicRoot"><value index="vDEF">107</value></field></language></sheet></data></T3FlexForms>'
+WHERE uid IN (9241, 9242) AND pid = 158 AND CType = 'nraisearch_search';
 
 -- nr_ai_search result modes (ADR-042): one search element per mode besides the
 -- answer. 'semantic' lists the pages the vector search finds without a model call,
@@ -7406,6 +7425,8 @@ INSERT INTO seed_expected_content VALUES
   (9235, 158, NULL, 0,  0, 0, 0, 260, 'nraisearch_search', 'AI Search: Matching pages only'),
   (9236, 158, NULL, 0,  0, 0, 0, 270, 'nraisearch_search', 'AI Search: Keyword results'),
   (9237, 158, NULL, 0,  0, 0, 0, 280, 'nraisearch_search', 'AI Search: Answer above keyword results'),
+  -- 9241 is rendered by the page template (<nrai:element>), so colPos 99.
+  (9241, 158, NULL, 0,  0, 99, 0, 100, 'nraisearch_search', 'AI Search from the page template'),
   -- 605-607 and 620-622 were created at pid 159 before the Contexts page moved
   -- to uid 164; legacy_pid re-points any row an earlier run left behind.
   (605, 164,  159, 0,   0, 0, 0, 100, 'html',              'Contexts'),
@@ -7447,6 +7468,7 @@ INSERT INTO seed_expected_content VALUES
   (9238, 158, NULL, 1, 9235, 0, 0, 260, 'nraisearch_search', 'KI-Suche: nur passende Seiten'),
   (9239, 158, NULL, 1, 9236, 0, 0, 270, 'nraisearch_search', 'KI-Suche: Stichwort-Treffer'),
   (9240, 158, NULL, 1, 9237, 0, 0, 280, 'nraisearch_search', 'KI-Suche: Antwort über Stichwort-Treffern'),
+  (9242, 158, NULL, 1, 9241, 99, 0, 100, 'nraisearch_search', 'KI-Suche aus der Seitenvorlage'),
   -- Browser AI, public page 9003. 9217 and 9220 are the fallback cards on
   -- colPos 99: enabled, because the RECORDS object that renders them applies
   -- enable fields, and off the page flow because no layout uses that column.
