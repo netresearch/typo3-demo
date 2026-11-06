@@ -39,7 +39,7 @@ if ($rootUid <= 0) {
 // Columns the current TYPO3 schema no longer defines (core suggests renaming
 // them to zzz_deleted_*). An instance that started from an older database still
 // carries them, a fresh one does not, so the seed must not name them.
-$classLoader = require '/var/www/vendor/autoload.php';
+$classLoader = require_once '/var/www/vendor/autoload.php';
 \TYPO3\CMS\Core\Core\SystemEnvironmentBuilder::run(0, \TYPO3\CMS\Core\Core\SystemEnvironmentBuilder::REQUESTTYPE_CLI);
 $container = \TYPO3\CMS\Core\Core\Bootstrap::init($classLoader);
 $sqlReader = $container->get(\TYPO3\CMS\Core\Database\Schema\SqlReader::class);
