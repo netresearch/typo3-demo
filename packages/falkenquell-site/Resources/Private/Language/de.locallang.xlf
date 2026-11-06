@@ -15,6 +15,14 @@
         <source>Search</source>
         <target>Suchen</target>
       </trans-unit>
+      <trans-unit id="event.time">
+        <source>%1$s</source>
+        <target>%1$s Uhr</target>
+      </trans-unit>
+      <trans-unit id="event.timeRange">
+        <source>%1$s – %2$s</source>
+        <target>%1$s – %2$s Uhr</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

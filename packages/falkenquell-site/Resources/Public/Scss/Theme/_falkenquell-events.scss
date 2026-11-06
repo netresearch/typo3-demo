@@ -1,0 +1,121 @@
+.event-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
+    gap: 1.5rem;
+    padding-left: 0;
+    margin-bottom: 0;
+    list-style: none;
+}
+
+.event-card {
+    position: relative;
+    display: flex;
+    gap: 1.25rem;
+    padding: 1.5rem;
+    background-color: #ffffff;
+    border: 1px solid #dbe2e9;
+    border-top: 4px solid #7cb35b;
+    border-radius: 6px;
+    transition: box-shadow .15s ease-in-out;
+    &:hover {
+        box-shadow: 0 .5rem 1.5rem rgba(28, 39, 51, .12);
+    }
+    &:has(.event-card-title a:focus-visible) {
+        outline: 3px solid #38a1e1;
+        outline-offset: 3px;
+    }
+}
+
+.event-card-date {
+    display: flex;
+    flex: 0 0 4.5rem;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    align-self: flex-start;
+    height: 4.5rem;
+    line-height: 1;
+    color: #ffffff;
+    background-color: #094277;
+    border-radius: 6px;
+}
+
+.event-card-day {
+    font-size: 1.75rem;
+    font-weight: 700;
+}
+
+.event-card-month {
+    margin-top: .25rem;
+    font-size: 1rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.event-card-body {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.event-card-title {
+    margin-bottom: .5rem;
+    font-size: 1.25rem;
+    a {
+        color: #094277;
+        text-decoration: none;
+        &::after {
+            position: absolute;
+            inset: 0;
+            content: "";
+        }
+        &:hover {
+            text-decoration: underline;
+        }
+        &:focus-visible {
+            outline: none;
+        }
+    }
+}
+
+.event-card-meta {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: .75rem;
+    font-size: .9375rem;
+    font-weight: 600;
+    color: #56616d;
+}
+
+.event-card-teaser {
+    margin-bottom: 1rem;
+}
+
+.event-card-footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: .75rem;
+    margin-top: auto;
+}
+
+.event-card-price {
+    padding: .125rem .625rem;
+    font-size: .9375rem;
+    font-weight: 600;
+    color: #1c2733;
+    background-color: #e8f2df;
+    border-radius: 3px;
+}
+
+.event-card-registration {
+    position: relative;
+    z-index: 1;
+}
+
+.event-cards-more {
+    margin-top: 2rem;
+    margin-bottom: 0;
+}

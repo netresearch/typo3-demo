@@ -12,6 +12,12 @@
       <trans-unit id="search.submit">
         <source>Search</source>
       </trans-unit>
+      <trans-unit id="event.time">
+        <source>%1$s</source>
+      </trans-unit>
+      <trans-unit id="event.timeRange">
+        <source>%1$s – %2$s</source>
+      </trans-unit>
     </body>
   </file>
 </xliff>

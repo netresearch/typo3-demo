@@ -1,0 +1,52 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" data-namespace-typo3-fluid="true">
+<li class="event-card">
+    <div class="event-card-date" aria-hidden="true">
+        <span class="event-card-day"><f:format.date date="{event.startdate}" pattern="dd" /></span>
+        <span class="event-card-month"><f:format.date date="{event.startdate}" pattern="MMM" /></span>
+    </div>
+    <div class="event-card-body">
+        <f:variable name="headingLevel" value="{f:if(condition: contentObjectData.header, then: '3', else: '2')}" />
+        <h{headingLevel} class="event-card-title">
+            <f:link.action action="detail" arguments="{event: event}" pageUid="{settings.detailPid}">{event.title}</f:link.action>
+        </h{headingLevel}>
+        <p class="event-card-meta">
+            <span class="event-card-when">
+                <time datetime="{f:format.date(date: event.startdate, format: 'c')}"><f:format.date date="{event.startdate}" pattern="EEE, dd.MM.yyyy" /></time>,
+                <f:if condition="{event.enddate} && {f:format.date(date: event.startdate, format: 'Y-m-d')} == {f:format.date(date: event.enddate, format: 'Y-m-d')}">
+                    <f:then>
+                        <f:translate key="LLL:EXT:falkenquell_site/Resources/Private/Language/locallang.xlf:event.timeRange" arguments="{0: '{f:format.date(date: event.startdate, pattern: \'HH:mm\')}', 1: '{f:format.date(date: event.enddate, pattern: \'HH:mm\')}'}" />
+                    </f:then>
+                    <f:else>
+                        <f:translate key="LLL:EXT:falkenquell_site/Resources/Private/Language/locallang.xlf:event.time" arguments="{0: '{f:format.date(date: event.startdate, pattern: \'HH:mm\')}'}" />
+                        <f:if condition="{event.enddate}">
+                            – <f:format.date date="{event.enddate}" pattern="EEE, dd.MM.yyyy" />
+                        </f:if>
+                    </f:else>
+                </f:if>
+            </span>
+            <f:if condition="{event.location.title}">
+                <span class="event-card-location">{event.location.title}</span>
+            </f:if>
+        </p>
+        <f:if condition="{event.teaser}">
+            <p class="event-card-teaser">{event.teaser}</p>
+        </f:if>
+        <div class="event-card-footer">
+            <span class="event-card-price">
+                <f:if condition="{event.currentPrice} == 0">
+                    <f:then><f:translate domain="sf_event_mgt.messages" key="event.freeofcharge" /></f:then>
+                    <f:else>
+                        <f:if condition="{event.priceOptions}">
+                            <f:then><f:translate domain="sf_event_mgt.messages" key="startingAt" /> {event.currentPrice -> f:format.number()} {event.currency}</f:then>
+                            <f:else>{event.currentPrice -> f:format.number()} {event.currency}</f:else>
+                        </f:if>
+                    </f:else>
+                </f:if>
+            </span>
+            <f:if condition="{event.registrationPossible} && {settings.registrationPid}">
+                <f:link.action action="registration" arguments="{event: event}" pageUid="{settings.registrationPid}" class="btn btn-sm btn-outline-primary event-card-registration" title="{f:translate(domain: 'sf_event_mgt.messages', key: 'event.registration')}: {event.title}"><f:translate domain="sf_event_mgt.messages" key="event.registration" /></f:link.action>
+            </f:if>
+        </div>
+    </div>
+</li>
+</html>

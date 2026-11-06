@@ -1,0 +1,74 @@
+.icongroup {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+    gap: 1.5rem;
+    @include media-breakpoint-up(xl) {
+        grid-template-columns: repeat(auto-fit, minmax(max(9rem, calc((100% - 5rem) / 6)), 1fr));
+        gap: 1rem;
+    }
+}
+
+.icongroup .icongroup-item {
+    position: relative;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    width: auto;
+    min-height: 11rem;
+    padding: 1.5rem;
+    color: #ffffff;
+    text-align: center;
+    background-color: #094277;
+    border-radius: 6px;
+    transition: background-color .15s ease-in-out;
+    @include media-breakpoint-up(xl) {
+        padding: 1.25rem 1rem;
+    }
+    &:has(a):hover {
+        background-color: #1a6fa3;
+    }
+    &:has(a:focus-visible) {
+        outline: 3px solid #38a1e1;
+        outline-offset: 3px;
+    }
+}
+
+.icongroup .icongroup-item-icon {
+    width: 3rem;
+    margin-right: auto;
+    margin-left: auto;
+    color: #ffffff;
+}
+
+.icongroup .icongroup-item-text {
+    flex-grow: 0;
+    text-align: center;
+    > :not(.icongroup-item-text-header) {
+        @include visually-hidden;
+    }
+}
+
+.icongroup .icongroup-item-text-header {
+    margin-bottom: 0;
+    font-size: 1.25rem;
+    color: #ffffff;
+    hyphens: auto;
+    @include media-breakpoint-up(xl) {
+        font-size: 1.125rem;
+    }
+    a,
+    a:hover,
+    a:focus {
+        color: #ffffff;
+        text-decoration: none;
+    }
+    a::after {
+        position: absolute;
+        inset: 0;
+        content: "";
+    }
+    a:focus-visible {
+        outline: none;
+    }
+}

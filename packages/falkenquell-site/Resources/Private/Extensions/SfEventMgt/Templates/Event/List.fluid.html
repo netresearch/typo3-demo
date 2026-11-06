@@ -4,34 +4,29 @@
 
 <f:section name="main">
 
-    <!-- The code below shows how you can filter events by categories. You can e.g. create an UL which acts like a select-box -->
-	<f:link.action action="list" class="{f:if(condition: overwriteDemand.category,then: 'button button-outline', else: 'button')}" controller="Event"><f:translate domain="sf_event_mgt.messages" key="event.allEvents" /></f:link.action>
-    <f:for each="{categories}" as="category">
-		<f:if condition="{overwriteDemand.category} == {category.uid}">
-			<f:then>
-				<f:link.action action="list" controller="Event" arguments="{overwriteDemand:{category: category}}" class="active button">{category.title}</f:link.action>
-			</f:then>
-			<f:else>
-				<f:link.action action="list" controller="Event" arguments="{overwriteDemand:{category: category}}" class="button button-outline">{category.title}</f:link.action>
-			</f:else>
-		</f:if>
-    </f:for>
-
-    <!-- Output all events -->
     <f:if condition="{pagination}">
         <f:then>
-            <f:for each="{pagination.paginator.paginatedItems}" as="event" iteration="iterator">
-                <f:render partial="Event/ListItem" arguments="{_all}"/>
-            </f:for>
+            <ul class="event-cards">
+                <f:for each="{pagination.paginator.paginatedItems}" as="event" iteration="iterator">
+                    <f:render partial="Event/ListItem" arguments="{_all}"/>
+                </f:for>
+            </ul>
             <f:render partial="Event/Pagination" arguments="{pagination: pagination.pagination, paginator: pagination.paginator, overwriteDemand: overwriteDemand}" />
         </f:then>
         <f:else>
-            <f:for each="{events}" as="event">
-                <f:render partial="Event/ListItem" arguments="{_all}"/>
-            </f:for>
+            <ul class="event-cards">
+                <f:for each="{events}" as="event">
+                    <f:render partial="Event/ListItem" arguments="{_all}"/>
+                </f:for>
+            </ul>
         </f:else>
     </f:if>
 
+    <f:if condition="{settings.queryLimit} && {settings.listPid}">
+        <p class="event-cards-more">
+            <f:link.page pageUid="{settings.listPid}" class="btn btn-primary"><f:translate domain="sf_event_mgt.messages" key="event.allEvents" /></f:link.page>
+        </p>
+    </f:if>
 
 </f:section>
 
