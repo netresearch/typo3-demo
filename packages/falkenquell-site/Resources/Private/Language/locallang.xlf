@@ -18,6 +18,45 @@
       <trans-unit id="event.timeRange">
         <source>%1$s – %2$s</source>
       </trans-unit>
+      <trans-unit id="event.detail.facts">
+        <source>At a glance</source>
+      </trans-unit>
+      <trans-unit id="event.detail.date">
+        <source>Date</source>
+      </trans-unit>
+      <trans-unit id="event.detail.time">
+        <source>Time</source>
+      </trans-unit>
+      <trans-unit id="event.detail.location">
+        <source>Location</source>
+      </trans-unit>
+      <trans-unit id="event.detail.price">
+        <source>Admission</source>
+      </trans-unit>
+      <trans-unit id="event.detail.places">
+        <source>Places</source>
+      </trans-unit>
+      <trans-unit id="event.detail.freePlaces">
+        <source>%1$s of %2$s places available</source>
+      </trans-unit>
+      <trans-unit id="event.detail.register">
+        <source>Register now</source>
+      </trans-unit>
+      <trans-unit id="event.detail.calendar">
+        <source>Add to calendar</source>
+      </trans-unit>
+      <trans-unit id="event.detail.ical">
+        <source>Calendar file (.ics)</source>
+      </trans-unit>
+      <trans-unit id="event.detail.google">
+        <source>Google Calendar</source>
+      </trans-unit>
+      <trans-unit id="event.detail.outlook">
+        <source>Outlook.com</source>
+      </trans-unit>
+      <trans-unit id="event.detail.back">
+        <source>Back to all events</source>
+      </trans-unit>
     </body>
   </file>
 </xliff>

@@ -119,3 +119,119 @@
     margin-top: 2rem;
     margin-bottom: 0;
 }
+
+.event-detail-header {
+    max-width: 48rem;
+    margin-bottom: 2rem;
+}
+
+.event-detail-lead {
+    padding-left: 1.25rem;
+    margin-bottom: 0;
+    font-size: 1.375rem;
+    line-height: 1.4545;
+    color: #094277;
+    border-left: 4px solid #7cb35b;
+}
+
+.event-detail-layout {
+    display: grid;
+    gap: 2rem;
+    @include media-breakpoint-up(lg) {
+        grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+        gap: 3rem;
+        align-items: start;
+    }
+}
+
+.event-detail-image {
+    margin-bottom: 1.5rem;
+    img {
+        display: block;
+        width: 100%;
+        height: auto;
+        border-radius: 6px;
+    }
+    figcaption {
+        margin-top: .5rem;
+        font-size: .9375rem;
+        color: #56616d;
+    }
+}
+
+.event-detail-description,
+.event-detail-program {
+    max-width: 70ch;
+    > :last-child {
+        margin-bottom: 0;
+    }
+}
+
+.event-detail-program {
+    margin-top: 2rem;
+}
+
+.event-detail-facts {
+    padding: 1.5rem;
+    background-color: #f3f6f9;
+    border-top: 4px solid #7cb35b;
+    border-radius: 6px;
+    @include media-breakpoint-up(lg) {
+        position: sticky;
+        top: 1.5rem;
+    }
+}
+
+.event-detail-facts-title {
+    margin-bottom: 1rem;
+    font-size: 1.25rem;
+}
+
+.event-detail-list {
+    margin-bottom: 1.5rem;
+    dt {
+        font-size: .9375rem;
+        font-weight: 600;
+        color: #56616d;
+    }
+    dd {
+        margin-bottom: 1rem;
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
+}
+
+.event-detail-price-options {
+    padding-left: 0;
+    margin-bottom: 0;
+    list-style: none;
+}
+
+.event-detail-register {
+    display: block;
+    width: 100%;
+    margin-bottom: 1.5rem;
+}
+
+.event-detail-calendar-title {
+    margin-bottom: .5rem;
+    font-size: 1rem;
+}
+
+.event-detail-calendar {
+    padding-left: 0;
+    margin-bottom: 0;
+    list-style: none;
+    li + li {
+        margin-top: .25rem;
+    }
+}
+
+.event-detail-back {
+    margin-top: 3rem;
+    margin-bottom: 0;
+    a::before {
+        content: "← ";
+    }
+}

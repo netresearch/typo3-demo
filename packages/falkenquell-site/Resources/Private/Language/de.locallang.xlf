@@ -23,6 +23,58 @@
         <source>%1$s – %2$s</source>
         <target>%1$s – %2$s Uhr</target>
       </trans-unit>
+      <trans-unit id="event.detail.facts">
+        <source>At a glance</source>
+        <target>Auf einen Blick</target>
+      </trans-unit>
+      <trans-unit id="event.detail.date">
+        <source>Date</source>
+        <target>Datum</target>
+      </trans-unit>
+      <trans-unit id="event.detail.time">
+        <source>Time</source>
+        <target>Uhrzeit</target>
+      </trans-unit>
+      <trans-unit id="event.detail.location">
+        <source>Location</source>
+        <target>Ort</target>
+      </trans-unit>
+      <trans-unit id="event.detail.price">
+        <source>Admission</source>
+        <target>Eintritt</target>
+      </trans-unit>
+      <trans-unit id="event.detail.places">
+        <source>Places</source>
+        <target>Plätze</target>
+      </trans-unit>
+      <trans-unit id="event.detail.freePlaces">
+        <source>%1$s of %2$s places available</source>
+        <target>%1$s von %2$s Plätzen frei</target>
+      </trans-unit>
+      <trans-unit id="event.detail.register">
+        <source>Register now</source>
+        <target>Jetzt anmelden</target>
+      </trans-unit>
+      <trans-unit id="event.detail.calendar">
+        <source>Add to calendar</source>
+        <target>In den Kalender</target>
+      </trans-unit>
+      <trans-unit id="event.detail.ical">
+        <source>Calendar file (.ics)</source>
+        <target>Kalenderdatei (.ics)</target>
+      </trans-unit>
+      <trans-unit id="event.detail.google">
+        <source>Google Calendar</source>
+        <target>Google Kalender</target>
+      </trans-unit>
+      <trans-unit id="event.detail.outlook">
+        <source>Outlook.com</source>
+        <target>Outlook.com</target>
+      </trans-unit>
+      <trans-unit id="event.detail.back">
+        <source>Back to all events</source>
+        <target>Zurück zu allen Veranstaltungen</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
