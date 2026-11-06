@@ -2745,12 +2745,12 @@
             "source": {
                 "type": "git",
                 "url": "git@git.netresearch.de:support/nr-ai-search.git",
-                "reference": "be220153a254837745ec5b70c897a0e7c04200f1"
+                "reference": "aab53b0e8495f4ba644e4abedff4da4744bf7717"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://git.netresearch.de/api/v4/projects/support%2Fnr-ai-search/repository/archive.zip?sha=be220153a254837745ec5b70c897a0e7c04200f1",
-                "reference": "be220153a254837745ec5b70c897a0e7c04200f1",
+                "url": "https://git.netresearch.de/api/v4/projects/support%2Fnr-ai-search/repository/archive.zip?sha=aab53b0e8495f4ba644e4abedff4da4744bf7717",
+                "reference": "aab53b0e8495f4ba644e4abedff4da4744bf7717",
                 "shasum": ""
             },
             "require": {
@@ -2760,8 +2760,9 @@
                 "netresearch/nr-llm": "^0.34 || ^0.35 || ^0.36 || ^0.37 || ^0.38 || ^0.39 || ^0.40 || ^0.41 || ^0.42 || ^0.43",
                 "php": "^8.3",
                 "psr/clock": "^1.0",
-                "symfony/ai-store": "^0.10 || ^0.11",
-                "symfony/ai-vektor-store": "^0.10 || ^0.11",
+                "symfony/ai-platform": "^0.10 || ^0.11 || ^0.12 || ^0.13 || ^0.14 || ^0.15",
+                "symfony/ai-store": "^0.10 || ^0.11 || ^0.12 || ^0.13 || ^0.14 || ^0.15",
+                "symfony/ai-vektor-store": "^0.10 || ^0.11 || ^0.12 || ^0.13 || ^0.14 || ^0.15",
                 "symfony/clock": "^7.3 || ^8.0",
                 "symfony/messenger": "^7.4 || ^8.0",
                 "symfony/rate-limiter": "^7.4 || ^8.0",
@@ -2854,7 +2855,7 @@
                 "source": "https://git.netresearch.de/support/nr-ai-search/-/tree/main",
                 "issues": "https://git.netresearch.de/support/nr-ai-search/-/issues"
             },
-            "time": "2026-11-05T23:12:26+01:00"
+            "time": "2026-11-06T10:27:04+01:00"
         },
         {
             "name": "netresearch/nr-browser-ai",
@@ -6268,16 +6269,16 @@
         },
         {
             "name": "symfony/ai-platform",
-            "version": "v0.11.0",
+            "version": "v0.15.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/ai-platform.git",
-                "reference": "dce4285eaf891cbdcb9526e576e3df6f8220fd1d"
+                "reference": "fa3bcc147286c0eb87ff0b192cfd4fa5230033a3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/ai-platform/zipball/dce4285eaf891cbdcb9526e576e3df6f8220fd1d",
-                "reference": "dce4285eaf891cbdcb9526e576e3df6f8220fd1d",
+                "url": "https://api.github.com/repos/symfony/ai-platform/zipball/fa3bcc147286c0eb87ff0b192cfd4fa5230033a3",
+                "reference": "fa3bcc147286c0eb87ff0b192cfd4fa5230033a3",
                 "shasum": ""
             },
             "require": {
@@ -6309,6 +6310,7 @@
                 "symfony/http-client-contracts": "^3.5",
                 "symfony/intl": "^7.3|^8.0",
                 "symfony/process": "^7.3|^8.0",
+                "symfony/stopwatch": "^7.3|^8.0",
                 "symfony/validator": "^7.3|^8.0",
                 "symfony/var-dumper": "^7.3|^8.0",
                 "symfony/yaml": "^7.3|^8.0"
@@ -6356,7 +6358,10 @@
                 "bedrock",
                 "cerebras",
                 "dockermodelrunner",
+                "edenai",
                 "elevenlabs",
+                "fireworks",
+                "higgsfield",
                 "huggingface",
                 "inference",
                 "litellm",
@@ -6371,12 +6376,15 @@
                 "perplexity",
                 "replicate",
                 "speech",
+                "together",
                 "transformers",
+                "typesafe",
+                "venice",
                 "vertexai",
                 "voyage"
             ],
             "support": {
-                "source": "https://github.com/symfony/ai-platform/tree/v0.11.0"
+                "source": "https://github.com/symfony/ai-platform/tree/v0.15.0"
             },
             "funding": [
                 {
@@ -6396,27 +6404,27 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-07-15T01:10:14+00:00"
+            "time": "2026-10-22T23:08:39+00:00"
         },
         {
             "name": "symfony/ai-store",
-            "version": "v0.11.0",
+            "version": "v0.15.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/ai-store.git",
-                "reference": "adb0237709baa8d2947647cf42f0a6d82e5c1aee"
+                "reference": "e615ae2fbf4bc85e295587fbd00634a9b7fd0e12"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/ai-store/zipball/adb0237709baa8d2947647cf42f0a6d82e5c1aee",
-                "reference": "adb0237709baa8d2947647cf42f0a6d82e5c1aee",
+                "url": "https://api.github.com/repos/symfony/ai-store/zipball/e615ae2fbf4bc85e295587fbd00634a9b7fd0e12",
+                "reference": "e615ae2fbf4bc85e295587fbd00634a9b7fd0e12",
                 "shasum": ""
             },
             "require": {
                 "ext-fileinfo": "*",
                 "php": ">=8.2",
                 "psr/log": "^3.0",
-                "symfony/ai-platform": "^0.11",
+                "symfony/ai-platform": "^0.15",
                 "symfony/clock": "^7.3|^8.0",
                 "symfony/event-dispatcher-contracts": "^3.0",
                 "symfony/http-client": "^7.3|^8.0",
@@ -6490,7 +6498,7 @@
                 "weaviate"
             ],
             "support": {
-                "source": "https://github.com/symfony/ai-store/tree/v0.11.0"
+                "source": "https://github.com/symfony/ai-store/tree/v0.15.0"
             },
             "funding": [
                 {
@@ -6510,27 +6518,27 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-07-15T00:58:20+00:00"
+            "time": "2026-10-22T23:44:24+00:00"
         },
         {
             "name": "symfony/ai-vektor-store",
-            "version": "v0.11.0",
+            "version": "v0.15.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/ai-vektor-store.git",
-                "reference": "4e1734101de3d249ddc5b9a6fc706d40de4796c8"
+                "reference": "a560bc1f3f836772571c2c450c0ae8171bc6c397"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/ai-vektor-store/zipball/4e1734101de3d249ddc5b9a6fc706d40de4796c8",
-                "reference": "4e1734101de3d249ddc5b9a6fc706d40de4796c8",
+                "url": "https://api.github.com/repos/symfony/ai-vektor-store/zipball/a560bc1f3f836772571c2c450c0ae8171bc6c397",
+                "reference": "a560bc1f3f836772571c2c450c0ae8171bc6c397",
                 "shasum": ""
             },
             "require": {
                 "centamiv/vektor": "^2.0.1",
                 "php": ">=8.2",
-                "symfony/ai-platform": "^0.11",
-                "symfony/ai-store": "^0.11",
+                "symfony/ai-platform": "^0.15",
+                "symfony/ai-store": "^0.15",
                 "symfony/filesystem": "^7.3|^8.0",
                 "symfony/uid": "^7.3|^8.0"
             },
@@ -6575,7 +6583,7 @@
                 "vektor"
             ],
             "support": {
-                "source": "https://github.com/symfony/ai-vektor-store/tree/v0.11.0"
+                "source": "https://github.com/symfony/ai-vektor-store/tree/v0.15.0"
             },
             "funding": [
                 {
@@ -6595,7 +6603,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-07-15T00:58:20+00:00"
+            "time": "2026-10-22T23:44:24+00:00"
         },
         {
             "name": "symfony/cache",
