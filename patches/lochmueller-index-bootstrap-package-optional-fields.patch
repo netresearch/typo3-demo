@@ -1,0 +1,64 @@
+--- a/Classes/Indexing/Database/ContentType/BootstrapPackage/BootstrapPackageInlineContentType.php
++++ b/Classes/Indexing/Database/ContentType/BootstrapPackage/BootstrapPackageInlineContentType.php
+@@ -60,14 +60,15 @@
+ 
+     protected function addItemContent(Record $item, DatabaseIndexingDto $dto, string $parentType): void
+     {
+-        $header = trim((string) $item->get('header'));
++        // An item type without a field has no such property (Record::get() throws)
++        $header = $item->has('header') ? trim((string) $item->get('header')) : '';
+         if ($header !== '') {
+             $dto->content .= '<h3>' . $header . '</h3>';
+         }
+ 
+         // Card group and carousel items have subheader
+         if (in_array($parentType, ['card_group', 'carousel', 'carousel_small', 'carousel_fullscreen'], true)) {
+-            $subheader = trim((string) $item->get('subheader'));
++            $subheader = $item->has('subheader') ? trim((string) $item->get('subheader')) : '';
+             if ($subheader !== '') {
+                 $dto->content .= '<p>' . $subheader . '</p>';
+             }
+@@ -76,7 +77,7 @@
+         // Timeline items have date field
+         if ($parentType === 'timeline') {
+             // datetime fields are resolved to \DateTimeImmutable by the Record API
+-            $dateValue = $item->get('date');
++            $dateValue = $item->has('date') ? $item->get('date') : null;
+             $date = $dateValue instanceof \DateTimeInterface
+                 ? $dateValue->format('Y-m-d')
+                 : trim((string) $dateValue);
+@@ -85,7 +86,7 @@
+             }
+         }
+ 
+-        $bodytext = trim((string) $item->get('bodytext'));
++        $bodytext = $item->has('bodytext') ? trim((string) $item->get('bodytext')) : '';
+         if ($bodytext !== '') {
+             $dto->content .= $bodytext;
+         }
+--- a/Classes/Indexing/Database/ContentType/BootstrapPackage/BootstrapPackageSimpleContentType.php
++++ b/Classes/Indexing/Database/ContentType/BootstrapPackage/BootstrapPackageSimpleContentType.php
+@@ -37,20 +37,20 @@
+         $this->headerContentType->addContent($record, $dto);
+ 
+         if ($this->isAnyType($record, self::TEASER_TYPES)) {
+-            $teaser = trim((string) $record->get('teaser'));
++            $teaser = $record->has('teaser') ? trim((string) $record->get('teaser')) : '';
+             if ($teaser !== '') {
+                 $dto->content .= '<p>' . $teaser . '</p>';
+             }
+         }
+ 
+         if ($this->isAnyType($record, self::QUOTE_TYPES)) {
+-            $quoteSource = trim((string) $record->get('quote_source'));
++            $quoteSource = $record->has('quote_source') ? trim((string) $record->get('quote_source')) : '';
+             if ($quoteSource !== '') {
+                 $dto->content .= '<cite>' . $quoteSource . '</cite>';
+             }
+         }
+ 
+-        $bodytext = trim((string) $record->get('bodytext'));
++        $bodytext = $record->has('bodytext') ? trim((string) $record->get('bodytext')) : '';
+         if ($bodytext !== '') {
+             $dto->content .= $bodytext;
+         }

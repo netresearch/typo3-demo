@@ -394,6 +394,20 @@ non-admin needs modify access to `sys_file_metadata` and access to language 1
 to get a German alt text; without it the upload keeps only the English text
 and logs the warning. All seeded accounts that can upload are admins.
 
+## Search index (lochmueller/index)
+
+The AI search reads the page index of `lochmueller/index`, which indexes a page
+from its content records after a backend save, a record command or a cache
+clear. Its Bootstrap Package handlers read each field with `Record::get()`,
+which throws for a field the record's type does not have: a carousel item of
+type "header" has no bodytext, one of type "image" or "background image" no
+subheader. The handler catches the exception for the whole page, logs it as
+`Record property "bodytext" is not available.` and leaves that page out of the
+index. The composer patch
+`patches/lochmueller-index-bootstrap-package-optional-fields.patch` reads a
+field only where the type has it, and the image build fails if the installed
+handler lacks the check.
+
 ## AI Chat turns
 
 `chat-worker` runs the turns of the AI Chat, in two replicas. A booted process waits

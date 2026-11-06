@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "76fff43b72d59f3f31e600281c25a79d",
+    "content-hash": "adde2b411624d5e24fcd9d926e276ea5",
     "packages": [
         {
             "name": "b13/ai-label",
