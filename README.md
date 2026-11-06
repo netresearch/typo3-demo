@@ -134,7 +134,8 @@ touch data:
 ```bash
 make reset                    # purge app data + re-seed from data/db.sql.gz (preserves Caddy TLS certs)
 make update                   # pull new images + migrate + apply seed-extensions + flush caches (no data purge)
-make seed-extensions          # (idempotent) apply data/seed-extensions.sql — extra demo records, dashboards, templates
+make seed-extensions          # (idempotent) apply data/seed-extensions.sql — extra demo records, dashboards, templates —
+                              # and data/seed-falkenquell.sql (the Falkenquell site, see below)
 make export-seed              # dump the current DB back to data/db.sql.gz
 ```
 
@@ -543,6 +544,53 @@ dashboards and removes "Häufige Aufgaben" from them once, recorded per
 dashboard in `sys_registry`; later edits by the user are kept. The new cache `nrmcpagent_dashboard` gets its tables from
 `extension:setup`, which the entrypoint runs on every start.
 
+## The Falkenquell site
+
+A second site in the same instance: the fictional town of Falkenquell, with its
+own page tree, site package (`packages/falkenquell-site`), German and English
+content, news, events and forms. It answers on `ai-demo.netresearch.de` and
+sits behind basic auth until it is announced.
+
+**Records.** `data/seed-falkenquell.sql` holds every record of the site in the
+seed uid band (9300 and up, rules at the top of `data/seed-extensions.sql`) and
+`make seed-extensions` applies it after `data/seed-extensions.sql`. It only
+ever inserts: after the first deploy the live instance owns the records, and
+later deploys change none of them. A record that is deleted for good on live
+(also from the recycler) is created again by the next deploy. A seeded uid held
+by a row with a different `crdate` is reported as `SEED-PROBLEM` and fails the
+deploy. The file is generated, never edited by hand: build the site locally,
+then
+
+```bash
+docker compose exec -T web php -- 9300 < scripts/falkenquell-seed.php > data/seed-falkenquell.sql
+```
+
+`9300` is the root page. The script keeps uids that are already in the band and
+gives records created since then the next free one; it prints the page uid map
+on stderr, and `config/sites/falkenquell` has to follow any page that moved.
+
+**Files.** Images and PDFs live in `data/fileadmin/falkenquell/` and reach the
+volume through the fileadmin sync in `entrypoint.sh`. The forms are
+`form_definition` records in the seed, not YAML files.
+
+**Domain.** `TYPO3_ADDITIONAL_DOMAINS` (default `ai-demo.netresearch.de`) adds
+hosts to `trustedHostsPattern` through a managed block in
+`config/system/additional.php` on every boot; `settings.php` only gets its
+pattern on first boot. Caddy serves `FALKENQUELL_DOMAIN` (same default) with
+the proxy settings of the main site, plus basic auth.
+
+**Basic auth.** Two repository secrets, written into the host `.env` by
+`make update`:
+
+| Secret | Value |
+|---|---|
+| `FALKENQUELL_BASIC_AUTH_USER` | user name |
+| `FALKENQUELL_BASIC_AUTH_HASH` | bcrypt hash of the password, from `caddy hash-password` |
+
+Without them `compose.yml` hands Caddy a hash of a random password nobody
+knows, so the site stays closed rather than open. To open it for good, remove
+the `basic_auth` block from `docker/caddy/Caddyfile`.
+
 ## Backend languages
 
 The backend is available in German as well as English. The entrypoint adds the
@@ -630,8 +678,10 @@ Run these from the repo's **Actions** tab:
 ```
 compose.yml / compose.dev.yml   # production stack / dev overrides
 docker/                         # web + db images, entrypoint
-data/                           # db.sql.gz (DB seed), seed-extensions.sql, fileadmin
+data/                           # db.sql.gz (DB seed), seed-extensions.sql, seed-falkenquell.sql, fileadmin
 packages/netresearch-demo-site  # site package: TypoScript, RTE preset, dashboard widgets/presets
+packages/falkenquell-site       # site package of the Falkenquell site
+scripts/falkenquell-seed.php    # generates data/seed-falkenquell.sql
 config/                         # TYPO3 site + system config
 deploy/                         # host provisioning
 .github/workflows/              # build, deploy, and the ops workflows above
