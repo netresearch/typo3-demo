@@ -16,3 +16,25 @@
         }
     }
 }
+
+.navbar-mainnavigation {
+    .nav-link-indicator:before {
+        transform: translateY(-.15em) rotate(-135deg);
+    }
+    .show > .nav-link-indicator:before {
+        transform: translateY(.15em) rotate(45deg);
+    }
+    .dropdown-nav {
+        grid-template-columns: 1fr;
+    }
+    .dropdown-nav[data-level="3"] {
+        margin-left: var(--mainnavigation-dropdown-link-padding-x);
+        .nav-link {
+            font-weight: 400;
+            color: #1c2733;
+            &:hover {
+                color: #1a6fa3;
+            }
+        }
+    }
+}
