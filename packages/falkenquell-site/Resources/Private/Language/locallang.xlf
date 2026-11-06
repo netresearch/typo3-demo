@@ -57,6 +57,18 @@
       <trans-unit id="event.detail.back">
         <source>Back to all events</source>
       </trans-unit>
+      <trans-unit id="header.language.label">
+        <source>Language</source>
+      </trans-unit>
+      <trans-unit id="header.search.toggle">
+        <source>Search</source>
+      </trans-unit>
+      <trans-unit id="event.pattern.short">
+        <source>EEE, d MMM yyyy</source>
+      </trans-unit>
+      <trans-unit id="event.pattern.long">
+        <source>EEEE, d MMMM yyyy</source>
+      </trans-unit>
     </body>
   </file>
 </xliff>

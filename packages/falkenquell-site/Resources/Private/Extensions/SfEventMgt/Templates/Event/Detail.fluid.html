@@ -54,8 +54,8 @@
                         <dt><f:translate key="{ll}event.detail.date" /></dt>
                         <dd>
                             <f:if condition="{endDay} && {startDay} != {endDay}">
-                                <f:then><time datetime="{startDay}"><f:format.date date="{event.startdate}" pattern="EEE, dd.MM.yyyy" /></time> – <time datetime="{endDay}"><f:format.date date="{event.enddate}" pattern="EEE, dd.MM.yyyy" /></time></f:then>
-                                <f:else><time datetime="{startDay}"><f:format.date date="{event.startdate}" pattern="EEEE, d. MMMM yyyy" /></time></f:else>
+                                <f:then><time datetime="{startDay}"><f:format.date date="{event.startdate}" pattern="{f:translate(key: 'LLL:EXT:falkenquell_site/Resources/Private/Language/locallang.xlf:event.pattern.short')}" /></time> – <time datetime="{endDay}"><f:format.date date="{event.enddate}" pattern="{f:translate(key: 'LLL:EXT:falkenquell_site/Resources/Private/Language/locallang.xlf:event.pattern.short')}" /></time></f:then>
+                                <f:else><time datetime="{startDay}"><f:format.date date="{event.startdate}" pattern="{f:translate(key: 'LLL:EXT:falkenquell_site/Resources/Private/Language/locallang.xlf:event.pattern.long')}" /></time></f:else>
                             </f:if>
                         </dd>
                         <dt><f:translate key="{ll}event.detail.time" /></dt>

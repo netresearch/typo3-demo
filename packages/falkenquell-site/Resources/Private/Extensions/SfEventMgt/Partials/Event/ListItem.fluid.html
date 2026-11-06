@@ -11,7 +11,7 @@
         </h{headingLevel}>
         <p class="event-card-meta">
             <span class="event-card-when">
-                <time datetime="{f:format.date(date: event.startdate, format: 'c')}"><f:format.date date="{event.startdate}" pattern="EEE, dd.MM.yyyy" /></time>,
+                <time datetime="{f:format.date(date: event.startdate, format: 'c')}"><f:format.date date="{event.startdate}" pattern="{f:translate(key: 'LLL:EXT:falkenquell_site/Resources/Private/Language/locallang.xlf:event.pattern.short')}" /></time>,
                 <f:if condition="{event.enddate} && {f:format.date(date: event.startdate, format: 'Y-m-d')} == {f:format.date(date: event.enddate, format: 'Y-m-d')}">
                     <f:then>
                         <f:translate key="LLL:EXT:falkenquell_site/Resources/Private/Language/locallang.xlf:event.timeRange" arguments="{0: '{f:format.date(date: event.startdate, pattern: \'HH:mm\')}', 1: '{f:format.date(date: event.enddate, pattern: \'HH:mm\')}'}" />
@@ -19,7 +19,7 @@
                     <f:else>
                         <f:translate key="LLL:EXT:falkenquell_site/Resources/Private/Language/locallang.xlf:event.time" arguments="{0: '{f:format.date(date: event.startdate, pattern: \'HH:mm\')}'}" />
                         <f:if condition="{event.enddate}">
-                            – <f:format.date date="{event.enddate}" pattern="EEE, dd.MM.yyyy" />
+                            – <f:format.date date="{event.enddate}" pattern="{f:translate(key: 'LLL:EXT:falkenquell_site/Resources/Private/Language/locallang.xlf:event.pattern.short')}" />
                         </f:if>
                     </f:else>
                 </f:if>
