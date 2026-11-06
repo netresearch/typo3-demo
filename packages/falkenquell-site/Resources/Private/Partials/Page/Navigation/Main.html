@@ -1,0 +1,58 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" data-namespace-typo3-fluid="true">
+
+<f:variable name="ll" value="LLL:EXT:falkenquell_site/Resources/Private/Language/locallang.xlf:" />
+<f:variable name="headerClass">bp-page-header navbar navbar-mainnavigation navbar-{theme.navigation.style}</f:variable>
+<f:variable name="headerClass">{headerClass}{f:if(condition: logo.normal, then:' navbar-has-image')}</f:variable>
+<f:variable name="headerClass">{headerClass}{f:if(condition: theme.navigation.type, else:' navbar-top', then:' navbar-{theme.navigation.type} navbar-fixed-{theme.navigation.type}')}</f:variable>
+<header id="page-header" class="{headerClass}">
+    <div class="container container-mainnavigation">
+        <f:render partial="Header/Logo" arguments="{_all}" />
+        <div class="header-tools">
+            <f:if condition="{languagenavigation -> f:count()} > 1">
+                <nav class="header-language" aria-label="{f:translate(key: '{ll}header.language.label')}">
+                    <ul class="header-language-list">
+                        <f:for each="{languagenavigation}" as="language">
+                            <f:if condition="{language.available}">
+                                <f:variable name="languageParts" value="{language.hreflang -> f:split(separator: '-')}" />
+                                <li>
+                                    <a class="header-language-link{f:if(condition: language.active, then: ' active')}" href="{language.link}" hreflang="{language.hreflang}" lang="{language.hreflang}" aria-current="{f:if(condition: language.active, then: 'true', else: 'false')}">
+                                        <span aria-hidden="true">{languageParts.0}</span>
+                                        <span class="visually-hidden">{language.navigationTitle}</span>
+                                    </a>
+                                </li>
+                            </f:if>
+                        </f:for>
+                    </ul>
+                </nav>
+            </f:if>
+            <f:if condition="{falkenquell.search.pageUid}">
+                <button class="header-search-toggle" type="button" aria-expanded="false" aria-controls="header-search" data-header-search-toggle>
+                    <svg class="header-search-icon-open" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></svg>
+                    <svg class="header-search-icon-close" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+                    <span class="visually-hidden"><f:translate key="{ll}header.search.toggle" /></span>
+                </button>
+            </f:if>
+        </div>
+        <f:if condition="{mainnavigation}">
+            <f:render partial="Header/Toggle" arguments="{_all}" />
+            <nav aria-label="{f:translate(key: 'main-navigation.label', extensionName: 'bootstrap_package')}" id="mainnavigation" class="collapse navbar-collapse">
+                <f:render partial="DropIn/Navigation/MainBefore" arguments="{_all}" />
+                <f:render partial="Navigation/MainNavigation" arguments="{_all}" />
+                <f:render partial="DropIn/Navigation/MainAfter" arguments="{_all}" />
+            </nav>
+        </f:if>
+    </div>
+    <f:if condition="{falkenquell.search.pageUid}">
+        <div class="header-search" id="header-search" hidden>
+            <div class="container">
+                <form class="hero-search header-search-form" action="{f:uri.page(pageUid: falkenquell.search.pageUid)}" method="post" role="search">
+                    <label class="visually-hidden" for="header-search-query"><f:translate key="{ll}search.label" /></label>
+                    <input class="hero-search-input" type="search" id="header-search-query" name="tx_nraisearch_search[query]" placeholder="{f:translate(key: '{ll}search.placeholder')}" autocomplete="off">
+                    <button class="hero-search-submit" type="submit"><f:translate key="{ll}search.submit" /></button>
+                </form>
+            </div>
+        </div>
+    </f:if>
+</header>
+
+</html>
