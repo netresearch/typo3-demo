@@ -16,3 +16,7 @@ dependencies:
   # definition plus the assistant's script and stylesheet. Same reason as
   # netresearch/contexts above.
   - netresearch/browser-ai
+  # b13/ai-bots-love-markdown: the <link rel="alternate" type="text/markdown">
+  # discovery tag. Its middlewares answer Accept: text/markdown only on a page
+  # that carries the tag, so without the set nothing is converted.
+  - b13/ai-bots-love-markdown
