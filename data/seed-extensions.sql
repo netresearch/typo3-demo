@@ -8130,8 +8130,11 @@ UPDATE sys_file SET sha1 = 'b58fced6b05e7456036fa72bd55ed0c69fa51982', size = 22
 UPDATE sys_file SET sha1 = '570c24da07d8dd301be229ef66da8b580d336b9f', size = 283325, tstamp = 1787040000, modification_date = 1787040000 WHERE uid = 287 AND name = 'vault-AuditLog.png';
 UPDATE sys_file SET sha1 = '5ef9bb0f7e881495e92a2ded9279d798712ca7a5', size = 230999, tstamp = 1787040000, modification_date = 1787040000 WHERE uid = 288 AND name = 'vault-SecretsList.png';
 UPDATE sys_file SET sha1 = 'cd14e00a432e9d758291714ec99071d96a99996b', size = 198302, tstamp = 1787040000, modification_date = 1787040000 WHERE uid = 289 AND name = 'vault-VaultOverview.png';
+-- The TextDb capture was retaken on 2026-11-06: nr_textdb 4.2.0 moved its module from
+-- the old "Netresearch" group to Content > TextDb, which the 2026-08-18 capture still showed.
+UPDATE sys_file SET sha1 = 'ec77bf1411edbcf032d5b8b081645b5408737775', size = 81291,  tstamp = 1793923200, modification_date = 1793923200 WHERE uid = 9001 AND name = 'textdb-backend-module.png';
 
-DELETE FROM sys_file_processedfile WHERE original IN (278, 279, 280, 281, 282, 283, 284, 285, 287, 288, 289);
+DELETE FROM sys_file_processedfile WHERE original IN (278, 279, 280, 281, 282, 283, 284, 285, 287, 288, 289, 9001);
 
 -- --- Verification -------------------------------------------------------------
 -- One line per record that is absent or whose uid is held by a foreign row —
