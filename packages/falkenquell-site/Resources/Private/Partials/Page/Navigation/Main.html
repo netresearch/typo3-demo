@@ -1,5 +1,3 @@
-<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" data-namespace-typo3-fluid="true">
-
 <f:variable name="ll" value="LLL:EXT:falkenquell_site/Resources/Private/Language/locallang.xlf:" />
 <f:variable name="headerClass">bp-page-header navbar navbar-mainnavigation navbar-{theme.navigation.style}</f:variable>
 <f:variable name="headerClass">{headerClass}{f:if(condition: logo.normal, then:' navbar-has-image')}</f:variable>
@@ -45,7 +43,7 @@
     <f:if condition="{falkenquell.search.pageUid}">
         <div class="header-search" id="header-search" hidden>
             <div class="container">
-                <form class="hero-search header-search-form" action="{f:uri.page(pageUid: falkenquell.search.pageUid)}" method="post" role="search">
+                <form class="hero-search header-search-form" action="{f:uri.page(pageUid: falkenquell.search.pageUid)}" method="get" role="search">
                     <label class="visually-hidden" for="header-search-query"><f:translate key="{ll}search.label" /></label>
                     <input class="hero-search-input" type="search" id="header-search-query" name="tx_nraisearch_search[query]" placeholder="{f:translate(key: '{ll}search.placeholder')}" autocomplete="off">
                     <button class="hero-search-submit" type="submit"><f:translate key="{ll}search.submit" /></button>
@@ -55,4 +53,3 @@
     </f:if>
 </header>
 
-</html>
