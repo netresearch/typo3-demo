@@ -1869,9 +1869,10 @@ VALUES (0, 'set_file_alternative_text', 1);
 -- 4) Frontend showcase page under "Extensions" (uid 101) carrying the two
 --    nr_ai_search plugin content elements. Page uid 158 and tt_content uids
 --    602-604 are above the seed maxima (pages 157, tt_content 601). Both plugins
---    are CType-based (registerPlugin + configurePlugin PLUGIN_TYPE_CONTENT_ELEMENT);
---    neither has a FlexForm (ADR-009), so pi_flexform stays empty (NULL) and all
---    configuration is instance-wide via the extension configuration.
+--    are CType-based (registerPlugin + configurePlugin PLUGIN_TYPE_CONTENT_ELEMENT).
+--    603/604 leave their FlexForm (topic area, AI configuration; nr_ai_search
+--    ADR-041) empty and use the whole index and the extension configuration;
+--    4b) below seeds an element that sets both.
 INSERT IGNORE INTO pages (uid, pid, tstamp, crdate, title, slug, doktype, sorting, hidden, deleted)
 VALUES (158, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'AI Search', '/extensions/ai-search', 1, 800, 1, 0);
 -- Kept HIDDEN on purpose: embeddings work (owner_uid=990 + frontend_accessible,
@@ -1907,6 +1908,37 @@ VALUES (604, 158, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'nraisearch_chat', 'AI Cha
 ON DUPLICATE KEY UPDATE
   bodytext = IF(pid = VALUES(pid) AND CType = VALUES(CType) AND header = VALUES(header),
                 VALUES(bodytext), bodytext);
+
+-- 4b) Settings per element (nr_ai_search ADR-041): a third search element that
+--     answers only from the Secrets Vault page (topic area = page 107) with its
+--     own nr_llm configuration, whose system prompt asks for short answers. The
+--     configuration is created once; an admin's later edits to it are kept, only
+--     its model binding is refreshed like nr_ai_search.chat's.
+INSERT INTO tx_nrllm_configuration
+    (pid, tstamp, crdate, identifier, name, description, model_uid, model_selection_mode,
+     system_prompt, temperature, max_tokens, is_active, is_default)
+SELECT
+    0, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'nr_ai_search.chat.brief', 'AI Search: Brief answers',
+    'Demo of a per-element configuration: the same model as AI Search: Chat, with a system prompt asking for short answers.',
+    COALESCE((SELECT uid FROM tx_nrllm_model WHERE FIND_IN_SET('tools', capabilities) AND deleted = 0 ORDER BY is_default DESC, uid ASC LIMIT 1), 0),
+    'fixed', 'Answer in at most two sentences.', 0.30, 4096, 1, 0
+FROM DUAL
+WHERE NOT EXISTS (
+    SELECT 1 FROM tx_nrllm_configuration WHERE identifier = 'nr_ai_search.chat.brief' AND deleted = 0
+);
+
+UPDATE tx_nrllm_configuration
+SET model_uid = COALESCE(
+        (SELECT uid FROM tx_nrllm_model WHERE FIND_IN_SET('tools', capabilities) AND deleted = 0 ORDER BY is_default DESC, uid ASC LIMIT 1),
+        model_uid),
+    is_active = 1
+WHERE identifier = 'nr_ai_search.chat.brief' AND deleted = 0;
+
+-- The FlexForm names the configuration by uid, which is only known after the
+-- INSERT above; it is re-asserted on every deploy while the element is ours.
+INSERT INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, pi_flexform, colPos, sorting, hidden, deleted)
+VALUES (9233, 158, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'nraisearch_search', 'AI Search: Secrets Vault only', '', '', 0, 250, 0, 0)
+ON DUPLICATE KEY UPDATE uid = uid;
 
 -- =============================================================================
 -- uid budget for everything below (re-derived, not inherited from any document)
@@ -3388,6 +3420,21 @@ VALUES (9214, 158, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 604, 604, 'nraisearch_
 ON DUPLICATE KEY UPDATE
   bodytext = IF(pid = VALUES(pid) AND CType = VALUES(CType) AND header = VALUES(header),
                 VALUES(bodytext), bodytext);
+
+-- Übersetzt tt_content 9233 (KI-Suche nur zum Secrets Vault). Eine Übersetzung trägt
+-- ihr eigenes pi_flexform; das UPDATE darunter schreibt es für beide Sprachen.
+INSERT INTO tt_content (uid, pid, tstamp, crdate, sys_language_uid, l18n_parent, l10n_source, CType, header, bodytext, pi_flexform, colPos, sorting, hidden, deleted)
+VALUES (9234, 158, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 9233, 9233, 'nraisearch_search', 'KI-Suche: nur Secrets Vault', '', '', 0, 250, 0, 0)
+ON DUPLICATE KEY UPDATE uid = uid;
+
+UPDATE tt_content
+SET pi_flexform = CONCAT(
+        '<?xml version="1.0" encoding="utf-8" standalone="yes" ?><T3FlexForms><data><sheet index="sDEF"><language index="lDEF">',
+        '<field index="settings.topicRoot"><value index="vDEF">107</value></field>',
+        '<field index="settings.llmConfiguration"><value index="vDEF">',
+        COALESCE((SELECT uid FROM tx_nrllm_configuration WHERE identifier = 'nr_ai_search.chat.brief' AND deleted = 0 ORDER BY uid ASC LIMIT 1), 0),
+        '</value></field></language></sheet></data></T3FlexForms>')
+WHERE uid IN (9233, 9234) AND pid = 158 AND CType = 'nraisearch_search';
 
 -- =============================================================================
 -- Browser AI (nr_browser_ai) — on-device assistant, frontend showcase page
@@ -7325,6 +7372,7 @@ INSERT INTO seed_expected_content VALUES
   (602, 158, NULL, 0,   0, 0, 0, 100, 'html',              ''),
   (603, 158, NULL, 0,   0, 0, 0, 200, 'nraisearch_search', 'AI Search'),
   (604, 158, NULL, 0,   0, 0, 0, 300, 'nraisearch_chat',   'AI Chat'),
+  (9233, 158, NULL, 0,  0, 0, 0, 250, 'nraisearch_search', 'AI Search: Secrets Vault only'),
   -- 605-607 and 620-622 were created at pid 159 before the Contexts page moved
   -- to uid 164; legacy_pid re-points any row an earlier run left behind.
   (605, 164,  159, 0,   0, 0, 0, 100, 'html',              'Contexts'),
@@ -7362,6 +7410,7 @@ INSERT INTO seed_expected_content VALUES
   (9212, 158, NULL, 1, 602, 0, 0, 100, 'html',              ''),
   (9213, 158, NULL, 1, 603, 0, 0, 200, 'nraisearch_search', 'KI-Suche'),
   (9214, 158, NULL, 1, 604, 0, 0, 300, 'nraisearch_chat',   'KI-Chat'),
+  (9234, 158, NULL, 1, 9233, 0, 0, 250, 'nraisearch_search', 'KI-Suche: nur Secrets Vault'),
   -- Browser AI, public page 9003. 9217 and 9220 are the fallback cards on
   -- colPos 99: enabled, because the RECORDS object that renders them applies
   -- enable fields, and off the page flow because no layout uses that column.
