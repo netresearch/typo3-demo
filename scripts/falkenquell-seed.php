@@ -36,6 +36,22 @@ if ($rootUid <= 0) {
     exit(1);
 }
 
+// Columns the current TYPO3 schema no longer defines (core suggests renaming
+// them to zzz_deleted_*). An instance that started from an older database still
+// carries them, a fresh one does not, so the seed must not name them.
+$classLoader = require '/var/www/vendor/autoload.php';
+\TYPO3\CMS\Core\Core\SystemEnvironmentBuilder::run(0, \TYPO3\CMS\Core\Core\SystemEnvironmentBuilder::REQUESTTYPE_CLI);
+$container = \TYPO3\CMS\Core\Core\Bootstrap::init($classLoader);
+$sqlReader = $container->get(\TYPO3\CMS\Core\Database\Schema\SqlReader::class);
+$leftoverColumns = [];
+foreach ($container->get(\TYPO3\CMS\Core\Database\Schema\SchemaMigrator::class)->getUpdateSuggestions($sqlReader->getCreateTableStatementArray($sqlReader->getTablesDefinitionString()), true) as $suggestions) {
+    foreach ($suggestions['change'] ?? [] as $statement) {
+        if (preg_match('/^ALTER TABLE `([^`]+)` CHANGE `([^`]+)` `zzz_deleted_\2` /', (string)$statement, $m) === 1) {
+            $leftoverColumns[$m[1]][$m[2]] = true;
+        }
+    }
+}
+
 $pdo = new PDO(
     'mysql:host=' . getenv('MARIADB_HOST') . ';dbname=' . getenv('MARIADB_DATABASE') . ';charset=utf8mb4',
     (string)getenv('MARIADB_USER'),
@@ -58,7 +74,7 @@ function uidList(array $rows): string
 $pageUids = [$rootUid];
 $queue = [$rootUid];
 while ($queue !== []) {
-    $children = $pdo->query('SELECT uid FROM pages WHERE deleted = 0 AND sys_language_uid = 0 AND pid IN (' . implode(',', $queue) . ')')->fetchAll(PDO::FETCH_COLUMN);
+    $children = $pdo->query('SELECT uid FROM pages WHERE deleted = 0 AND sys_language_uid = 0 AND pid IN (' . implode(',', $queue) . ')')->fetchAll(PDO::FETCH_COLUMN); // NOSONAR — integer uids read from the database, no outside input
     $queue = array_map('intval', $children);
     $pageUids = array_merge($pageUids, $queue);
 }
@@ -111,7 +127,7 @@ foreach ($records['sys_file'] as $file) {
 $map = [];
 foreach ($records as $table => $tableRows) {
     $own = array_map(static fn(array $row): int => (int)$row['uid'], $tableRows);
-    $taken = array_map('intval', $pdo->query("SELECT uid FROM $table WHERE uid BETWEEN " . BAND_START . ' AND ' . BAND_END)->fetchAll(PDO::FETCH_COLUMN));
+    $taken = array_map('intval', $pdo->query("SELECT uid FROM $table WHERE uid BETWEEN " . BAND_START . ' AND ' . BAND_END)->fetchAll(PDO::FETCH_COLUMN)); // NOSONAR — table names come from the fixed list above
     $taken = array_flip(array_diff($taken, $own));
     $next = BAND_START;
     $map[$table] = [];
@@ -245,6 +261,14 @@ foreach ($records as $table => $tableRows) {
                 $row['uid_foreign'] = mapUid($map, $row['tablenames'], $row['uid_foreign']);
                 $row['link'] = mapTypolink($map, $row['link']);
                 break;
+            default:
+                // pid and translation pointers above are all these records refer to.
+                break;
+        }
+        foreach (array_keys($row) as $column) {
+            if (isset($leftoverColumns[$table][$column]) || str_starts_with($column, 'zzz_deleted_')) {
+                unset($row[$column]);
+            }
         }
         $mapped[$table][] = $row;
     }
