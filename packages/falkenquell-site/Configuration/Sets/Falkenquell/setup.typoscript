@@ -5,6 +5,12 @@ page {
         as = falkenquell
     }
 
+    10.dataProcessing.1740 = files
+    10.dataProcessing.1740 {
+        references.fieldName = media
+        as = heroImages
+    }
+
     includeCSSLibs {
         falkenquellFonts = EXT:falkenquell_site/Resources/Public/Css/fonts.css
     }
