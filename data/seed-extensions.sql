@@ -2118,7 +2118,7 @@ VALUES (608, 160, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'TextDB',
 </div>
 
 <div class="alert alert-light border" role="alert" style="font-size: 1rem;">
-  <strong style="color: #2F99A4;">Try it:</strong> Open <em>Netresearch &gt; TextDb</em> in the module menu and filter by component <code>demo</code>. This demo ships four seeded labels, each with a German translation &mdash; switch the module to the translated view to compare them side by side. The records are stored in the <em>TextDB Translations</em> folder in the page tree.
+  <strong style="color: #2F99A4;">Try it:</strong> Open <em>Content &gt; TextDb</em> in the module menu and filter by component <code>demo</code>. This demo ships four seeded labels, each with a German translation &mdash; switch the module to the translated view to compare them side by side. The records are stored in the <em>TextDB Translations</em> folder in the page tree.
 </div>',
 0, 100, 0, 0)
 ON DUPLICATE KEY UPDATE
@@ -2435,7 +2435,7 @@ VALUES (623, 160, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 608, 608, 'html', 'Text
 </div>
 
 <div class="alert alert-light border" role="alert" style="font-size: 1rem;">
-  <strong style="color: #2F99A4;">Ausprobieren:</strong> <em>Netresearch &gt; TextDb</em> im Modulmenü öffnen und nach der Komponente <code>demo</code> filtern. Diese Demo bringt vier Texte mit, jeweils mit deutscher Übersetzung &mdash; in der Ansicht der übersetzten Einträge stehen sie nebeneinander. Abgelegt sind die Datensätze im Ordner <em>TextDB Translations</em> im Seitenbaum.
+  <strong style="color: #2F99A4;">Ausprobieren:</strong> <em>Inhalt &gt; TextDb</em> im Modulmenü öffnen und nach der Komponente <code>demo</code> filtern. Diese Demo bringt vier Texte mit, jeweils mit deutscher Übersetzung &mdash; in der Ansicht der übersetzten Einträge stehen sie nebeneinander. Abgelegt sind die Datensätze im Ordner <em>TextDB Translations</em> im Seitenbaum.
 </div>',
 0, 100, 0, 0)
 ON DUPLICATE KEY UPDATE

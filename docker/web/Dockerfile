@@ -22,13 +22,6 @@ RUN --mount=type=secret,id=composer_auth \
     COMPOSER_AUTH="$(cat /run/secrets/composer_auth 2>/dev/null || true)" \
     composer install --no-dev --prefer-dist --no-interaction --ignore-platform-reqs --optimize-autoloader
 
-# Patch lochmueller/index: it casts a DateTimeImmutable date field to string
-# directly ((string) $item->get('date')), which throws and aborts index:queue —
-# that blocks nr-ai-search content vectorization on bootstrap-package timeline
-# content. Idempotent str_replace; upstream fix pending. Remove once released.
-COPY docker/web/patch-lochmueller-index.php /tmp/patch-lochmueller-index.php
-RUN php /tmp/patch-lochmueller-index.php && rm -f /tmp/patch-lochmueller-index.php
-
 # mfd/ai-filemetadata's upload listener must run only in a backend request: a
 # CLI job that writes images to FAL (nr_repurpose) would otherwise call the
 # vision model for each image, and a failed call aborts the job. The composer
@@ -90,7 +83,7 @@ FROM php:8.5-fpm-alpine@sha256:64535609509e0fd5c8529359e6b599a68ce42089defd565f7
 # The encoders were originally added for nr_image_optimize. They stay after its
 # removal because core's conversion needs exactly the same thing — the WebP
 # delivery the build asserts comes from core.
-RUN --mount=type=bind,from=ghcr.io/php/pie:1.5.2-bin@sha256:a254c78b51ca34daef0541fa1cf0147385c93ba5ca799868392275d947f00fe7,source=/pie,target=/usr/local/bin/pie \
+RUN --mount=type=bind,from=ghcr.io/php/pie:1.5.5-bin@sha256:3fca03c16df842d02b654dc382db3756058d9c128064f57cace14f8728779ce9,source=/pie,target=/usr/local/bin/pie \
     apk add --no-cache --virtual .build-deps \
         freetype-dev libjpeg-turbo-dev libpng-dev libzip-dev icu-dev linux-headers \
         libwebp-dev libavif-dev imagemagick-dev $PHPIZE_DEPS \
