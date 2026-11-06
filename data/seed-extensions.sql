@@ -3448,15 +3448,23 @@ VALUES
   (9237, 158, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'nraisearch_search', 'AI Search: Answer above keyword results', '', '', 0, 280, 0, 0)
 ON DUPLICATE KEY UPDATE uid = uid;
 
+-- German translations; each carries its own pi_flexform, the UPDATEs below write both.
+INSERT INTO tt_content (uid, pid, tstamp, crdate, sys_language_uid, l18n_parent, l10n_source, CType, header, bodytext, pi_flexform, colPos, sorting, hidden, deleted)
+VALUES
+  (9238, 158, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 9235, 9235, 'nraisearch_search', 'KI-Suche: nur passende Seiten', '', '', 0, 260, 0, 0),
+  (9239, 158, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 9236, 9236, 'nraisearch_search', 'KI-Suche: Stichwort-Treffer', '', '', 0, 270, 0, 0),
+  (9240, 158, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 9237, 9237, 'nraisearch_search', 'KI-Suche: Antwort über Stichwort-Treffern', '', '', 0, 280, 0, 0)
+ON DUPLICATE KEY UPDATE uid = uid;
+
 UPDATE tt_content
 SET pi_flexform = '<?xml version="1.0" encoding="utf-8" standalone="yes" ?><T3FlexForms><data><sheet index="sDEF"><language index="lDEF"><field index="settings.mode"><value index="vDEF">semantic</value></field></language></sheet></data></T3FlexForms>'
-WHERE uid = 9235 AND pid = 158 AND CType = 'nraisearch_search';
+WHERE uid IN (9235, 9238) AND pid = 158 AND CType = 'nraisearch_search';
 UPDATE tt_content
 SET pi_flexform = '<?xml version="1.0" encoding="utf-8" standalone="yes" ?><T3FlexForms><data><sheet index="sDEF"><language index="lDEF"><field index="settings.mode"><value index="vDEF">keyword</value></field></language></sheet></data></T3FlexForms>'
-WHERE uid = 9236 AND pid = 158 AND CType = 'nraisearch_search';
+WHERE uid IN (9236, 9239) AND pid = 158 AND CType = 'nraisearch_search';
 UPDATE tt_content
 SET pi_flexform = '<?xml version="1.0" encoding="utf-8" standalone="yes" ?><T3FlexForms><data><sheet index="sDEF"><language index="lDEF"><field index="settings.mode"><value index="vDEF">answer_keyword</value></field></language></sheet></data></T3FlexForms>'
-WHERE uid = 9237 AND pid = 158 AND CType = 'nraisearch_search';
+WHERE uid IN (9237, 9240) AND pid = 158 AND CType = 'nraisearch_search';
 
 -- =============================================================================
 -- Browser AI (nr_browser_ai) — on-device assistant, frontend showcase page
@@ -7436,6 +7444,9 @@ INSERT INTO seed_expected_content VALUES
   (9213, 158, NULL, 1, 603, 0, 0, 200, 'nraisearch_search', 'KI-Suche'),
   (9214, 158, NULL, 1, 604, 0, 0, 300, 'nraisearch_chat',   'KI-Chat'),
   (9234, 158, NULL, 1, 9233, 0, 0, 250, 'nraisearch_search', 'KI-Suche: nur Secrets Vault'),
+  (9238, 158, NULL, 1, 9235, 0, 0, 260, 'nraisearch_search', 'KI-Suche: nur passende Seiten'),
+  (9239, 158, NULL, 1, 9236, 0, 0, 270, 'nraisearch_search', 'KI-Suche: Stichwort-Treffer'),
+  (9240, 158, NULL, 1, 9237, 0, 0, 280, 'nraisearch_search', 'KI-Suche: Antwort über Stichwort-Treffern'),
   -- Browser AI, public page 9003. 9217 and 9220 are the fallback cards on
   -- colPos 99: enabled, because the RECORDS object that renders them applies
   -- enable fields, and off the page flow because no layout uses that column.
