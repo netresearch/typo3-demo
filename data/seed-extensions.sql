@@ -3436,6 +3436,28 @@ SET pi_flexform = CONCAT(
         '</value></field></language></sheet></data></T3FlexForms>')
 WHERE uid IN (9233, 9234) AND pid = 158 AND CType = 'nraisearch_search';
 
+-- nr_ai_search result modes (ADR-042): one search element per mode besides the
+-- answer. 'semantic' lists the pages the vector search finds without a model call,
+-- 'keyword' the pages nr_llm's keyword search finds (no Solr here, so its database
+-- search answers), 'answer_keyword' the answer above that keyword list. The mode is
+-- re-asserted on every deploy while the element is ours.
+INSERT INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, pi_flexform, colPos, sorting, hidden, deleted)
+VALUES
+  (9235, 158, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'nraisearch_search', 'AI Search: Matching pages only', '', '', 0, 260, 0, 0),
+  (9236, 158, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'nraisearch_search', 'AI Search: Keyword results', '', '', 0, 270, 0, 0),
+  (9237, 158, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'nraisearch_search', 'AI Search: Answer above keyword results', '', '', 0, 280, 0, 0)
+ON DUPLICATE KEY UPDATE uid = uid;
+
+UPDATE tt_content
+SET pi_flexform = '<?xml version="1.0" encoding="utf-8" standalone="yes" ?><T3FlexForms><data><sheet index="sDEF"><language index="lDEF"><field index="settings.mode"><value index="vDEF">semantic</value></field></language></sheet></data></T3FlexForms>'
+WHERE uid = 9235 AND pid = 158 AND CType = 'nraisearch_search';
+UPDATE tt_content
+SET pi_flexform = '<?xml version="1.0" encoding="utf-8" standalone="yes" ?><T3FlexForms><data><sheet index="sDEF"><language index="lDEF"><field index="settings.mode"><value index="vDEF">keyword</value></field></language></sheet></data></T3FlexForms>'
+WHERE uid = 9236 AND pid = 158 AND CType = 'nraisearch_search';
+UPDATE tt_content
+SET pi_flexform = '<?xml version="1.0" encoding="utf-8" standalone="yes" ?><T3FlexForms><data><sheet index="sDEF"><language index="lDEF"><field index="settings.mode"><value index="vDEF">answer_keyword</value></field></language></sheet></data></T3FlexForms>'
+WHERE uid = 9237 AND pid = 158 AND CType = 'nraisearch_search';
+
 -- =============================================================================
 -- Browser AI (nr_browser_ai) — on-device assistant, frontend showcase page
 -- =============================================================================
@@ -7373,6 +7395,9 @@ INSERT INTO seed_expected_content VALUES
   (603, 158, NULL, 0,   0, 0, 0, 200, 'nraisearch_search', 'AI Search'),
   (604, 158, NULL, 0,   0, 0, 0, 300, 'nraisearch_chat',   'AI Chat'),
   (9233, 158, NULL, 0,  0, 0, 0, 250, 'nraisearch_search', 'AI Search: Secrets Vault only'),
+  (9235, 158, NULL, 0,  0, 0, 0, 260, 'nraisearch_search', 'AI Search: Matching pages only'),
+  (9236, 158, NULL, 0,  0, 0, 0, 270, 'nraisearch_search', 'AI Search: Keyword results'),
+  (9237, 158, NULL, 0,  0, 0, 0, 280, 'nraisearch_search', 'AI Search: Answer above keyword results'),
   -- 605-607 and 620-622 were created at pid 159 before the Contexts page moved
   -- to uid 164; legacy_pid re-points any row an earlier run left behind.
   (605, 164,  159, 0,   0, 0, 0, 100, 'html',              'Contexts'),
