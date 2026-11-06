@@ -2,7 +2,7 @@ base: 'https://ai-demo.netresearch.de/'
 baseVariants:
   - base: 'https://falkenquell.netresearch.local/'
     condition: 'applicationContext matches "#^Development#"'
-rootPageId: 10000
+rootPageId: 9300
 dependencies:
   - netresearch/falkenquell
 languages:
@@ -26,7 +26,7 @@ websiteTitle: 'Stadt Falkenquell'
 routeEnhancers:
   EventDetailPlugin:
     type: Extbase
-    limitToPages: [10032]
+    limitToPages: [9332]
     extension: SfEventMgt
     plugin: Pieventdetail
     routes:
@@ -48,7 +48,7 @@ routeEnhancers:
         routeFieldName: slug
   EventRegistrationPlugin:
     type: Extbase
-    limitToPages: [10033]
+    limitToPages: [9333]
     extension: SfEventMgt
     plugin: Pieventregistration
     routes:
