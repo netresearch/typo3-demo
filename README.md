@@ -438,7 +438,10 @@ sends `Accept: text/markdown`: the content of `<main>` with the page metadata
 as YAML front matter, `X-Robots-Tag: noindex`. Every HTML page announces it
 with `<link rel="alternate" type="text/markdown">`. The site has no PageType
 route enhancer, so that link reads `?type=2026` rather than ending in
-`/ai-bots-love.md`; adding an enhancer would change the URL of every page.
+`/ai-bots-love.md`; adding an enhancer would change the URL of every page. It
+is root-relative (`/extensions?type=2026`) although the extension asks for an
+absolute URL: the site base is `/` (`TYPO3_SITE_BASE`), the same reason the
+`og:image` tag is built from `TYPO3_SITE_URL`.
 The middleware sends `Vary: Accept` on every HTML response; nginx passes it
 through, Caddy's compression adds `Accept-Encoding` to the list, and the
 `validate` job of the Build workflow checks that `Accept` arrives. `/llms.txt` is not affected: nginx still serves the

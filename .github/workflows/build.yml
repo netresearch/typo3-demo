@@ -380,7 +380,14 @@ jobs:
           [ "$(wc -l <<<"$links")" -eq 1 ] || fail "more than one Markdown discovery link: $links"
           href=$(grep -oE 'href="[^"]+"' <<<"$links" | cut -d'"' -f2 | sed 's/&amp;/\&/g')
           echo "discovery link -> $href"
-          case "$href" in https://*) : ;; *) fail "the discovery link is not absolute: $href";; esac
+          # The extension asks typolink for an absolute URL, but the site base is
+          # "/" (TYPO3_SITE_BASE), so the link comes out root-relative, which a
+          # client resolves against the page. Anything else is not a page URL.
+          case "$href" in
+            https://*) : ;;
+            /*) href="https://localhost$href" ;;
+            *) fail "the discovery link is neither absolute nor root-relative: $href" ;;
+          esac
 
           fetch 'text/markdown' https://localhost/extensions /tmp/ext-md
           fetch 'text/html' "$href" /tmp/ext-link
