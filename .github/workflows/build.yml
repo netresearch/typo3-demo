@@ -362,8 +362,9 @@ jobs:
             curl -sSf --proto '=https' --proto-redir '=https' --cacert "$RUNNER_TEMP/caddy-root.crt" \
               -H "Accept: $accept" -D "$out.headers" -o "$out.body" "$url"
           }
-          # Every pattern test reads a file or a herestring, never a pipe: under
-          # pipefail a `grep -q` that stops at its match can fail the writer.
+          # Every pattern test reads a file or a herestring, never a pipe: a
+          # `grep -q` that stops at its match can kill the writer with SIGPIPE,
+          # which fails the test as soon as the step runs with pipefail.
           header() { local file="$1" name="$2"; grep -i "^$name:" "$file" | cut -d: -f2- | tr -d '\r' || true; }
           varies_by_accept() {
             local file="$1" tokens

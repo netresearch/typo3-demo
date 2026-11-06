@@ -1894,7 +1894,7 @@ VALUES (0, 'set_file_alternative_text', 1);
 --    are CType-based (registerPlugin + configurePlugin PLUGIN_TYPE_CONTENT_ELEMENT).
 --    603/604 leave their FlexForm (topic area, AI configuration; nr_ai_search
 --    ADR-041) empty and use the whole index and the extension configuration;
---    4b) below seeds an element that sets both.
+--    4b) and 4d) below seed elements that set both.
 INSERT IGNORE INTO pages (uid, pid, tstamp, crdate, title, slug, doktype, sorting, hidden, deleted)
 VALUES (158, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'AI Search', '/extensions/ai-search', 1, 800, 1, 0);
 -- Kept HIDDEN on purpose: embeddings work (owner_uid=990 + frontend_accessible,
