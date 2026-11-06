@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file source-language="en" target-language="de" datatype="plaintext" original="EXT:falkenquell_site/Configuration/Sets/Falkenquell/labels.xlf" date="2026-11-03T12:00:00Z" product-name="falkenquell_site">
+    <header/>
+    <body>
+      <trans-unit id="label">
+        <source>Falkenquell Site</source>
+        <target>Falkenquell-Site</target>
+      </trans-unit>
+      <trans-unit id="categories.falkenquell">
+        <source>Falkenquell</source>
+        <target>Falkenquell</target>
+      </trans-unit>
+      <trans-unit id="categories.falkenquell.search">
+        <source>Search</source>
+        <target>Suche</target>
+      </trans-unit>
+      <trans-unit id="settings.falkenquell.search.pageUid">
+        <source>Search result page</source>
+        <target>Suchergebnisseite</target>
+      </trans-unit>
+      <trans-unit id="settings.description.falkenquell.search.pageUid">
+        <source>Page the search field in the start page hero submits to. With 0 the search field is not shown.</source>
+        <target>Seite, an die das Suchfeld im Hero der Startseite sendet. Bei 0 wird das Suchfeld nicht angezeigt.</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

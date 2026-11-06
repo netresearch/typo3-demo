@@ -1,0 +1,63 @@
+$enable-rfs: false;
+$enable-responsive-font-sizes: false;
+
+$grid-float-breakpoint: 1200px;
+
+$font-size-base: 1.125rem;
+$line-height-base: 1.6111;
+$h1-font-size: 2.75rem;
+$h2-font-size: 2rem;
+$h3-font-size: 1.5rem;
+$h4-font-size: 1.25rem;
+$h5-font-size: 1.125rem;
+$h6-font-size: 1.125rem;
+$headings-font-weight: 700;
+$headings-line-height: 1.2;
+$headings-color: #094277;
+
+$border-color: #dbe2e9;
+$border-radius: 3px;
+$border-radius-sm: 3px;
+$border-radius-lg: 6px;
+$card-border-radius: 6px;
+$card-border-color: #dbe2e9;
+
+$btn-font-size: 1.0625rem;
+$btn-font-weight: 600;
+$btn-padding-y: .625rem;
+$btn-padding-x: 1.25rem;
+$btn-border-width: 2px;
+$btn-border-radius: 3px;
+
+$input-border-color: #56616d;
+$input-border-radius: 3px;
+
+$container-max-widths: (
+    sm: 540px,
+    md: 720px,
+    lg: 960px,
+    xl: 1140px,
+    xxl: 1240px
+);
+
+$navbar-heights: (
+    xs: 100px,
+    sm: 100px,
+    md: 100px,
+    lg: 130px,
+    xl: 130px,
+    xxl: 130px
+);
+
+$footer-sections: (
+    'content': (
+        'background': #094277,
+        'color': #ffffff,
+        'link-color': #ffffff
+    ),
+    'meta': (
+        'background': #094277,
+        'color': #ffffff,
+        'link-color': #ffffff
+    )
+);

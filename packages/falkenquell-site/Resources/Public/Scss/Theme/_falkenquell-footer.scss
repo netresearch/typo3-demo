@@ -1,0 +1,49 @@
+.footer-section-content {
+    padding-top: 3rem;
+    padding-bottom: 2.5rem;
+    .element-header {
+        margin-bottom: 1rem;
+        font-size: 1.25rem;
+        color: #ffffff;
+    }
+    .textpic-text > :last-child {
+        margin-bottom: 0;
+    }
+    a:not(.btn) {
+        color: #ffffff;
+        text-decoration: underline;
+        text-decoration-color: rgba(255, 255, 255, .5);
+        &:hover {
+            text-decoration-color: #ffffff;
+        }
+    }
+    ul {
+        padding-left: 0;
+        list-style: none;
+        li + li {
+            margin-top: .375rem;
+        }
+    }
+    .btn-secondary {
+        color: #1c2733;
+        background-color: #38a1e1;
+        border-color: #38a1e1;
+        &:hover,
+        &:focus-visible {
+            color: #1c2733;
+            background-color: #ffffff;
+            border-color: #ffffff;
+        }
+    }
+}
+
+.footer-brand-logo {
+    display: block;
+    width: 200px;
+    height: auto;
+    margin-bottom: 1.5rem;
+}
+
+.footer-section-meta {
+    border-top: 1px solid rgba(255, 255, 255, .2);
+}

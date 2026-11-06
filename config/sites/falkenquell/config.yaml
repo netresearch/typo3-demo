@@ -1,0 +1,115 @@
+base: 'https://ai-demo.netresearch.de/'
+baseVariants:
+  - base: 'https://falkenquell.netresearch.local/'
+    condition: 'applicationContext matches "#^Development#"'
+rootPageId: 9300
+dependencies:
+  - netresearch/falkenquell
+languages:
+  - title: Deutsch
+    enabled: true
+    languageId: 0
+    base: /
+    locale: de_DE.UTF-8
+    navigationTitle: Deutsch
+    flag: de
+  - title: English
+    enabled: true
+    languageId: 1
+    base: /en/
+    locale: en_GB.UTF-8
+    navigationTitle: English
+    flag: gb
+    fallbackType: fallback
+    fallbacks: '0'
+websiteTitle: 'Stadt Falkenquell'
+routeEnhancers:
+  EventDetailPlugin:
+    type: Extbase
+    limitToPages: [9332]
+    extension: SfEventMgt
+    plugin: Pieventdetail
+    routes:
+      -
+        routePath: '/{event_title}'
+        _controller: 'Event::detail'
+        _arguments:
+          event_title: event
+      -
+        routePath: '/{event_title}/ical'
+        _controller: 'Event::icalDownload'
+        _arguments:
+          event_title: event
+    defaultController: 'Event::detail'
+    aspects:
+      event_title:
+        type: PersistedAliasMapper
+        tableName: tx_sfeventmgt_domain_model_event
+        routeFieldName: slug
+  EventRegistrationPlugin:
+    type: Extbase
+    limitToPages: [9333]
+    extension: SfEventMgt
+    plugin: Pieventregistration
+    routes:
+      -
+        routePath: '/{event_title}'
+        _controller: 'Event::registration'
+        _arguments:
+          event_title: event
+      -
+        routePath: '/save-registration/{event_title}'
+        _controller: 'Event::saveRegistration'
+        _arguments:
+          event_title: event
+      -
+        routePath: '/save-registration-result/{eventuid}/{reguid}/{result}/{hmac}'
+        _controller: 'Event::saveRegistrationResult'
+        _arguments:
+          eventuid: eventuid
+          reguid: reguid
+          result: result
+          hmac: hmac
+      -
+        routePath: '/confirm-registration/{reguid}/{hmac}'
+        _controller: 'Event::confirmRegistration'
+        _arguments:
+          reguid: reguid
+          hmac: hmac
+      -
+        routePath: '/verify-confirm-registration/{reguid}/{hmac}'
+        _controller: 'Event::verifyConfirmRegistration'
+        _arguments:
+          reguid: reguid
+          hmac: hmac
+      -
+        routePath: '/cancel-registration/{reguid}/{hmac}'
+        _controller: 'Event::cancelRegistration'
+        _arguments:
+          reguid: reguid
+          hmac: hmac
+      -
+        routePath: '/verify-cancel-registration/{reguid}/{hmac}'
+        _controller: 'Event::verifyCancelRegistration'
+        _arguments:
+          reguid: reguid
+          hmac: hmac
+    defaultController: 'Event::registration'
+    requirements:
+      eventuid: \d+
+      reguid: \d+
+      result: '[0-9]'
+      hmac: '^[a-zA-Z0-9]{40}$'
+    aspects:
+      eventuid:
+        type: PersistedAliasMapper
+        tableName: tx_sfeventmgt_domain_model_event
+        routeFieldName: uid
+      reguid:
+        type: PersistedAliasMapper
+        tableName: tx_sfeventmgt_domain_model_registration
+        routeFieldName: uid
+      event_title:
+        type: PersistedAliasMapper
+        tableName: tx_sfeventmgt_domain_model_event
+        routeFieldName: slug

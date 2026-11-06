@@ -1,0 +1,39 @@
+page {
+    10.dataProcessing.1730 = BK2K\BootstrapPackage\DataProcessing\ConstantsProcessor
+    10.dataProcessing.1730 {
+        key = falkenquell
+        as = falkenquell
+    }
+
+    10.dataProcessing.1740 = files
+    10.dataProcessing.1740 {
+        references.fieldName = media
+        as = heroImages
+    }
+
+    includeCSSLibs {
+        falkenquellFonts = EXT:falkenquell_site/Resources/Public/Css/fonts.css
+    }
+
+    includeJSFooter {
+        falkenquellHeaderSearch = EXT:falkenquell_site/Resources/Public/JavaScript/header-search.js
+    }
+
+    includeCSS {
+        theme = EXT:falkenquell_site/Resources/Public/Scss/Theme/theme.scss
+    }
+
+    headerData {
+        100 = TEXT
+        100 {
+            value = <link rel="icon" type="image/png" sizes="32x32" href="{asset:EXT:falkenquell_site/Resources/Public/Icons/favicon-32.png}">
+            insertData = 1
+        }
+
+        110 = TEXT
+        110 {
+            value = <link rel="apple-touch-icon" href="{asset:EXT:falkenquell_site/Resources/Public/Icons/apple-touch-icon.png}">
+            insertData = 1
+        }
+    }
+}

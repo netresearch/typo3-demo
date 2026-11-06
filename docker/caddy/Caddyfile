@@ -8,7 +8,7 @@
 	}
 }
 
-{$TYPO3_DOMAIN:localhost} {
+(typo3) {
     reverse_proxy web:80 {
         # A deploy replaces the web container, and the new one accepts
         # connections only when its entrypoint is done (about 10-30s). Caddy
@@ -38,4 +38,19 @@
         output stdout
         format json
     }
+}
+
+{$TYPO3_DOMAIN:localhost} {
+    import typo3
+}
+
+# Falkenquell (NRMARKETING-1485), the second site of this instance, behind basic
+# auth until it is announced. The credentials come from the GitHub secrets
+# FALKENQUELL_BASIC_AUTH_USER and FALKENQUELL_BASIC_AUTH_HASH (a bcrypt hash,
+# `caddy hash-password`); compose.yml supplies a closed default for both.
+{$FALKENQUELL_DOMAIN:ai-demo.netresearch.de} {
+    basic_auth {
+        {$FALKENQUELL_BASIC_AUTH_USER} {$FALKENQUELL_BASIC_AUTH_HASH}
+    }
+    import typo3
 }
