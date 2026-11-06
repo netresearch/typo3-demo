@@ -8534,7 +8534,7 @@ UNION ALL
 SELECT CONCAT('SEED-PROBLEM: ', COUNT(*),
               ' extension screenshots still carry their old checksum -- the refresh did not match')
   FROM sys_file
- WHERE uid IN (278, 279, 280, 281, 282, 283, 284, 285, 287, 288, 289)
+ WHERE uid IN (278, 279, 280, 281, 282, 283, 284, 285, 287, 288, 289, 9001)
    AND sha1 NOT IN (
        'fd25fdf0d36ffa1ec7b02297f1c1e42cb808179b',
        'c3d23741172d3c68d98b90f7a3947424a3178244',
@@ -8546,7 +8546,8 @@ SELECT CONCAT('SEED-PROBLEM: ', COUNT(*),
        'b58fced6b05e7456036fa72bd55ed0c69fa51982',
        '570c24da07d8dd301be229ef66da8b580d336b9f',
        '5ef9bb0f7e881495e92a2ded9279d798712ca7a5',
-       'cd14e00a432e9d758291714ec99071d96a99996b')
+       'cd14e00a432e9d758291714ec99071d96a99996b',
+       'ec77bf1411edbcf032d5b8b081645b5408737775')
 HAVING COUNT(*) > 0
 UNION ALL
 -- The property this whole band exists for, asserted directly rather than
