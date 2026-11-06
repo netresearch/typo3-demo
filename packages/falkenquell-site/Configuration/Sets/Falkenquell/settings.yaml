@@ -34,3 +34,5 @@ plugin.bootstrap_package.settings.scss.link-hover-color: '#1a6fa3'
 plugin.bootstrap_package.settings.scss.font-family-sans-serif: '"Source Sans 3", sans-serif'
 plugin.bootstrap_package.settings.scss.enable-shadows: false
 plugin.bootstrap_package.settings.scss.enable-gradients: false
+
+page.theme.navigation.type: 'top'

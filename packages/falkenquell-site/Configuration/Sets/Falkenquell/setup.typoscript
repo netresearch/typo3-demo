@@ -15,6 +15,10 @@ page {
         falkenquellFonts = EXT:falkenquell_site/Resources/Public/Css/fonts.css
     }
 
+    includeJSFooter {
+        falkenquellHeaderSearch = EXT:falkenquell_site/Resources/Public/JavaScript/header-search.js
+    }
+
     includeCSS {
         theme = EXT:falkenquell_site/Resources/Public/Scss/Theme/theme.scss
     }

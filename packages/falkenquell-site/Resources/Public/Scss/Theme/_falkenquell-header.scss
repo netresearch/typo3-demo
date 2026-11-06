@@ -38,3 +38,190 @@
         }
     }
 }
+
+.container-mainnavigation {
+    gap: 0 .5rem;
+    @media (min-width: $grid-float-breakpoint) {
+        gap: 0 2rem;
+    }
+    .navbar-toggler {
+        order: 2;
+        align-self: center;
+    }
+    .navbar-collapse {
+        order: 3;
+        @media (min-width: $grid-float-breakpoint) {
+            order: 1;
+        }
+    }
+}
+
+.header-tools {
+    display: flex;
+    order: 1;
+    align-items: center;
+    align-self: center;
+    gap: .5rem;
+    margin-left: auto;
+    @media (min-width: $grid-float-breakpoint) {
+        order: 2;
+        margin-left: 0;
+    }
+}
+
+.header-language-list {
+    display: flex;
+    gap: .25rem;
+    padding-left: 0;
+    margin-bottom: 0;
+    list-style: none;
+}
+
+.header-language-link {
+    display: block;
+    padding: .5rem .5rem;
+    font-weight: 600;
+    line-height: 1.5;
+    color: #094277;
+    text-decoration: none;
+    text-transform: uppercase;
+    border-radius: 3px;
+    &:hover {
+        color: #094277;
+        background-color: #f3f6f9;
+    }
+    &.active {
+        color: #ffffff;
+        background-color: #094277;
+    }
+    &:focus-visible {
+        outline: 3px solid #38a1e1;
+        outline-offset: 2px;
+    }
+}
+
+.header-search-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    padding: 0;
+    color: #094277;
+    background: transparent;
+    border: 0;
+    border-radius: 3px;
+    &:hover {
+        background-color: #f3f6f9;
+    }
+    &:focus-visible {
+        outline: 3px solid #38a1e1;
+        outline-offset: 2px;
+    }
+    &[aria-expanded="true"] {
+        color: #ffffff;
+        background-color: #094277;
+        .header-search-icon-open {
+            display: none;
+        }
+        .header-search-icon-close {
+            display: block;
+        }
+    }
+}
+
+.header-search-icon-close {
+    display: none;
+}
+
+.header-search {
+    flex: 0 0 100%;
+    width: 100%;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    background-color: #094277;
+}
+
+.header-search .header-search-form {
+    max-width: 40rem;
+    margin-top: 0;
+    margin-left: auto;
+}
+
+.navbar-mainnavigation {
+    padding-top: .75rem;
+    padding-bottom: .75rem;
+    .navbar-brand {
+        align-self: center;
+        height: auto;
+    }
+    .navbar-brand-image img {
+        top: auto;
+        display: block;
+        transform: none;
+        transition: height .27s ease-out;
+        @media (max-width: 575.98px) {
+            height: 56px;
+        }
+    }
+    &.navbar-transition {
+        --mainnavigation-nav-height: 80px;
+        box-shadow: 0 .25rem 1rem rgba(28, 39, 51, .12);
+        .navbar-brand-image img {
+            height: 56px;
+        }
+    }
+}
+
+@media (min-width: $grid-float-breakpoint) {
+    .navbar-mainnavigation {
+        flex-wrap: wrap;
+        --mainnavigation-nav-spacing-x: .5em;
+        --mainnavigation-link-padding-x: .4em;
+        .navbar-nav {
+            justify-content: flex-end;
+            > .nav-item {
+                flex-wrap: nowrap;
+            }
+        }
+        .nav-link-text {
+            white-space: nowrap;
+        }
+    }
+
+    .navbar-mainnavigation .container-mainnavigation {
+        display: grid;
+        grid-template-areas:
+            "logo tools"
+            "logo nav";
+        grid-template-columns: auto 1fr;
+        gap: .25rem 2rem;
+        .navbar-brand {
+            grid-area: logo;
+            align-self: center;
+        }
+        .header-tools {
+            grid-area: tools;
+            align-self: end;
+            justify-self: end;
+        }
+        .navbar-collapse {
+            grid-area: nav;
+            align-self: start;
+        }
+    }
+
+    .navbar-mainnavigation.navbar-transition {
+        .container-mainnavigation {
+            grid-template-areas: "logo nav tools";
+            grid-template-columns: auto 1fr auto;
+            .header-tools,
+            .navbar-collapse {
+                align-self: center;
+            }
+        }
+        .header-language {
+            display: none;
+        }
+    }
+}
