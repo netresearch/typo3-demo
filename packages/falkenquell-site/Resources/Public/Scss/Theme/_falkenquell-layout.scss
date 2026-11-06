@@ -8,3 +8,25 @@
 .bp-page-content {
     flex: 1 0 auto;
 }
+
+.textteaser {
+    display: block;
+    max-width: 48rem;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+.textteaser-item {
+    width: auto;
+}
+
+.textteaser-teaser {
+    margin-bottom: 1.5rem;
+    > :not(.frame-header) {
+        padding-left: 1.25rem;
+        font-size: 1.375rem;
+        line-height: 1.4545;
+        color: #094277;
+        border-left: 4px solid #7cb35b;
+    }
+}
