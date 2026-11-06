@@ -312,7 +312,7 @@ services:
       $options:
         description: 'Moves frontend system strings — form labels, buttons, confirmation messages — out of XLIFF files and into the database, so editors change the wording in the backend without a deployment. Keys are filed by environment, component, and type, and a key rendered for the first time creates its own record.'
         howTo:
-          - 'Open Netresearch > TextDb in the module menu.'
+          - 'Open Content > TextDb in the module menu.'
           - 'Filter by component "demo" to see the four seeded labels, then switch to the translated view to compare them with their German translations.'
           - 'Use Import to upload an XLIFF file, or Export to download the current filtered set as a ZIP.'
           - 'The records are stored in the "TextDB Translations" folder in the page tree.'
