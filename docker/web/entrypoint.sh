@@ -289,6 +289,33 @@ MANAGED_BLOCK_PHP='
     }
 '
 
+# Trusted hosts beyond TYPO3_DOMAIN. settings.php gets its trustedHostsPattern
+# on FIRST BOOT ONLY and from TYPO3_DOMAIN alone, so a second site on this
+# instance (Falkenquell, ai-demo.netresearch.de) would be refused with "The
+# current host header value does not match the configured trusted hosts
+# pattern". This block lists TYPO3_DOMAIN, TYPO3_ADDITIONAL_DOMAINS and the
+# healthcheck hosts, and is rewritten on every boot. Without additional domains
+# the block stays empty and the settings.php pattern applies unchanged.
+if [ -f config/system/settings.php ]; then
+    php -r "$MANAGED_BLOCK_PHP"'
+        $f = "config/system/additional.php";
+        $begin = "// >>> trusted hosts (managed by entrypoint, do not edit this block)";
+        $end   = "// <<< trusted hosts";
+        $extra = preg_split("/[\s,]+/", trim((string) getenv("TYPO3_ADDITIONAL_DOMAINS")), -1, PREG_SPLIT_NO_EMPTY);
+        $block = $begin . "\n";
+        if ($extra !== []) {
+            $hosts = array_values(array_unique(array_merge([getenv("TYPO3_DOMAIN") ?: "localhost"], $extra, ["localhost", "127.0.0.1"])));
+            $pattern = "^(" . implode("|", array_map("preg_quote", $hosts)) . ")(:[0-9]+)?\$";
+            $block .= "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"SYS\"][\"trustedHostsPattern\"] = " . var_export($pattern, true) . ";\n";
+        }
+        $block .= $end;
+        if (!write_managed_block($f, $begin, $end, $block)) {
+            exit(1);
+        }
+        echo "additional.php: trustedHostsPattern " . ($extra === [] ? "from settings.php" : "for " . implode(", ", $hosts)) . "." . PHP_EOL;
+    ' || echo "WARNING: failed to write the trusted hosts block in additional.php" >&2
+fi
+
 # Point the AI Chat (nr_mcp_agent) at the seeded nr-llm Task (uid 1).
 # config/system is a Docker volume that overlays any repo-provided
 # file, so this is (re)written on every boot. It is idempotent and merge-safe:

@@ -26,7 +26,7 @@ jobs:
           host: ${{ secrets.HETZNER_SSH_HOST }}
           username: ${{ vars.HETZNER_SSH_USER }}
           key: ${{ secrets.HETZNER_SSH_KEY }}
-          envs: DHI_USERNAME,DHI_TOKEN,OPENAI_API_KEY,DEEPL_API_KEY,DEPLOY_SHA
+          envs: DHI_USERNAME,DHI_TOKEN,OPENAI_API_KEY,DEEPL_API_KEY,DEPLOY_SHA,FALKENQUELL_BASIC_AUTH_USER,FALKENQUELL_BASIC_AUTH_HASH
           # The default of 10m is shorter than one chat worker's stop: compose.yml
           # gives it 610s to finish a running turn. A recreate that waits for it
           # outlived the session, which ended with the new web container created
@@ -112,3 +112,8 @@ jobs:
           # translator. Absent or empty, a key already stored on the host and in
           # the vault is kept and the deploy still succeeds.
           DEEPL_API_KEY: ${{ secrets.DEEPL_API_KEY }}
+          # Basic auth of the Falkenquell site (docker/caddy/Caddyfile), written into
+          # .env by `make update`. Absent, the value stored on the host is kept, and
+          # without any value compose.yml keeps the site closed.
+          FALKENQUELL_BASIC_AUTH_USER: ${{ secrets.FALKENQUELL_BASIC_AUTH_USER }}
+          FALKENQUELL_BASIC_AUTH_HASH: ${{ secrets.FALKENQUELL_BASIC_AUTH_HASH }}

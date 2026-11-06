@@ -53,6 +53,8 @@ update: ## Update code without purging data
 	# time, and the deploy session's variables are gone by the next host reboot.
 	$(MAKE) persist-env-secret SECRET_NAME=OPENAI_API_KEY
 	$(MAKE) persist-env-secret SECRET_NAME=DEEPL_API_KEY
+	$(MAKE) persist-env-secret SECRET_NAME=FALKENQUELL_BASIC_AUTH_USER
+	$(MAKE) persist-env-secret SECRET_NAME=FALKENQUELL_BASIC_AUTH_HASH
 	$(COMPOSE) pull
 	# Workers first, while the old web container still serves; then web and
 	# caddy; then the rest. A single `up` recreates web together with every

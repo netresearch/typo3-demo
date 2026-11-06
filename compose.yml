@@ -28,6 +28,9 @@ services:
       MARIADB_PASSWORD: ${MARIADB_PASSWORD:-typo3}
       TYPO3_CONTEXT: ${TYPO3_CONTEXT:-Development/Docker}
       TYPO3_DOMAIN: ${TYPO3_DOMAIN:-localhost}
+      # Further hosts TYPO3 answers (space separated), added to
+      # trustedHostsPattern on every boot: the Falkenquell site.
+      TYPO3_ADDITIONAL_DOMAINS: ${TYPO3_ADDITIONAL_DOMAINS:-ai-demo.netresearch.de}
       TYPO3_SITE_BASE: ${TYPO3_SITE_BASE:-/}
       TYPO3_ENCRYPTION_KEY: ${TYPO3_ENCRYPTION_KEY:-}
       TYPO3_INSTALL_TOOL_PASSWORD: ${TYPO3_INSTALL_TOOL_PASSWORD:-joh316}
@@ -617,6 +620,13 @@ services:
       - caddy-config-v2:/config
     environment:
       TYPO3_DOMAIN: ${TYPO3_DOMAIN:-localhost}
+      FALKENQUELL_DOMAIN: ${FALKENQUELL_DOMAIN:-ai-demo.netresearch.de}
+      # Basic auth for the Falkenquell site, from the GitHub secrets via .env.
+      # `:-` also replaces an empty value: Caddy would accept a basic_auth block
+      # without an account. The default hash belongs to a random password nobody
+      # knows, so a missing secret keeps the site closed.
+      FALKENQUELL_BASIC_AUTH_USER: ${FALKENQUELL_BASIC_AUTH_USER:-falkenquell}
+      FALKENQUELL_BASIC_AUTH_HASH: ${FALKENQUELL_BASIC_AUTH_HASH:-$$2b$$14$$PqKnrM9D7/6Xv5ya6j/Q1uXQjHP5CEERjY33kkdQ/SpYR94jZIzvi}
     # service_started, not service_healthy: when caddy itself is recreated (a
     # new dhi.io/caddy:2 digest, a changed mount) it starts with the new web
     # container instead of after its boot, and the reverse_proxy retry in the
