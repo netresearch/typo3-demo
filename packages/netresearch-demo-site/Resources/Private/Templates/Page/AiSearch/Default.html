@@ -1,0 +1,34 @@
+<f:comment>
+    bootstrap_package's Templates/Page/Default.html for the AI Search page (158)
+    only, see setup.typoscript. The one addition: an AI search element rendered by
+    the page template through nr_ai_search's ViewHelper (ADR-043) instead of the
+    content area. The element (9241) sits on colPos 99, which no layout renders.
+    No html wrapper element, like the other overrides here: "f" is global, and
+    nr_ai_search registers "nrai" globally.
+</f:comment>
+<f:layout name="Default" />
+<f:section name="Border">
+
+    <f:cObject typoscriptObjectPath="lib.dynamicContent" data="{pageUid: '{data.uid}', colPos: '3', slide: '{theme.pagelayout.{pagelayout}.colPos.3.slide}'}" />
+
+</f:section>
+<f:section name="Main">
+
+    <f:cObject typoscriptObjectPath="lib.dynamicContent" data="{pageUid: '{data.uid}', colPos: '8', slide: '{theme.pagelayout.{pagelayout}.colPos.8.slide}'}" />
+
+    <div class="section section-default" data-demo-page-template-element="1">
+        <nrai:element uid="9241" />
+    </div>
+
+    <div class="section section-default">
+        <f:cObject typoscriptObjectPath="lib.dynamicContent" data="{pageUid: '{data.uid}', colPos: '0', slide: '{theme.pagelayout.{pagelayout}.colPos.0.slide}'}" />
+    </div>
+
+    <f:cObject typoscriptObjectPath="lib.dynamicContent" data="{pageUid: '{data.uid}', colPos: '9', slide: '{theme.pagelayout.{pagelayout}.colPos.9.slide}'}" />
+
+</f:section>
+<f:section name="Footer">
+
+    <f:render partial="Structure/FooterContent" arguments="{_all}" />
+
+</f:section>

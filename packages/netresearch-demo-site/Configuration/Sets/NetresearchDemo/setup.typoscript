@@ -274,6 +274,16 @@ config {
 [END]
 
 #
+# AI Search page (158, hidden): its page template renders one more AI search
+# element (tt_content 9241, colPos 99) through nr_ai_search's <nrai:element>
+# ViewHelper, to show an element placed by a template rather than in the content
+# area. Only this page gets the template; every other page keeps bootstrap_package's.
+#
+[traverse(page, "uid") == 158]
+    page.10.templateRootPaths.158 = EXT:netresearch_demo_site/Resources/Private/Templates/Page/AiSearch/
+[END]
+
+#
 # Browser AI form assistant (page 9004): describe the plugin and the chain it
 # demonstrates, so an answer engine can state what this is without parsing prose.
 # The four HowTo steps are the four steps the page itself lists under "How it
