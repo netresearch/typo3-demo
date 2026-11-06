@@ -272,10 +272,13 @@ jobs:
 
           echo "Meta tags present and indexable."
 
-      # The JSON-LD is assembled in TypoScript, where a stray quote or an
-      # unreplaced placeholder produces a block that still *looks* present and
-      # is silently worthless to every consumer. So parse it, rather than grep
-      # for the script tag.
+      # brotkrueml/schema writes the JSON-LD from SCHEMA objects in TypoScript
+      # and from the site package's listener for page 9004. A misspelt type or
+      # property is not an error there: the extension logs it and leaves the
+      # node out, and the page still renders. So parse the block and name the
+      # types it must carry, rather than grep for the script tag. Exactly one
+      # block: the extension merges every type into one, so a second block is
+      # hand-written markup that came back.
       - name: Verify the structured data parses
         run: |
           get() { curl -sSfL --proto '=https' --proto-redir '=https' --cacert "$RUNNER_TEMP/caddy-root.crt" "$1"; }
@@ -285,8 +288,9 @@ jobs:
           import json, re, sys
 
           expected = {
-              '/tmp/home.html':   {'WebSite', 'Organization'},
-              '/tmp/plugin.html': {'SoftwareApplication', 'HowTo'},
+              '/tmp/home.html':   {'WebSite', 'Organization', 'WebPage'},
+              '/tmp/plugin.html': {'WebSite', 'Organization', 'WebPage',
+                                   'SoftwareApplication', 'SoftwareSourceCode', 'HowTo'},
           }
           failed = False
           for path, want in expected.items():
@@ -295,6 +299,9 @@ jobs:
                   r'<script[^>]+type="application/ld\+json"[^>]*>(.*?)</script>', html, re.S)
               if not blocks:
                   print(f'::error::{path}: no JSON-LD block at all'); failed = True; continue
+              if len(blocks) != 1:
+                  print(f'::error::{path}: {len(blocks)} JSON-LD blocks, expected the one brotkrueml/schema writes')
+                  failed = True
               seen = set()
               for i, raw in enumerate(blocks, 1):
                   if '###' in raw:
@@ -313,6 +320,11 @@ jobs:
                           if isinstance(v, str) and v.startswith('/'):
                               print(f'::error::{path}: {n.get("@type")}.{key} is relative: {v}')
                               failed = True
+                      # The four steps the page lists under "How it works", the
+                      # list a SCHEMA object cannot express.
+                      if n.get('@type') == 'HowTo' and len(n.get('step') or []) != 4:
+                          print(f'::error::{path}: HowTo has {len(n.get("step") or [])} steps, expected 4')
+                          failed = True
               missing = want - seen
               print(f'{path}: {len(blocks)} block(s), types {sorted(t for t in seen if t)}')
               if missing:
