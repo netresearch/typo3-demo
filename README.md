@@ -453,6 +453,26 @@ through, Caddy's compression adds `Accept-Encoding` to the list, and the
 `validate` job of the Build workflow checks that `Accept` arrives.
 `/llms.txt` is not affected: nginx still serves the curated one.
 
+## Page scores (sitescore)
+
+`in2code/sitescore` adds a score dashboard (GEO & SEO, performance, semantics,
+keyword, accessibility) with suggestions at the top of the Page module; "Analyze
+Page" starts an analysis. Sitescore asks Google Gemini by default and needs a
+Gemini key for that. This instance has none: `docker/web/entrypoint.sh` enables
+the `sitescore` integration of `netresearch/nr-llm-compat` (0.5.0 and later),
+which points sitescore's `llmRepositoryClass` hook at a bridge that sends the
+analysis through nr-llm's default configuration and its provider key.
+Sitescore fetches the page's rendered HTML over HTTP from the backend request's
+domain and sends all of it, with the page title and the page's
+`tx_sitescore_keyword`, to the model. `vendor/bin/typo3 nrllm:compat:status`
+shows whether the integration is active. `vendor/bin/typo3
+sitescore:analyzePage` does not work here: with the site base `/` it cannot
+build an absolute page URL outside a backend request. On a local `make up`
+with `TYPO3_DOMAIN=localhost`, "Analyze Page" fails as well: the fetch goes to
+`https://localhost/`, which inside the `web` container is the container itself,
+and it serves plain HTTP only. On a public domain the fetch leaves the container
+and reaches Caddy.
+
 ## AI Chat turns
 
 `chat-worker` runs the turns of the AI Chat, in two replicas. A booted process waits
