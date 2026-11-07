@@ -301,12 +301,16 @@ if [ -f config/system/settings.php ]; then
     ' || echo "WARNING: failed to write additional.php" >&2
 fi
 
-# Enable the two nr-llm-compat integrations for extensions this demo installs.
+# Enable the nr-llm-compat integrations for extensions this demo installs.
 # Opt-in by design: without these flags the compat extension does nothing.
 #  - ai_filemetadata: routes EXT:ai_filemetadata's alt-text calls through nr-llm.
 #  - news: gives the assistant the create_news_draft tool for EXT:news
 #    (NEXT-160). The tool itself stays off until an administrator enables it
 #    in nr-llm's Tools module.
+#  - sitescore: points EXT:sitescore's llmRepositoryClass hook at the compat
+#    bridge (nr-llm-compat 0.5.0), so the page analysis behind the scores in
+#    the page module runs through nr-llm's default configuration and needs no
+#    Gemini API key. The analysis sends the page's full rendered HTML.
 # Same managed-block mechanics as above.
 if [ -f config/system/settings.php ]; then
     php -r '
@@ -316,6 +320,7 @@ if [ -f config/system/settings.php ]; then
         $block = $begin . "\n"
             . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"nr_llm_compat\"][\"integrations\"][\"ai_filemetadata\"] = \"1\";\n"
             . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"nr_llm_compat\"][\"integrations\"][\"news\"] = \"1\";\n"
+            . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"nr_llm_compat\"][\"integrations\"][\"sitescore\"] = \"1\";\n"
             . $end;
         $existing = is_file($f) ? (string) file_get_contents($f) : "";
         if (strpos($existing, "<?php") === false) {
@@ -330,7 +335,7 @@ if [ -f config/system/settings.php ]; then
         }
         $existing = rtrim($existing, "\n") . "\n\n" . $block . "\n";
         file_put_contents($f, $existing);
-        echo "additional.php: nr_llm_compat integrations ai_filemetadata and news enabled." . PHP_EOL;
+        echo "additional.php: nr_llm_compat integrations ai_filemetadata, news and sitescore enabled." . PHP_EOL;
     ' || echo "WARNING: failed to write additional.php" >&2
 fi
 

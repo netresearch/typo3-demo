@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e747ac3aeeeeaebf94aafd0b256d3942",
+    "content-hash": "99c49b30ea6034e17eb0c902d3be1e5c",
     "packages": [
         {
             "name": "b13/ai-bots-love-markdown",
@@ -2258,6 +2258,108 @@
             "time": "2026-10-17T23:57:19+00:00"
         },
         {
+            "name": "in2code/sitescore",
+            "version": "3.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/in2code-de/sitescore.git",
+                "reference": "3aaec54e255ec3883d87ad46af8bd19235bffd3c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/in2code-de/sitescore/zipball/3aaec54e255ec3883d87ad46af8bd19235bffd3c",
+                "reference": "3aaec54e255ec3883d87ad46af8bd19235bffd3c",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.2.0",
+                "typo3/cms-core": "^13.4 || ^14.3"
+            },
+            "replace": {
+                "typo3-ter/sitescore": "self.version"
+            },
+            "require-dev": {
+                "helhum/typo3-console": "*",
+                "in2code/sitescore-test": "@dev",
+                "typo3/cms-backend": "^13.4 || ^14.3",
+                "typo3/cms-belog": "^13.4 || ^14.3",
+                "typo3/cms-beuser": "^13.4 || ^14.3",
+                "typo3/cms-dashboard": "^13.4 || ^14.3",
+                "typo3/cms-extbase": "^13.4 || ^14.3",
+                "typo3/cms-extensionmanager": "^13.4 || ^14.3",
+                "typo3/cms-filelist": "^13.4 || ^14.3",
+                "typo3/cms-fluid": "^13.4 || ^14.3",
+                "typo3/cms-fluid-styled-content": "^13.4 || ^14.3",
+                "typo3/cms-frontend": "^13.4 || ^14.3",
+                "typo3/cms-info": "^13.4 || ^14.3",
+                "typo3/cms-install": "^13.4 || ^14.3",
+                "typo3/cms-lowlevel": "^13.4 || ^14.3",
+                "typo3/cms-rte-ckeditor": "^13.4 || ^14.3",
+                "typo3/cms-scheduler": "^13.4 || ^14.3",
+                "typo3/cms-setup": "^13.4 || ^14.3",
+                "typo3/cms-t3editor": "^13.4 || ^14.3",
+                "typo3/cms-tstemplate": "^13.4 || ^14.3"
+            },
+            "suggest": {
+                "typo3/cms-dashboard": "*"
+            },
+            "type": "typo3-cms-extension",
+            "extra": {
+                "typo3/cms": {
+                    "web-dir": ".Build/public",
+                    "extension-key": "sitescore",
+                    "cms-package-dir": "{$vendor-dir}/typo3/cms"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "In2code\\Sitescore\\": "Classes/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "Sandra Pohl",
+                    "email": "sandra.pohl@in2code.de",
+                    "homepage": "https://www.in2code.de",
+                    "role": "Product owner"
+                },
+                {
+                    "name": "Alex Kellner",
+                    "email": "alexander.kellner@in2code.de",
+                    "homepage": "https://www.in2code.de",
+                    "role": "Technical owner"
+                }
+            ],
+            "description": "AI-driven content quality dashboard providing SEO, GEO and accessibility scores directly in the TYPO3 page module",
+            "homepage": "https://github.com/in2code-de/sitescore",
+            "keywords": [
+                "Gemini",
+                "ai",
+                "geo",
+                "seo",
+                "typo3"
+            ],
+            "support": {
+                "issues": "https://github.com/in2code-de/sitescore/issues",
+                "source": "https://github.com/in2code-de/sitescore/tree/3.1.0"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/orgs/in2code-de/sponsoring",
+                    "type": "github"
+                },
+                {
+                    "url": "https://www.in2code.de/supportopensource",
+                    "type": "other"
+                }
+            ],
+            "time": "2026-08-20T06:56:12+00:00"
+        },
+        {
             "name": "james-heinrich/getid3",
             "version": "v1.9.28",
             "source": {
@@ -3444,16 +3546,16 @@
         },
         {
             "name": "netresearch/nr-llm-compat",
-            "version": "v0.4.3",
+            "version": "v0.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/t3x-nr-llm-compat.git",
-                "reference": "3a69ab26a319f14c32953449c4968bc6847de82d"
+                "reference": "066db023814544ed8697133bac759cc48a75e77b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/t3x-nr-llm-compat/zipball/3a69ab26a319f14c32953449c4968bc6847de82d",
-                "reference": "3a69ab26a319f14c32953449c4968bc6847de82d",
+                "url": "https://api.github.com/repos/netresearch/t3x-nr-llm-compat/zipball/066db023814544ed8697133bac759cc48a75e77b",
+                "reference": "066db023814544ed8697133bac759cc48a75e77b",
                 "shasum": ""
             },
             "require": {
@@ -3467,6 +3569,7 @@
             },
             "require-dev": {
                 "georgringer/news": "^14.0",
+                "in2code/sitescore": "^3.1",
                 "in2code/texter": "^3.0",
                 "mfd/ai-filemetadata": "^1.6",
                 "netresearch/typo3-ci-workflows": "^2.0.3",
@@ -3480,6 +3583,7 @@
             "suggest": {
                 "eliashaeussler/typo3-solver": "The exception solver's completions are routed through nr-llm via its official provider setting when the integration is enabled",
                 "georgringer/news": "nr-llm's assistant gets a create_news_draft tool that drafts hidden news articles as the acting backend user when the integration is enabled",
+                "in2code/sitescore": "Sitescore's page analysis is routed through nr-llm via its official llmRepositoryClass hook when the integration is enabled",
                 "in2code/texter": "Texter's LLM calls are routed through nr-llm via its official llmRepositoryClass hook when the integration is enabled",
                 "mfd/ai-filemetadata": "AI File Metadata's alt-text vision calls are routed through nr-llm when the integration is enabled",
                 "nitsan/ns-t3ai": "T3AI's OpenAI calls are routed through nr-llm when the integration is enabled",
@@ -3488,7 +3592,7 @@
             "type": "typo3-cms-extension",
             "extra": {
                 "typo3/cms": {
-                    "version": "0.4.3",
+                    "version": "0.5.0",
                     "web-dir": ".Build/Web",
                     "extension-key": "nr_llm_compat"
                 }
@@ -3524,7 +3628,7 @@
                 "issues": "https://github.com/netresearch/t3x-nr-llm-compat/issues",
                 "source": "https://github.com/netresearch/t3x-nr-llm-compat"
             },
-            "time": "2026-11-01T21:50:33+00:00"
+            "time": "2026-11-07T11:16:59+00:00"
         },
         {
             "name": "netresearch/nr-mcp-agent",
