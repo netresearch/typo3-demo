@@ -408,6 +408,51 @@ index. The composer patch
 field only where the type has it, and the image build fails if the installed
 handler lacks the check.
 
+## Extension advisor chat (nr_ai_search)
+
+The hidden AI Search page (`/extensions/ai-search`) carries an AI Chat element
+"AI Chat: Extension advisor" (tt_content 9243, German 9244). Its topic area is
+the Extensions page and its subpages, and its nr_llm configuration
+`nr_ai_search.chat.advisor` has a system prompt that asks for the visitor's
+need, recommends at most three extensions from the retrieved pages and links
+them. Both settings are per element (nr_ai_search ADR-041). Two other elements
+on the page set them too: "AI Search: Secrets Vault only" (9233, German 9234)
+searches the Secrets Vault page (107) with the `nr_ai_search.chat.brief`
+configuration, and the search the page template renders (9241, German 9242)
+searches page 107 with the default configuration; the remaining elements use
+the whole index and the default configuration. It stays on the hidden page for
+the same reason as the other widgets: a public chat lets any visitor start paid
+model calls.
+
+The configuration is created once by the seed; an admin's later edits to its
+prompt are kept. Each deploy refreshes its model binding and sets it active
+again, so a configuration an admin switched off is switched back on.
+
+## Structured data and Markdown for AI crawlers
+
+`brotkrueml/schema` writes the JSON-LD of every page: one block before
+`</body>` with the `WebSite` and `Organization` nodes from SCHEMA objects in
+the NetresearchDemo set, and the `WebPage` node the extension adds itself. The
+Browser AI form assistant page (9004) adds a `SoftwareApplication`, its
+`SoftwareSourceCode` and a `HowTo` with four steps from the listener
+`Classes/EventListener/AddBrowserAiFormAssistantStructuredData.php`, because a
+SCHEMA object cannot express a list of typed nodes.
+
+`b13/ai-bots-love-markdown` answers a page with Markdown when the request
+sends `Accept: text/markdown`: the content of `<main>` with the page metadata
+as YAML front matter, `X-Robots-Tag: noindex`. Every HTML page announces it
+with `<link rel="alternate" type="text/markdown">`. The site has no PageType
+route enhancer, so that link reads `?type=2026` rather than ending in
+`/ai-bots-love.md`; adding an enhancer would change the URL of every page. It
+is root-relative (`/extensions?type=2026`) although the extension asks for an
+absolute URL: the site base is `/` (`TYPO3_SITE_BASE`), the same reason the
+`og:image` tag is built from `TYPO3_SITE_URL`.
+
+The middleware sends `Vary: Accept` on every HTML response; nginx passes it
+through, Caddy's compression adds `Accept-Encoding` to the list, and the
+`validate` job of the Build workflow checks that `Accept` arrives.
+`/llms.txt` is not affected: nginx still serves the curated one.
+
 ## AI Chat turns
 
 `chat-worker` runs the turns of the AI Chat, in two replicas. A booted process waits

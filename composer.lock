@@ -4,8 +4,53 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8bde142cd2abffd7d3f47119d3a149a4",
+    "content-hash": "e747ac3aeeeeaebf94aafd0b256d3942",
     "packages": [
+        {
+            "name": "b13/ai-bots-love-markdown",
+            "version": "0.6.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/b13/ai-bots-love-markdown.git",
+                "reference": "47060d5d97ab7dcbad177cc22b01a100e6c6326d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/b13/ai-bots-love-markdown/zipball/47060d5d97ab7dcbad177cc22b01a100e6c6326d",
+                "reference": "47060d5d97ab7dcbad177cc22b01a100e6c6326d",
+                "shasum": ""
+            },
+            "require": {
+                "league/html-to-markdown": "^5.1",
+                "php": "^8.2",
+                "typo3/cms-core": "^13.4 || ^14.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^11.3",
+                "typo3/testing-framework": "^9.1"
+            },
+            "type": "typo3-cms-extension",
+            "extra": {
+                "typo3/cms": {
+                    "extension-key": "ai_bots_love_markdown"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "B13\\AiBotsLoveMarkdown\\": "Classes/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "description": "Serve page content as Markdown for AI bots",
+            "support": {
+                "issues": "https://github.com/b13/ai-bots-love-markdown/issues",
+                "source": "https://github.com/b13/ai-bots-love-markdown/tree/0.6.1"
+            },
+            "time": "2026-05-26T08:55:26+00:00"
+        },
         {
             "name": "b13/ai-label",
             "version": "1.6.0",
@@ -314,6 +359,98 @@
                 }
             ],
             "time": "2026-09-12T10:28:18+00:00"
+        },
+        {
+            "name": "brotkrueml/schema",
+            "version": "v4.4.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/brotkrueml/schema.git",
+                "reference": "202a3a205c8728b69456486be968c24af9fa82c0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/brotkrueml/schema/zipball/202a3a205c8728b69456486be968c24af9fa82c0",
+                "reference": "202a3a205c8728b69456486be968c24af9fa82c0",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.2",
+                "typo3/cms-core": "^13.4 || ^14.3",
+                "typo3/cms-fluid": "^13.4 || ^14.3",
+                "typo3/cms-frontend": "^13.4 || ^14.3"
+            },
+            "require-dev": {
+                "brotkrueml/coding-standards": "~6.3.1",
+                "dg/bypass-finals": "^1.11",
+                "ergebnis/composer-normalize": "~2.54.0",
+                "infection/infection": "^0.35.4",
+                "phpstan/extension-installer": "^1.4",
+                "phpstan/phpstan": "2.2.16",
+                "phpstan/phpstan-phpunit": "2.0.19",
+                "phpstan/phpstan-strict-rules": "2.0.12",
+                "phpunit/phpunit": "^11.5 || ^12.5 || ^13.3",
+                "rector/rector": "2.6.7",
+                "symfony/yaml": "^7.4",
+                "symplify/phpstan-rules": "~14.15.3",
+                "tomasvotruba/cognitive-complexity": "^1.2",
+                "typo3/cms-adminpanel": "^13.4 || ^14.3",
+                "typo3/cms-lowlevel": "^13.4 || ^14.3",
+                "typo3/testing-framework": "^9.7"
+            },
+            "suggest": {
+                "brotkrueml/schema-auto": "Provides additional terms related to auto",
+                "brotkrueml/schema-bib": "Provides additional terms related to bibliography",
+                "brotkrueml/schema-health": "Provides additional terms related to health and lifesciences",
+                "brotkrueml/schema-pending": "Provides pending terms which have yet to be accepted into the core vocabulary",
+                "typo3/cms-adminpanel": "Display schema.org types and properties on a page in Admin Panel",
+                "typo3/cms-lowlevel": "Display available schema.org types in the Configuration module"
+            },
+            "type": "typo3-cms-extension",
+            "extra": {
+                "typo3/cms": {
+                    "Package": {
+                        "providesPackages": []
+                    },
+                    "version": "4.4.0",
+                    "web-dir": ".Build/web",
+                    "extension-key": "schema"
+                },
+                "branch-alias": {
+                    "dev-main": "4.4.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Brotkrueml\\Schema\\": "Classes/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "Chris Müller",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Embedding schema.org vocabulary - API and view helpers for schema.org markup",
+            "keywords": [
+                "JSON-LD",
+                "TYPO3 CMS",
+                "TYPO3 Extension",
+                "schema.org",
+                "seo",
+                "structured data"
+            ],
+            "support": {
+                "chat": "https://typo3.slack.com/app_redirect?channel=CV36M73D5",
+                "docs": "https://docs.typo3.org/p/brotkrueml/schema/main/en-us/",
+                "issues": "https://github.com/brotkrueml/schema/issues",
+                "source": "https://github.com/brotkrueml/schema"
+            },
+            "time": "2026-09-28T16:39:38+00:00"
         },
         {
             "name": "causal/extractor",
@@ -2377,6 +2514,96 @@
             "time": "2022-12-11T20:36:23+00:00"
         },
         {
+            "name": "league/html-to-markdown",
+            "version": "5.2.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/thephpleague/html-to-markdown.git",
+                "reference": "905eb9374feee6cedf9b972fc47c7c26a86bbec1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/thephpleague/html-to-markdown/zipball/905eb9374feee6cedf9b972fc47c7c26a86bbec1",
+                "reference": "905eb9374feee6cedf9b972fc47c7c26a86bbec1",
+                "shasum": ""
+            },
+            "require": {
+                "ext-dom": "*",
+                "ext-xml": "*",
+                "php": "^7.2.5 || ^8.0"
+            },
+            "require-dev": {
+                "mikehaertl/php-shellcommand": "^1.1.0",
+                "phpstan/phpstan": "^1.8.8 || ^2.0",
+                "phpunit/phpunit": "^8.5 || ^9.2 || ^10.5 || ^11.0 || ^12.0 || ^13.0",
+                "scrutinizer/ocular": "^1.6",
+                "symfony/process": "^5.4 || ^6.0 || ^7.0 || ^8.0",
+                "unleashedtech/php-coding-standard": "^2.7 || ^3.0",
+                "vimeo/psalm": "^4.22 || ^5.0 || ^6.0"
+            },
+            "bin": [
+                "bin/html-to-markdown"
+            ],
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "5.3-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "League\\HTMLToMarkdown\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Colin O'Dell",
+                    "email": "colinodell@gmail.com",
+                    "homepage": "https://www.colinodell.com",
+                    "role": "Lead Developer"
+                },
+                {
+                    "name": "Nick Cernis",
+                    "email": "nick@cern.is",
+                    "homepage": "http://modernnerd.net",
+                    "role": "Original Author"
+                }
+            ],
+            "description": "An HTML-to-markdown conversion helper for PHP",
+            "homepage": "https://github.com/thephpleague/html-to-markdown",
+            "keywords": [
+                "html",
+                "markdown"
+            ],
+            "support": {
+                "issues": "https://github.com/thephpleague/html-to-markdown/issues",
+                "source": "https://github.com/thephpleague/html-to-markdown/tree/5.2.3"
+            },
+            "funding": [
+                {
+                    "url": "https://www.colinodell.com/sponsor",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://www.paypal.me/colinpodell/10.00",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/colinodell",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/league/html-to-markdown",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2026-10-19T04:13:34+00:00"
+        },
+        {
             "name": "lochmueller/index",
             "version": "3.0.1",
             "source": {
@@ -4265,11 +4492,13 @@
             "dist": {
                 "type": "path",
                 "url": "packages/netresearch-demo-site",
-                "reference": "1d23636c5571a9aba7bc2b5b327a3ef4ae0b8a38"
+                "reference": "5a79861ddb54e3c53a2058b6b1d8fff78ff44fa9"
             },
             "require": {
+                "b13/ai-bots-love-markdown": "^0.6.1",
                 "b13/ai-label": "^1.3",
                 "bk2k/bootstrap-package": "^16.0",
+                "brotkrueml/schema": "^4.4",
                 "georgringer/news": "^14.0",
                 "typo3/cms-backend": "^14.1",
                 "typo3/cms-core": "^14.1",

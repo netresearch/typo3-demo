@@ -272,10 +272,13 @@ jobs:
 
           echo "Meta tags present and indexable."
 
-      # The JSON-LD is assembled in TypoScript, where a stray quote or an
-      # unreplaced placeholder produces a block that still *looks* present and
-      # is silently worthless to every consumer. So parse it, rather than grep
-      # for the script tag.
+      # brotkrueml/schema writes the JSON-LD from SCHEMA objects in TypoScript
+      # and from the site package's listener for page 9004. A misspelt type or
+      # property is not an error there: the extension logs it and leaves the
+      # node out, and the page still renders. So parse the block and name the
+      # types it must carry, rather than grep for the script tag. Exactly one
+      # block: the extension merges every type into one, so a second block is
+      # hand-written markup that came back.
       - name: Verify the structured data parses
         run: |
           get() { curl -sSfL --proto '=https' --proto-redir '=https' --cacert "$RUNNER_TEMP/caddy-root.crt" "$1"; }
@@ -285,8 +288,9 @@ jobs:
           import json, re, sys
 
           expected = {
-              '/tmp/home.html':   {'WebSite', 'Organization'},
-              '/tmp/plugin.html': {'SoftwareApplication', 'HowTo'},
+              '/tmp/home.html':   {'WebSite', 'Organization', 'WebPage'},
+              '/tmp/plugin.html': {'WebSite', 'Organization', 'WebPage',
+                                   'SoftwareApplication', 'SoftwareSourceCode', 'HowTo'},
           }
           failed = False
           for path, want in expected.items():
@@ -295,6 +299,9 @@ jobs:
                   r'<script[^>]+type="application/ld\+json"[^>]*>(.*?)</script>', html, re.S)
               if not blocks:
                   print(f'::error::{path}: no JSON-LD block at all'); failed = True; continue
+              if len(blocks) != 1:
+                  print(f'::error::{path}: {len(blocks)} JSON-LD blocks, expected the one brotkrueml/schema writes')
+                  failed = True
               seen = set()
               for i, raw in enumerate(blocks, 1):
                   if '###' in raw:
@@ -313,6 +320,11 @@ jobs:
                           if isinstance(v, str) and v.startswith('/'):
                               print(f'::error::{path}: {n.get("@type")}.{key} is relative: {v}')
                               failed = True
+                      # The four steps the page lists under "How it works", the
+                      # list a SCHEMA object cannot express.
+                      if n.get('@type') == 'HowTo' and len(n.get('step') or []) != 4:
+                          print(f'::error::{path}: HowTo has {len(n.get("step") or [])} steps, expected 4')
+                          failed = True
               missing = want - seen
               print(f'{path}: {len(blocks)} block(s), types {sorted(t for t in seen if t)}')
               if missing:
@@ -335,6 +347,65 @@ jobs:
           curl -sSfL --proto '=https' --proto-redir '=https' --cacert "$RUNNER_TEMP/caddy-root.crt" https://localhost/robots.txt | grep -q '^Sitemap: https://' \
             || { echo 'ERROR: robots.txt names no sitemap'; exit 1; }
           echo "robots.txt and llms.txt served."
+
+      # b13/ai-bots-love-markdown answers the same URL with Markdown when the
+      # request accepts text/markdown, so every HTML response must say
+      # `Vary: Accept`, or a cache in between hands one representation to the
+      # other kind of client. The middleware sets it in TYPO3; this asserts it
+      # still arrives after nginx and Caddy, whose `encode` adds its own
+      # `Vary: Accept-Encoding` (one header or two, both are accepted). The
+      # token is compared whole: accept-encoding contains "accept".
+      - name: Verify pages are offered as Markdown and vary by Accept
+        run: |
+          fetch() {
+            local accept="$1" url="$2" out="$3"
+            curl -sSf --proto '=https' --proto-redir '=https' --cacert "$RUNNER_TEMP/caddy-root.crt" \
+              -H "Accept: $accept" -D "$out.headers" -o "$out.body" "$url"
+          }
+          # Every pattern test reads a file or a herestring, never a pipe: a
+          # `grep -q` that stops at its match can kill the writer with SIGPIPE,
+          # which fails the test as soon as the step runs with pipefail.
+          header() { local file="$1" name="$2"; grep -i "^$name:" "$file" | cut -d: -f2- | tr -d '\r' || true; }
+          varies_by_accept() {
+            local file="$1" tokens
+            tokens=$(tr ',' '\n' <<<"$(header "$file" vary)" | tr -d ' ')
+            grep -qix accept <<<"$tokens"
+          }
+          fail() { local message="$1"; echo "ERROR: $message" >&2; exit 1; }
+
+          fetch 'text/html' https://localhost/extensions /tmp/ext-html
+          varies_by_accept /tmp/ext-html.headers \
+            || fail "the HTML page does not vary by Accept: vary=[$(header /tmp/ext-html.headers vary)]"
+          links=$(grep -oiE '<link[^>]+type="text/markdown"[^>]*>' /tmp/ext-html.body || true)
+          [ -n "$links" ] || fail 'the HTML page carries no <link rel="alternate" type="text/markdown">'
+          [ "$(wc -l <<<"$links")" -eq 1 ] || fail "more than one Markdown discovery link: $links"
+          href=$(grep -oE 'href="[^"]+"' <<<"$links" | cut -d'"' -f2 | sed 's/&amp;/\&/g')
+          echo "discovery link -> $href"
+          # The extension asks typolink for an absolute URL, but the site base is
+          # "/" (TYPO3_SITE_BASE), so the link comes out root-relative, which a
+          # client resolves against the page. Anything else is not a page URL.
+          case "$href" in
+            https://*) : ;;
+            /*) href="https://localhost$href" ;;
+            *) fail "the discovery link is neither absolute nor root-relative: $href" ;;
+          esac
+
+          fetch 'text/markdown' https://localhost/extensions /tmp/ext-md
+          fetch 'text/html' "$href" /tmp/ext-link
+          for out in /tmp/ext-md /tmp/ext-link; do
+            ctype=$(header "$out.headers" content-type)
+            robots=$(header "$out.headers" x-robots-tag)
+            echo "$out -> content-type:$ctype x-robots-tag:$robots"
+            case "$ctype" in *'text/markdown'*) : ;; *) fail "$out is not text/markdown: $ctype";; esac
+            grep -qi noindex <<<"$robots" || fail "$out lacks X-Robots-Tag: noindex"
+            varies_by_accept "$out.headers" || fail "$out does not vary by Accept"
+            [ "$(head -1 "$out.body")" = '---' ] || fail "$out does not open with YAML front matter"
+            grep -q '^# ' "$out.body" || fail "$out has no heading"
+            # The body of the Extensions page (tt_content 410), not only its title.
+            grep -q 'Open-source extensions for TYPO3 v14' "$out.body" || fail "$out lacks the page content"
+            if grep -qiE '<(script|nav)' "$out.body"; then fail "$out still carries markup"; fi
+          done
+          echo "Markdown served, discovery link works, Vary: Accept survives the proxies."
 
       # nginx ignores the .htaccess files TYPO3 writes into fileadmin, so both
       # the deny for its temporary folders and the CSP for uploaded documents

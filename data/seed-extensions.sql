@@ -1894,7 +1894,7 @@ VALUES (0, 'set_file_alternative_text', 1);
 --    are CType-based (registerPlugin + configurePlugin PLUGIN_TYPE_CONTENT_ELEMENT).
 --    603/604 leave their FlexForm (topic area, AI configuration; nr_ai_search
 --    ADR-041) empty and use the whole index and the extension configuration;
---    4b) below seeds an element that sets both.
+--    4b) and 4d) below seed elements that set both.
 INSERT IGNORE INTO pages (uid, pid, tstamp, crdate, title, slug, doktype, sorting, hidden, deleted)
 VALUES (158, 101, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'AI Search', '/extensions/ai-search', 1, 800, 1, 0);
 -- Kept HIDDEN on purpose: embeddings work (owner_uid=990 + frontend_accessible,
@@ -1969,6 +1969,50 @@ ON DUPLICATE KEY UPDATE uid = uid;
 --     Secrets Vault page, set below together with its translation 9242.
 INSERT INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, pi_flexform, colPos, sorting, hidden, deleted)
 VALUES (9241, 158, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'nraisearch_search', 'AI Search from the page template', '', '', 99, 100, 0, 0)
+ON DUPLICATE KEY UPDATE uid = uid;
+
+-- 4d) An advisor chat (nr_ai_search ADR-041): a chat element whose topic area is
+--     the Extensions page (101) and its subpages, with its own nr_llm
+--     configuration whose system prompt makes it recommend extensions for the
+--     visitor's need instead of answering one question. The extension puts this
+--     prompt in front of its grounding rules, so the advisor still answers only
+--     from retrieved pages. Only the stored system prompt reaches the model;
+--     snippets and skills on the configuration are not applied (ADR-041).
+--
+--     The element sits on the hidden AI Search page (158), not on the public
+--     Extensions page: a public chat would let any anonymous visitor start paid
+--     model calls, the reason every nr_ai_search element lives on 158 (step 4).
+--     Hidden subpages are outside a topic area, so 158 itself is never a source.
+--
+--     Like nr_ai_search.chat.brief: created once, an admin's later edits to it
+--     are kept, only its model binding is refreshed. The model must call tools,
+--     or every question of the element fails (ADR-041).
+INSERT INTO tx_nrllm_configuration
+    (pid, tstamp, crdate, identifier, name, description, model_uid, model_selection_mode,
+     system_prompt, temperature, max_tokens, is_active, is_default)
+SELECT
+    0, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'nr_ai_search.chat.advisor', 'AI Search: Extension advisor',
+    'Demo of an advisor chat: the same model as AI Search: Chat, with a system prompt that asks for the visitor''s need and recommends extensions from the Extensions pages.',
+    COALESCE((SELECT uid FROM tx_nrllm_model WHERE FIND_IN_SET('tools', capabilities) AND deleted = 0 ORDER BY is_default DESC, uid ASC LIMIT 1), 0),
+    'fixed',
+    'You are the extension advisor of this website. Help the visitor find the TYPO3 extensions that fit what they want to do. If their need is unclear, first ask one short question about it, for example what they want to achieve or which part of TYPO3 they work in. Then recommend at most three extensions, each with one sentence on why it fits and a link to its page. Recommend only extensions the retrieved pages describe, and say so when none of them fits. Answer in the language of the question.',
+    0.30, 4096, 1, 0
+FROM DUAL
+WHERE NOT EXISTS (
+    SELECT 1 FROM tx_nrllm_configuration WHERE identifier = 'nr_ai_search.chat.advisor' AND deleted = 0
+);
+
+UPDATE tx_nrllm_configuration
+SET model_uid = COALESCE(
+        (SELECT uid FROM tx_nrllm_model WHERE FIND_IN_SET('tools', capabilities) AND deleted = 0 ORDER BY is_default DESC, uid ASC LIMIT 1),
+        model_uid),
+    is_active = 1
+WHERE identifier = 'nr_ai_search.chat.advisor' AND deleted = 0;
+
+-- The FlexForm (topic area 101, the configuration's uid) is written together
+-- with the German translation 9244 below, and re-asserted on every deploy.
+INSERT INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, pi_flexform, colPos, sorting, hidden, deleted)
+VALUES (9243, 158, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'nraisearch_chat', 'AI Chat: Extension advisor', '', '', 0, 310, 0, 0)
 ON DUPLICATE KEY UPDATE uid = uid;
 
 -- =============================================================================
@@ -3476,6 +3520,21 @@ ON DUPLICATE KEY UPDATE uid = uid;
 UPDATE tt_content
 SET pi_flexform = '<?xml version="1.0" encoding="utf-8" standalone="yes" ?><T3FlexForms><data><sheet index="sDEF"><language index="lDEF"><field index="settings.topicRoot"><value index="vDEF">107</value></field></language></sheet></data></T3FlexForms>'
 WHERE uid IN (9241, 9242) AND pid = 158 AND CType = 'nraisearch_search';
+
+-- Übersetzt tt_content 9243 (KI-Chat als Extension-Berater, Schritt 4d); das UPDATE
+-- darunter schreibt Themenbereich (Seite 101) und Konfiguration für beide Sprachen.
+INSERT INTO tt_content (uid, pid, tstamp, crdate, sys_language_uid, l18n_parent, l10n_source, CType, header, bodytext, pi_flexform, colPos, sorting, hidden, deleted)
+VALUES (9244, 158, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 9243, 9243, 'nraisearch_chat', 'KI-Chat: Extension-Berater', '', '', 0, 310, 0, 0)
+ON DUPLICATE KEY UPDATE uid = uid;
+
+UPDATE tt_content
+SET pi_flexform = CONCAT(
+        '<?xml version="1.0" encoding="utf-8" standalone="yes" ?><T3FlexForms><data><sheet index="sDEF"><language index="lDEF">',
+        '<field index="settings.topicRoot"><value index="vDEF">101</value></field>',
+        '<field index="settings.llmConfiguration"><value index="vDEF">',
+        COALESCE((SELECT uid FROM tx_nrllm_configuration WHERE identifier = 'nr_ai_search.chat.advisor' AND deleted = 0 ORDER BY uid ASC LIMIT 1), 0),
+        '</value></field></language></sheet></data></T3FlexForms>')
+WHERE uid IN (9243, 9244) AND pid = 158 AND CType = 'nraisearch_chat';
 
 -- nr_ai_search result modes (ADR-042): one search element per mode besides the
 -- answer. 'semantic' lists the pages the vector search finds without a model call,
@@ -7449,6 +7508,7 @@ INSERT INTO seed_expected_content VALUES
   (9237, 158, NULL, 0,  0, 0, 0, 280, 'nraisearch_search', 'AI Search: Answer above keyword results'),
   -- 9241 is rendered by the page template (<nrai:element>), so colPos 99.
   (9241, 158, NULL, 0,  0, 99, 0, 100, 'nraisearch_search', 'AI Search from the page template'),
+  (9243, 158, NULL, 0,  0, 0, 0, 310, 'nraisearch_chat',   'AI Chat: Extension advisor'),
   -- 605-607 and 620-622 were created at pid 159 before the Contexts page moved
   -- to uid 164; legacy_pid re-points any row an earlier run left behind.
   (605, 164,  159, 0,   0, 0, 0, 100, 'html',              'Contexts'),
@@ -7491,6 +7551,7 @@ INSERT INTO seed_expected_content VALUES
   (9239, 158, NULL, 1, 9236, 0, 0, 270, 'nraisearch_search', 'KI-Suche: Stichwort-Treffer'),
   (9240, 158, NULL, 1, 9237, 0, 0, 280, 'nraisearch_search', 'KI-Suche: Antwort über Stichwort-Treffern'),
   (9242, 158, NULL, 1, 9241, 99, 0, 100, 'nraisearch_search', 'KI-Suche aus der Seitenvorlage'),
+  (9244, 158, NULL, 1, 9243, 0, 0, 310, 'nraisearch_chat',   'KI-Chat: Extension-Berater'),
   -- Browser AI, public page 9003. 9217 and 9220 are the fallback cards on
   -- colPos 99: enabled, because the RECORDS object that renders them applies
   -- enable fields, and off the page flow because no layout uses that column.
