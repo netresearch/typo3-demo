@@ -442,10 +442,11 @@ route enhancer, so that link reads `?type=2026` rather than ending in
 is root-relative (`/extensions?type=2026`) although the extension asks for an
 absolute URL: the site base is `/` (`TYPO3_SITE_BASE`), the same reason the
 `og:image` tag is built from `TYPO3_SITE_URL`.
+
 The middleware sends `Vary: Accept` on every HTML response; nginx passes it
 through, Caddy's compression adds `Accept-Encoding` to the list, and the
-`validate` job of the Build workflow checks that `Accept` arrives. `/llms.txt` is not affected: nginx still serves the
-curated one.
+`validate` job of the Build workflow checks that `Accept` arrives.
+`/llms.txt` is not affected: nginx still serves the curated one.
 
 ## AI Chat turns
 
