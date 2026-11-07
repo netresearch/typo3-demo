@@ -736,6 +736,25 @@ jobs:
           fi
           echo "German backend language pack is in place."
 
+      # The entrypoint enables three nr-llm-compat integrations. One whose
+      # contract check fails is silently inactive: sitescore would then ask
+      # Gemini without a key and every analysis in the page module would fail.
+      # The status command exits non-zero when an enabled integration is not
+      # active; the grep pins that sitescore is among the active ones.
+      - name: Verify the nr-llm-compat integrations are active
+        run: |
+          status=$(docker compose exec -T -u www-data web vendor/bin/typo3 nrllm:compat:status 2>&1) || {
+            printf '%s\n' "$status"
+            echo "::error::an enabled nr-llm-compat integration is not active"
+            exit 1
+          }
+          printf '%s\n' "$status"
+          # First "status" row after the sitescore section heading.
+          if ! awk '/^ *sitescore *$/ {s = 1; next} s && $1 == "status" {found = ($2 == "ACTIVE"); exit} END {exit !found}' <<<"$status"; then
+            echo "::error::the sitescore integration of nr-llm-compat is not active"
+            exit 1
+          fi
+
       # The RTE preset is assembled from three imports, and the YAML merge
       # REPLACES a string with a list (and a list with a string) instead of
       # appending. That silently dropped core's contents.css, so the editor text
