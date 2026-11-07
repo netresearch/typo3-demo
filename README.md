@@ -467,7 +467,11 @@ domain and sends all of it, with the page title and the page's
 `tx_sitescore_keyword`, to the model. `vendor/bin/typo3 nrllm:compat:status`
 shows whether the integration is active. `vendor/bin/typo3
 sitescore:analyzePage` does not work here: with the site base `/` it cannot
-build an absolute page URL outside a backend request.
+build an absolute page URL outside a backend request. On a local `make up`
+with `TYPO3_DOMAIN=localhost`, "Analyze Page" fails as well: the fetch goes to
+`https://localhost/`, which inside the `web` container is the container itself,
+and it serves plain HTTP only. On a public domain the fetch leaves the container
+and reaches Caddy.
 
 ## AI Chat turns
 
