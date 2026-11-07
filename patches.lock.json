@@ -1,6 +1,18 @@
 {
-    "_hash": "081a8fafef5fd6886a4826fe7ea86cfed4a4450336cbb878e97da34b89766074",
+    "_hash": "e5f2e475e6fa13a0b60f535482286aa4c348e423a4c7e8a250f2051230f0ef54",
     "patches": {
+        "b13/ai-label": [
+            {
+                "package": "b13/ai-label",
+                "description": "Name typo3/fluid-styled-content as an optional set dependency: the hard one made TYPO3 log \"Invalid set b13/ai-label: Missing dependency\" on every boot of a site without fluid_styled_content",
+                "url": "patches/b13-ai-label-optional-fluid-styled-content.patch",
+                "sha256": "ac48699f183b2e00203618751254097b0b30c697a34107003f234c4b31290832",
+                "depth": 1,
+                "extra": {
+                    "provenance": "root"
+                }
+            }
+        ],
         "lochmueller/index": [
             {
                 "package": "lochmueller/index",

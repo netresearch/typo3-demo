@@ -106,6 +106,9 @@
             "web-dir": "public"
         },
         "patches": {
+            "b13/ai-label": {
+                "Name typo3/fluid-styled-content as an optional set dependency: the hard one made TYPO3 log \"Invalid set b13/ai-label: Missing dependency\" on every boot of a site without fluid_styled_content": "patches/b13-ai-label-optional-fluid-styled-content.patch"
+            },
             "lochmueller/index": {
                 "Bootstrap Package indexing: read an item's or element's field only where the record's type has it; Record::get() throws for a field outside the type (a carousel item of type \"header\" has no bodytext, one of type \"image\" no subheader), and the throw dropped the whole page from the index": "patches/lochmueller-index-bootstrap-package-optional-fields.patch"
             },
