@@ -1722,10 +1722,32 @@ WHERE uid = 995 AND deleted = 0 AND title = 'Workspace editors (AI chat)'
 -- no longer reads: the edit form refused element 222 with `authMode
 -- "explicitAllow" failed for field "CType" with value "texticon"`, and so did
 -- the chat's card. Group 995 carries the same list in the current format
--- ("tt_content:CType:texticon"), so the existing groups stay as they are.
+-- ("tt_content:CType:texticon"); the next statement converts the lists of the
+-- groups themselves.
 UPDATE be_groups SET explicit_allowdeny = 'tt_content:CType:accordion,tt_content:CType:audio,tt_content:CType:carousel,tt_content:CType:carousel_small,tt_content:CType:carousel_fullscreen,tt_content:CType:listgroup,tt_content:CType:media,tt_content:CType:menu_thumbnail_list,tt_content:CType:menu_thumbnail_dir,tt_content:CType:panel,tt_content:CType:quote,tt_content:CType:tab,tt_content:CType:textcolumn,tt_content:CType:texticon,tt_content:CType:textteaser,tt_content:CType:header,tt_content:CType:text,tt_content:CType:textpic,tt_content:CType:image,tt_content:CType:textmedia,tt_content:CType:bullets,tt_content:CType:table,tt_content:CType:uploads,tt_content:CType:menu_abstract,tt_content:CType:menu_categorized_content,tt_content:CType:menu_categorized_pages,tt_content:CType:menu_pages,tt_content:CType:menu_subpages,tt_content:CType:menu_recently_updated,tt_content:CType:menu_related_pages,tt_content:CType:menu_section,tt_content:CType:menu_section_pages,tt_content:CType:menu_sitemap,tt_content:CType:menu_sitemap_pages,tt_content:CType:shortcut,tt_content:CType:list,tt_content:CType:div,tt_content:CType:html,tt_content:CType:form_formframework,tt_content:CType:login,tt_content:list_type:indexedsearch_pi2,tx_bootstrappackage_carousel_item:item_type:header,tx_bootstrappackage_carousel_item:item_type:html'
 WHERE uid = 995 AND deleted = 0 AND title = 'Workspace editors (AI chat)'
   AND COALESCE(explicit_allowdeny, '') <> 'tt_content:CType:accordion,tt_content:CType:audio,tt_content:CType:carousel,tt_content:CType:carousel_small,tt_content:CType:carousel_fullscreen,tt_content:CType:listgroup,tt_content:CType:media,tt_content:CType:menu_thumbnail_list,tt_content:CType:menu_thumbnail_dir,tt_content:CType:panel,tt_content:CType:quote,tt_content:CType:tab,tt_content:CType:textcolumn,tt_content:CType:texticon,tt_content:CType:textteaser,tt_content:CType:header,tt_content:CType:text,tt_content:CType:textpic,tt_content:CType:image,tt_content:CType:textmedia,tt_content:CType:bullets,tt_content:CType:table,tt_content:CType:uploads,tt_content:CType:menu_abstract,tt_content:CType:menu_categorized_content,tt_content:CType:menu_categorized_pages,tt_content:CType:menu_pages,tt_content:CType:menu_subpages,tt_content:CType:menu_recently_updated,tt_content:CType:menu_related_pages,tt_content:CType:menu_section,tt_content:CType:menu_section_pages,tt_content:CType:menu_sitemap,tt_content:CType:menu_sitemap_pages,tt_content:CType:shortcut,tt_content:CType:list,tt_content:CType:div,tt_content:CType:html,tt_content:CType:form_formframework,tt_content:CType:login,tt_content:list_type:indexedsearch_pi2,tx_bootstrappackage_carousel_item:item_type:header,tx_bootstrappackage_carousel_item:item_type:html';
+
+-- "Simple editors" (uid 1) and "Advanced editors" (uid 3) come from
+-- data/db.sql.gz with every content type in the format before TYPO3 12
+-- ("tt_content:CType:text:ALLOW"). TYPO3 14 compares the exact token
+-- "table:field:value" (BackendUserAuthentication::checkAuthMode()), so none of
+-- them matches and an editor of these groups can edit no content element at
+-- all. The TYPO3 12 and 13 upgrade wizard that rewrote this field
+-- (BackendGroupsExplicitAllowDenyMigration) is gone from 14.3, so this does
+-- what it did: ":ALLOW" is cut off the token, and a token ending in ":DENY" is
+-- dropped, because an explicit deny no longer exists (neither group carries
+-- one). Tokens already in the current format, including any an administrator
+-- added, are kept as they are; once no old token is left the WHERE clause
+-- matches nothing.
+UPDATE be_groups
+SET explicit_allowdeny = TRIM(BOTH ',' FROM
+        REGEXP_REPLACE(
+            REGEXP_REPLACE(CONCAT(',', explicit_allowdeny, ','), ',[^,]*:DENY(?=,)', ''),
+            ':ALLOW(?=,)', ''))
+WHERE ((uid = 1 AND title = 'Simple editors') OR (uid = 3 AND title = 'Advanced editors'))
+  AND deleted = 0
+  AND explicit_allowdeny REGEXP ':(ALLOW|DENY)(,|$)';
 
 INSERT IGNORE INTO tx_nrvault_secret_begroups_mm (uid_local, uid_foreign, sorting, sorting_foreign)
 SELECT s.uid, 995, 3, 0
@@ -7529,6 +7551,69 @@ UPDATE pages p
        p.hidden           = e.hidden,
        p.sorting          = e.sorting,
        p.deleted          = 0;
+
+-- --- Page permissions of the seeded pages ------------------------------------
+-- The pages INSERTs above name no perms_* column, so every page this file
+-- creates (the extension pages and all German translations, 45 rows) has owner
+-- 0, group 0 and no rights at all. Only an administrator could edit them.
+--
+-- That also broke the AI label of a non-admin editor's change to page 1. When
+-- pages:1 is saved, core's DataMapProcessor adds the German translation
+-- pages:170 to the same save to synchronise its l10n_mode=exclude fields, and
+-- DataHandler::process_datamap() refuses that row in hasPermissionToUpdate()
+-- ("Attempt to modify record pages:170 without permission or non-existing
+-- page"). The page itself is written, but b13/ai-label's AiLabelApi treats any
+-- entry in the DataHandler error log as a failure and threw "Backend user 995
+-- is not allowed to update tx_ailabel_metadata on pages:1".
+--
+-- A seeded default-language page takes the permissions of the root page 1
+-- (owner, group "Simple editors", which every editor group includes); a
+-- seeded translation takes those of the page it translates, as each German
+-- page should allow what its English source allows (a translation whose source
+-- page does not exist is left alone). Only rows that still carry
+-- no permissions at all are written, so a permission an administrator set
+-- stays, and a second run changes nothing. Default-language pages go first:
+-- some translations translate one of them.
+UPDATE pages p
+  JOIN seed_expected_pages e
+    ON p.uid  = e.uid
+   AND p.slug = e.slug
+   AND e.sys_language_uid = 0
+  JOIN pages root
+    ON root.uid = 1
+   AND root.slug = '/'
+   AND root.sys_language_uid = 0
+   AND root.t3ver_wsid = 0
+   AND root.deleted = 0
+   SET p.perms_userid    = root.perms_userid,
+       p.perms_groupid   = root.perms_groupid,
+       p.perms_user      = root.perms_user,
+       p.perms_group     = root.perms_group,
+       p.perms_everybody = root.perms_everybody
+ WHERE p.t3ver_wsid = 0
+   AND p.perms_userid = 0 AND p.perms_groupid = 0
+   AND p.perms_user = 0 AND p.perms_group = 0 AND p.perms_everybody = 0
+   AND (root.perms_user <> 0 OR root.perms_group <> 0 OR root.perms_everybody <> 0);
+
+UPDATE pages p
+  JOIN seed_expected_pages e
+    ON p.uid  = e.uid
+   AND p.slug = e.slug
+   AND e.sys_language_uid > 0
+  JOIN pages src
+    ON src.uid = p.l10n_parent
+   AND src.sys_language_uid = 0
+   AND src.t3ver_wsid = 0
+   AND src.deleted = 0
+   SET p.perms_userid    = src.perms_userid,
+       p.perms_groupid   = src.perms_groupid,
+       p.perms_user      = src.perms_user,
+       p.perms_group     = src.perms_group,
+       p.perms_everybody = src.perms_everybody
+ WHERE p.t3ver_wsid = 0
+   AND p.perms_userid = 0 AND p.perms_groupid = 0
+   AND p.perms_user = 0 AND p.perms_group = 0 AND p.perms_everybody = 0
+   AND (src.perms_user <> 0 OR src.perms_group <> 0 OR src.perms_everybody <> 0);
 
 -- --- Re-assert the content elements -------------------------------------------
 -- Scoped by uid together with the expected pid: our record is the one sitting on
