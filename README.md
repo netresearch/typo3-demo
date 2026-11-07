@@ -415,13 +415,18 @@ The hidden AI Search page (`/extensions/ai-search`) carries an AI Chat element
 the Extensions page and its subpages, and its nr_llm configuration
 `nr_ai_search.chat.advisor` has a system prompt that asks for the visitor's
 need, recommends at most three extensions from the retrieved pages and links
-them. Both settings are per element (nr_ai_search ADR-041); the other elements
-on the page keep the whole index and the default configuration. It stays on
-the hidden page for the same reason as the other widgets: a public chat lets
-any visitor start paid model calls.
+them. Both settings are per element (nr_ai_search ADR-041). Two other elements
+on the page set them too: "AI Search: Secrets Vault only" (9233, German 9234)
+searches the Secrets Vault page (107) with the `nr_ai_search.chat.brief`
+configuration, and the search the page template renders (9241, German 9242)
+searches page 107 with the default configuration; the remaining elements use
+the whole index and the default configuration. It stays on the hidden page for
+the same reason as the other widgets: a public chat lets any visitor start paid
+model calls.
 
 The configuration is created once by the seed; an admin's later edits to its
-prompt are kept, and only its model binding is refreshed on each deploy.
+prompt are kept. Each deploy refreshes its model binding and sets it active
+again, so a configuration an admin switched off is switched back on.
 
 ## Structured data and Markdown for AI crawlers
 
