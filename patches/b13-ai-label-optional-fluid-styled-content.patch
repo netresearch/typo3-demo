@@ -1,0 +1,8 @@
+--- a/Configuration/Sets/AiLabel/config.yaml
++++ b/Configuration/Sets/AiLabel/config.yaml
+@@ -1,4 +1,4 @@
+ name: b13/ai-label
+ label: AI Label
+-dependencies:
++optionalDependencies:
+   - typo3/fluid-styled-content
