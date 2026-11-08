@@ -1358,6 +1358,24 @@ UPDATE tx_nrllm_model
    AND model_id = 'gpt-6.1-sol'
    AND NOT FIND_IN_SET('tools', capabilities);
 
+-- `vision` was lost in the same edit, and it is now measured too: on
+-- 2026-11-08 a chat completion to gpt-6.1-sol with this instance's key and a
+-- PNG from fileadmin as image_url input answered 200 and described the image
+-- correctly ("a world map formed by tiny orange icons", introduction/images/
+-- map.png). Without the token nr-llm offers no vision editor action
+-- (VisionActionBuilder::isAvailable() requires `vision` on a model whose
+-- capability set is not empty): the default configuration runs on this model,
+-- and after the 0.43.21 deploy the file list showed no "AI actions" item on
+-- any file while content elements had one: the item is offered only when an
+-- editor action is left for sys_file, and the sys_file actions read images.
+-- Same guard as above.
+UPDATE tx_nrllm_model
+   SET capabilities = CONCAT_WS(',', NULLIF(capabilities, ''), 'vision'),
+       tstamp       = UNIX_TIMESTAMP()
+ WHERE uid = 1 AND deleted = 0
+   AND model_id = 'gpt-6.1-sol'
+   AND NOT FIND_IN_SET('vision', capabilities);
+
 -- =============================================================================
 -- AI Search & Chat (nr_ai_search) — RAG embeddings + chat configuration
 -- =============================================================================
