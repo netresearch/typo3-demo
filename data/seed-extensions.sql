@@ -1839,8 +1839,9 @@ WHERE uid = 998 AND deleted = 0 AND title = 'Repurpose editors (no audio/vision)
   AND (COALESCE(subgroup, '') <> '3' OR COALESCE(groupMods, '') <> 'web_nrrepurpose'
        OR COALESCE(custom_options, '') <> '');
 
-UPDATE be_users SET usergroup = '998'
-WHERE uid = 998 AND username = 'redakteur_repurpose' AND COALESCE(usergroup, '') <> '998'
+UPDATE be_users SET usergroup = '998', options = options | 3
+WHERE uid = 998 AND username = 'redakteur_repurpose'
+  AND (COALESCE(usergroup, '') <> '998' OR options & 3 <> 3)
   AND EXISTS (SELECT 1 FROM be_groups WHERE uid = 998 AND deleted = 0 AND title = 'Repurpose editors (no audio/vision)');
 
 -- 3d) Identity for the nr_repurpose generation job (release 0.4.2).
@@ -8564,8 +8565,17 @@ UNION ALL
 SELECT 'SEED-PROBLEM: be_users 998 redakteur_repurpose missing, foreign, admin or outside group 998'
   FROM DUAL
  WHERE NOT EXISTS (SELECT 1 FROM be_users
-                    WHERE uid = 998 AND deleted = 0 AND admin = 0
+                    WHERE uid = 998 AND deleted = 0 AND disable = 0 AND admin = 0
                       AND username = 'redakteur_repurpose' AND usergroup = '998')
+UNION ALL
+-- The editor inherits groups 3 and 2 through group 998. If one of the three
+-- ever grants a nr_repurpose option, the account no longer shows the refusal
+-- it exists for.
+SELECT 'SEED-PROBLEM: group 998, 3 or 2 grants an nrrepurpose option to redakteur_repurpose'
+  FROM DUAL
+ WHERE EXISTS (SELECT 1 FROM be_groups
+                WHERE uid IN (998, 3, 2) AND deleted = 0
+                  AND COALESCE(custom_options, '') LIKE '%nrrepurpose:%')
 UNION ALL
 -- Every versioned '*-chat-latest' alias OpenAI ever served to this account is
 -- deprecated and answers 404, so a chat model still carrying one is a dead
