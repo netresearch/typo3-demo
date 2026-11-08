@@ -786,7 +786,8 @@ jobs:
             fi
           done
           count() {
-            docker compose exec -T db sh -c 'MYSQL_PWD="$MARIADB_PASSWORD" mariadb -N -B -u "$MARIADB_USER" "$MARIADB_DATABASE"' <<<"$1"
+            local query="$1"
+            docker compose exec -T db sh -c 'MYSQL_PWD="$MARIADB_PASSWORD" mariadb -N -B -u "$MARIADB_USER" "$MARIADB_DATABASE"' <<<"$query"
           }
           categories=$(count "SELECT COUNT(*) FROM sys_category WHERE parent = 7100 AND deleted = 0 AND hidden = 0 AND sys_language_uid IN (0, -1) AND t3ver_wsid = 0;")
           audiences=$(count "SELECT COUNT(*) FROM tx_nrllm_promptsnippet WHERE deleted = 0 AND hidden = 0 AND is_active = 1 AND FIND_IN_SET('audience', REPLACE(tags, ' ', '')) > 0;")
