@@ -755,6 +755,50 @@ jobs:
             exit 1
           fi
 
+      # The Cowriter audience variant and the nr-llm category action are off
+      # until a setting is on AND a seeded record exists, and the entrypoint
+      # writes both without failing the boot: the settings through php -r with
+      # a WARNING on error, the records through one mariadb heredoc whose
+      # errors go to /dev/null. A broken INSERT would leave both buttons
+      # missing on a green job. The settings are read the way the extensions
+      # read them, through ExtensionConfiguration after a TYPO3 boot; the
+      # records are counted with the conditions the extensions apply.
+      # No apostrophes in the PHP below: it is a single-quoted shell argument.
+      - name: Verify the audience variant, category action and AI crawler context are set up
+        run: |
+          settings=$(docker compose exec -T -u www-data web php -r '
+          foreach (["TYPO3_PATH_APP" => "/var/www", "TYPO3_PATH_ROOT" => "/var/www/public"] as $v => $p) {
+              putenv("$v=$p"); $_ENV[$v] = $_SERVER[$v] = $p;
+          }
+          $cl = require "/var/www/vendor/autoload.php";
+          \TYPO3\CMS\Core\Core\SystemEnvironmentBuilder::run(1, \TYPO3\CMS\Core\Core\SystemEnvironmentBuilder::REQUESTTYPE_CLI);
+          \TYPO3\CMS\Core\Core\Bootstrap::init($cl, false);
+          $ext = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Configuration\ExtensionConfiguration::class);
+          echo "variant=" . (string) $ext->get("t3_cowriter", "variant/enable") . "\n";
+          echo "rootUid=" . (string) $ext->get("nr_llm", "vision/categories/rootUid") . "\n";
+          echo "categoriesEnabled=" . (string) $ext->get("nr_llm", "vision/categories/enabled") . "\n";
+          ')
+          printf '%s\n' "$settings"
+          for expected in variant=1 rootUid=7100 categoriesEnabled=1; do
+            if ! grep -qx "$expected" <<<"$settings"; then
+              echo "::error::extension setting is not $expected"
+              exit 1
+            fi
+          done
+          count() {
+            local query="$1"
+            docker compose exec -T db sh -c 'MYSQL_PWD="$MARIADB_PASSWORD" mariadb -N -B -u "$MARIADB_USER" "$MARIADB_DATABASE"' <<<"$query"
+          }
+          categories=$(count "SELECT COUNT(*) FROM sys_category WHERE parent = 7100 AND deleted = 0 AND hidden = 0 AND sys_language_uid IN (0, -1) AND t3ver_wsid = 0;")
+          audiences=$(count "SELECT COUNT(*) FROM tx_nrllm_promptsnippet WHERE deleted = 0 AND hidden = 0 AND is_active = 1 AND FIND_IN_SET('audience', REPLACE(tags, ' ', '')) > 0;")
+          tones=$(count "SELECT COUNT(*) FROM tx_nrllm_promptsnippet WHERE deleted = 0 AND hidden = 0 AND is_active = 1 AND FIND_IN_SET('tone_of_voice', REPLACE(tags, ' ', '')) > 0;")
+          crawler=$(count "SELECT COUNT(*) FROM tx_contexts_contexts WHERE uid = 7120 AND type = 'aicrawler' AND deleted = 0 AND disabled = 0 AND hide_in_backend = 0;")
+          echo "categories below 7100: $categories, audience snippets: $audiences, tone snippets: $tones, aicrawler context 7120: $crawler"
+          [ "$categories" = 8 ] || { echo "::error::expected 8 categories below sys_category 7100, got $categories"; exit 1; }
+          [ "$audiences" = 3 ] || { echo "::error::expected 3 active audience prompt snippets, got $audiences"; exit 1; }
+          [ "$tones" = 2 ] || { echo "::error::expected 2 active tone_of_voice prompt snippets, got $tones"; exit 1; }
+          [ "$crawler" = 1 ] || { echo "::error::the aicrawler context 7120 is missing or not usable"; exit 1; }
+
       # The RTE preset is assembled from three imports, and the YAML merge
       # REPLACES a string with a list (and a list with a string) instead of
       # appending. That silently dropped core's contents.css, so the editor text
@@ -937,6 +981,16 @@ jobs:
             exit 1
           fi
           make seed-extensions
+
+      # The editor action "Set categories from the image" is offered only while
+      # the tool set_file_categories is enabled, and it ships disabled. The row
+      # comes from data/seed-extensions.sql, which the step above has just
+      # applied the way a deploy does.
+      - name: Verify the seed enables the category writer
+        run: |
+          tool=$(docker compose exec -T db sh -c 'MYSQL_PWD="$MARIADB_PASSWORD" mariadb -N -B -u "$MARIADB_USER" "$MARIADB_DATABASE" -e "SELECT COUNT(*) FROM tx_nrllm_tool_state WHERE tool_name = \"set_file_categories\" AND enabled = 1;"')
+          echo "set_file_categories enabled rows: $tool"
+          [ "$tool" = 1 ] || { echo "::error::the tool set_file_categories is not enabled"; exit 1; }
 
       # The seed re-asserts its RTE content on every deploy, after the boot-time
       # upgrade wizard rteImageReferenceValidation has run. An <img> whose

@@ -553,6 +553,12 @@ if [ -f config/system/settings.php ]; then
             // denies the key, and every queued run fails on its first model
             // call. Seeded with read access to that secret and one file mount.
             . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"nr_llm\"][\"worker\"][\"technicalBeUserUid\"] = \"994\";\n"
+            // nr-llm 0.43.21: the editor action that sets the categories of
+            // an image from what it shows (tool set_file_categories). It
+            // chooses only existing categories below this sys_category, the
+            // root Bildthemen seeded further below with fixed uids. 0 would
+            // offer no category action at all.
+            . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"nr_llm\"][\"vision\"][\"categories\"][\"rootUid\"] = \"7100\";\n"
             // nr_repurpose 0.4.2 runs its generation job as this backend user.
             // Without it the setting stays 0, the job keeps booting an
             // unauthenticated CLI user, and nr_vault denies the provider key --
@@ -574,7 +580,7 @@ if [ -f config/system/settings.php ]; then
         }
         $existing = rtrim($existing, "\n") . "\n\n" . $block . "\n";
         file_put_contents($f, $existing);
-        echo "additional.php: nr_ai_search configured (technicalBeUserUid=990, dims=1536), nr_vault provisioning actor 991, nr_repurpose actor 992, nr_llm media on (tts-1), nr_llm DeepL translator key deepl_api_key, index dev-sync on." . PHP_EOL;
+        echo "additional.php: nr_ai_search configured (technicalBeUserUid=990, dims=1536), nr_vault provisioning actor 991, nr_repurpose actor 992, nr_llm media on (tts-1), nr_llm DeepL translator key deepl_api_key, nr_llm category root 7100, index dev-sync on." . PHP_EOL;
     ' || echo "WARNING: failed to write nr_ai_search additional.php block" >&2
 fi
 
@@ -671,6 +677,15 @@ if [ -f config/system/settings.php ]; then
         // request against the editor budget. Only the string "1" is on.
         $cfg["EXTENSIONS"]["t3_cowriter"]["presentation"]["enable"] = "1";
 
+        // Cowriter (3.27+): "Create an audience variant" next to the rich text
+        // of text elements. The language model rewrites header and text for
+        // an audience the editor picks; the reviewed result becomes a hidden
+        // copy after the original, which a context of EXT:contexts can show.
+        // The button needs an active nr_llm prompt snippet tagged audience;
+        // the demo snippets are seeded further below. Each proposal is one
+        // request against the editor budget. Only the string "1" is on.
+        $cfg["EXTENSIONS"]["t3_cowriter"]["variant"]["enable"] = "1";
+
         // Write to a sibling and rename. file_put_contents() truncates in place,
         // and settings.php is the one file whose corruption bricks the instance:
         // a partial write (full volume) leaves a parse error, the
@@ -696,7 +711,8 @@ if [ -f config/system/settings.php ]; then
             || ($check["EXTENSIONS"]["t3_cowriter"]["translation"]["polish"] ?? null) !== "1"
             || ($check["EXTENSIONS"]["t3_cowriter"]["image"]["enable"] ?? null) !== "1"
             || ($check["EXTENSIONS"]["t3_cowriter"]["inlineSuggestions"]["enable"] ?? null) !== "1"
-            || ($check["EXTENSIONS"]["t3_cowriter"]["presentation"]["enable"] ?? null) !== "1") {
+            || ($check["EXTENSIONS"]["t3_cowriter"]["presentation"]["enable"] ?? null) !== "1"
+            || ($check["EXTENSIONS"]["t3_cowriter"]["variant"]["enable"] ?? null) !== "1") {
             @unlink($tmp);
             fwrite(STDERR, "the new settings.php did not parse back - settings.php left untouched" . PHP_EOL);
             exit(1);
@@ -710,10 +726,10 @@ if [ -f config/system/settings.php ]; then
             fwrite(STDERR, "failed to rename " . $tmp . " over settings.php - settings.php left untouched" . PHP_EOL);
             exit(1);
         }
-        echo "settings.php: t3_cowriter translation polish, image generation, inline suggestions and tabs/accordion on; ai_filemetadata configured (alt texts on upload: en_US, de_DE), OpenAI key "
+        echo "settings.php: t3_cowriter translation polish, image generation, inline suggestions, tabs/accordion and audience variants on; ai_filemetadata configured (alt texts on upload: en_US, de_DE), OpenAI key "
             . ($key !== "" ? $origin : "NOT set - alt-text generation will fail")
             . "." . PHP_EOL;
-    ' || echo "WARNING: ai_filemetadata and t3_cowriter are NOT configured - settings.php was left untouched, so alt-text generation runs on the extension's fail-open defaults (no image downscaling, frontend generation on) and DeepL translations are not revised and image generation, inline suggestions and tabs/accordion stay off" >&2
+    ' || echo "WARNING: ai_filemetadata and t3_cowriter are NOT configured - settings.php was left untouched, so alt-text generation runs on the extension's fail-open defaults (no image downscaling, frontend generation on) and DeepL translations are not revised and image generation, inline suggestions, tabs/accordion and audience variants stay off" >&2
 fi
 
 # Configure autotranslate (DeepL).
@@ -1030,18 +1046,20 @@ if [ -d /var/www/data/forms ]; then
     done
 fi
 # ---------------------------------------------------------------------------
-# Demo records for contexts and nr_textdb.
+# Demo records for contexts and nr_textdb, and the category tree and prompt
+# snippets of the nr-llm and Cowriter editor actions.
 # ---------------------------------------------------------------------------
 # These MUST run after extension:setup, not from data/seed-extensions.sql:
-# neither tx_contexts_contexts / tx_nrtextdb_domain_model_* nor the
-# pages/tt_content tx_contexts_* columns exist when that file is imported, and
+# neither tx_contexts_contexts / tx_nrtextdb_domain_model_* /
+# tx_nrllm_promptsnippet nor the pages/tt_content tx_contexts_* columns exist
+# when that file is imported on first boot, and
 # the mariadb client aborts the whole import on the first unknown-table error.
 # Same reason the lochmueller/index configuration row lives down here.
 # Idempotent: guarded INSERTs plus UPDATEs that re-apply the assignment on
 # every boot (INSERT IGNORE never updates an existing row).
 if [ -f config/system/settings.php ]; then
-    echo "Seeding contexts and nr_textdb demo records..."
-    MYSQL_PWD="${MARIADB_PASSWORD:-typo3}" mariadb -h"${MARIADB_HOST:-db}" -u"${MARIADB_USER:-typo3}" "${MARIADB_DATABASE:-typo3}" --default-character-set=utf8mb4 2>/dev/null <<'SQL' || echo "WARNING: contexts/nr_textdb seed failed" >&2
+    echo "Seeding contexts, nr_textdb, category and prompt snippet demo records..."
+    MYSQL_PWD="${MARIADB_PASSWORD:-typo3}" mariadb -h"${MARIADB_HOST:-db}" -u"${MARIADB_USER:-typo3}" "${MARIADB_DATABASE:-typo3}" --default-character-set=utf8mb4 2>/dev/null <<'SQL' || echo "WARNING: contexts/nr_textdb/category/prompt snippet seed failed" >&2
 -- The "Demo channel" context: matches while ?nrdemo=mobile is present.
 -- pid 1 keeps the record reachable via Web > List on the demo home page;
 -- ctrl.rootLevel = -1 plus security.ignorePageTypeRestriction permit it there.
@@ -1106,6 +1124,81 @@ VALUES
   (6, 163, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 2, 2, 0, 0, 32, 1, 1, 1, 'demo.cta.button',    'Demo anfragen'),
   (7, 163, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 3, 3, 0, 0, 48, 1, 1, 1, 'demo.form.submit',   'Nachricht senden'),
   (8, 163, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 4, 4, 0, 0, 64, 1, 1, 1, 'demo.form.thankyou', 'Danke, wir melden uns.');
+
+-- The records below come after the ones above on purpose: the client stops at
+-- the first failing statement, so a failure here leaves the older seeds intact.
+-- Fixed uids in the 7100 range, which no seed and no dump of this demo uses.
+-- INSERT IGNORE keys on the primary key: a reboot keeps a seeded record as an
+-- editor left it, and a deleted one stays deleted.
+
+-- The category tree of the editor action "Set categories from the image"
+-- (nr-llm 0.43.21, tool set_file_categories). The action chooses only
+-- existing, visible, default-language categories below the root that
+-- vision.categories.rootUid names in additional.php (7100). The children
+-- match what the images in fileadmin show: the office and team photos, the
+-- fitness and physiotherapy pictures, the introduction package images, logos
+-- and backend screenshots. pid 0 like the two categories of the dump.
+INSERT IGNORE INTO sys_category
+    (uid, pid, tstamp, crdate, deleted, hidden, sorting, sys_language_uid, l10n_parent, t3ver_wsid, parent, title)
+VALUES
+  (7100, 0, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0, 1024, 0, 0, 0, 0,    'Bildthemen'),
+  (7101, 0, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0, 16,   0, 0, 0, 7100, 'Menschen und Team'),
+  (7102, 0, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0, 32,   0, 0, 0, 7100, 'Büro und Arbeitsplatz'),
+  (7103, 0, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0, 48,   0, 0, 0, 7100, 'Sport und Fitness'),
+  (7104, 0, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0, 64,   0, 0, 0, 7100, 'Gesundheit und Therapie'),
+  (7105, 0, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0, 80,   0, 0, 0, 7100, 'Logistik und Industrie'),
+  (7106, 0, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0, 96,   0, 0, 0, 7100, 'Natur und Landschaft'),
+  (7107, 0, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0, 112,  0, 0, 0, 7100, 'Logos und Grafiken'),
+  (7108, 0, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0, 128,  0, 0, 0, 7100, 'Screenshots und Software');
+
+-- Audiences and tones of voice for the Cowriter (t3-cowriter 3.27): its
+-- button "Create an audience variant" appears only while at least one active
+-- prompt snippet is tagged audience, and the writing dialog offers the
+-- snippets tagged tone_of_voice as tones. nr_repurpose reads the same tags.
+-- The snippet table has no language field; the texts are German like the
+-- backend of this demo, and the Cowriter tells the model to keep the language
+-- of the element it rewrites. data_class stays empty (undeclared), which
+-- blocks no provider.
+INSERT IGNORE INTO tx_nrllm_promptsnippet
+    (uid, pid, tstamp, crdate, deleted, hidden, is_active, sorting, identifier, name, description, tags, snippet)
+VALUES
+  (7111, 0, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0, 1, 16, 'audience-einsteiger',
+   'Zielgruppe: Einsteiger ohne Fachwissen', 'Demo-Zielgruppe für die Cowriter-Varianten.', 'audience',
+   'Schreibe für Leserinnen und Leser ohne Vorwissen über TYPO3 und Webtechnik. Erkläre Fachbegriffe beim ersten Auftreten in einfachen Worten, nutze kurze Sätze und ein konkretes Beispiel aus dem Redaktionsalltag.'),
+  (7112, 0, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0, 1, 32, 'audience-entscheider',
+   'Zielgruppe: Entscheider im Management', 'Demo-Zielgruppe für die Cowriter-Varianten.', 'audience',
+   'Schreibe für Geschäftsführung und Abteilungsleitung. Beginne mit dem wichtigsten Ergebnis, stelle Nutzen, Aufwand und Risiko in den Vordergrund und lass technische Details weg.'),
+  (7113, 0, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0, 1, 48, 'audience-entwickler',
+   'Zielgruppe: Entwicklerinnen und Entwickler', 'Demo-Zielgruppe für die Cowriter-Varianten.', 'audience',
+   'Schreibe für Webentwicklerinnen und Webentwickler mit TYPO3-Erfahrung. Benenne Techniken, Schnittstellen und Konfiguration genau und verzichte auf Werbesprache.'),
+  (7114, 0, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0, 1, 64, 'tone-sachlich',
+   'Tonalität: sachlich und knapp', 'Demo-Tonalität für den Cowriter.', 'tone_of_voice',
+   'Schreibe sachlich, knapp und neutral: aktive Sätze, keine Superlative, keine Ausrufezeichen.'),
+  (7115, 0, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0, 1, 80, 'tone-freundlich',
+   'Tonalität: freundlich und persönlich', 'Demo-Tonalität für den Cowriter.', 'tone_of_voice',
+   'Schreibe freundlich und zugewandt, sprich die Leserinnen und Leser direkt an und bleibe dabei professionell.');
+
+-- An "AI crawler" context (contexts 5.1.0): active while the User-Agent names
+-- a known AI crawler or fetcher (GPTBot, ClaudeBot, PerplexityBot and the
+-- others the extension lists). The Cowriter offers it when an audience variant
+-- gets a context, so a variant can be shown to AI crawlers only. Not hidden in
+-- the backend, or the Cowriter dialog would not list it. No additional
+-- user-agent substrings; the built-in list is the point of the type.
+INSERT INTO tx_contexts_contexts
+    (uid, pid, tstamp, crdate, deleted, disabled, hide_in_backend, type, title, alias, invert, use_session, type_conf)
+SELECT 7120, 1, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0, 0, 'aicrawler', 'KI-Crawler', 'ai-crawler', 0, 0,
+'<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<T3FlexForms>
+    <data>
+        <sheet index="sDEF">
+            <language index="lDEF">
+                <field index="field_additional_user_agents"><value index="vDEF"></value></field>
+            </language>
+        </sheet>
+    </data>
+</T3FlexForms>'
+FROM DUAL
+WHERE NOT EXISTS (SELECT 1 FROM tx_contexts_contexts WHERE uid = 7120);
 SQL
 fi
 

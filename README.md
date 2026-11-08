@@ -473,6 +473,47 @@ with `TYPO3_DOMAIN=localhost`, "Analyze Page" fails as well: the fetch goes to
 and it serves plain HTTP only. On a public domain the fetch leaves the container
 and reaches Caddy.
 
+## AI actions on files and image categories (nr-llm)
+
+Right-clicking a file or folder in Media › Filelist offers "AI actions"
+(nr-llm 0.43.21): the Editor Action Center for that file, or the batch page for
+the folder. It needs no setting; the item appears for users with the nr-llm
+task grant and the AI tasks module, which includes the admin login.
+
+One of the actions, "Set categories from the image", lets the model choose
+categories for an image from what it shows, but only existing categories below
+the root named in `vision.categories.rootUid`. The entrypoint sets that root to
+`sys_category` 7100 in the managed `nr_ai_search` block of
+`config/system/additional.php`, and seeds the tree on every boot: the root
+"Bildthemen" (7100) with eight children (7101–7108: Menschen und Team, Büro und
+Arbeitsplatz, Sport und Fitness, Gesundheit und Therapie, Logistik und
+Industrie, Natur und Landschaft, Logos und Grafiken, Screenshots und Software)
+that match the images in `fileadmin`. The writing tool behind the action,
+`set_file_categories`, ships disabled; `data/seed-extensions.sql` (step 8g2)
+enables it like the other writers. Every proposal stops at an approval card.
+
+## Audience variants (Cowriter) and the AI crawler context
+
+The Cowriter's "Create an audience variant" button (t3-cowriter 3.27) sits next
+to the rich text of Text, Text & Images and Text & Media elements. The model
+rewrites header and text for an audience, the editor reviews the proposal, and
+a hidden copy is created after the original; with `netresearch/contexts` the
+editor can give the copy a context and show it there. The entrypoint switches
+it on (`variant.enable = "1"` in `settings.php`, next to the other Cowriter
+switches) and seeds the prompt snippets the dialog offers: three tagged
+`audience` (7111–7113: Einsteiger, Entscheider, Entwicklerinnen und Entwickler)
+and two tagged `tone_of_voice` (7114–7115: sachlich, freundlich). The button
+does not appear without an active `audience` snippet. An element that has
+translations, or is a connected translation, gets no variant; a new text
+element without translations is the simplest way to try it.
+
+contexts 5.1 adds the context type "AI crawler", which is active while the
+User-Agent names a known AI crawler or fetcher (GPTBot, ClaudeBot,
+PerplexityBot and others). The entrypoint seeds one such context, "KI-Crawler"
+(`tx_contexts_contexts` uid 7120, alias `ai-crawler`), so a variant can be
+given to AI crawlers only. The User-Agent is set by the client; the context
+detects what a client claims to be.
+
 ## AI Chat turns
 
 `chat-worker` runs the turns of the AI Chat, in two replicas. A booted process waits

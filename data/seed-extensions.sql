@@ -7948,6 +7948,21 @@ WHERE identifier = 'backend-ai-chat' AND deleted = 0
   AND allowed_tool_groups <> ''
   AND FIND_IN_SET('content', allowed_tool_groups) = 0;
 
+-- 8g2. The category writer of nr-llm 0.43.21 (ADR-268)
+--
+-- set_file_categories sets the categories of one image's metadata from the
+-- tree below vision.categories.rootUid (the entrypoint sets the root and seeds
+-- the tree). The editor action "Set categories from the image" in the file
+-- list and the Editor Action Center is offered only while the tool is enabled,
+-- and it ships disabled like every writer. Same defence as 8c: it writes as the
+-- acting user through the DataHandler, chooses only categories of that tree the
+-- user may assign, stops at a human approval and reads the row back. It
+-- belongs to the group 'editing', whose row 8c sets.
+INSERT INTO tx_nrllm_tool_state (pid, tool_name, enabled)
+VALUES (0, 'set_file_categories', 1)
+ON DUPLICATE KEY UPDATE
+  enabled = VALUES(enabled);
+
 -- 8h. The tool groups of the guided tours
 --
 -- The tours (see "The two guided tours" above) declare tools of five groups:

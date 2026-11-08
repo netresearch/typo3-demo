@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "99c49b30ea6034e17eb0c902d3be1e5c",
+    "content-hash": "ec2b455e434510cf2f546acfee68af97",
     "packages": [
         {
             "name": "b13/ai-bots-love-markdown",
@@ -2999,16 +2999,16 @@
         },
         {
             "name": "netresearch/contexts",
-            "version": "v5.0.4",
+            "version": "v5.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/t3x-contexts.git",
-                "reference": "05d99285d0d0f7bf6f247a751e0f0ef16eeac7d4"
+                "reference": "2766100d0867580cdeb9f1926717cc53daf33415"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/t3x-contexts/zipball/05d99285d0d0f7bf6f247a751e0f0ef16eeac7d4",
-                "reference": "05d99285d0d0f7bf6f247a751e0f0ef16eeac7d4",
+                "url": "https://api.github.com/repos/netresearch/t3x-contexts/zipball/2766100d0867580cdeb9f1926717cc53daf33415",
+                "reference": "2766100d0867580cdeb9f1926717cc53daf33415",
                 "shasum": ""
             },
             "require": {
@@ -3029,7 +3029,7 @@
                     "Package": {
                         "providesPackages": []
                     },
-                    "version": "5.0.4",
+                    "version": "5.1.0",
                     "extension-key": "contexts"
                 },
                 "captainhook": {
@@ -3066,7 +3066,7 @@
                 "issues": "https://github.com/netresearch/t3x-contexts/issues",
                 "source": "https://github.com/netresearch/t3x-contexts"
             },
-            "time": "2026-10-31T14:04:49+00:00"
+            "time": "2026-11-08T00:38:42+00:00"
         },
         {
             "name": "netresearch/nr-ai-search",
@@ -3445,16 +3445,16 @@
         },
         {
             "name": "netresearch/nr-llm",
-            "version": "v0.43.20",
+            "version": "v0.43.21",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/t3x-nr-llm.git",
-                "reference": "ac59b8de5226ad7e941a587ed31b10690919277f"
+                "reference": "8ee9ec6a2c7d72cdf3232baaacc93ad01e88a26e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/t3x-nr-llm/zipball/ac59b8de5226ad7e941a587ed31b10690919277f",
-                "reference": "ac59b8de5226ad7e941a587ed31b10690919277f",
+                "url": "https://api.github.com/repos/netresearch/t3x-nr-llm/zipball/8ee9ec6a2c7d72cdf3232baaacc93ad01e88a26e",
+                "reference": "8ee9ec6a2c7d72cdf3232baaacc93ad01e88a26e",
                 "shasum": ""
             },
             "require": {
@@ -3497,7 +3497,7 @@
                     "Package": {
                         "providesPackages": []
                     },
-                    "version": "0.43.20",
+                    "version": "0.43.21",
                     "web-dir": ".Build/Web",
                     "extension-key": "nr_llm"
                 },
@@ -3542,7 +3542,7 @@
                 "issues": "https://github.com/netresearch/t3x-nr-llm/issues",
                 "source": "https://github.com/netresearch/t3x-nr-llm"
             },
-            "time": "2026-11-06T19:46:05+00:00"
+            "time": "2026-11-08T01:01:53+00:00"
         },
         {
             "name": "netresearch/nr-llm-compat",
@@ -4498,16 +4498,16 @@
         },
         {
             "name": "netresearch/t3-cowriter",
-            "version": "v3.26.2",
+            "version": "v3.27.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/t3x-cowriter.git",
-                "reference": "d104dffbe09662322ddf6c9e3e43eb9deeabdb51"
+                "reference": "1370d23db4cc4bece18ad1757d74dae9a165398a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/t3x-cowriter/zipball/d104dffbe09662322ddf6c9e3e43eb9deeabdb51",
-                "reference": "d104dffbe09662322ddf6c9e3e43eb9deeabdb51",
+                "url": "https://api.github.com/repos/netresearch/t3x-cowriter/zipball/1370d23db4cc4bece18ad1757d74dae9a165398a",
+                "reference": "1370d23db4cc4bece18ad1757d74dae9a165398a",
                 "shasum": ""
             },
             "require": {
@@ -4520,10 +4520,14 @@
             },
             "require-dev": {
                 "bk2k/bootstrap-package": "^16.0.1",
+                "netresearch/contexts": "^5.0.4",
                 "netresearch/rte-ckeditor-image": "^13.10.3",
                 "netresearch/typo3-ci-workflows": "^2.0.3",
                 "typo3/cms-seo": "^13.4 || ^14.3",
                 "typo3/cms-workspaces": "^13.4 || ^14.3"
+            },
+            "suggest": {
+                "netresearch/contexts": "Lets the audience variant of a content element be shown only in a chosen context, and its original be hidden there"
             },
             "type": "typo3-cms-extension",
             "extra": {
@@ -4588,7 +4592,7 @@
                 "issues": "https://github.com/netresearch/t3x-cowriter/issues",
                 "source": "https://github.com/netresearch/t3x-cowriter"
             },
-            "time": "2026-11-05T12:02:02+00:00"
+            "time": "2026-11-08T00:42:26+00:00"
         },
         {
             "name": "netresearch/typo3-demo-site",
