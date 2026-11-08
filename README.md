@@ -486,6 +486,9 @@ capability (or no capability at all). The default model here (uid 1,
 `gpt-6.1-sol`) lost `vision` in a backend edit, and the file list showed no
 item at all until `data/seed-extensions.sql` declared it again (#494). If the
 item disappears, check the model's capabilities in the nr-llm Models module.
+For a non-admin user the item also needs the right to change the file's
+metadata (on a file) or read access to the folder (on a folder), as nr-llm's
+file storage gate decides it.
 
 One of the actions, "Set categories from the image", lets the model choose
 categories for an image from what it shows, but only existing categories below
