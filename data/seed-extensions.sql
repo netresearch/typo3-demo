@@ -1918,6 +1918,13 @@ WHERE s.deleted = 0
 --
 --     options = 3 is what makes the user take the group's mount:
 --     BackendUserAuthentication reads file mounts from a group only with bit 2.
+--
+--     workspace_perms = 1 lets the group work in the live workspace. Since
+--     nr_llm 0.43.18 the batch sets its user up in live (ADR-265) and refuses
+--     a user without that right ("--user must name an active backend user who
+--     may work in the live workspace"). Without this column neither the user
+--     nor its group grants live: be_groups.workspace_perms defaults to 0, and
+--     the row of be_users 994 on the demo holds 0 as well.
 INSERT IGNORE INTO sys_filemounts (uid, pid, tstamp, deleted, hidden, title, description, identifier, read_only)
 VALUES (994, 0, UNIX_TIMESTAMP(), 0, 0, 'AI alternative texts',
      'The one folder the scheduled alternative-text batch works on.',
@@ -1925,10 +1932,15 @@ VALUES (994, 0, UNIX_TIMESTAMP(), 0, 0, 'AI alternative texts',
 
 INSERT IGNORE INTO be_groups
     (uid, pid, tstamp, crdate, deleted, hidden, title, description,
-     file_mountpoints, file_permissions, tables_select, tables_modify)
+     file_mountpoints, file_permissions, tables_select, tables_modify, workspace_perms)
 VALUES (994, 0, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0, 'AI alternative texts',
      'Read access to one file mount and to the file metadata, and read access to the OpenAI provider secret. No interactive members.',
-     '994', 'readFolder,readFile', 'sys_file,sys_file_metadata', 'sys_file_metadata');
+     '994', 'readFolder,readFile', 'sys_file,sys_file_metadata', 'sys_file_metadata', 1);
+
+-- The live right on a group that an earlier seed created without it, only while
+-- the row is the seeded one.
+UPDATE be_groups SET workspace_perms = workspace_perms | 1
+WHERE uid = 994 AND deleted = 0 AND title = 'AI alternative texts' AND workspace_perms & 1 = 0;
 
 INSERT IGNORE INTO be_users
     (uid, pid, tstamp, crdate, deleted, disable, admin, username, password, usergroup, options, realName, description)
@@ -8475,6 +8487,9 @@ SELECT 'SEED-PROBLEM: sys_filemounts 994 is missing, foreign or read-only' FROM 
 UNION ALL
 SELECT 'SEED-PROBLEM: be_groups 994 does not carry file mount 994' FROM DUAL
  WHERE NOT EXISTS (SELECT 1 FROM be_groups WHERE uid = 994 AND deleted = 0 AND hidden = 0 AND file_mountpoints = '994')
+UNION ALL
+SELECT 'SEED-PROBLEM: be_groups 994 does not grant the live workspace (the alt-text batch refuses nr_llm_worker)' FROM DUAL
+ WHERE NOT EXISTS (SELECT 1 FROM be_groups WHERE uid = 994 AND deleted = 0 AND hidden = 0 AND workspace_perms & 1 = 1)
 UNION ALL
 SELECT 'SEED-PROBLEM: tx_nrllm_model 90 text-embedding-3-small missing or foreign' FROM DUAL
  WHERE NOT EXISTS (SELECT 1 FROM tx_nrllm_model WHERE uid = 90 AND identifier = 'text-embedding-3-small' AND deleted = 0)
