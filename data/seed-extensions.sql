@@ -1783,6 +1783,67 @@ WHERE s.deleted = 0
   AND s.identifier = (SELECT api_key FROM tx_nrllm_provider WHERE uid = 1 LIMIT 1)
   AND (SELECT api_key FROM tx_nrllm_provider WHERE uid = 1 LIMIT 1) <> '';
 
+-- 3c5) A non-admin editor of the Repurpose module without audio and vision.
+--
+--      nr_repurpose gates its paid media per backend group: the worker checks
+--      the options nrrepurpose:generate_audio and nrrepurpose:generate_vision
+--      for the user who created the job, and an administrator holds both.
+--      With only administrators able to open Web > Repurpose, the demo could
+--      not show the gate. A job of this editor shows it: the podcast and the
+--      two AI image variants of the Schaubild fail with "Not permitted: the
+--      job owner's backend groups do not grant ...", while the text formats
+--      and the plain HTML Schaubild are still produced.
+--
+--      The group adds one thing to "Advanced editors" (uid 3, which brings
+--      the page mount 1, the page group 1 the demo pages are shared with, and
+--      live editing): the module web_nrrepurpose. It carries no
+--      nrrepurpose option at all. nrrepurpose:approve_artifacts is left out
+--      too: a job does not need it, and its holder sees the jobs of every
+--      user, so this editor would see the administrators' jobs as well. No
+--      table, file or vault right is added: the module stores jobs through
+--      Extbase, the worker reads the provider key as nr_repurpose_technical
+--      (step 3d), and a user without a tx_nrllm_user_budget row has no
+--      budget limit. The base dump has no file mount, so the editor picks a
+--      page as the source, not a PDF.
+--
+--      No password (a deliberately invalid hash, as for 990-995): an
+--      administrator enters it through Backend Users > "Switch to user". The
+--      user works in live (workspace 0), unlike redakteur_entwurf; only the
+--      INSERT sets it.
+--
+--      Fixed uids 998 are above the seed maxima (be_users 995, be_groups 995)
+--      and above be_users 996, which the live demo holds for a user no file
+--      of this repository creates. 997 is skipped on purpose: it is the next
+--      uid a user created in the backend would take there, and a collision
+--      makes the check at the end of this file fail the deploy.
+INSERT IGNORE INTO be_groups
+    (uid, pid, tstamp, crdate, deleted, hidden, title, description, subgroup, groupMods, custom_options)
+VALUES (998, 0, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0, 'Repurpose editors (no audio/vision)',
+     'Advanced editors plus the Repurpose module, without the nr_repurpose options: no podcast audio, no AI imagery, no approval.',
+     '3', 'web_nrrepurpose', '');
+
+INSERT IGNORE INTO be_users
+    (uid, pid, tstamp, crdate, deleted, disable, admin, username, password, usergroup, options, lang,
+     workspace_id, realName, description)
+VALUES (998, 0, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0, 0,
+     'redakteur_repurpose', '!redakteur_repurpose_no_login', '998', 3, 'de', 0,
+     'Redakteur Repurpose',
+     'Demo editor (non-admin) of the Repurpose module without the audio and vision permissions. No password: reached through Backend Users > Switch to user.');
+
+-- Re-assert the group and the membership, only while the rows are the seeded
+-- ones: on a live database uid 998 could be a group or a user somebody created
+-- in the backend.
+UPDATE be_groups
+SET subgroup = '3', groupMods = 'web_nrrepurpose', custom_options = ''
+WHERE uid = 998 AND deleted = 0 AND title = 'Repurpose editors (no audio/vision)'
+  AND (COALESCE(subgroup, '') <> '3' OR COALESCE(groupMods, '') <> 'web_nrrepurpose'
+       OR COALESCE(custom_options, '') <> '');
+
+UPDATE be_users SET usergroup = '998', options = options | 3
+WHERE uid = 998 AND username = 'redakteur_repurpose'
+  AND (COALESCE(usergroup, '') <> '998' OR options & 3 <> 3)
+  AND EXISTS (SELECT 1 FROM be_groups WHERE uid = 998 AND deleted = 0 AND title = 'Repurpose editors (no audio/vision)');
+
 -- 3d) Identity for the nr_repurpose generation job (release 0.4.2).
 --
 --     The job runs in a Messenger consumer, where TYPO3 boots an
@@ -8491,6 +8552,30 @@ SELECT 'SEED-PROBLEM: the demo editor 995 is not a member of workspace 9001'
       JOIN be_users u ON u.uid = 995 AND u.deleted = 0 AND u.username = 'redakteur_entwurf'
      WHERE w.uid = 9001 AND w.deleted = 0 AND FIND_IN_SET('be_users_995', COALESCE(w.members, ''))
  )
+UNION ALL
+-- Step 3c5 skips a row it does not recognise as its own. Without the group or
+-- the user the demo has no non-admin editor of the Repurpose module again.
+SELECT 'SEED-PROBLEM: be_groups 998 "Repurpose editors (no audio/vision)" missing, foreign or without web_nrrepurpose'
+  FROM DUAL
+ WHERE NOT EXISTS (SELECT 1 FROM be_groups
+                    WHERE uid = 998 AND deleted = 0 AND hidden = 0
+                      AND title = 'Repurpose editors (no audio/vision)'
+                      AND FIND_IN_SET('web_nrrepurpose', COALESCE(groupMods, '')))
+UNION ALL
+SELECT 'SEED-PROBLEM: be_users 998 redakteur_repurpose missing, foreign, admin or outside group 998'
+  FROM DUAL
+ WHERE NOT EXISTS (SELECT 1 FROM be_users
+                    WHERE uid = 998 AND deleted = 0 AND disable = 0 AND admin = 0
+                      AND username = 'redakteur_repurpose' AND usergroup = '998')
+UNION ALL
+-- The editor inherits groups 3 and 2 through group 998. If one of the three
+-- ever grants a nr_repurpose option, the account no longer shows the refusal
+-- it exists for.
+SELECT 'SEED-PROBLEM: group 998, 3 or 2 grants an nrrepurpose option to redakteur_repurpose'
+  FROM DUAL
+ WHERE EXISTS (SELECT 1 FROM be_groups
+                WHERE uid IN (998, 3, 2) AND deleted = 0
+                  AND COALESCE(custom_options, '') LIKE '%nrrepurpose:%')
 UNION ALL
 -- Every versioned '*-chat-latest' alias OpenAI ever served to this account is
 -- deprecated and answers 404, so a chat model still carrying one is a dead
