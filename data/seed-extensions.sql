@@ -7415,6 +7415,10 @@ UPDATE tt_content SET bodytext = REPLACE(REPLACE(bodytext,
 -- =============================================================================
 -- Re-assert every seeded record, then verify — KEEP THIS BLOCK LAST
 -- =============================================================================
+-- Every pull request that adds records puts them just above this block, so two
+-- such pull requests conflict here. Resolve it by keeping both sides, in order,
+-- with this block still last; never pick one side.
+--
 -- Two failure modes of INSERT IGNORE cost three deploy cycles (PRs #91/#94/#95):
 --
 --   1. A uid already taken in the LIVE database makes INSERT IGNORE skip in

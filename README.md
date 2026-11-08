@@ -154,6 +154,15 @@ need the private `git.netresearch.de` credential. `composer validate` in the
 files disagree — the image and the attested SBOM would otherwise describe
 different resolutions.
 
+An extension update on the demo is nevertheless a full update, so that one
+deploy carries everything: raise the netresearch extensions' constraints to
+their newest releases, run `composer update --no-install --no-scripts` without
+a package name, and update the base images in `docker/web/Dockerfile` in the
+same pull request. Close the open dependency-bot pull requests it supersedes,
+with a comment naming it. A full update also resolves the private
+`git.netresearch.de` repository, so it needs a `COMPOSER_AUTH` with a token
+for that host; the Build workflow has one, pull requests from forks do not.
+
 Raising `netresearch/nr-llm` past a range its consumers admit (for example to
 a new minor in the 0.x series) only resolves once every extension in
 `composer.lock` that requires `netresearch/nr-llm` has a release that admits
