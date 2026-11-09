@@ -59,7 +59,15 @@ final class BoundedDatabaseWriter extends DatabaseWriter
             $context['exception'] = (string)$context['exception'];
         }
         $encoded = json_encode($context, JSON_INVALID_UTF8_SUBSTITUTE | JSON_PARTIAL_OUTPUT_ON_ERROR);
-        if ($encoded === false || strlen($encoded) <= self::MAX_BYTES) {
+        if ($encoded === false) {
+            return $context;
+        }
+        if (json_encode($context) === false) {
+            // Core encodes without flags, so invalid UTF-8 would store an empty
+            // value. Hand it the substituted form instead.
+            $context = (array)json_decode($encoded, true);
+        }
+        if (strlen($encoded) <= self::MAX_BYTES) {
             return $context;
         }
 
