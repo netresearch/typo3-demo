@@ -27,4 +27,7 @@ $GLOBALS['TYPO3_CONF_VARS']['BE']['stylesheets']['netresearch_demo_site'] = 'EXT
 // addition to the default file writer, so runtime failures — e.g. nr-ai-search's
 // swallowed RAG errors — are visible in the backend "System > Log" module and to
 // diagnostic tooling, without shell access to var/log on the deployed instance.
-$GLOBALS['TYPO3_CONF_VARS']['LOG']['writerConfiguration'][\TYPO3\CMS\Core\Log\LogLevel::ERROR][\TYPO3\CMS\Core\Log\Writer\DatabaseWriter::class] = [];
+// The bounded writer cuts message and context to the 64 KB of the sys_log TEXT
+// columns: core's DatabaseWriter stores the whole exception trace, MariaDB
+// rejects a longer value, and that failed insert turned the request into a 500.
+$GLOBALS['TYPO3_CONF_VARS']['LOG']['writerConfiguration'][\TYPO3\CMS\Core\Log\LogLevel::ERROR][\Netresearch\DemoSite\Log\Writer\BoundedDatabaseWriter::class] = [];
