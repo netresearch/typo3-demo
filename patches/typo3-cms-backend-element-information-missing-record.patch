@@ -1,0 +1,20 @@
+--- a/Classes/Controller/ContentElement/ElementInformationController.php
++++ b/Classes/Controller/ContentElement/ElementInformationController.php
+@@ -98,7 +98,7 @@
+                     $this->row = BackendUtility::readPageAccess($uid, $permsClause) ?: [];
+                     $accessAllowed = $this->row !== [];
+                 } else {
+-                    $this->row = BackendUtility::getRecordWSOL($this->table, $uid);
++                    $this->row = BackendUtility::getRecordWSOL($this->table, $uid) ?? [];
+                     if ($this->row) {
+                         if (isset($this->row['_ORIG_uid'])) {
+                             // Make $uid the uid of the versioned record, while $this->row['uid'] is live record uid
+@@ -121,7 +121,7 @@
+                 $accessAllowed = $this->fileObject->checkActionPermission('read');
+                 $this->type = 'file';
+                 $this->table = 'sys_file';
+-                $this->row = BackendUtility::getRecordWSOL($this->table, $fileOrFolderObject->getUid());
++                $this->row = BackendUtility::getRecordWSOL($this->table, $fileOrFolderObject->getUid()) ?? [];
+             }
+         }
+ 
