@@ -1,5 +1,5 @@
 {
-    "_hash": "c45a39759dde5dd28fd6a3d747225a63ddf17c86d6ca588185e25212be193d3d",
+    "_hash": "62274dce8083f81553b7249f5f71519e3006b6508149c326740a32c819b6769e",
     "patches": {
         "b13/ai-label": [
             {
@@ -52,7 +52,7 @@
                 "package": "typo3/cms-backend",
                 "description": "Element information of a record that does not exist (deleted, or a stale link) showed an info message for pages but threw a TypeError for every other table: getRecordWSOL() returns null and the controller's $row is typed array",
                 "url": "patches/typo3-cms-backend-element-information-missing-record.patch",
-                "sha256": "719b1901e92239558c753069bf0e68a274676d246220dbb8798c87a908dabb79",
+                "sha256": "b2cb00230f98f2d502c9846a4230aefacd99ec2bb1079fff21f06ff3a615142b",
                 "depth": 1,
                 "extra": {
                     "provenance": "root"
