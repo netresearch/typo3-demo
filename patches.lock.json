@@ -1,5 +1,5 @@
 {
-    "_hash": "e5f2e475e6fa13a0b60f535482286aa4c348e423a4c7e8a250f2051230f0ef54",
+    "_hash": "62274dce8083f81553b7249f5f71519e3006b6508149c326740a32c819b6769e",
     "patches": {
         "b13/ai-label": [
             {
@@ -41,6 +41,18 @@
                 "description": "FalAdapter::localizeFile(): log DataHandler errors as a warning instead of DebuggerUtility::var_dump(), which wrote HTML into the AJAX upload response; the exception stays",
                 "url": "patches/mfd-ai-filemetadata-fal-adapter-log.patch",
                 "sha256": "c1be0f371bdbec1dce6ce7da21de2f2360855612f6f3f2add01386acd09c23bb",
+                "depth": 1,
+                "extra": {
+                    "provenance": "root"
+                }
+            }
+        ],
+        "typo3/cms-backend": [
+            {
+                "package": "typo3/cms-backend",
+                "description": "Element information of a record that does not exist (deleted, or a stale link) showed an info message for pages but threw a TypeError for every other table: getRecordWSOL() returns null and the controller's $row is typed array",
+                "url": "patches/typo3-cms-backend-element-information-missing-record.patch",
+                "sha256": "b2cb00230f98f2d502c9846a4230aefacd99ec2bb1079fff21f06ff3a615142b",
                 "depth": 1,
                 "extra": {
                     "provenance": "root"
