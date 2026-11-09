@@ -1746,6 +1746,29 @@ UPDATE be_groups SET explicit_allowdeny = 'tt_content:CType:accordion,tt_content
 WHERE uid = 995 AND deleted = 0 AND title = 'Workspace editors (AI chat)'
   AND COALESCE(explicit_allowdeny, '') <> 'tt_content:CType:accordion,tt_content:CType:audio,tt_content:CType:carousel,tt_content:CType:carousel_small,tt_content:CType:carousel_fullscreen,tt_content:CType:listgroup,tt_content:CType:media,tt_content:CType:menu_thumbnail_list,tt_content:CType:menu_thumbnail_dir,tt_content:CType:panel,tt_content:CType:quote,tt_content:CType:tab,tt_content:CType:textcolumn,tt_content:CType:texticon,tt_content:CType:textteaser,tt_content:CType:header,tt_content:CType:text,tt_content:CType:textpic,tt_content:CType:image,tt_content:CType:textmedia,tt_content:CType:bullets,tt_content:CType:table,tt_content:CType:uploads,tt_content:CType:menu_abstract,tt_content:CType:menu_categorized_content,tt_content:CType:menu_categorized_pages,tt_content:CType:menu_pages,tt_content:CType:menu_subpages,tt_content:CType:menu_recently_updated,tt_content:CType:menu_related_pages,tt_content:CType:menu_section,tt_content:CType:menu_section_pages,tt_content:CType:menu_sitemap,tt_content:CType:menu_sitemap_pages,tt_content:CType:shortcut,tt_content:CType:list,tt_content:CType:div,tt_content:CType:html,tt_content:CType:form_formframework,tt_content:CType:login,tt_content:list_type:indexedsearch_pi2,tx_bootstrappackage_carousel_item:item_type:header,tx_bootstrappackage_carousel_item:item_type:html';
 
+-- The images the editor may pick, and the page fields for a social image.
+-- Without a file mount the chat's replace_file_reference refused every new file
+-- ("File reference, content element or file not found, or not permitted"), and
+-- without the field grants set_page_social_image refused pages:og_image ("holds
+-- no field-level ("exclude field") grant"). Both found in the live check of
+-- 2026-11-09. The mount is read-only: picking a file needs readFile, and the
+-- editor uploads nothing there. Fixed uid 996 is above the seed's file mount
+-- 994; options = 3 on be_users 995 makes the user take the group's mounts.
+INSERT IGNORE INTO sys_filemounts (uid, pid, tstamp, deleted, hidden, title, description, identifier, read_only)
+VALUES (996, 0, UNIX_TIMESTAMP(), 0, 0, 'Demo images (workspace editor)',
+     'The demo''s images, read-only, for the workspace editor''s AI chat.',
+     '1:/user_upload/images/', 1);
+
+UPDATE be_groups
+SET file_mountpoints = '996',
+    file_permissions = 'readFolder,readFile',
+    non_exclude_fields = 'pages:og_image,pages:twitter_image'
+WHERE uid = 995 AND deleted = 0 AND title = 'Workspace editors (AI chat)'
+  AND (COALESCE(file_mountpoints, '') <> '996'
+       OR COALESCE(file_permissions, '') <> 'readFolder,readFile'
+       OR COALESCE(non_exclude_fields, '') <> 'pages:og_image,pages:twitter_image')
+  AND EXISTS (SELECT 1 FROM sys_filemounts WHERE uid = 996 AND deleted = 0 AND identifier = '1:/user_upload/images/');
+
 -- "Simple editors" (uid 1) and "Advanced editors" (uid 3) come from
 -- data/db.sql.gz with every content type in the format before TYPO3 12
 -- ("tt_content:CType:text:ALLOW"). TYPO3 14 compares the exact token
@@ -8571,6 +8594,15 @@ SELECT 'SEED-PROBLEM: the demo editor 995 is not a member of workspace 9001'
       JOIN be_users u ON u.uid = 995 AND u.deleted = 0 AND u.username = 'redakteur_entwurf'
      WHERE w.uid = 9001 AND w.deleted = 0 AND FIND_IN_SET('be_users_995', COALESCE(w.members, ''))
  )
+UNION ALL
+SELECT 'SEED-PROBLEM: be_groups 995 lacks file mount 996 or the og_image/twitter_image grants (the chat cannot replace images or set a social image)'
+  FROM DUAL
+ WHERE NOT EXISTS (SELECT 1 FROM be_groups
+                    WHERE uid = 995 AND deleted = 0 AND hidden = 0
+                      AND FIND_IN_SET('996', COALESCE(file_mountpoints, ''))
+                      AND FIND_IN_SET('pages:og_image', COALESCE(non_exclude_fields, ''))
+                      AND FIND_IN_SET('pages:twitter_image', COALESCE(non_exclude_fields, '')))
+   OR NOT EXISTS (SELECT 1 FROM sys_filemounts WHERE uid = 996 AND deleted = 0 AND hidden = 0 AND identifier = '1:/user_upload/images/')
 UNION ALL
 -- Step 3c5 skips a row it does not recognise as its own. Without the group or
 -- the user the demo has no non-admin editor of the Repurpose module again.
