@@ -17,7 +17,7 @@
         "in2code/sitescore": "^3.1",
         "lochmueller/index": "^3.0.1",
         "mfd/ai-filemetadata": "^1.6",
-        "netresearch/contexts": "^5.1.0",
+        "netresearch/contexts": "^5.1.1",
         "netresearch/nr-ai-search": "dev-main",
         "netresearch/nr-browser-ai": "^0.8.0",
         "netresearch/nr-bug-reporter": "^0.1.2",

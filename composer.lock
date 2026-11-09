@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f93bb0dcc2df3df730b6be452b2db358",
+    "content-hash": "b997c415c6a4656c2436e3f09453cd04",
     "packages": [
         {
             "name": "b13/ai-bots-love-markdown",
@@ -3038,16 +3038,16 @@
         },
         {
             "name": "netresearch/contexts",
-            "version": "v5.1.0",
+            "version": "v5.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/t3x-contexts.git",
-                "reference": "2766100d0867580cdeb9f1926717cc53daf33415"
+                "reference": "8709a1037d0b5b7ae101ea255662906ad7a0a379"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/t3x-contexts/zipball/2766100d0867580cdeb9f1926717cc53daf33415",
-                "reference": "2766100d0867580cdeb9f1926717cc53daf33415",
+                "url": "https://api.github.com/repos/netresearch/t3x-contexts/zipball/8709a1037d0b5b7ae101ea255662906ad7a0a379",
+                "reference": "8709a1037d0b5b7ae101ea255662906ad7a0a379",
                 "shasum": ""
             },
             "require": {
@@ -3068,7 +3068,7 @@
                     "Package": {
                         "providesPackages": []
                     },
-                    "version": "5.1.0",
+                    "version": "5.1.1",
                     "extension-key": "contexts"
                 },
                 "captainhook": {
@@ -3105,8 +3105,8 @@
                 "issues": "https://github.com/netresearch/t3x-contexts/issues",
                 "source": "https://github.com/netresearch/t3x-contexts"
             },
-            "time": "2026-11-08T00:38:42+00:00",
-            "published-time": "2026-11-08T00:53:52+00:00"
+            "time": "2026-11-09T07:29:34+00:00",
+            "published-time": "2026-11-09T07:35:34+00:00"
         },
         {
             "name": "netresearch/nr-ai-search",
