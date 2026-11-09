@@ -1769,6 +1769,16 @@ WHERE uid = 995 AND deleted = 0 AND title = 'Workspace editors (AI chat)'
        OR COALESCE(non_exclude_fields, '') <> 'pages:og_image,pages:twitter_image')
   AND EXISTS (SELECT 1 FROM sys_filemounts WHERE uid = 996 AND deleted = 0 AND identifier = '1:/user_upload/images/');
 
+-- The mount stays read-only, and the editor takes the group's file mounts
+-- (options bit 2), also on a database where an earlier seed or an
+-- administrator changed them. Only the seeded rows are touched.
+UPDATE sys_filemounts SET read_only = 1
+WHERE uid = 996 AND deleted = 0 AND title = 'Demo images (workspace editor)'
+  AND identifier = '1:/user_upload/images/' AND read_only <> 1;
+
+UPDATE be_users SET options = options | 2
+WHERE uid = 995 AND deleted = 0 AND username = 'redakteur_entwurf' AND options & 2 = 0;
+
 -- "Simple editors" (uid 1) and "Advanced editors" (uid 3) come from
 -- data/db.sql.gz with every content type in the format before TYPO3 12
 -- ("tt_content:CType:text:ALLOW"). TYPO3 14 compares the exact token
@@ -8595,14 +8605,15 @@ SELECT 'SEED-PROBLEM: the demo editor 995 is not a member of workspace 9001'
      WHERE w.uid = 9001 AND w.deleted = 0 AND FIND_IN_SET('be_users_995', COALESCE(w.members, ''))
  )
 UNION ALL
-SELECT 'SEED-PROBLEM: be_groups 995 lacks file mount 996 or the og_image/twitter_image grants (the chat cannot replace images or set a social image)'
+SELECT 'SEED-PROBLEM: be_groups 995 lacks file mount 996 or the og_image/twitter_image grants, mount 996 is not read-only, or be_users 995 does not take group mounts (the chat cannot replace images or set a social image)'
   FROM DUAL
  WHERE NOT EXISTS (SELECT 1 FROM be_groups
                     WHERE uid = 995 AND deleted = 0 AND hidden = 0
                       AND FIND_IN_SET('996', COALESCE(file_mountpoints, ''))
                       AND FIND_IN_SET('pages:og_image', COALESCE(non_exclude_fields, ''))
                       AND FIND_IN_SET('pages:twitter_image', COALESCE(non_exclude_fields, '')))
-   OR NOT EXISTS (SELECT 1 FROM sys_filemounts WHERE uid = 996 AND deleted = 0 AND hidden = 0 AND identifier = '1:/user_upload/images/')
+   OR NOT EXISTS (SELECT 1 FROM sys_filemounts WHERE uid = 996 AND deleted = 0 AND hidden = 0 AND identifier = '1:/user_upload/images/' AND read_only = 1)
+   OR NOT EXISTS (SELECT 1 FROM be_users WHERE uid = 995 AND deleted = 0 AND username = 'redakteur_entwurf' AND options & 2 = 2)
 UNION ALL
 -- Step 3c5 skips a row it does not recognise as its own. Without the group or
 -- the user the demo has no non-admin editor of the Repurpose module again.
