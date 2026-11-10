@@ -730,6 +730,25 @@ Without them `compose.yml` hands Caddy a hash of a random password nobody
 knows, so the site stays closed rather than open. To open it for good, remove
 the `basic_auth` block from `docker/caddy/Caddyfile`.
 
+The secret holds only the hash, so the password cannot be read back from
+GitHub. The user name and password that people log in with belong in the
+team's Bitwarden, as an item with the site's URL.
+
+**TLS certificate.** Caddy requests the certificate for `FALKENQUELL_DOMAIN`
+when it starts. If the name does not resolve yet, the request fails with
+`NXDOMAIN` in the Caddy log, and Caddy retries with a pause that grows
+exponentially, up to one day between attempts
+([Caddy docs](https://caddyserver.com/docs/automatic-https)). On 2026-11-10
+the pause had reached one hour. To request the certificate at once after the
+DNS record went live, reload Caddy on the host:
+
+```bash
+docker compose exec -T caddy caddy reload --config /etc/caddy/Caddyfile --force
+```
+
+The reload keeps the container running. A **Deploy (Update)** run does not
+help here: `make update` leaves an unchanged Caddy container running.
+
 ## Backend languages
 
 The backend is available in German as well as English. The entrypoint adds the
