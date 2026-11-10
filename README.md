@@ -736,8 +736,11 @@ team's Bitwarden, as an item with the site's URL.
 
 **TLS certificate.** Caddy requests the certificate for `FALKENQUELL_DOMAIN`
 when it starts. If the name does not resolve yet, the request fails with
-`NXDOMAIN` in the Caddy log, and Caddy tries again about once an hour. To
-request it at once after the DNS record went live, reload Caddy on the host:
+`NXDOMAIN` in the Caddy log, and Caddy retries with a pause that grows
+exponentially, up to one day between attempts
+([Caddy docs](https://caddyserver.com/docs/automatic-https)). On 2026-11-10
+the pause had reached one hour. To request the certificate at once after the
+DNS record went live, reload Caddy on the host:
 
 ```bash
 docker compose exec -T caddy caddy reload --config /etc/caddy/Caddyfile --force
