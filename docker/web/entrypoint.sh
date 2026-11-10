@@ -232,13 +232,61 @@ if [ -f config/system/settings.php ]; then
     '
 fi
 
+# Shared by every block below that keeps a marked section of
+# config/system/additional.php up to date (#467). TYPO3 includes that file on
+# every request, so a block is written beside the file and renamed over it
+# (a reader sees the old or the new file, never half of one), the byte count is
+# checked, and a begin marker without its end marker leaves the file unchanged:
+# cutting from the marker to the end of the file would drop every block written
+# after it. The caller exits non-zero on false, so the shell prints its warning.
+MANAGED_BLOCK_PHP='
+    function write_managed_block(string $f, string $begin, string $end, string $block): bool
+    {
+        $existing = is_file($f) ? @file_get_contents($f) : "";
+        if ($existing === false) {
+            fwrite(STDERR, $f . ": cannot be read, left unchanged" . PHP_EOL);
+            return false;
+        }
+        if (strpos($existing, "<?php") === false) {
+            $existing = "<?php\n" . ($existing === "" ? "" : $existing . "\n");
+        }
+        $b = strpos($existing, $begin);
+        if ($b !== false) {
+            $e = strpos($existing, $end, $b);
+            if ($e === false) {
+                fwrite(STDERR, $f . ": \"" . $begin . "\" has no end marker, file left unchanged" . PHP_EOL);
+                return false;
+            }
+            $existing = substr($existing, 0, $b) . substr($existing, $e + strlen($end));
+        }
+        $existing = rtrim($existing, "\n") . "\n\n" . $block . "\n";
+        $tmp = $f . "." . getmypid() . ".tmp";
+        $written = @file_put_contents($tmp, $existing);
+        if ($written !== strlen($existing)) {
+            @unlink($tmp);
+            fwrite(STDERR, $f . ": wrote " . var_export($written, true) . " of " . strlen($existing) . " bytes, file left unchanged" . PHP_EOL);
+            return false;
+        }
+        $perms = @fileperms($f);
+        if ($perms !== false) {
+            @chmod($tmp, $perms & 0777);
+        }
+        if (!@rename($tmp, $f)) {
+            @unlink($tmp);
+            fwrite(STDERR, $f . ": rename failed, file left unchanged" . PHP_EOL);
+            return false;
+        }
+        return true;
+    }
+'
+
 # Point the AI Chat (nr_mcp_agent) at the seeded nr-llm Task (uid 1).
 # config/system is a Docker volume that overlays any repo-provided
 # file, so this is (re)written on every boot. It is idempotent and merge-safe:
 # only a marked block is managed, any other additional.php content is preserved.
 # TYPO3 loads config/system/additional.php automatically after settings.php.
 if [ -f config/system/settings.php ]; then
-    php -r '
+    php -r "$MANAGED_BLOCK_PHP"'
         $f = "config/system/additional.php";
         $begin = "// >>> nr_mcp_agent (managed by entrypoint, do not edit this block)";
         $end   = "// <<< nr_mcp_agent";
@@ -254,19 +302,9 @@ if [ -f config/system/settings.php ]; then
             // since July. This block is rewritten on every boot.
             . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"BE\"][\"lockSSL\"] = true;\n"
             . $end;
-        $existing = is_file($f) ? (string) file_get_contents($f) : "";
-        if (strpos($existing, "<?php") === false) {
-            $existing = "<?php\n" . ($existing === "" ? "" : $existing . "\n");
+        if (!write_managed_block($f, $begin, $end, $block)) {
+            exit(1);
         }
-        $b = strpos($existing, $begin);
-        if ($b !== false) {
-            $e = strpos($existing, $end, $b);
-            $existing = $e !== false
-                ? substr($existing, 0, $b) . substr($existing, $e + strlen($end))
-                : substr($existing, 0, $b);
-        }
-        $existing = rtrim($existing, "\n") . "\n\n" . $block . "\n";
-        file_put_contents($f, $existing);
         echo "additional.php: nr_mcp_agent.llmTaskUid=1." . PHP_EOL;
     ' || echo "WARNING: failed to write additional.php" >&2
 fi
@@ -277,26 +315,16 @@ fi
 # container - the demo-site bridge translates via nr-llm, and autotranslate
 # needs no DeepL key of its own. Same managed-block mechanics as above.
 if [ -f config/system/settings.php ]; then
-    php -r '
+    php -r "$MANAGED_BLOCK_PHP"'
         $f = "config/system/additional.php";
         $begin = "// >>> autotranslate via nr-llm (managed by entrypoint, do not edit this block)";
         $end   = "// <<< autotranslate via nr-llm";
         $block = $begin . "\n"
             . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"autotranslate\"][\"translatorClass\"] = \"Netresearch\\\\DemoSite\\\\Translation\\\\NrLlmDeeplTranslator\";\n"
             . $end;
-        $existing = is_file($f) ? (string) file_get_contents($f) : "";
-        if (strpos($existing, "<?php") === false) {
-            $existing = "<?php\n" . ($existing === "" ? "" : $existing . "\n");
+        if (!write_managed_block($f, $begin, $end, $block)) {
+            exit(1);
         }
-        $b = strpos($existing, $begin);
-        if ($b !== false) {
-            $e = strpos($existing, $end, $b);
-            $existing = $e !== false
-                ? substr($existing, 0, $b) . substr($existing, $e + strlen($end))
-                : substr($existing, 0, $b);
-        }
-        $existing = rtrim($existing, "\n") . "\n\n" . $block . "\n";
-        file_put_contents($f, $existing);
         echo "additional.php: autotranslate routed through nr-llm." . PHP_EOL;
     ' || echo "WARNING: failed to write additional.php" >&2
 fi
@@ -313,7 +341,7 @@ fi
 #    Gemini API key. The analysis sends the page's full rendered HTML.
 # Same managed-block mechanics as above.
 if [ -f config/system/settings.php ]; then
-    php -r '
+    php -r "$MANAGED_BLOCK_PHP"'
         $f = "config/system/additional.php";
         $begin = "// >>> nr_llm_compat (managed by entrypoint, do not edit this block)";
         $end   = "// <<< nr_llm_compat";
@@ -322,19 +350,9 @@ if [ -f config/system/settings.php ]; then
             . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"nr_llm_compat\"][\"integrations\"][\"news\"] = \"1\";\n"
             . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"nr_llm_compat\"][\"integrations\"][\"sitescore\"] = \"1\";\n"
             . $end;
-        $existing = is_file($f) ? (string) file_get_contents($f) : "";
-        if (strpos($existing, "<?php") === false) {
-            $existing = "<?php\n" . ($existing === "" ? "" : $existing . "\n");
+        if (!write_managed_block($f, $begin, $end, $block)) {
+            exit(1);
         }
-        $b = strpos($existing, $begin);
-        if ($b !== false) {
-            $e = strpos($existing, $end, $b);
-            $existing = $e !== false
-                ? substr($existing, 0, $b) . substr($existing, $e + strlen($end))
-                : substr($existing, 0, $b);
-        }
-        $existing = rtrim($existing, "\n") . "\n\n" . $block . "\n";
-        file_put_contents($f, $existing);
         echo "additional.php: nr_llm_compat integrations ai_filemetadata, news and sitescore enabled." . PHP_EOL;
     ' || echo "WARNING: failed to write additional.php" >&2
 fi
@@ -357,7 +375,7 @@ fi
 # This needs the encoders in the image (see the Dockerfile); without them
 # ImageMagick fails the conversion instead of producing anything.
 if [ -f config/system/settings.php ]; then
-    php -r '
+    php -r "$MANAGED_BLOCK_PHP"'
         $f = "config/system/additional.php";
         $begin = "// >>> gfx image conversion (managed by entrypoint, do not edit this block)";
         $end   = "// <<< gfx image conversion";
@@ -366,19 +384,9 @@ if [ -f config/system/settings.php ]; then
         $block = $begin . "\n"
             . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"GFX\"][\"imageFileConversionFormats\"] = [\"svg\" => \"svg\", \"default\" => \"webp\"];\n"
             . $end;
-        $existing = is_file($f) ? (string) file_get_contents($f) : "";
-        if (strpos($existing, "<?php") === false) {
-            $existing = "<?php\n" . ($existing === "" ? "" : $existing . "\n");
+        if (!write_managed_block($f, $begin, $end, $block)) {
+            exit(1);
         }
-        $b = strpos($existing, $begin);
-        if ($b !== false) {
-            $e = strpos($existing, $end, $b);
-            $existing = $e !== false
-                ? substr($existing, 0, $b) . substr($existing, $e + strlen($end))
-                : substr($existing, 0, $b);
-        }
-        $existing = rtrim($existing, "\n") . "\n\n" . $block . "\n";
-        file_put_contents($f, $existing);
         echo "additional.php: processed images are converted to webp." . PHP_EOL;
     ' || echo "WARNING: failed to write the GFX block to additional.php" >&2
 fi
@@ -390,7 +398,7 @@ fi
 # SYS/phpTimeZone at bootstrap. Not in the settings.php heredoc for the same
 # reason as the GFX block: that one runs only on first boot.
 if [ -f config/system/settings.php ]; then
-    php -r '
+    php -r "$MANAGED_BLOCK_PHP"'
         $f = "config/system/additional.php";
         $begin = "// >>> sys time zone (managed by entrypoint, do not edit this block)";
         $end   = "// <<< sys time zone";
@@ -399,19 +407,9 @@ if [ -f config/system/settings.php ]; then
         $block = $begin . "\n"
             . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"SYS\"][\"phpTimeZone\"] = \"Europe/Berlin\";\n"
             . $end;
-        $existing = is_file($f) ? (string) file_get_contents($f) : "";
-        if (strpos($existing, "<?php") === false) {
-            $existing = "<?php\n" . ($existing === "" ? "" : $existing . "\n");
+        if (!write_managed_block($f, $begin, $end, $block)) {
+            exit(1);
         }
-        $b = strpos($existing, $begin);
-        if ($b !== false) {
-            $e = strpos($existing, $end, $b);
-            $existing = $e !== false
-                ? substr($existing, 0, $b) . substr($existing, $e + strlen($end))
-                : substr($existing, 0, $b);
-        }
-        $existing = rtrim($existing, "\n") . "\n\n" . $block . "\n";
-        file_put_contents($f, $existing);
         echo "additional.php: SYS.phpTimeZone=Europe/Berlin." . PHP_EOL;
     ' || echo "WARNING: failed to write the time zone block to additional.php" >&2
 fi
@@ -430,7 +428,7 @@ fi
 # Space-separated; the download step below reads the same variable.
 BACKEND_LANGUAGES="de"
 if [ -f config/system/settings.php ]; then
-    BACKEND_LANGUAGES="$BACKEND_LANGUAGES" php -r '
+    BACKEND_LANGUAGES="$BACKEND_LANGUAGES" php -r "$MANAGED_BLOCK_PHP"'
         $f = "config/system/additional.php";
         $begin = "// >>> backend languages (managed by entrypoint, do not edit this block)";
         $end   = "// <<< backend languages";
@@ -442,22 +440,7 @@ if [ -f config/system/settings.php ]; then
             . "    " . json_encode($languages) . "\n"
             . ")));\n"
             . $end;
-        $existing = is_file($f) ? (string) file_get_contents($f) : "";
-        if (strpos($existing, "<?php") === false) {
-            $existing = "<?php\n" . ($existing === "" ? "" : $existing . "\n");
-        }
-        $b = strpos($existing, $begin);
-        if ($b !== false) {
-            $e = strpos($existing, $end, $b);
-            $existing = $e !== false
-                ? substr($existing, 0, $b) . substr($existing, $e + strlen($end))
-                : substr($existing, 0, $b);
-        }
-        $existing = rtrim($existing, "\n") . "\n\n" . $block . "\n";
-        // A full or read-only volume makes file_put_contents() return false
-        // without throwing; exit non-zero so the shell prints its warning.
-        if (file_put_contents($f, $existing) === false) {
-            fwrite(STDERR, "ERROR: failed to write " . $f . PHP_EOL);
+        if (!write_managed_block($f, $begin, $end, $block)) {
             exit(1);
         }
         echo "additional.php: backend languages " . implode(", ", $languages) . " are selectable." . PHP_EOL;
@@ -476,7 +459,7 @@ fi
 #   inline instead of persisting to a separate 'index' transport that would
 #   otherwise need its own long-running consumer.
 if [ -f config/system/settings.php ]; then
-    php -r '
+    php -r "$MANAGED_BLOCK_PHP"'
         $f = "config/system/additional.php";
         // The marker text is load-bearing: the replacement below finds the old
         // block by searching for it. Renaming it would leave every existing
@@ -567,19 +550,9 @@ if [ -f config/system/settings.php ]; then
             . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"nr_ai_search\"][\"hybridSearchEnabled\"] = \"0\";\n"
             . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"index\"][\"defaultTransportInDevelopmentContext\"] = \"1\";\n"
             . $end;
-        $existing = is_file($f) ? (string) file_get_contents($f) : "";
-        if (strpos($existing, "<?php") === false) {
-            $existing = "<?php\n" . ($existing === "" ? "" : $existing . "\n");
+        if (!write_managed_block($f, $begin, $end, $block)) {
+            exit(1);
         }
-        $b = strpos($existing, $begin);
-        if ($b !== false) {
-            $e = strpos($existing, $end, $b);
-            $existing = $e !== false
-                ? substr($existing, 0, $b) . substr($existing, $e + strlen($end))
-                : substr($existing, 0, $b);
-        }
-        $existing = rtrim($existing, "\n") . "\n\n" . $block . "\n";
-        file_put_contents($f, $existing);
         echo "additional.php: nr_ai_search configured (technicalBeUserUid=990, dims=1536), nr_vault provisioning actor 991, nr_repurpose actor 992, nr_llm media on (tts-1), nr_llm DeepL translator key deepl_api_key, nr_llm category root 7100, index dev-sync on." . PHP_EOL;
     ' || echo "WARNING: failed to write nr_ai_search additional.php block" >&2
 fi
@@ -752,7 +725,7 @@ fi
 # runner reports "done" even when nothing was translated (upstream issue #156).
 # On this instance the log is the only place a failed translation shows up.
 if [ -f config/system/settings.php ]; then
-    php -r '
+    php -r "$MANAGED_BLOCK_PHP"'
         $f = "config/system/additional.php";
         $begin = "// >>> autotranslate (managed by entrypoint, do not edit this block)";
         $end   = "// <<< autotranslate";
@@ -778,19 +751,9 @@ if [ -f config/system/settings.php ]; then
                 . var_export($key, true) . ";\n";
         }
         $block .= $end;
-        $existing = is_file($f) ? (string) file_get_contents($f) : "";
-        if (strpos($existing, "<?php") === false) {
-            $existing = "<?php\n" . ($existing === "" ? "" : $existing . "\n");
+        if (!write_managed_block($f, $begin, $end, $block)) {
+            exit(1);
         }
-        $b = strpos($existing, $begin);
-        if ($b !== false) {
-            $e = strpos($existing, $end, $b);
-            $existing = $e !== false
-                ? substr($existing, 0, $b) . substr($existing, $e + strlen($end))
-                : substr($existing, 0, $b);
-        }
-        $existing = rtrim($existing, "\n") . "\n\n" . $block . "\n";
-        file_put_contents($f, $existing);
         echo "additional.php: autotranslate debug on, DeepL key "
             . ($key !== "" ? $origin : "NOT set - translations will silently do nothing")
             . "." . PHP_EOL;
@@ -805,7 +768,7 @@ fi
 # createIfMissing = 1 is the extension's own shipped default: a key rendered
 # through the ViewHelpers for the first time creates its own record.
 if [ -f config/system/settings.php ]; then
-    php -r '
+    php -r "$MANAGED_BLOCK_PHP"'
         $f = "config/system/additional.php";
         $begin = "// >>> nr_textdb (managed by entrypoint, do not edit this block)";
         $end   = "// <<< nr_textdb";
@@ -813,19 +776,9 @@ if [ -f config/system/settings.php ]; then
             . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"nr_textdb\"][\"textDbPid\"] = \"163\";\n"
             . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"nr_textdb\"][\"createIfMissing\"] = \"1\";\n"
             . $end;
-        $existing = is_file($f) ? (string) file_get_contents($f) : "";
-        if (strpos($existing, "<?php") === false) {
-            $existing = "<?php\n" . ($existing === "" ? "" : $existing . "\n");
+        if (!write_managed_block($f, $begin, $end, $block)) {
+            exit(1);
         }
-        $b = strpos($existing, $begin);
-        if ($b !== false) {
-            $e = strpos($existing, $end, $b);
-            $existing = $e !== false
-                ? substr($existing, 0, $b) . substr($existing, $e + strlen($end))
-                : substr($existing, 0, $b);
-        }
-        $existing = rtrim($existing, "\n") . "\n\n" . $block . "\n";
-        file_put_contents($f, $existing);
         echo "additional.php: nr_textdb configured (textDbPid=163, createIfMissing=1)." . PHP_EOL;
     ' || echo "WARNING: failed to write nr_textdb additional.php block" >&2
 fi
@@ -843,26 +796,16 @@ fi
 # additional.php is included after the DefaultConfiguration/settings.php merge,
 # so appending here extends the core default list rather than replacing it.
 if [ -f config/system/settings.php ]; then
-    php -r '
+    php -r "$MANAGED_BLOCK_PHP"'
         $f = "config/system/additional.php";
         $begin = "// >>> contexts (managed by entrypoint, do not edit this block)";
         $end   = "// <<< contexts";
         $block = $begin . "\n"
             . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"FE\"][\"cacheHash\"][\"excludedParameters\"][] = \"nrdemo\";\n"
             . $end;
-        $existing = is_file($f) ? (string) file_get_contents($f) : "";
-        if (strpos($existing, "<?php") === false) {
-            $existing = "<?php\n" . ($existing === "" ? "" : $existing . "\n");
+        if (!write_managed_block($f, $begin, $end, $block)) {
+            exit(1);
         }
-        $b = strpos($existing, $begin);
-        if ($b !== false) {
-            $e = strpos($existing, $end, $b);
-            $existing = $e !== false
-                ? substr($existing, 0, $b) . substr($existing, $e + strlen($end))
-                : substr($existing, 0, $b);
-        }
-        $existing = rtrim($existing, "\n") . "\n\n" . $block . "\n";
-        file_put_contents($f, $existing);
         echo "additional.php: contexts cacheHash exclusion for \"nrdemo\" registered." . PHP_EOL;
     ' || echo "WARNING: failed to write contexts additional.php block" >&2
 fi
