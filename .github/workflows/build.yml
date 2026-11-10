@@ -1004,7 +1004,9 @@ jobs:
       # database on the first boot (entrypoint.sh, #411); while they sat in
       # fileadmin, Reports > Status said the update was incomplete. A second
       # boot must neither bring the YAML files back nor store the forms again
-      # as "<identifier>_1", and both pages must still render their form.
+      # as "<identifier>_1", and both pages must still render their form. The
+      # four Falkenquell forms come in as records from data/seed-falkenquell.sql
+      # and must be there once each as well.
       - name: Verify the seeded forms move into the database once
         run: |
           get() {
@@ -1017,8 +1019,8 @@ jobs:
               'MYSQL_PWD="$MARIADB_PASSWORD" mariadb -N -u "$MARIADB_USER" "$MARIADB_DATABASE" -e "SELECT identifier FROM form_definition WHERE deleted = 0 ORDER BY identifier;"' \
               | tr '\n' ' ')
             echo "$boot boot, database forms: $rows"
-            if [ "$rows" != "contactformcustom demoanfordern " ]; then
-              echo "::error title=Seeded forms::$boot boot: expected the database forms contactformcustom and demoanfordern, once each, got: $rows"
+            if [ "$rows" != "contactformcustom demoanfordern maengelmelder maengelmelder-en newsletter newsletter-en " ]; then
+              echo "::error title=Seeded forms::$boot boot: expected the database forms contactformcustom, demoanfordern, maengelmelder, maengelmelder-en, newsletter and newsletter-en, once each, got: $rows"
               exit 1
             fi
             # The move runs as root and creates fileadmin/_processed_ when it is
