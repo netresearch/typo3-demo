@@ -260,10 +260,19 @@ MANAGED_BLOCK_PHP='
             $existing = substr($existing, 0, $b) . substr($existing, $e + strlen($end));
         }
         $existing = rtrim($existing, "\n") . "\n\n" . $block . "\n";
-        $tmp = $f . "." . getmypid() . ".tmp";
-        $written = @file_put_contents($tmp, $existing);
+        // A random name, created exclusively: config/system is writable by
+        // www-data and this runs as root, so a predictable name could be a
+        // planted symlink. "x" refuses any existing path, a symlink included.
+        $tmp = $f . "." . bin2hex(random_bytes(8)) . ".tmp";
+        $h = @fopen($tmp, "xb");
+        $written = $h === false ? false : @fwrite($h, $existing);
+        if ($h !== false && !@fclose($h)) {
+            $written = false;
+        }
         if ($written !== strlen($existing)) {
-            @unlink($tmp);
+            if ($h !== false) {
+                @unlink($tmp);
+            }
             fwrite(STDERR, $f . ": wrote " . var_export($written, true) . " of " . strlen($existing) . " bytes, file left unchanged" . PHP_EOL);
             return false;
         }
