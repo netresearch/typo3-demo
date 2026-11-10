@@ -1,0 +1,120 @@
+{namespace e=DERHANSEN\SfEventMgt\ViewHelpers}
+<f:layout name="Default" />
+
+<f:section name="main">
+
+    <f:if condition="{event}">
+        <f:variable name="ll" value="LLL:EXT:falkenquell_site/Resources/Private/Language/locallang.xlf:" />
+        <f:variable name="pageTitle">{f:if(condition: event.metaTitle, then: event.metaTitle, else: event.title)}</f:variable>
+        <f:page.title>{pageTitle}</f:page.title>
+        <f:page.meta property="og:title">{pageTitle}</f:page.meta>
+        <f:page.meta property="description">{f:if(condition: event.metaDescription, then: event.metaDescription, else: event.teaser)}</f:page.meta>
+        <f:variable name="startDay" value="{f:format.date(date: event.startdate, format: 'Y-m-d')}" />
+        <f:variable name="endDay" value="{f:format.date(date: event.enddate, format: 'Y-m-d')}" />
+
+        <article class="event-detail">
+            <header class="event-detail-header">
+                <h1 class="event-detail-title">{event.title}</h1>
+                <f:if condition="{event.teaser}">
+                    <p class="event-detail-lead">{event.teaser}</p>
+                </f:if>
+            </header>
+
+            <div class="event-detail-layout">
+                <div class="event-detail-main">
+                    <f:for each="{event.image}" as="image" iteration="imageIteration">
+                        <f:if condition="{imageIteration.isFirst}">
+                            <figure class="event-detail-image">
+                                <f:image image="{image}" maxWidth="1200" />
+                                <f:if condition="{image.originalResource.description}">
+                                    <figcaption>{image.originalResource.description}</figcaption>
+                                </f:if>
+                            </figure>
+                        </f:if>
+                    </f:for>
+                    <f:if condition="{event.description}">
+                        <div class="event-detail-description">
+                            <f:format.html>{event.description}</f:format.html>
+                        </div>
+                    </f:if>
+                    <f:if condition="{event.program}">
+                        <div class="event-detail-program">
+                            <h2><f:translate domain="sf_event_mgt.messages" key="tx_sfeventmgt_domain_model_event.program" /></h2>
+                            <f:format.html>{event.program}</f:format.html>
+                        </div>
+                    </f:if>
+                </div>
+
+                <aside class="event-detail-facts" aria-labelledby="event-facts-{event.uid}">
+                    <h2 class="event-detail-facts-title" id="event-facts-{event.uid}"><f:translate key="{ll}event.detail.facts" /></h2>
+                    <dl class="event-detail-list">
+                        <dt><f:translate key="{ll}event.detail.date" /></dt>
+                        <dd>
+                            <f:if condition="{endDay} && {startDay} != {endDay}">
+                                <f:then><time datetime="{startDay}"><f:format.date date="{event.startdate}" pattern="{f:translate(key: 'LLL:EXT:falkenquell_site/Resources/Private/Language/locallang.xlf:event.pattern.short')}" /></time> – <time datetime="{endDay}"><f:format.date date="{event.enddate}" pattern="{f:translate(key: 'LLL:EXT:falkenquell_site/Resources/Private/Language/locallang.xlf:event.pattern.short')}" /></time></f:then>
+                                <f:else><time datetime="{startDay}"><f:format.date date="{event.startdate}" pattern="{f:translate(key: 'LLL:EXT:falkenquell_site/Resources/Private/Language/locallang.xlf:event.pattern.long')}" /></time></f:else>
+                            </f:if>
+                        </dd>
+                        <dt><f:translate key="{ll}event.detail.time" /></dt>
+                        <dd>
+                            <f:if condition="{event.enddate}">
+                                <f:then><f:translate key="{ll}event.timeRange" arguments="{0: '{f:format.date(date: event.startdate, pattern: \'HH:mm\')}', 1: '{f:format.date(date: event.enddate, pattern: \'HH:mm\')}'}" /></f:then>
+                                <f:else><f:translate key="{ll}event.time" arguments="{0: '{f:format.date(date: event.startdate, pattern: \'HH:mm\')}'}" /></f:else>
+                            </f:if>
+                        </dd>
+                        <f:if condition="{event.location}">
+                            <dt><f:translate key="{ll}event.detail.location" /></dt>
+                            <dd>
+                                <strong>{event.location.title}</strong>
+                                <f:if condition="{event.room}"><br>{event.room}</f:if>
+                                <f:if condition="{event.location.address}"><br><f:format.nl2br>{event.location.address}</f:format.nl2br></f:if>
+                                <f:if condition="{event.location.city}"><br>{event.location.zip} {event.location.city}</f:if>
+                            </dd>
+                        </f:if>
+                        <dt><f:translate key="{ll}event.detail.price" /></dt>
+                        <dd>
+                            <f:if condition="{event.currentPrice} == 0">
+                                <f:then><f:translate domain="sf_event_mgt.messages" key="event.freeofcharge" /></f:then>
+                                <f:else>
+                                    <f:if condition="{event.priceOptions}">
+                                        <f:then>
+                                            <ul class="event-detail-price-options">
+                                                <f:for each="{event.priceOptions}" as="priceOption">
+                                                    <li>{priceOption.title}: {priceOption.price -> f:format.number()} {event.currency}</li>
+                                                </f:for>
+                                            </ul>
+                                        </f:then>
+                                        <f:else>{event.currentPrice -> f:format.number()} {event.currency}</f:else>
+                                    </f:if>
+                                </f:else>
+                            </f:if>
+                        </dd>
+                        <f:if condition="{event.enableRegistration} && {event.maxParticipants} > 0">
+                            <dt><f:translate key="{ll}event.detail.places" /></dt>
+                            <dd><f:translate key="{ll}event.detail.freePlaces" arguments="{0: event.freePlaces, 1: event.maxParticipants}" /></dd>
+                        </f:if>
+                    </dl>
+
+                    <f:if condition="{event.registrationPossible} && {settings.registrationPid}">
+                        <f:link.action action="registration" arguments="{event: event}" pageUid="{settings.registrationPid}" class="btn btn-primary event-detail-register"><f:translate key="{ll}event.detail.register" /></f:link.action>
+                    </f:if>
+
+                    <h3 class="event-detail-calendar-title"><f:translate key="{ll}event.detail.calendar" /></h3>
+                    <ul class="event-detail-calendar">
+                        <li><f:link.action action="icalDownload" arguments="{event: event}" rel="nofollow"><f:translate key="{ll}event.detail.ical" /></f:link.action></li>
+                        <li><f:link.external uri="{e:uri.onlineCalendar(type: 'google', event: event)}" rel="nofollow noopener" target="_blank"><f:translate key="{ll}event.detail.google" /></f:link.external></li>
+                        <li><f:link.external uri="{e:uri.onlineCalendar(type: 'outlook', event: event)}" rel="nofollow noopener" target="_blank"><f:translate key="{ll}event.detail.outlook" /></f:link.external></li>
+                    </ul>
+                </aside>
+            </div>
+
+            <f:if condition="{settings.listPid}">
+                <p class="event-detail-back">
+                    <f:link.page pageUid="{settings.listPid}"><f:translate key="{ll}event.detail.back" /></f:link.page>
+                </p>
+            </f:if>
+        </article>
+    </f:if>
+
+</f:section>
+

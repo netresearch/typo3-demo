@@ -26,7 +26,7 @@ jobs:
           host: ${{ secrets.HETZNER_SSH_HOST }}
           username: ${{ vars.HETZNER_SSH_USER }}
           key: ${{ secrets.HETZNER_SSH_KEY }}
-          envs: TYPO3_DOMAIN,MARIADB_ROOT_PASSWORD,MARIADB_PASSWORD,TYPO3_ENCRYPTION_KEY,DHI_USERNAME,DHI_TOKEN,OPENAI_API_KEY,DEEPL_API_KEY
+          envs: TYPO3_DOMAIN,MARIADB_ROOT_PASSWORD,MARIADB_PASSWORD,TYPO3_ENCRYPTION_KEY,DHI_USERNAME,DHI_TOKEN,OPENAI_API_KEY,DEEPL_API_KEY,FALKENQUELL_BASIC_AUTH_USER,FALKENQUELL_BASIC_AUTH_HASH
           script: |
             # Without this a failed step is ignored and only the exit status of
             # the last command (`make update`) reaches the job. No pipefail:
@@ -66,6 +66,11 @@ jobs:
           DHI_TOKEN: ${{ secrets.DHI_TOKEN }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           DEEPL_API_KEY: ${{ secrets.DEEPL_API_KEY }}
+          # Basic auth of the Falkenquell site (docker/caddy/Caddyfile), written into
+          # .env by `make update`. Absent, the value stored on the host is kept, and
+          # without any value compose.yml keeps the site closed.
+          FALKENQUELL_BASIC_AUTH_USER: ${{ secrets.FALKENQUELL_BASIC_AUTH_USER }}
+          FALKENQUELL_BASIC_AUTH_HASH: ${{ secrets.FALKENQUELL_BASIC_AUTH_HASH }}
           TYPO3_DOMAIN: ${{ secrets.TYPO3_DOMAIN }}
           MARIADB_ROOT_PASSWORD: ${{ secrets.MARIADB_ROOT_PASSWORD }}
           MARIADB_PASSWORD: ${{ secrets.MARIADB_PASSWORD }}

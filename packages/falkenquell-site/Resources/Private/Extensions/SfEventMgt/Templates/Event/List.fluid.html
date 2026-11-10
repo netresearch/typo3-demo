@@ -1,0 +1,30 @@
+<f:layout name="Default" />
+
+<f:section name="main">
+
+    <f:if condition="{pagination}">
+        <f:then>
+            <ul class="event-cards">
+                <f:for each="{pagination.paginator.paginatedItems}" as="event" iteration="iterator">
+                    <li class="event-card"><f:render partial="Event/ListItem" arguments="{_all}"/></li>
+                </f:for>
+            </ul>
+            <f:render partial="Event/Pagination" arguments="{pagination: pagination.pagination, paginator: pagination.paginator, overwriteDemand: overwriteDemand}" />
+        </f:then>
+        <f:else>
+            <ul class="event-cards">
+                <f:for each="{events}" as="event">
+                    <li class="event-card"><f:render partial="Event/ListItem" arguments="{_all}"/></li>
+                </f:for>
+            </ul>
+        </f:else>
+    </f:if>
+
+    <f:if condition="{settings.queryLimit} && {settings.listPid}">
+        <p class="event-cards-more">
+            <f:link.page pageUid="{settings.listPid}" class="btn btn-primary"><f:translate domain="sf_event_mgt.messages" key="event.allEvents" /></f:link.page>
+        </p>
+    </f:if>
+
+</f:section>
+

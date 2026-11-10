@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file source-language="en" datatype="plaintext" original="EXT:falkenquell_site/Resources/Private/Language/locallang.xlf" date="2026-11-03T12:00:00Z" product-name="falkenquell_site">
+    <header/>
+    <body>
+      <trans-unit id="search.label">
+        <source>Search term</source>
+      </trans-unit>
+      <trans-unit id="search.placeholder">
+        <source>e.g. register a change of address</source>
+      </trans-unit>
+      <trans-unit id="search.submit">
+        <source>Search</source>
+      </trans-unit>
+      <trans-unit id="event.time">
+        <source>%1$s</source>
+      </trans-unit>
+      <trans-unit id="event.timeRange">
+        <source>%1$s – %2$s</source>
+      </trans-unit>
+      <trans-unit id="event.detail.facts">
+        <source>At a glance</source>
+      </trans-unit>
+      <trans-unit id="event.detail.date">
+        <source>Date</source>
+      </trans-unit>
+      <trans-unit id="event.detail.time">
+        <source>Time</source>
+      </trans-unit>
+      <trans-unit id="event.detail.location">
+        <source>Location</source>
+      </trans-unit>
+      <trans-unit id="event.detail.price">
+        <source>Admission</source>
+      </trans-unit>
+      <trans-unit id="event.detail.places">
+        <source>Places</source>
+      </trans-unit>
+      <trans-unit id="event.detail.freePlaces">
+        <source>%1$s of %2$s places available</source>
+      </trans-unit>
+      <trans-unit id="event.detail.register">
+        <source>Register now</source>
+      </trans-unit>
+      <trans-unit id="event.detail.calendar">
+        <source>Add to calendar</source>
+      </trans-unit>
+      <trans-unit id="event.detail.ical">
+        <source>Calendar file (.ics)</source>
+      </trans-unit>
+      <trans-unit id="event.detail.google">
+        <source>Google Calendar</source>
+      </trans-unit>
+      <trans-unit id="event.detail.outlook">
+        <source>Outlook.com</source>
+      </trans-unit>
+      <trans-unit id="event.detail.back">
+        <source>Back to all events</source>
+      </trans-unit>
+      <trans-unit id="header.language.label">
+        <source>Language</source>
+      </trans-unit>
+      <trans-unit id="header.search.toggle">
+        <source>Search</source>
+      </trans-unit>
+      <trans-unit id="event.pattern.short">
+        <source>EEE, d MMM yyyy</source>
+      </trans-unit>
+      <trans-unit id="event.pattern.long">
+        <source>EEEE, d MMMM yyyy</source>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

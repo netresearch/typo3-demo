@@ -1,0 +1,8 @@
+name: netresearch/falkenquell
+label: Falkenquell Site
+dependencies:
+  - bootstrap-package/full
+  - georgringer/news
+  - georgringer/news-twb5
+  - derhansen/sf_event_mgt
+  - netresearch/nr-llm

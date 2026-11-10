@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file source-language="en" target-language="de" datatype="plaintext" original="EXT:falkenquell_site/Resources/Private/Language/locallang.xlf" date="2026-11-03T12:00:00Z" product-name="falkenquell_site">
+    <header/>
+    <body>
+      <trans-unit id="search.label">
+        <source>Search term</source>
+        <target>Suchbegriff</target>
+      </trans-unit>
+      <trans-unit id="search.placeholder">
+        <source>e.g. register a change of address</source>
+        <target>z. B. Wohnsitz ummelden</target>
+      </trans-unit>
+      <trans-unit id="search.submit">
+        <source>Search</source>
+        <target>Suchen</target>
+      </trans-unit>
+      <trans-unit id="event.time">
+        <source>%1$s</source>
+        <target>%1$s Uhr</target>
+      </trans-unit>
+      <trans-unit id="event.timeRange">
+        <source>%1$s – %2$s</source>
+        <target>%1$s – %2$s Uhr</target>
+      </trans-unit>
+      <trans-unit id="event.detail.facts">
+        <source>At a glance</source>
+        <target>Auf einen Blick</target>
+      </trans-unit>
+      <trans-unit id="event.detail.date">
+        <source>Date</source>
+        <target>Datum</target>
+      </trans-unit>
+      <trans-unit id="event.detail.time">
+        <source>Time</source>
+        <target>Uhrzeit</target>
+      </trans-unit>
+      <trans-unit id="event.detail.location">
+        <source>Location</source>
+        <target>Ort</target>
+      </trans-unit>
+      <trans-unit id="event.detail.price">
+        <source>Admission</source>
+        <target>Eintritt</target>
+      </trans-unit>
+      <trans-unit id="event.detail.places">
+        <source>Places</source>
+        <target>Plätze</target>
+      </trans-unit>
+      <trans-unit id="event.detail.freePlaces">
+        <source>%1$s of %2$s places available</source>
+        <target>%1$s von %2$s Plätzen frei</target>
+      </trans-unit>
+      <trans-unit id="event.detail.register">
+        <source>Register now</source>
+        <target>Jetzt anmelden</target>
+      </trans-unit>
+      <trans-unit id="event.detail.calendar">
+        <source>Add to calendar</source>
+        <target>In den Kalender</target>
+      </trans-unit>
+      <trans-unit id="event.detail.ical">
+        <source>Calendar file (.ics)</source>
+        <target>Kalenderdatei (.ics)</target>
+      </trans-unit>
+      <trans-unit id="event.detail.google">
+        <source>Google Calendar</source>
+        <target>Google Kalender</target>
+      </trans-unit>
+      <trans-unit id="event.detail.outlook">
+        <source>Outlook.com</source>
+        <target>Outlook.com</target>
+      </trans-unit>
+      <trans-unit id="event.detail.back">
+        <source>Back to all events</source>
+        <target>Zurück zu allen Veranstaltungen</target>
+      </trans-unit>
+      <trans-unit id="header.language.label">
+        <source>Language</source>
+        <target>Sprache</target>
+      </trans-unit>
+      <trans-unit id="header.search.toggle">
+        <source>Search</source>
+        <target>Suche</target>
+      </trans-unit>
+      <trans-unit id="event.pattern.short">
+        <source>EEE, d MMM yyyy</source>
+        <target>EEE, dd.MM.yyyy</target>
+      </trans-unit>
+      <trans-unit id="event.pattern.long">
+        <source>EEEE, d MMMM yyyy</source>
+        <target>EEEE, d. MMMM yyyy</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>
