@@ -64,24 +64,44 @@ final readonly class SocialWebhookTestReceiver implements MiddlewareInterface
             return $handler->handle($request);
         }
 
-        $body = self::readAtMost($request, self::MAX_BODY_BYTES + 1);
+        try {
+            $body = self::readAtMost($request, self::MAX_BODY_BYTES + 1);
+            $this->store($body, $this->verifiedPost($request, $body));
+        } catch (RefusedWebhookRequest $refusal) {
+            // Warning, not error: an unsigned request from anybody is expected on a
+            // public URL, and only ERROR and above go to sys_log on this instance.
+            $this->logger->warning('Social webhook test receiver refused a request: ' . $refusal->getMessage(), ['status' => $refusal->getCode()]);
+
+            return $this->responseFactory->createResponse($refusal->getCode());
+        }
+
+        return $this->responseFactory->createResponse(204);
+    }
+
+    /**
+     * The decoded post, once size and signature are checked.
+     *
+     * @return array<array-key, mixed>
+     * @throws RefusedWebhookRequest
+     */
+    private function verifiedPost(ServerRequestInterface $request, string $body): array
+    {
         if (strlen($body) > self::MAX_BODY_BYTES) {
-            return $this->refuse(413, 'body larger than ' . self::MAX_BODY_BYTES . ' bytes');
+            throw new RefusedWebhookRequest(413, 'body larger than ' . self::MAX_BODY_BYTES . ' bytes');
         }
 
         $signature = $request->getHeaderLine(self::SIGNATURE_HEADER);
         if (preg_match('/^sha256=[0-9a-f]{64}$/D', $signature) !== 1) {
-            return $this->refuse(401, 'no well-formed signature header');
+            throw new RefusedWebhookRequest(401, 'no well-formed signature header');
         }
 
         $secret = $this->secret();
         if ($secret === null) {
-            return $this->refuse(503, 'signing secret not readable');
+            throw new RefusedWebhookRequest(503, 'signing secret not readable');
         }
 
-        $expected = 'sha256=' . hash_hmac('sha256', $body, $secret);
-        if (!hash_equals($expected, $signature)) {
-            return $this->refuse(403, 'signature does not match');
+        if (!hash_equals('sha256=' . hash_hmac('sha256', $body, $secret), $signature)) {
+            throw new RefusedWebhookRequest(403, 'signature does not match');
         }
 
         try {
@@ -90,9 +110,18 @@ final readonly class SocialWebhookTestReceiver implements MiddlewareInterface
             $post = null;
         }
         if (!is_array($post)) {
-            return $this->refuse(400, 'body is not a JSON object');
+            throw new RefusedWebhookRequest(400, 'body is not a JSON object');
         }
 
+        return $post;
+    }
+
+    /**
+     * @param array<array-key, mixed> $post
+     * @throws RefusedWebhookRequest
+     */
+    private function store(string $body, array $post): void
+    {
         try {
             $now = time();
             $this->connectionPool->getConnectionForTable(self::TABLE)->insert(self::TABLE, [
@@ -110,10 +139,8 @@ final readonly class SocialWebhookTestReceiver implements MiddlewareInterface
         } catch (Throwable $e) {
             $this->logger->error('Social webhook test receiver could not store a signed post', ['exception' => $e]);
 
-            return $this->refuse(500, 'post could not be stored');
+            throw new RefusedWebhookRequest(500, 'post could not be stored');
         }
-
-        return $this->responseFactory->createResponse(204);
     }
 
     private function secret(): ?string
@@ -146,15 +173,6 @@ final readonly class SocialWebhookTestReceiver implements MiddlewareInterface
         }
 
         return is_scalar($value) ? trim((string)$value) : '';
-    }
-
-    private function refuse(int $status, string $reason): ResponseInterface
-    {
-        // Warning, not error: an unsigned request from anybody is expected on a
-        // public URL, and only ERROR and above go to sys_log on this instance.
-        $this->logger->warning('Social webhook test receiver refused a request: ' . $reason, ['status' => $status]);
-
-        return $this->responseFactory->createResponse($status);
     }
 
     /** Reads the body up to $limit bytes, so an oversized upload is refused without holding all of it. */
