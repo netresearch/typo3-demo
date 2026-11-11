@@ -1289,6 +1289,44 @@ PREPARE seed_stmt FROM @seed_sql;
 EXECUTE seed_stmt;
 DEALLOCATE PREPARE seed_stmt;
 
+-- 6) A table task that sends its rows as TOON (nr-llm ADR-286).
+--
+--    The demo's one task whose input is a table: it reads sys_redirect and asks
+--    for a review. "format":"toon" makes nr-llm send the rows as TOON, the
+--    column names once and one line per row, instead of JSON that repeats every
+--    column name in every row. An nr-llm without ADR-286 ignores the option and
+--    sends JSON, so this block is safe on any nr-llm version.
+--
+--    sys_redirect because its rows are harmless to send: paths, targets and
+--    status codes, a handful of rows. The table reader sends every column of up
+--    to `limit` rows to the provider. Table tasks are admin-only in nr-llm, so
+--    the task shows in the admin task module, not in the editors' AI tasks.
+--
+--    Keyed on `identifier` like the blocks above; the UPDATE re-asserts the
+--    input source and the prompt on an instance seeded by an earlier run.
+INSERT INTO tx_nrllm_task
+    (pid, identifier, name, description, category, configuration_uid, prompt_template,
+     input_type, input_source, output_format, is_active, is_system, sorting, tstamp, crdate, deleted, hidden)
+SELECT 0, 'review-redirects-toon', 'Review redirects (TOON input)',
+       'Reviews the redirects for chains, loops, duplicates and suspicious targets. Sends the rows as TOON.',
+       'system',
+       COALESCE((SELECT uid FROM tx_nrllm_configuration
+                  WHERE identifier = 'content-assistant' AND deleted = 0
+                  ORDER BY uid ASC LIMIT 1), 0),
+       'Review these redirects of a TYPO3 site. List redirect chains, loops, duplicate sources, disabled redirects, and targets that look broken or point to another host. Name each finding with the redirect uid. If there is nothing to report, say so.\n\n{{input}}',
+       'table', '{"table":"sys_redirect","limit":50,"format":"toon"}', 'markdown', 1, 0, 210,
+       UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0
+ WHERE NOT EXISTS (
+       SELECT 1 FROM tx_nrllm_task e
+        WHERE e.identifier = 'review-redirects-toon' AND e.deleted = 0);
+
+UPDATE tx_nrllm_task e
+   SET e.input_type = 'table',
+       e.input_source = '{"table":"sys_redirect","limit":50,"format":"toon"}',
+       e.prompt_template = 'Review these redirects of a TYPO3 site. List redirect chains, loops, duplicate sources, disabled redirects, and targets that look broken or point to another host. Name each finding with the redirect uid. If there is nothing to report, say so.\n\n{{input}}',
+       e.is_active = 1
+ WHERE e.identifier = 'review-redirects-toon' AND e.deleted = 0;
+
 -- Give unpriced demo models cost metrics so the LLM cost module + Monthly-Cost
 -- widget show non-zero figures (cents per 1M tokens). Idempotent: the WHERE stops
 -- matching once set, so re-running make seed-extensions is a no-op.
