@@ -23,7 +23,7 @@ use TYPO3\CMS\Core\Database\ConnectionPool;
  * its extension setting socialWebhookUrl. On this demo that URL points here, so
  * the demo shows that a post arrives without posting to a real network. Each
  * accepted post becomes a row of tx_netresearchdemosite_social_webhook_receipt,
- * an admin-only table on the root page (Content > List, page 0).
+ * an admin-only table on the root page (Content > Records, page 0).
  *
  * The endpoint is public, so it accepts a post only with a valid signature:
  * nr_repurpose signs the body with the nr-vault secret named in its setting

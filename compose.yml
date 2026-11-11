@@ -251,7 +251,7 @@ services:
 
   # Sends the approved social posts whose time has come (nr_repurpose). On a public
   # domain the entrypoint points socialWebhookUrl at the site's own test receiver
-  # (/_social-webhook-test, posts listed on the root page in Content > List), so a
+  # (/_social-webhook-test, posts listed on the root page in Content > Records), so a
   # post goes through the real webhook and reaches no social network. On localhost
   # the URL stays empty and the command only logs how many posts are due.
   social-publish:

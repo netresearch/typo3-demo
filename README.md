@@ -598,7 +598,7 @@ path can be shown without a network account:
   above 64 KB. nr-repurpose shows that code at the post as "Webhook answered
   HTTP …". A GET to the path gets the site's 404.
 - Accepted posts are records of `tx_netresearchdemosite_social_webhook_receipt` on
-  the root page: **Content > List**, page 0, admins only. Each holds the platform,
+  the root page: **Content > Records**, page 0, admins only. Each holds the platform,
   the text, the time the post was scheduled for, the artifact and job uids, the
   source URL and the payload as received. The seed export truncates the table.
 
