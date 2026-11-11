@@ -104,16 +104,17 @@ final readonly class SocialWebhookTestReceiver implements MiddlewareInterface
             throw new RefusedWebhookRequest(403, 'signature does not match');
         }
 
+        // Decoded to objects: as an array, a JSON list such as [] would pass too.
         try {
-            $post = json_decode($body, true, 16, JSON_THROW_ON_ERROR);
+            $post = json_decode($body, false, 16, JSON_THROW_ON_ERROR);
         } catch (Throwable) {
             $post = null;
         }
-        if (!is_array($post)) {
+        if (!$post instanceof \stdClass) {
             throw new RefusedWebhookRequest(400, 'body is not a JSON object');
         }
 
-        return $post;
+        return get_object_vars($post);
     }
 
     /**
