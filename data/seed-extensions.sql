@@ -4653,11 +4653,15 @@ SELECT 0, r.service_type, 'openai', r.configuration_uid, r.model_uid, r.model_id
 --                                           as it, so its number stays put
 --   uid 1000 redakteur_ki   0.50  -> real use only; the editor who logs in to
 --                                           show their own usage (step 3c6). No
---                                           synthetic usage. The run form
---                                           estimates up to ~0.011 USD for a
---                                           task, so 0.50 lasts some 45 runs a
---                                           month and is small enough that a
---                                           few dozen runs move the bar.
+--                                           synthetic usage. A short task run
+--                                           costs well under a cent (181 tokens
+--                                           on Content Assistant, 2026-11-11),
+--                                           so 0.50 covers real use for a month.
+--                                           The run form's upper estimate
+--                                           (~0.16 USD there, a full 16,000-token
+--                                           answer) only warns; a run is refused
+--                                           once the month's actual cost reaches
+--                                           the ceiling.
 --
 -- Three fill levels on one screen show the column tracks something real and is
 -- per user. One budget would only turn "no budget set" into "3 % of 50".

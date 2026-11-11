@@ -55,9 +55,11 @@ Then open the URL printed by `make up` (defaults to `localhost`). The backend is
 at `/typo3/`. Backend user is **`nr_admin`**; the demo password lives in the
 team password manager (it is not stored in this repo). To see the backend as an
 editor, log in as **`redakteur_ki`**: a non-admin with the AI Tasks module and a
-small AI budget, whose own usage the module and the Cowriter dialog show. Its
-password is in the team password manager too; on a new instance the workflow
-`Set AI Tasks Editor Password` sets it. The other demo editors
+small AI budget, whose own usage the module and the Cowriter dialog show. On the
+deployed demo its password is in the team password manager too; after a fresh
+install there the workflow `Set AI Tasks Editor Password` sets it again. That
+workflow only reaches the deployed host, so on a local stack the account has no
+password and is entered through "Switch to user" like the others. The other demo editors
 (`redakteur_entwurf`, `redakteur_repurpose`) have no password and are entered
 through Backend Users > "Switch to user". The database seed is
 imported automatically on first boot, including demo content, landing-page
