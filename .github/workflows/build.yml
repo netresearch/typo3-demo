@@ -376,6 +376,10 @@ jobs:
             | docker compose exec -T db sh -c 'MYSQL_PWD="$MARIADB_PASSWORD" mariadb -N -u "$MARIADB_USER" "$MARIADB_DATABASE"')
           echo "stored rows: $rows"
           [ "$rows" = 0 ] || fail "the receiver stored $rows row(s) from refused requests"
+          # The backend lists the records by uid; without it Content > Records fails with HTTP 500.
+          keys=$(echo "SELECT COUNT(*) FROM information_schema.statistics WHERE table_schema = DATABASE() AND table_name = 'tx_netresearchdemosite_social_webhook_receipt' AND index_name = 'PRIMARY' AND column_name = 'uid';" \
+            | docker compose exec -T db sh -c 'MYSQL_PWD="$MARIADB_PASSWORD" mariadb -N -u "$MARIADB_USER" "$MARIADB_DATABASE"')
+          [ "$keys" = 1 ] || fail "the receipt table has no primary key on uid"
           echo "The receiver refuses unsigned posts and stores nothing."
 
       # b13/ai-bots-love-markdown answers the same URL with Markdown when the
