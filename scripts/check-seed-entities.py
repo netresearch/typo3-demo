@@ -17,7 +17,9 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-DOUBLE_ESCAPED = re.compile(r"&amp;(#[0-9]+|#x[0-9a-fA-F]+|[a-zA-Z][a-zA-Z0-9]*);")
+# The escaped ampersand in any of its forms (`&amp;`, `&#38;`, `&#x26;`)
+# followed by an entity: each renders as the literal entity text.
+DOUBLE_ESCAPED = re.compile(r"&(?:amp|#0*38|#[xX]0*26);(#\d+|#[xX][0-9a-fA-F]+|[a-zA-Z][a-zA-Z0-9]*);")
 
 
 def main() -> int:
