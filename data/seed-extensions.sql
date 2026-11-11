@@ -2105,6 +2105,14 @@ SET s.allowed_groups = (
 WHERE s.deleted = 0
   AND s.identifier = 'demo_social_webhook_test';
 
+-- The receipt table of that receiver was created without uid on the deploy
+-- that introduced it: extension:setup ran with the cached TCA of the previous
+-- release, and the later schema update cannot add an auto-increment primary key
+-- as two statements. One statement adds both; existing rows get numbered. A
+-- second run, or an instance without the table, changes nothing.
+ALTER TABLE IF EXISTS tx_netresearchdemosite_social_webhook_receipt
+    ADD COLUMN IF NOT EXISTS uid int(11) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY FIRST;
+
 -- A writing tool ships switched off, and the tool state lives in the database.
 -- IGNORE keeps a decision an admin made in AI > Tools.
 INSERT IGNORE INTO tx_nrllm_tool_state (pid, tool_name, enabled)
