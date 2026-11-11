@@ -13,15 +13,18 @@ index a424d18..886ff84 100644
              return;
          }
 diff --git a/Classes/Utility/DeeplApiHelper.php b/Classes/Utility/DeeplApiHelper.php
-index 7cb112d..135692d 100644
+index 7cb112d..4c5e7fd 100644
 --- a/Classes/Utility/DeeplApiHelper.php
 +++ b/Classes/Utility/DeeplApiHelper.php
-@@ -23,7 +23,65 @@ class DeeplApiHelper
+@@ -21,9 +21,67 @@ class DeeplApiHelper
+      */
+     private static array $apiKeyCheckCache = [];
  
-     public static function createTranslator(string $apiKey): Translator
+-    public static function createTranslator(string $apiKey): Translator
++    public static function createTranslator(?string $apiKey): Translator
      {
 -        return new Translator($apiKey, self::translatorOptions());
-+        return self::configuredTranslator() ?? new Translator($apiKey, self::translatorOptions());
++        return self::configuredTranslator() ?? new Translator((string)$apiKey, self::translatorOptions());
 +    }
 +
 +    /**

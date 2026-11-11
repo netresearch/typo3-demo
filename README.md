@@ -655,8 +655,8 @@ translate with this copy, though: the entrypoint sets autotranslate's setting
 (nr-llm ADR-289), which sends the texts to nr-llm's language model; nr-llm's
 setting `autotranslate.translator` stays empty here. Rich text goes as HTML. A
 page or content element that receives machine-translated text gets nr-llm's
-AI-written marker and AI Label's "AI-modified" origin, so the AI Label notice
-shows on the website. The batch command reads the provider key as
+AI-written marker and AI Label's "AI-modified" origin in the same write; the
+site's AI Label partial renders that origin as its notice. The batch command reads the provider key as
 `worker.technicalBeUserUid`, like nr-llm's own worker.
 
 autotranslate 3.6 reads neither `translatorClass` nor the batch mode "Create

@@ -1,5 +1,5 @@
 {
-    "_hash": "fb627601b7af6c5bdd5aa4e59032d2af6c1c7a5b81a5bae4a14ec3195c33ec0e",
+    "_hash": "a773a55ff655bb81a0c1d8f6b53ba8cf62b17e2266d8f7a0c7372936daadcd8c",
     "patches": {
         "b13/ai-label": [
             {
@@ -64,7 +64,7 @@
                 "package": "thieleundklose/autotranslate",
                 "description": "Setting translatorClass: a container-resolved \\DeepL\\Translator subclass translates instead of the DeepL client (upstream pull request 175, https://github.com/thieleundklose/tk-typo3-autotranslate/pull/175), so nr-llm's AutotranslateTranslator does the translating",
                 "url": "patches/thieleundklose-autotranslate-translator-class.patch",
-                "sha256": "36f5d5817197be07dafe11142954084b14514e2b30c49b21e2c15386811ce5da",
+                "sha256": "202f31c171c06472c3c7e26ab0f616fe36d6dbd7cdafc4442aac2c33c1b98206",
                 "depth": 1,
                 "extra": {
                     "provenance": "root"
