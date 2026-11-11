@@ -503,6 +503,17 @@ if [ -f config/system/settings.php ]; then
         // nr_ai_search name even though the block now also carries nr_vault.
         $begin = "// >>> nr_ai_search (managed by entrypoint, do not edit this block)";
         $end   = "// <<< nr_ai_search";
+        // The social webhook of nr_repurpose points at the test receiver of
+        // this site (SocialWebhookTestReceiver in netresearch_demo_site), so a
+        // due, approved post arrives there instead of on a social network.
+        // nr_repurpose sends only to a host whose addresses are all public, so
+        // on localhost the URL stays empty and publish-due only counts the due
+        // posts, as it did before. The secret is generated on the host by
+        // make provision-social-webhook-secret.
+        $domain = strtolower(trim((string) getenv("TYPO3_DOMAIN")));
+        $webhookUrl = ($domain === "" || $domain === "localhost" || filter_var($domain, FILTER_VALIDATE_IP) !== false)
+            ? ""
+            : "https://" . $domain . "/_social-webhook-test";
         $block = $begin . "\n"
             // The identity `vault:store --as-provisioner` acts as; seeded in
             // data/seed-extensions.sql with exactly two vault permissions.
@@ -583,13 +594,15 @@ if [ -f config/system/settings.php ]; then
             // unauthenticated CLI user, and nr_vault denies the provider key --
             // which is the failure the release fixes but does not configure.
             . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"nr_repurpose\"][\"technicalBeUserUid\"] = \"992\";\n"
+            . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"nr_repurpose\"][\"socialWebhookUrl\"] = " . var_export($webhookUrl, true) . ";\n"
+            . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"nr_repurpose\"][\"socialWebhookSecretIdentifier\"] = \"demo_social_webhook_test\";\n"
             . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"nr_ai_search\"][\"hybridSearchEnabled\"] = \"0\";\n"
             . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"index\"][\"defaultTransportInDevelopmentContext\"] = \"1\";\n"
             . $end;
         if (!write_managed_block($f, $begin, $end, $block)) {
             exit(1);
         }
-        echo "additional.php: nr_ai_search configured (technicalBeUserUid=990, dims=1536), nr_vault provisioning actor 991, nr_repurpose actor 992, nr_llm media on (tts-1), nr_llm DeepL translator key deepl_api_key, nr_llm category root 7100, index dev-sync on." . PHP_EOL;
+        echo "additional.php: nr_ai_search configured (technicalBeUserUid=990, dims=1536), nr_vault provisioning actor 991, nr_repurpose actor 992, nr_repurpose social webhook " . ($webhookUrl === "" ? "off (no public domain)" : $webhookUrl) . ", nr_llm media on (tts-1), nr_llm DeepL translator key deepl_api_key, nr_llm category root 7100, index dev-sync on." . PHP_EOL;
     ' || echo "WARNING: failed to write nr_ai_search additional.php block" >&2
 fi
 

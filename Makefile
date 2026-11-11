@@ -1,4 +1,4 @@
-.PHONY: up down reset update logs shell db-shell seed seed-extensions provision-llm-key provision-deepl-key install-usecase-packs persist-env-secret install-tool-check remove-schema-leftovers export-seed build clean dev dev-down prune help
+.PHONY: up down reset update logs shell db-shell seed seed-extensions provision-llm-key provision-deepl-key provision-social-webhook-secret install-usecase-packs persist-env-secret install-tool-check remove-schema-leftovers export-seed build clean dev dev-down prune help
 
 COMPOSE     := docker compose
 COMPOSE_DEV := docker compose -f compose.yml -f compose.dev.yml
@@ -16,6 +16,10 @@ LLM_KEY_ID  := openai_api_key
 # reads it through EXTENSIONS.nr_llm.translators.deepl.apiKeyIdentifier, which
 # the entrypoint sets to this name.
 DEEPL_KEY_ID := deepl_api_key
+# Identifier of the social webhook signing secret, same rules. The entrypoint
+# sets nr_repurpose's socialWebhookSecretIdentifier to this name, and the seed
+# grants be_group 992 the read tier on it; change all three together.
+SOCIAL_WEBHOOK_SECRET_ID := demo_social_webhook_test
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
@@ -103,6 +107,7 @@ update: ## Update code without purging data
 	$(MAKE) seed-extensions
 	$(MAKE) provision-llm-key
 	$(MAKE) provision-deepl-key
+	$(MAKE) provision-social-webhook-secret
 	$(MAKE) seed-extensions
 	$(TYPO3) extension:setup || true
 	$(MAKE) install-usecase-packs
@@ -301,6 +306,44 @@ provision-deepl-key: ## Store $DEEPL_API_KEY in the vault for nr_llm's DeepL tra
 		0|'') echo "ERROR: vault:store reported success but no secret '$(DEEPL_KEY_ID)' exists." >&2; exit 1 ;; \
 	esac; \
 	echo "DeepL key provisioned as vault secret '$(DEEPL_KEY_ID)'."
+
+provision-social-webhook-secret: ## Create the vault secret that signs nr_repurpose's social posts for the test receiver (once)
+	@# nr_repurpose signs each social post with the vault secret named in its
+	@# setting socialWebhookSecretIdentifier, and the test receiver of this site
+	@# (SocialWebhookTestReceiver) checks that signature before it stores a post.
+	@# Both ends live in this instance, so the secret is made here: random bytes
+	@# from the web container, piped into vault:store and never printed. The deploy
+	@# log is public. An existing secret is kept, so the value stays stable across
+	@# deploys and nothing has to rotate.
+	@#
+	@# Written as the provisioning identity 991, which becomes the owner. The
+	@# signer and the receiver both read it as be_user 992 (nr_repurpose
+	@# technicalBeUserUid); the seed grants group 992 the read tier on it, which
+	@# is why seed-extensions runs again after this target. vault:store --groups
+	@# is not used: in nr-vault 1.4.2 the command hands the groups over under a
+	@# key the service does not read.
+	@set -e; \
+	count=$$(echo "SELECT COUNT(*) FROM tx_nrvault_secret WHERE identifier = '$(SOCIAL_WEBHOOK_SECRET_ID)' AND deleted = 0;" \
+		| $(COMPOSE) exec -T db sh -c 'MYSQL_PWD="$$MARIADB_PASSWORD" mariadb -N -u "$$MARIADB_USER" "$$MARIADB_DATABASE"'); \
+	case "$$count" in \
+		''|*[!0-9]*) echo "ERROR: could not count the vault secrets (got '$$count')." >&2; exit 1 ;; \
+		0) ;; \
+		*) echo "Vault secret '$(SOCIAL_WEBHOOK_SECRET_ID)' exists - kept."; exit 0 ;; \
+	esac; \
+	echo "Creating vault secret '$(SOCIAL_WEBHOOK_SECRET_ID)' ..."; \
+	if ! out=$$($(COMPOSE) exec -T web php -r 'echo bin2hex(random_bytes(32));' \
+		| $(TYPO3) vault:store $(SOCIAL_WEBHOOK_SECRET_ID) --stdin --as-provisioner 2>&1); then \
+		echo "ERROR: vault:store failed. Its output follows; the value is passed on" >&2; \
+		echo "       stdin, so it cannot appear in the command line it reports." >&2; \
+		printf '%s\n' "$$out" | sed 's/^/    /' >&2; \
+		exit 1; \
+	fi; \
+	count=$$(echo "SELECT COUNT(*) FROM tx_nrvault_secret WHERE identifier = '$(SOCIAL_WEBHOOK_SECRET_ID)' AND deleted = 0;" \
+		| $(COMPOSE) exec -T db sh -c 'MYSQL_PWD="$$MARIADB_PASSWORD" mariadb -N -u "$$MARIADB_USER" "$$MARIADB_DATABASE"'); \
+	case "$$count" in \
+		0|'') echo "ERROR: vault:store reported success but no secret '$(SOCIAL_WEBHOOK_SECRET_ID)' exists." >&2; exit 1 ;; \
+	esac; \
+	echo "Vault secret '$(SOCIAL_WEBHOOK_SECRET_ID)' created."
 
 persist-env-secret: ## Write $$SECRET_NAME from the environment into .env (usage: make persist-env-secret SECRET_NAME=FOO)
 	@# Some extensions cannot use nr_vault. ai_filemetadata reads a plain OpenAI

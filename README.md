@@ -569,6 +569,43 @@ holds the read tier on that one secret.
 `fieldFill.fields` stays empty on purpose: a save does not start a background run
 here.
 
+## Social posts and the webhook test receiver (nr-repurpose)
+
+nr-repurpose does not post to social networks itself. When an approved social
+post is due, `nr_repurpose:publish-due` sends it as JSON by POST to the URL in its
+extension setting `socialWebhookUrl`; a scheduling tool, an automation service or
+an own endpoint takes it from there. The `social-publish` service runs that command
+every five minutes.
+
+On this demo the URL points at a test receiver of the site package, so the whole
+path can be shown without a network account:
+
+- `docker/web/entrypoint.sh` sets `socialWebhookUrl` to
+  `https://$TYPO3_DOMAIN/_social-webhook-test` and `socialWebhookSecretIdentifier`
+  to `demo_social_webhook_test`. nr-repurpose sends only to a host whose addresses
+  are all public, so with `TYPO3_DOMAIN=localhost` the URL stays empty and the
+  command only counts the due posts.
+- `make provision-social-webhook-secret` (part of `make update`) creates that vault
+  secret once, from random bytes, as the provisioning identity 991; it never prints
+  it. The seed (step 3f in `data/seed-extensions.sql`) gives group 992 the read tier
+  on it.
+- nr-repurpose signs every post with it (`X-Nr-Repurpose-Signature: sha256=<HMAC>`),
+  reading as be_user 992. The receiver
+  (`packages/netresearch-demo-site/Classes/Middleware/SocialWebhookTestReceiver.php`)
+  reads the same secret as the same user and stores a post only when the signature
+  matches. It answers 401 without a well-formed signature, 403 for a wrong one, 503
+  when it cannot read the secret, 400 for a body that is not a JSON object and 413
+  above 64 KB. nr-repurpose shows that code at the post as "Webhook answered
+  HTTP …". A GET to the path gets the site's 404.
+- Accepted posts are records of `tx_netresearchdemosite_social_webhook_receipt` on
+  the root page: **Content > Records**, page 0, admins only. Each holds the platform,
+  the text, the time the post was scheduled for, the artifact and job uids, the
+  source URL and the payload as received. The seed export truncates the table.
+
+To see it: in **Content > Repurpose**, approve a social post of a finished job,
+schedule it a few minutes ahead, and wait for the next `publish-due` run. The post
+then shows as published in the job, and the record appears on page 0.
+
 ## The DeepL key
 
 The key travels as the `DEEPL_API_KEY` repository secret and reaches two places.
