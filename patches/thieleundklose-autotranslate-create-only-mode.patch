@@ -1,0 +1,79 @@
+diff --git a/Classes/Controller/BatchTranslationBaseController.php b/Classes/Controller/BatchTranslationBaseController.php
+index 77de87f..4238faf 100644
+--- a/Classes/Controller/BatchTranslationBaseController.php
++++ b/Classes/Controller/BatchTranslationBaseController.php
+@@ -369,7 +369,8 @@ class BatchTranslationBaseController extends ActionController
+                     'targetLanguage' => array_map(fn($item) => $item->getTitle(), $languages),
+                     'mode' => [
+                         Translator::TRANSLATE_MODE_BOTH => $this->getLanguageService()->sL('LLL:EXT:autotranslate/Resources/Private/Language/locallang_db.xlf:autotranslate_batch.mode.' . Translator::TRANSLATE_MODE_BOTH),
+-                        Translator::TRANSLATE_MODE_UPDATE_ONLY => $this->getLanguageService()->sL('LLL:EXT:autotranslate/Resources/Private/Language/locallang_db.xlf:autotranslate_batch.mode.' . Translator::TRANSLATE_MODE_UPDATE_ONLY)
++                        Translator::TRANSLATE_MODE_UPDATE_ONLY => $this->getLanguageService()->sL('LLL:EXT:autotranslate/Resources/Private/Language/locallang_db.xlf:autotranslate_batch.mode.' . Translator::TRANSLATE_MODE_UPDATE_ONLY),
++                        Translator::TRANSLATE_MODE_CREATE_ONLY => $this->getLanguageService()->sL('LLL:EXT:autotranslate/Resources/Private/Language/locallang_db.xlf:autotranslate_batch.mode.' . Translator::TRANSLATE_MODE_CREATE_ONLY)
+                     ],
+                     'frequency' => [
+                         BatchItem::FREQUENCY_ONCE => $this->getLanguageService()->sL('LLL:EXT:autotranslate/Resources/Private/Language/locallang_db.xlf:autotranslate_batch.frequency.' . BatchItem::FREQUENCY_ONCE),
+diff --git a/Classes/Utility/Translator.php b/Classes/Utility/Translator.php
+index 11ba3d3..0864a8b 100644
+--- a/Classes/Utility/Translator.php
++++ b/Classes/Utility/Translator.php
+@@ -245,6 +245,15 @@ class Translator implements LoggerAwareInterface
+                     continue;
+                 }
+ 
++                if ($translateMode === self::TRANSLATE_MODE_CREATE_ONLY && $existingTranslation) {
++                    LogUtility::log($this->logger, 'No Translation of {table} with uid {uid} because mode "create only" and the translation exists.', [
++                        'table' => $table,
++                        'uid' => $recordUid
++                    ]);
++                    $translationResult->addSkippedReason('An existing target-language record was kept in create-only mode.');
++                    continue;
++                }
++
+                 $deeplTargetLanguage = $this->deeplTargetLanguage((int)$languageId);
+                 if ($deeplTargetLanguage === null || trim($deeplTargetLanguage) === '') {
+                     throw new \RuntimeException(sprintf(
+@@ -675,6 +684,16 @@ class Translator implements LoggerAwareInterface
+             return null;
+         }
+ 
++        if ($translateMode === self::TRANSLATE_MODE_CREATE_ONLY && !empty($referenceTranslation)) {
++            LogUtility::log($this->logger, 'No {referenceTable} {referenceUid} Translation of {table} with uid {uid} because mode "create only" and the translation exists.', [
++                'referenceTable' => $referenceTable,
++                'table' => $parentTable,
++                'uid' => $parentUid,
++                'referenceUid' => $referenceUid,
++            ]);
++            return null;
++        }
++
+         if (empty($referenceTranslation)) {
+             $dataHandler = GeneralUtility::makeInstance(DataHandler::class);
+             $dataHandler->start([], []);
+@@ -1195,6 +1214,10 @@ class Translator implements LoggerAwareInterface
+                         continue;
+                     }
+ 
++                    if ($translateMode === self::TRANSLATE_MODE_CREATE_ONLY && !empty($referenceTranslation)) {
++                        continue;
++                    }
++
+                     $recordReference = $this->getReferenceRecordForTranslation($referenceTable, (int)$referenceUid, $parentObject);
+ 
+                     if (!is_array($recordReference)) {
+diff --git a/Configuration/TCA/tx_autotranslate_batch_item.php b/Configuration/TCA/tx_autotranslate_batch_item.php
+index e8d4e8c..f18b565 100644
+--- a/Configuration/TCA/tx_autotranslate_batch_item.php
++++ b/Configuration/TCA/tx_autotranslate_batch_item.php
+@@ -95,8 +95,10 @@ return [
+                         'label' => 'LLL:EXT:autotranslate/Resources/Private/Language/locallang_db.xlf:autotranslate_batch.mode.' . \ThieleUndKlose\Autotranslate\Utility\Translator::TRANSLATE_MODE_UPDATE_ONLY,
+                         'value' => \ThieleUndKlose\Autotranslate\Utility\Translator::TRANSLATE_MODE_UPDATE_ONLY,
+                     ],
+-                    // TODO implement create only mode
+-                    // ['LLL:EXT:autotranslate/Resources/Private/Language/locallang_db.xlf:autotranslate_batch.mode.' . \ThieleUndKlose\Autotranslate\Utility\Translator::TRANSLATE_MODE_CREATE_ONLY, \ThieleUndKlose\Autotranslate\Utility\Translator::TRANSLATE_MODE_CREATE_ONLY],
++                    [
++                        'label' => 'LLL:EXT:autotranslate/Resources/Private/Language/locallang_db.xlf:autotranslate_batch.mode.' . \ThieleUndKlose\Autotranslate\Utility\Translator::TRANSLATE_MODE_CREATE_ONLY,
++                        'value' => \ThieleUndKlose\Autotranslate\Utility\Translator::TRANSLATE_MODE_CREATE_ONLY,
++                    ],
+                 ],
+                 'default' => \ThieleUndKlose\Autotranslate\Utility\Translator::TRANSLATE_MODE_BOTH,
+                 'required' => true

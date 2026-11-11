@@ -7,12 +7,6 @@ services:
   Netresearch\DemoSite\:
     resource: '../Classes/*'
 
-  # The autotranslate composer patch resolves this class through the public
-  # container (GeneralUtility::getContainer()->get()), so it cannot stay a
-  # private service.
-  Netresearch\DemoSite\Translation\NrLlmDeeplTranslator:
-    public: true
-
   # The middleware dispatcher fetches its targets from the container.
   Netresearch\DemoSite\Middleware\SocialWebhookTestReceiver:
     public: true

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "bd00085a90e91f1c568cbb80ac34c3ab",
+    "content-hash": "89526ce782ddcdd2bc72f137c56ed8cd",
     "packages": [
         {
             "name": "b13/ai-bots-love-markdown",

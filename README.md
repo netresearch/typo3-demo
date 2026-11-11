@@ -649,10 +649,24 @@ the host `.env` (so a reboot keeps it), compose passes it into the `web`
 container, and the entrypoint writes it into `config/system/additional.php` as
 a managed block. An empty variable keeps
 whatever key that file already holds; it never wipes it. autotranslate does not
-translate with this copy, though: its translations are routed through nr-llm by
-`Netresearch\DemoSite\Translation\NrLlmDeeplTranslator`, which calls
-`TranslationService::translate()`, and that method always uses the language
-model, never the DeepL translator.
+translate with this copy, though: the entrypoint sets autotranslate's setting
+`translatorClass` to nr-llm's
+`Netresearch\NrLlm\Integration\Autotranslate\AutotranslateTranslator`
+(nr-llm ADR-289), which sends the texts to nr-llm's language model; nr-llm's
+setting `autotranslate.translator` stays empty here. Rich text goes as HTML. A
+page or content element that receives machine-translated text gets nr-llm's
+AI-written marker and AI Label's "AI-modified" origin, so the AI Label notice
+shows on the website. The batch command reads the provider key as
+`worker.technicalBeUserUid`, like nr-llm's own worker.
+
+autotranslate 3.6 reads neither `translatorClass` nor the batch mode "Create
+new (missing) translation only". Two composer patches carry them until a
+release does, each the change of an upstream pull request:
+[#175](https://github.com/thieleundklose/tk-typo3-autotranslate/pull/175)
+(`patches/thieleundklose-autotranslate-translator-class.patch`) and
+[#176](https://github.com/thieleundklose/tk-typo3-autotranslate/pull/176)
+(`patches/thieleundklose-autotranslate-create-only-mode.patch`). Drop each patch
+once a release contains its pull request.
 
 Language mapping lives in `config/sites/default/config.yaml` and is not secret:
 `deeplSourceLang: EN` on the English language, `deeplTargetLang: DE` on the

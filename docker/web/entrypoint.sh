@@ -345,18 +345,20 @@ if [ -f config/system/settings.php ]; then
     ' || echo "WARNING: failed to write additional.php" >&2
 fi
 
-# Route EXT:autotranslate through nr-llm. autotranslate has no provider hook;
-# a local composer patch (patches/thieleundklose-autotranslate-translator-hook.patch)
-# teaches its DeeplApiHelper to resolve the class configured here from the
-# container - the demo-site bridge translates via nr-llm, and autotranslate
-# needs no DeepL key of its own. Same managed-block mechanics as above.
+# Route EXT:autotranslate through nr-llm. autotranslate's setting
+# translatorClass names nr-llm's translator for it (nr-llm ADR-289); autotranslate
+# then needs no DeepL key of its own. autotranslate 3.6 does not read the setting
+# yet: patches/thieleundklose-autotranslate-translator-class.patch carries the
+# change of the upstream pull request that adds it
+# (https://github.com/thieleundklose/tk-typo3-autotranslate/pull/175) until a
+# release does. Same managed-block mechanics as above.
 if [ -f config/system/settings.php ]; then
     php -r "$MANAGED_BLOCK_PHP"'
         $f = "config/system/additional.php";
         $begin = "// >>> autotranslate via nr-llm (managed by entrypoint, do not edit this block)";
         $end   = "// <<< autotranslate via nr-llm";
         $block = $begin . "\n"
-            . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"autotranslate\"][\"translatorClass\"] = \"Netresearch\\\\DemoSite\\\\Translation\\\\NrLlmDeeplTranslator\";\n"
+            . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"autotranslate\"][\"translatorClass\"] = \"Netresearch\\\\NrLlm\\\\Integration\\\\Autotranslate\\\\AutotranslateTranslator\";\n"
             . $end;
         if (!write_managed_block($f, $begin, $end, $block)) {
             exit(1);
