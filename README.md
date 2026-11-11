@@ -24,6 +24,14 @@ host pulls and updates itself. There is no manual server editing.
 | `netresearch/nr-temporal-cache` | Time-based page-cache invalidation | Tools › Temporal Cache |
 | `netresearch/rte-ckeditor-image` | Image support inside the RTE | (RTE toolbar) |
 
+The AI extensions in this table are also available as one package,
+[`netresearch/typo3-ai-edition`](https://github.com/netresearch/typo3-ai-edition):
+a Composer metapackage that installs nr-llm, nr-vault, t3-cowriter,
+nr-mcp-agent, nr-landingpage and nr-repurpose in versions a weekly CI run
+installs and tests together on TYPO3 14.3. This demo requires the extensions
+individually, so its installed versions can differ from the ones the edition
+has tested.
+
 The backend has two dashboards: **Netresearch Demo** (one explainer card per
 extension, each with a "how to demo it" recipe) and **Netresearch Widgets**
 (the extensions' own live dashboard widgets).
