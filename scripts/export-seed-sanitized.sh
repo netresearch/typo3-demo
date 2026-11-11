@@ -46,7 +46,8 @@ echo "SELECT table_name FROM information_schema.tables
             'tx_nrllm_skill_audit', 'tx_nrllm_eval_result',
             'tx_nrllm_agentrun', 'tx_nrllm_agentrun_event',
             'tx_nrllm_ai_session', 'tx_nrllm_ai_session_message',
-            'tx_nrllm_tool_state', 'tx_nrllm_tool_group_state'
+            'tx_nrllm_tool_state', 'tx_nrllm_tool_group_state',
+            'tx_netresearchdemosite_social_webhook_receipt'
           ));" \
     | sql -N "$SCRATCH" \
     | while read -r t; do echo "TRUNCATE TABLE \`$t\`;"; done \

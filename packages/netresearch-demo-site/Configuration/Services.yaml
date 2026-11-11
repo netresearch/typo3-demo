@@ -13,6 +13,10 @@ services:
   Netresearch\DemoSite\Translation\NrLlmDeeplTranslator:
     public: true
 
+  # The middleware dispatcher fetches its targets from the container.
+  Netresearch\DemoSite\Middleware\SocialWebhookTestReceiver:
+    public: true
+
   # ---------------------------------------------------------------------------
   # Dashboard cards — one per Netresearch demo extension.
   # All share the DemoExtensionCardWidget class; content is options-driven.

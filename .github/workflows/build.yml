@@ -348,6 +348,36 @@ jobs:
             || { echo 'ERROR: robots.txt names no sitemap'; exit 1; }
           echo "robots.txt and llms.txt served."
 
+      # The social webhook test receiver (SocialWebhookTestReceiver) is a public
+      # URL that writes to the database, so its refusals are what this checks:
+      # without a well-formed signature it answers 401 before the vault is asked,
+      # a well-formed but foreign signature never gets a 2xx (CI has no signing
+      # secret, so 503; on the demo 403), a GET falls through to the site's 404,
+      # and none of it stores a row. Without the middleware the POSTs would get
+      # the site's 404 too, so the 401 assertions fail.
+      - name: Verify the social webhook test receiver refuses unsigned posts
+        run: |
+          url=https://localhost/_social-webhook-test
+          post() {
+            curl -sS -o /dev/null -w '%{http_code}' --proto '=https' --cacert "$RUNNER_TEMP/caddy-root.crt" \
+              -X POST -H 'Content-Type: application/json' "$@" --data '{"platform":"linkedin","text":"ci"}' "$url"
+          }
+          fail() { echo "ERROR: $1" >&2; exit 1; }
+          code=$(post); echo "unsigned POST -> $code"
+          [ "$code" = 401 ] || fail "unsigned POST answered $code, expected 401"
+          code=$(post -H 'X-Nr-Repurpose-Signature: sha256=nothex'); echo "malformed signature -> $code"
+          [ "$code" = 401 ] || fail "malformed signature answered $code, expected 401"
+          code=$(post -H "X-Nr-Repurpose-Signature: sha256=$(printf '0%.0s' $(seq 64))"); echo "foreign signature -> $code"
+          case "$code" in 403|503) : ;; *) fail "foreign signature answered $code, expected 403 or 503" ;; esac
+          code=$(curl -sS -o /dev/null -w '%{http_code}' --proto '=https' --cacert "$RUNNER_TEMP/caddy-root.crt" "$url")
+          echo "GET -> $code"
+          [ "$code" = 404 ] || fail "GET answered $code, expected the site's 404"
+          rows=$(echo "SELECT COUNT(*) FROM tx_netresearchdemosite_social_webhook_receipt;" \
+            | docker compose exec -T db sh -c 'MYSQL_PWD="$MARIADB_PASSWORD" mariadb -N -u "$MARIADB_USER" "$MARIADB_DATABASE"')
+          echo "stored rows: $rows"
+          [ "$rows" = 0 ] || fail "the receiver stored $rows row(s) from refused requests"
+          echo "The receiver refuses unsigned posts and stores nothing."
+
       # b13/ai-bots-love-markdown answers the same URL with Markdown when the
       # request accepts text/markdown, so every HTML response must say
       # `Vary: Accept`, or a cache in between hands one representation to the

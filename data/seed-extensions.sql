@@ -2007,6 +2007,26 @@ WHERE s.deleted = 0
   AND s.identifier = (SELECT api_key FROM tx_nrllm_provider WHERE uid = 1 LIMIT 1)
   AND (SELECT api_key FROM tx_nrllm_provider WHERE uid = 1 LIMIT 1) <> '';
 
+-- 3f) Read tier for the nr_repurpose identity (group 992) on the social webhook
+--     signing secret. `make provision-social-webhook-secret` creates the secret
+--     as the provisioning identity 991, which owns it. nr_repurpose signs its
+--     social posts with it and the site's test receiver
+--     (SocialWebhookTestReceiver) checks the signature with it, both reading as
+--     be_user 992. Same MM caveat as step 3c. On an instance without the secret
+--     (a fresh seed, CI) both statements change nothing.
+INSERT IGNORE INTO tx_nrvault_secret_begroups_mm (uid_local, uid_foreign, sorting, sorting_foreign)
+SELECT s.uid, 992, 1, 0
+FROM tx_nrvault_secret s
+WHERE s.deleted = 0
+  AND s.identifier = 'demo_social_webhook_test';
+
+UPDATE tx_nrvault_secret s
+SET s.allowed_groups = (
+    SELECT COUNT(*) FROM tx_nrvault_secret_begroups_mm mm WHERE mm.uid_local = s.uid
+)
+WHERE s.deleted = 0
+  AND s.identifier = 'demo_social_webhook_test';
+
 -- A writing tool ships switched off, and the tool state lives in the database.
 -- IGNORE keeps a decision an admin made in AI > Tools.
 INSERT IGNORE INTO tx_nrllm_tool_state (pid, tool_name, enabled)
