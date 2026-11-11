@@ -1877,6 +1877,84 @@ WHERE uid = 998 AND username = 'redakteur_repurpose'
   AND (COALESCE(usergroup, '') <> '998' OR options & 3 <> 3)
   AND EXISTS (SELECT 1 FROM be_groups WHERE uid = 998 AND deleted = 0 AND title = 'Repurpose editors (no audio/vision)');
 
+-- 3c6) A non-admin editor of the AI Tasks module who logs in.
+--
+--      nr-llm shows an editor their own AI usage against their budget in the
+--      AI Tasks module and in the Cowriter dialog, and its monthly billing
+--      report counts the users entitled to AI tasks. Reaching the module takes
+--      both switches (nr-llm ADR-131): the module nrllm_aitasks in the group's
+--      module list and the grant tx_nrllm_grants:tasks_use. No demo account
+--      had both, so the billing report said "0" and no editor could show the
+--      usage panel.
+--
+--      The group adds to "Advanced editors" (uid 3: page mount 1, page group
+--      1, the Page module and the content types, so the Cowriter dialog is
+--      reachable in the rich text editor) the AI Tasks module, the tasks_use
+--      grant and secret.use. A run calls the model with the provider key as
+--      the editor, and nr_vault grants that read to a non-admin only through
+--      secret.use plus a read-tier group of the secret (as for group 995
+--      above); both are set here. agent_approve is left out: it would let the
+--      editor decide other users' suspended runs.
+--
+--      Unlike 995 and 998, this account is meant for a real login, so that an
+--      editor's view can be checked without an administrator's session. The
+--      INSERT still writes an invalid hash, and nothing below touches the
+--      password: the workflow "Set AI Tasks Editor Password" hashes the
+--      repository secret TYPO3_BE_EDITOR_KI_PASSWORD on the host, and that
+--      hash survives every later seed run. The password itself lives in the
+--      team password manager beside nr_admin's.
+--
+--      Its budget is the row 9304 in the user-budget block further down.
+--
+--      Fixed uids 1000: inserting 998 moved the auto-increment counters of
+--      be_users and be_groups to 999, so 999 is the uid the next user or
+--      group created in the backend takes, and it is skipped like 997 was.
+INSERT IGNORE INTO be_groups
+    (uid, pid, tstamp, crdate, deleted, hidden, title, description, subgroup, groupMods, custom_options)
+VALUES (1000, 0, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0, 'AI Tasks editors',
+     'Advanced editors plus the AI Tasks module, the right to run AI tasks and read access to the AI provider key.',
+     '3', 'nrllm_aitasks', 'tx_nrllm_grants:tasks_use,tx_nrvault:secret.use');
+
+INSERT IGNORE INTO be_users
+    (uid, pid, tstamp, crdate, deleted, disable, admin, username, password, usergroup, options, lang,
+     workspace_id, realName, description)
+VALUES (1000, 0, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0, 0,
+     'redakteur_ki', '!redakteur_ki_no_password_yet', '1000', 3, 'de', 0,
+     'Redakteur KI',
+     'Demo editor (non-admin) of the AI Tasks module with a small AI budget. Logs in with the password in the team password manager, set by the workflow "Set AI Tasks Editor Password".');
+
+-- Re-assert the group and the membership, only while the rows are the seeded
+-- ones: on a live database uid 1000 could be a group or a user somebody created
+-- in the backend. The password is never re-asserted.
+UPDATE be_groups
+SET subgroup = '3', groupMods = 'nrllm_aitasks', custom_options = 'tx_nrllm_grants:tasks_use,tx_nrvault:secret.use'
+WHERE uid = 1000 AND deleted = 0 AND title = 'AI Tasks editors'
+  AND (COALESCE(subgroup, '') <> '3' OR COALESCE(groupMods, '') <> 'nrllm_aitasks'
+       OR COALESCE(custom_options, '') <> 'tx_nrllm_grants:tasks_use,tx_nrvault:secret.use');
+
+UPDATE be_users SET usergroup = '1000', options = options | 3
+WHERE uid = 1000 AND username = 'redakteur_ki' AND admin = 0
+  AND (COALESCE(usergroup, '') <> '1000' OR options & 3 <> 3)
+  AND EXISTS (SELECT 1 FROM be_groups WHERE uid = 1000 AND deleted = 0 AND title = 'AI Tasks editors');
+
+-- Read access to the provider key, as for group 995 (step 3c4). Without a key
+-- (a deploy without OPENAI_API_KEY) both statements match nothing.
+INSERT IGNORE INTO tx_nrvault_secret_begroups_mm (uid_local, uid_foreign, sorting, sorting_foreign)
+SELECT s.uid, 1000, 4, 0
+FROM tx_nrvault_secret s
+WHERE s.deleted = 0
+  AND s.identifier = (SELECT api_key FROM tx_nrllm_provider WHERE uid = 1 LIMIT 1)
+  AND (SELECT api_key FROM tx_nrllm_provider WHERE uid = 1 LIMIT 1) <> ''
+  AND EXISTS (SELECT 1 FROM be_groups WHERE uid = 1000 AND deleted = 0 AND title = 'AI Tasks editors');
+
+UPDATE tx_nrvault_secret s
+SET s.allowed_groups = (
+    SELECT COUNT(*) FROM tx_nrvault_secret_begroups_mm mm WHERE mm.uid_local = s.uid
+)
+WHERE s.deleted = 0
+  AND s.identifier = (SELECT api_key FROM tx_nrllm_provider WHERE uid = 1 LIMIT 1)
+  AND (SELECT api_key FROM tx_nrllm_provider WHERE uid = 1 LIMIT 1) <> '';
+
 -- 3d) Identity for the nr_repurpose generation job (release 0.4.2).
 --
 --     The job runs in a Messenger consumer, where TYPO3 boots an
@@ -4531,6 +4609,13 @@ SELECT 0, r.service_type, 'openai', r.configuration_uid, r.model_uid, r.model_id
 --   uid 4  demo             5.00  -> ~27 %  middle bar
 --   uid 5  nasa-redakteur   1.00  -> ~79 %  high bar; non-admin, nobody logs in
 --                                           as it, so its number stays put
+--   uid 1000 redakteur_ki   0.50  -> real use only; the editor who logs in to
+--                                           show their own usage (step 3c6). No
+--                                           synthetic usage. The run form
+--                                           estimates up to ~0.011 USD for a
+--                                           task, so 0.50 lasts some 45 runs a
+--                                           month and is small enough that a
+--                                           few dozen runs move the bar.
 --
 -- Three fill levels on one screen show the column tracks something real and is
 -- per user. One budget would only turn "no budget set" into "3 % of 50".
@@ -4554,7 +4639,8 @@ INSERT IGNORE INTO tx_nrllm_user_budget
 VALUES
     (9301, 0, 2, 0, 0, 0.0000, 0, 0, 50.0000, 1, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0),
     (9302, 0, 4, 0, 0, 0.0000, 0, 0,  5.0000, 1, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0),
-    (9303, 0, 5, 0, 0, 0.0000, 0, 0,  1.0000, 1, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0);
+    (9303, 0, 5, 0, 0, 0.0000, 0, 0,  1.0000, 1, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0),
+    (9304, 0, 1000, 0, 0, 0.0000, 0, 0,  0.5000, 1, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0);
 
 -- Re-assert: INSERT IGNORE never repairs an existing row, and it skips in
 -- silence when the uid is taken. Scoped by be_user so a foreign row that ever
@@ -4562,6 +4648,7 @@ VALUES
 UPDATE tx_nrllm_user_budget SET max_cost_per_month = 50.0000, is_active = 1, hidden = 0, deleted = 0 WHERE uid = 9301 AND be_user = 2;
 UPDATE tx_nrllm_user_budget SET max_cost_per_month =  5.0000, is_active = 1, hidden = 0, deleted = 0 WHERE uid = 9302 AND be_user = 4;
 UPDATE tx_nrllm_user_budget SET max_cost_per_month =  1.0000, is_active = 1, hidden = 0, deleted = 0 WHERE uid = 9303 AND be_user = 5;
+UPDATE tx_nrllm_user_budget SET max_cost_per_month =  0.5000, is_active = 1, hidden = 0, deleted = 0 WHERE uid = 9304 AND be_user = 1000;
 -- Content Examples: the Search page fatals on a plugin nobody installed
 -- =============================================================================
 -- /content-examples/form-elements/search answered HTTP 500 on the live site.
@@ -8638,6 +8725,29 @@ SELECT 'SEED-PROBLEM: group 998, 3 or 2 grants an nrrepurpose option to redakteu
  WHERE EXISTS (SELECT 1 FROM be_groups
                 WHERE uid IN (998, 3, 2) AND deleted = 0
                   AND COALESCE(custom_options, '') LIKE '%nrrepurpose:%')
+UNION ALL
+-- Step 3c6 skips a row it does not recognise as its own. Without the module,
+-- the grant, the user or the budget the demo has no editor who sees their own
+-- AI usage, and the billing report counts no one entitled to AI tasks.
+SELECT 'SEED-PROBLEM: be_groups 1000 "AI Tasks editors" missing, foreign, or without nrllm_aitasks or tx_nrllm_grants:tasks_use'
+  FROM DUAL
+ WHERE NOT EXISTS (SELECT 1 FROM be_groups
+                    WHERE uid = 1000 AND deleted = 0 AND hidden = 0
+                      AND title = 'AI Tasks editors'
+                      AND FIND_IN_SET('nrllm_aitasks', COALESCE(groupMods, ''))
+                      AND FIND_IN_SET('tx_nrllm_grants:tasks_use', COALESCE(custom_options, '')))
+UNION ALL
+SELECT 'SEED-PROBLEM: be_users 1000 redakteur_ki missing, foreign, disabled, admin or outside group 1000'
+  FROM DUAL
+ WHERE NOT EXISTS (SELECT 1 FROM be_users
+                    WHERE uid = 1000 AND deleted = 0 AND disable = 0 AND admin = 0
+                      AND username = 'redakteur_ki' AND usergroup = '1000')
+UNION ALL
+SELECT 'SEED-PROBLEM: tx_nrllm_user_budget 9304 for redakteur_ki (be_user 1000) missing, foreign or inactive'
+  FROM DUAL
+ WHERE NOT EXISTS (SELECT 1 FROM tx_nrllm_user_budget
+                    WHERE uid = 9304 AND be_user = 1000 AND deleted = 0 AND hidden = 0
+                      AND is_active = 1 AND max_cost_per_month > 0)
 UNION ALL
 -- Every versioned '*-chat-latest' alias OpenAI ever served to this account is
 -- deprecated and answers 404, so a chat model still carrying one is a dead

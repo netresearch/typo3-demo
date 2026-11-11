@@ -45,7 +45,13 @@ one-shot `db-init` service (`docker/db/init.sh`) instead of by the image.
 
 Then open the URL printed by `make up` (defaults to `localhost`). The backend is
 at `/typo3/`. Backend user is **`nr_admin`**; the demo password lives in the
-team password manager (it is not stored in this repo). The database seed is
+team password manager (it is not stored in this repo). To see the backend as an
+editor, log in as **`redakteur_ki`**: a non-admin with the AI Tasks module and a
+small AI budget, whose own usage the module and the Cowriter dialog show. Its
+password is in the team password manager too; on a new instance the workflow
+`Set AI Tasks Editor Password` sets it. The other demo editors
+(`redakteur_entwurf`, `redakteur_repurpose`) have no password and are entered
+through Backend Users > "Switch to user". The database seed is
 imported automatically on first boot, including demo content, landing-page
 templates and both dashboards.
 
@@ -827,6 +833,7 @@ Run these from the repo's **Actions** tab:
 |----------|---------|
 | `Deploy (Fresh Install)` | Full reset + reinstall (wipes data — requires typing `yes`) |
 | `Reset BE Admin Password` | Reset a backend user's password to the `TYPO3_BE_ADMIN_PASSWORD` secret |
+| `Set AI Tasks Editor Password` | Set the password of the non-admin demo editor `redakteur_ki` to the `TYPO3_BE_EDITOR_KI_PASSWORD` secret (run once after a fresh install or reset) |
 | `Remote Diagnostics` | Read-only host/DB snapshot, output encrypted with `DIAG_PASSPHRASE` |
 | `Export DB Seed` | Produce a **sanitized** DB dump (API keys/secrets/logs stripped) as an encrypted artifact for review before committing |
 | `Host Maintenance` | Deeper disk reclaim (all unused images + build cache; never volumes) with `df` before/after |
