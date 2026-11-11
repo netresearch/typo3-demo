@@ -825,6 +825,10 @@ the output is unchanged. The image build compares the installed originals
 with `docker/web/bootstrap-text-templates.sha256` and fails when
 bootstrap_package changes one of them, as it does for the image partial.
 
+The module (`web_edit`) is open to a non-admin only through a group's module
+list. The seed adds it to "Simple editors" and "Advanced editors" beside the
+Page module, so every demo editor reaches it.
+
 Visual Editor 1.10.4 cannot render a field whose preset lists an
 `importModules` entry as a plain string; every rich-text field then fails
 with a TypeError. Since 13.10.5, rte_ckeditor_image's preset uses the

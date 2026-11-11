@@ -1800,6 +1800,20 @@ WHERE ((uid = 1 AND title = 'Simple editors') OR (uid = 3 AND title = 'Advanced 
   AND deleted = 0
   AND explicit_allowdeny REGEXP ':(ALLOW|DENY)(,|$)';
 
+-- The Visual Editor (EXT:visual_editor, module web_edit, "Bearbeiten") is a
+-- module with access "user": a non-admin reaches it only through a module list
+-- of one of their groups. "Simple editors" and "Advanced editors" carry the
+-- Page module (web_layout) but not web_edit, so no demo editor could open the
+-- Visual Editor; the backend sent them to the Page module instead. Both groups
+-- get it beside the Page module. A group an administrator took the Page module
+-- from is left alone, and once both carry web_edit nothing matches.
+UPDATE be_groups
+SET groupMods = CONCAT_WS(',', NULLIF(groupMods, ''), 'web_edit')
+WHERE ((uid = 1 AND title = 'Simple editors') OR (uid = 3 AND title = 'Advanced editors'))
+  AND deleted = 0
+  AND FIND_IN_SET('web_layout', COALESCE(groupMods, ''))
+  AND NOT FIND_IN_SET('web_edit', COALESCE(groupMods, ''));
+
 INSERT IGNORE INTO tx_nrvault_secret_begroups_mm (uid_local, uid_foreign, sorting, sorting_foreign)
 SELECT s.uid, 995, 3, 0
 FROM tx_nrvault_secret s
@@ -8729,6 +8743,15 @@ SELECT 'SEED-PROBLEM: be_groups 995 lacks file mount 996 or the og_image/twitter
                       AND FIND_IN_SET('pages:twitter_image', COALESCE(non_exclude_fields, '')))
    OR NOT EXISTS (SELECT 1 FROM sys_filemounts WHERE uid = 996 AND deleted = 0 AND hidden = 0 AND identifier = '1:/user_upload/images/' AND read_only = 1)
    OR NOT EXISTS (SELECT 1 FROM be_users WHERE uid = 995 AND deleted = 0 AND username = 'redakteur_entwurf' AND options & 2 = 2)
+UNION ALL
+-- An editor group with the Page module but without the Visual Editor leaves
+-- its editors outside the Visual Editor again (see the web_edit update above).
+SELECT CONCAT('SEED-PROBLEM: be_groups ', g.uid, ' "', g.title, '" has the Page module but not the Visual Editor (web_edit)')
+  FROM be_groups g
+ WHERE ((g.uid = 1 AND g.title = 'Simple editors') OR (g.uid = 3 AND g.title = 'Advanced editors'))
+   AND g.deleted = 0
+   AND FIND_IN_SET('web_layout', COALESCE(g.groupMods, ''))
+   AND NOT FIND_IN_SET('web_edit', COALESCE(g.groupMods, ''))
 UNION ALL
 -- Step 3c5 skips a row it does not recognise as its own. Without the group or
 -- the user the demo has no non-admin editor of the Repurpose module again.
