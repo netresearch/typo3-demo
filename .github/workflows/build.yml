@@ -84,6 +84,17 @@ jobs:
       - name: Verify the seeded skills match data/skills
         run: python3 scripts/check-seed-skills.py
 
+  # The html content elements in the seed are output as written, so an entity
+  # escaped twice (`&amp;mdash;`) shows on the page as the literal "&mdash;".
+  seed-entities:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Verify the seed holds no double-escaped HTML entities
+        run: python3 scripts/check-seed-entities.py
+
   # Runs on main *and* on pull requests, but gets its image from a different
   # place in each case. On main `build` has just published the image, so pulling
   # it validates the exact artifact the deploy will roll out. On a pull request
