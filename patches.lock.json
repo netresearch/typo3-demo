@@ -1,5 +1,5 @@
 {
-    "_hash": "62274dce8083f81553b7249f5f71519e3006b6508149c326740a32c819b6769e",
+    "_hash": "2968de43591bba462ffa46c17b4671a0f7a58b32c21fc68a8135bb7d21989420",
     "patches": {
         "b13/ai-label": [
             {
@@ -28,9 +28,9 @@
         "mfd/ai-filemetadata": [
             {
                 "package": "mfd/ai-filemetadata",
-                "description": "Import ApplicationType from TYPO3\\CMS\\Core\\Http (1.6.3+ imports a class that does not exist) and generate alt texts on upload only in a backend request unless generateAltTextInFrontend is on, so CLI jobs that write images to FAL (nr_repurpose) no longer call the vision model; a failed generation is logged as a warning instead of failing the upload",
+                "description": "Import ApplicationType from TYPO3\\CMS\\Core\\Http (1.6.3+ imports a class that does not exist) and skip the frontend check when there is no request, as on the CLI; a failed generation is logged as a warning instead of failing the upload",
                 "url": "patches/mfd-ai-filemetadata-application-type.patch",
-                "sha256": "6a2bae3a6f5ec2e031e7cca49ef62503f195ac0b2ba8ec23aa39d965049a034e",
+                "sha256": "b1d1059d54d93be4269b8da8c90bffb96f03a865b0dd8d557840290eaf0dfa2d",
                 "depth": 1,
                 "extra": {
                     "provenance": "root"

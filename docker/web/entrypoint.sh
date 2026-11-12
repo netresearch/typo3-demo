@@ -553,9 +553,11 @@ if [ -f config/system/settings.php ]; then
             //
             // This line was briefly disabled on the theory that it broke the
             // rendered artifacts. It did not: the cause was the alt-text
-            // listener firing on the CLI, which the backend-only guard in
-            // patches/mfd-ai-filemetadata-application-type.patch prevents. With that the
-            // job produces all ten artifacts, podcast and AI images included.
+            // listener failing on the CLI. nr_repurpose now gives its images an
+            // alt text when it creates them, and
+            // patches/mfd-ai-filemetadata-application-type.patch keeps a failed
+            // generation from failing the job. With that the job produces all
+            // ten artifacts, podcast and AI images included.
             //
             // Note for anyone reading this after a deploy: extension:setup
             // persists EXTENSIONS.nr_llm into config/system/settings.php, so on
