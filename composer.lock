@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d3a7bcf7bca5b4bb5b1e14ab8bb1795c",
+    "content-hash": "bd00085a90e91f1c568cbb80ac34c3ab",
     "packages": [
         {
             "name": "b13/ai-bots-love-markdown",
@@ -1367,20 +1367,20 @@
         },
         {
             "name": "doctrine/deprecations",
-            "version": "1.1.6",
+            "version": "1.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/deprecations.git",
-                "reference": "d4fe3e6fd9bb9e72557a19674f44d8ac7db4c6ca"
+                "reference": "d2e16653a734c8784c1851ad68b02f997b53ca82"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/deprecations/zipball/d4fe3e6fd9bb9e72557a19674f44d8ac7db4c6ca",
-                "reference": "d4fe3e6fd9bb9e72557a19674f44d8ac7db4c6ca",
+                "url": "https://api.github.com/repos/doctrine/deprecations/zipball/d2e16653a734c8784c1851ad68b02f997b53ca82",
+                "reference": "d2e16653a734c8784c1851ad68b02f997b53ca82",
                 "shasum": ""
             },
             "require": {
-                "php": "^7.1 || ^8.0"
+                "php": "^7.4 || ^8.0"
             },
             "conflict": {
                 "phpunit/phpunit": "<=7.5 || >=14"
@@ -1409,10 +1409,10 @@
             "homepage": "https://www.doctrine-project.org/",
             "support": {
                 "issues": "https://github.com/doctrine/deprecations/issues",
-                "source": "https://github.com/doctrine/deprecations/tree/1.1.6"
+                "source": "https://github.com/doctrine/deprecations/tree/1.2.0"
             },
-            "time": "2026-02-07T07:09:04+00:00",
-            "published-time": "2026-02-07T07:10:09+00:00"
+            "time": "2026-11-11T10:04:49+00:00",
+            "published-time": "2026-11-11T10:12:24+00:00"
         },
         {
             "name": "doctrine/instantiator",
@@ -2354,6 +2354,73 @@
             "published-time": "2026-10-17T23:57:53+00:00"
         },
         {
+            "name": "helgesverre/toon",
+            "version": "v3.3.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/HelgeSverre/toon-php.git",
+                "reference": "6c9163b174fb77f31e64bd9840d428b6691964fc"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/HelgeSverre/toon-php/zipball/6c9163b174fb77f31e64bd9840d428b6691964fc",
+                "reference": "6c9163b174fb77f31e64bd9840d428b6691964fc",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^8.1"
+            },
+            "require-dev": {
+                "infection/infection": "*",
+                "laravel/pint": "1.20.0",
+                "phpbench/phpbench": "^1.4",
+                "phpstan/phpstan": "^1.10",
+                "phpunit/phpunit": "^10.0"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "src/helpers.php"
+                ],
+                "psr-4": {
+                    "HelgeSverre\\Toon\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Helge Sverre",
+                    "email": "helge.sverre@gmail.com"
+                }
+            ],
+            "description": "Token-Oriented Object Notation - A compact data format for reducing token consumption when sending structured data to LLMs",
+            "keywords": [
+                "ai",
+                "anthropic",
+                "claude",
+                "compression",
+                "cost-reduction",
+                "format",
+                "gpt",
+                "laravel",
+                "llm",
+                "openai",
+                "optimization",
+                "prompt",
+                "serialization",
+                "token"
+            ],
+            "support": {
+                "issues": "https://github.com/HelgeSverre/toon-php/issues",
+                "source": "https://github.com/HelgeSverre/toon-php/tree/v3.3.0"
+            },
+            "time": "2026-11-06T13:07:31+00:00",
+            "published-time": "2026-11-06T13:08:24+00:00"
+        },
+        {
             "name": "in2code/sitescore",
             "version": "3.1.0",
             "source": {
@@ -3208,19 +3275,19 @@
             "source": {
                 "type": "git",
                 "url": "git@git.netresearch.de:support/nr-ai-search.git",
-                "reference": "dd6900764808a22eb5595ce0d17cf5181288af25"
+                "reference": "cc1a98c44f74e0c112b8173f8841777cf1172096"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://git.netresearch.de/api/v4/projects/support%2Fnr-ai-search/repository/archive.zip?sha=dd6900764808a22eb5595ce0d17cf5181288af25",
-                "reference": "dd6900764808a22eb5595ce0d17cf5181288af25",
+                "url": "https://git.netresearch.de/api/v4/projects/support%2Fnr-ai-search/repository/archive.zip?sha=cc1a98c44f74e0c112b8173f8841777cf1172096",
+                "reference": "cc1a98c44f74e0c112b8173f8841777cf1172096",
                 "shasum": ""
             },
             "require": {
                 "centamiv/vektor": "^2.0",
                 "doctrine/dbal": "^4.4",
                 "league/commonmark": "^2.4",
-                "netresearch/nr-llm": "^0.34 || ^0.35 || ^0.36 || ^0.37 || ^0.38 || ^0.39 || ^0.40 || ^0.41 || ^0.42 || ^0.43",
+                "netresearch/nr-llm": "^0.34 || ^0.35 || ^0.36 || ^0.37 || ^0.38 || ^0.39 || ^0.40 || ^0.41 || ^0.42 || ^0.43 || ^0.44",
                 "php": "^8.3",
                 "psr/clock": "^1.0",
                 "symfony/ai-platform": "^0.10 || ^0.11 || ^0.12 || ^0.13 || ^0.14 || ^0.15",
@@ -3322,7 +3389,7 @@
                 "source": "https://git.netresearch.de/support/nr-ai-search/-/tree/main",
                 "issues": "https://git.netresearch.de/support/nr-ai-search/-/issues"
             },
-            "time": "2026-11-11T21:22:18+01:00"
+            "time": "2026-11-12T19:50:08+01:00"
         },
         {
             "name": "netresearch/nr-browser-ai",
@@ -3525,20 +3592,20 @@
         },
         {
             "name": "netresearch/nr-landingpage",
-            "version": "v0.4.0",
+            "version": "v0.4.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/nr-landingpage.git",
-                "reference": "facb38dc3f5cda2fc751b9b6b426b490da97b395"
+                "reference": "28fb0633418d4f0b8ca0a430a237c4a9a7fa36c2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/nr-landingpage/zipball/facb38dc3f5cda2fc751b9b6b426b490da97b395",
-                "reference": "facb38dc3f5cda2fc751b9b6b426b490da97b395",
+                "url": "https://api.github.com/repos/netresearch/nr-landingpage/zipball/28fb0633418d4f0b8ca0a430a237c4a9a7fa36c2",
+                "reference": "28fb0633418d4f0b8ca0a430a237c4a9a7fa36c2",
                 "shasum": ""
             },
             "require": {
-                "netresearch/nr-llm": "^0.43.10",
+                "netresearch/nr-llm": "^0.43.10 || ^0.44",
                 "php": "^8.2",
                 "typo3/cms-backend": "^13.4 || ^14.3",
                 "typo3/cms-core": "^13.4 || ^14.3",
@@ -3575,28 +3642,29 @@
             "description": "Landing Page Generator - Generate landing pages with an LLM in a step-by-step backend wizard.",
             "support": {
                 "issues": "https://github.com/netresearch/nr-landingpage/issues",
-                "source": "https://github.com/netresearch/nr-landingpage/tree/v0.4.0"
+                "source": "https://github.com/netresearch/nr-landingpage/tree/v0.4.1"
             },
-            "time": "2026-11-12T07:34:12+00:00",
-            "published-time": "2026-11-12T11:20:37+00:00"
+            "time": "2026-11-12T20:09:20+00:00",
+            "published-time": "2026-11-12T20:22:11+00:00"
         },
         {
             "name": "netresearch/nr-llm",
-            "version": "v0.43.23",
+            "version": "v0.44.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/t3x-nr-llm.git",
-                "reference": "a0c98a4d76cf35ca24f224bbd10ed6ad05fc4b94"
+                "reference": "d17ba31ac6cdf88aee8b5e9a12dba561072ba960"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/t3x-nr-llm/zipball/a0c98a4d76cf35ca24f224bbd10ed6ad05fc4b94",
-                "reference": "a0c98a4d76cf35ca24f224bbd10ed6ad05fc4b94",
+                "url": "https://api.github.com/repos/netresearch/t3x-nr-llm/zipball/d17ba31ac6cdf88aee8b5e9a12dba561072ba960",
+                "reference": "d17ba31ac6cdf88aee8b5e9a12dba561072ba960",
                 "shasum": ""
             },
             "require": {
+                "helgesverre/toon": "^3.3",
                 "masterminds/html5": "^2.7.6",
-                "netresearch/nr-vault": "^0.16.0 || ^1.1",
+                "netresearch/nr-vault": "^1.5",
                 "php": "^8.2",
                 "psr/event-dispatcher": "^1.0",
                 "psr/http-client": "^1.0",
@@ -3614,6 +3682,7 @@
                 "netresearch/typo3-ci-workflows": "^2.0.3",
                 "nikic/php-parser": "^5.4",
                 "phpunit/phpcov": "^10.0 || ^11.0 || ^12.0 || ^13.0",
+                "thieleundklose/autotranslate": "^3.6",
                 "tpwd/ke_search": "^7.0",
                 "typo3/cms-dashboard": "^13.4 || ^14.3",
                 "typo3/cms-filemetadata": "^13.4 || ^14.3",
@@ -3627,6 +3696,7 @@
                 "apache-solr-for-typo3/solr": "Site-search RAG tools retrieve evidence from the Solr index when installed",
                 "b13/ai-label": "^1.6: Adds AI origin, editorial review and configurable frontend labels for AI-written pages and content elements",
                 "poppler-utils": "System package (not a Composer package) providing pdftoppm/pdfimages — enables DocumentAnalysisService's rasterization fallback for providers without native PDF ingestion",
+                "thieleundklose/autotranslate": "Translates page trees and records in the background; nr-llm can do the translating for it (ADR-289)",
                 "tpwd/ke_search": "Site-search RAG tools retrieve evidence from the ke_search index when installed",
                 "typo3/cms-dashboard": "Adds AI usage / cost widgets to the TYPO3 dashboard",
                 "typo3/cms-indexed-search": "Site-search RAG tools retrieve evidence from the indexed_search index when installed",
@@ -3639,7 +3709,7 @@
                     "Package": {
                         "providesPackages": []
                     },
-                    "version": "0.43.23",
+                    "version": "0.44.0",
                     "web-dir": ".Build/Web",
                     "extension-key": "nr_llm"
                 },
@@ -3684,27 +3754,27 @@
                 "issues": "https://github.com/netresearch/t3x-nr-llm/issues",
                 "source": "https://github.com/netresearch/t3x-nr-llm"
             },
-            "time": "2026-11-10T18:03:01+00:00",
-            "published-time": "2026-11-10T18:31:32+00:00"
+            "time": "2026-11-12T16:52:47+00:00",
+            "published-time": "2026-11-12T17:35:23+00:00"
         },
         {
             "name": "netresearch/nr-llm-compat",
-            "version": "v0.5.0",
+            "version": "v0.5.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/t3x-nr-llm-compat.git",
-                "reference": "066db023814544ed8697133bac759cc48a75e77b"
+                "reference": "23a1dca5f788094f1d289e182a319c6e6a9ffa89"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/t3x-nr-llm-compat/zipball/066db023814544ed8697133bac759cc48a75e77b",
-                "reference": "066db023814544ed8697133bac759cc48a75e77b",
+                "url": "https://api.github.com/repos/netresearch/t3x-nr-llm-compat/zipball/23a1dca5f788094f1d289e182a319c6e6a9ffa89",
+                "reference": "23a1dca5f788094f1d289e182a319c6e6a9ffa89",
                 "shasum": ""
             },
             "require": {
                 "composer-runtime-api": "^2.2",
                 "composer/semver": "^3.4",
-                "netresearch/nr-llm": "^0.35 || ^0.36 || ^0.37 || ^0.38 || ^0.39 || ^0.40 || ^0.41 || ^0.42 || ^0.43",
+                "netresearch/nr-llm": "^0.35 || ^0.36 || ^0.37 || ^0.38 || ^0.39 || ^0.40 || ^0.41 || ^0.42 || ^0.43 || ^0.44",
                 "php": "^8.2",
                 "symfony/console": "^6.4 || ^7.0 || ^8.0",
                 "symfony/dependency-injection": "^6.4 || ^7.0 || ^8.0",
@@ -3735,7 +3805,7 @@
             "type": "typo3-cms-extension",
             "extra": {
                 "typo3/cms": {
-                    "version": "0.5.0",
+                    "version": "0.5.1",
                     "web-dir": ".Build/Web",
                     "extension-key": "nr_llm_compat"
                 }
@@ -3771,25 +3841,25 @@
                 "issues": "https://github.com/netresearch/t3x-nr-llm-compat/issues",
                 "source": "https://github.com/netresearch/t3x-nr-llm-compat"
             },
-            "time": "2026-11-07T11:16:59+00:00",
-            "published-time": "2026-11-07T11:40:25+00:00"
+            "time": "2026-11-12T19:46:36+00:00",
+            "published-time": "2026-11-12T20:19:56+00:00"
         },
         {
             "name": "netresearch/nr-mcp-agent",
-            "version": "v0.36.0",
+            "version": "v0.37.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/t3x-nr-mcp-agent.git",
-                "reference": "13cd3eacb0b649eb4c15f184b2df99ca81973a27"
+                "reference": "20fa7963c75c67ffba779ab457cc00baf1796990"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/t3x-nr-mcp-agent/zipball/13cd3eacb0b649eb4c15f184b2df99ca81973a27",
-                "reference": "13cd3eacb0b649eb4c15f184b2df99ca81973a27",
+                "url": "https://api.github.com/repos/netresearch/t3x-nr-mcp-agent/zipball/20fa7963c75c67ffba779ab457cc00baf1796990",
+                "reference": "20fa7963c75c67ffba779ab457cc00baf1796990",
                 "shasum": ""
             },
             "require": {
-                "netresearch/nr-llm": "^0.43.18",
+                "netresearch/nr-llm": "^0.44.0",
                 "php": "^8.2",
                 "phpoffice/phpword": "^1.0",
                 "smalot/pdfparser": "^2.0",
@@ -3853,8 +3923,8 @@
                 "issues": "https://github.com/netresearch/t3x-nr-mcp-agent/issues",
                 "source": "https://github.com/netresearch/t3x-nr-mcp-agent"
             },
-            "time": "2026-11-10T11:26:04+00:00",
-            "published-time": "2026-11-10T12:04:55+00:00"
+            "time": "2026-11-12T18:23:19+00:00",
+            "published-time": "2026-11-12T18:31:52+00:00"
         },
         {
             "name": "netresearch/nr-passkeys-be",
@@ -4017,22 +4087,22 @@
         },
         {
             "name": "netresearch/nr-repurpose",
-            "version": "v0.15.0",
+            "version": "v0.15.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/t3x-nr-repurpose.git",
-                "reference": "a545dcad072229df7d0c07dcb3fe3cfe835bb8e8"
+                "reference": "3581fd0fdb19586a131aab69ccd543ebb0fd3193"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/t3x-nr-repurpose/zipball/a545dcad072229df7d0c07dcb3fe3cfe835bb8e8",
-                "reference": "a545dcad072229df7d0c07dcb3fe3cfe835bb8e8",
+                "url": "https://api.github.com/repos/netresearch/t3x-nr-repurpose/zipball/3581fd0fdb19586a131aab69ccd543ebb0fd3193",
+                "reference": "3581fd0fdb19586a131aab69ccd543ebb0fd3193",
                 "shasum": ""
             },
             "require": {
                 "ext-curl": "*",
                 "ext-json": "*",
-                "netresearch/nr-llm": "^0.43.4",
+                "netresearch/nr-llm": "^0.43.4 || ^0.44",
                 "netresearch/nr-vault": "^1.1",
                 "php": "^8.3",
                 "psr/log": "^3.0",
@@ -4066,7 +4136,7 @@
                             "smalot/pdfparser": ""
                         }
                     },
-                    "version": "0.15.0",
+                    "version": "0.15.1",
                     "web-dir": ".Build/Web",
                     "extension-key": "nr_repurpose"
                 },
@@ -4097,8 +4167,8 @@
                 "issues": "https://github.com/netresearch/t3x-nr-repurpose/issues",
                 "source": "https://github.com/netresearch/t3x-nr-repurpose"
             },
-            "time": "2026-11-12T10:45:56+00:00",
-            "published-time": "2026-11-12T11:04:35+00:00"
+            "time": "2026-11-12T20:02:32+00:00",
+            "published-time": "2026-11-12T20:24:24+00:00"
         },
         {
             "name": "netresearch/nr-scheduler",
@@ -4403,16 +4473,16 @@
         },
         {
             "name": "netresearch/nr-vault",
-            "version": "v1.4.2",
+            "version": "v1.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/t3x-nr-vault.git",
-                "reference": "95bf2b2f2f134ce58bd4012747e5cacfa2e8c9a8"
+                "reference": "6274a6002b94ccc3e4a4c3bf99616f7c139f7084"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/t3x-nr-vault/zipball/95bf2b2f2f134ce58bd4012747e5cacfa2e8c9a8",
-                "reference": "95bf2b2f2f134ce58bd4012747e5cacfa2e8c9a8",
+                "url": "https://api.github.com/repos/netresearch/t3x-nr-vault/zipball/6274a6002b94ccc3e4a4c3bf99616f7c139f7084",
+                "reference": "6274a6002b94ccc3e4a4c3bf99616f7c139f7084",
                 "shasum": ""
             },
             "require": {
@@ -4445,7 +4515,7 @@
                     "Package": {
                         "providesPackages": []
                     },
-                    "version": "1.4.2",
+                    "version": "1.5.0",
                     "web-dir": ".Build/web",
                     "extension-key": "nr_vault"
                 },
@@ -4491,8 +4561,8 @@
                 "issues": "https://github.com/netresearch/t3x-nr-vault/issues",
                 "source": "https://github.com/netresearch/t3x-nr-vault"
             },
-            "time": "2026-11-10T17:09:19+00:00",
-            "published-time": "2026-11-10T17:46:18+00:00"
+            "time": "2026-11-11T04:00:44+00:00",
+            "published-time": "2026-11-11T05:02:18+00:00"
         },
         {
             "name": "netresearch/rte-ckeditor-image",
@@ -4649,21 +4719,21 @@
         },
         {
             "name": "netresearch/t3-cowriter",
-            "version": "v3.28.0",
+            "version": "v3.28.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/t3x-cowriter.git",
-                "reference": "4e6eb27928f72367478bfe69b47ec1c30ff5a0a2"
+                "reference": "2d922ae2acc28623f7ef6d74fba5c66ed1d8a37a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/t3x-cowriter/zipball/4e6eb27928f72367478bfe69b47ec1c30ff5a0a2",
-                "reference": "4e6eb27928f72367478bfe69b47ec1c30ff5a0a2",
+                "url": "https://api.github.com/repos/netresearch/t3x-cowriter/zipball/2d922ae2acc28623f7ef6d74fba5c66ed1d8a37a",
+                "reference": "2d922ae2acc28623f7ef6d74fba5c66ed1d8a37a",
                 "shasum": ""
             },
             "require": {
                 "masterminds/html5": "^2.9",
-                "netresearch/nr-llm": "^0.43.9",
+                "netresearch/nr-llm": "^0.43.9 || ^0.44",
                 "php": "^8.2",
                 "typo3/cms-backend": "^13.4 || ^14.3",
                 "typo3/cms-core": "^13.4 || ^14.3",
@@ -4743,8 +4813,8 @@
                 "issues": "https://github.com/netresearch/t3x-cowriter/issues",
                 "source": "https://github.com/netresearch/t3x-cowriter"
             },
-            "time": "2026-11-12T11:01:52+00:00",
-            "published-time": "2026-11-12T11:21:45+00:00"
+            "time": "2026-11-12T20:23:36+00:00",
+            "published-time": "2026-11-12T20:32:52+00:00"
         },
         {
             "name": "netresearch/typo3-demo-site",
