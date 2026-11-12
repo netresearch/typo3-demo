@@ -1,5 +1,5 @@
 {
-    "_hash": "2968de43591bba462ffa46c17b4671a0f7a58b32c21fc68a8135bb7d21989420",
+    "_hash": "a773a55ff655bb81a0c1d8f6b53ba8cf62b17e2266d8f7a0c7372936daadcd8c",
     "patches": {
         "b13/ai-label": [
             {
@@ -62,9 +62,19 @@
         "thieleundklose/autotranslate": [
             {
                 "package": "thieleundklose/autotranslate",
-                "description": "Local translator hook: route translations through a container-resolved \\DeepL\\Translator subclass (nr-llm bridge) instead of the DeepL client",
-                "url": "patches/thieleundklose-autotranslate-translator-hook.patch",
-                "sha256": "8dca3862be5b28af5ed3066344d72d4123bac91bb91a6e512606af486a6fc33f",
+                "description": "Setting translatorClass: a container-resolved \\DeepL\\Translator subclass translates instead of the DeepL client (upstream pull request 175, https://github.com/thieleundklose/tk-typo3-autotranslate/pull/175), so nr-llm's AutotranslateTranslator does the translating",
+                "url": "patches/thieleundklose-autotranslate-translator-class.patch",
+                "sha256": "202f31c171c06472c3c7e26ab0f616fe36d6dbd7cdafc4442aac2c33c1b98206",
+                "depth": 1,
+                "extra": {
+                    "provenance": "root"
+                }
+            },
+            {
+                "package": "thieleundklose/autotranslate",
+                "description": "Batch mode create_only: create missing translations and keep existing ones (upstream pull request 176, https://github.com/thieleundklose/tk-typo3-autotranslate/pull/176)",
+                "url": "patches/thieleundklose-autotranslate-create-only-mode.patch",
+                "sha256": "046aa99e76e803d8b51d18f7bdf5f65de8c956f55f974467dd1e383967d20547",
                 "depth": 1,
                 "extra": {
                     "provenance": "root"

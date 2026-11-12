@@ -126,7 +126,8 @@
       "Element information of a record that does not exist (deleted, or a stale link) showed an info message for pages but threw a TypeError for every other table: getRecordWSOL() returns null and the controller's $row is typed array": "patches/typo3-cms-backend-element-information-missing-record.patch"
     },
     "thieleundklose/autotranslate": {
-                "Local translator hook: route translations through a container-resolved \\DeepL\\Translator subclass (nr-llm bridge) instead of the DeepL client": "patches/thieleundklose-autotranslate-translator-hook.patch"
+                "Setting translatorClass: a container-resolved \\DeepL\\Translator subclass translates instead of the DeepL client (upstream pull request 175, https://github.com/thieleundklose/tk-typo3-autotranslate/pull/175), so nr-llm's AutotranslateTranslator does the translating": "patches/thieleundklose-autotranslate-translator-class.patch",
+            "Batch mode create_only: create missing translations and keep existing ones (upstream pull request 176, https://github.com/thieleundklose/tk-typo3-autotranslate/pull/176)": "patches/thieleundklose-autotranslate-create-only-mode.patch"
             }
         }
     },
