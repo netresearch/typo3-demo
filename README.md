@@ -802,6 +802,68 @@ docker compose exec -T caddy caddy reload --config /etc/caddy/Caddyfile --force
 The reload keeps the container running. A **Deploy (Update)** run does not
 help here: `make update` leaves an unchanged Caddy container running.
 
+### Content changes on the live instance
+
+Editors change content on live for two different reasons, and each has its own
+way of handling the result.
+
+**Changes that should stay** (refining the example site). Edit in the live
+workspace as usual. Every **Deploy (Update)** keeps these changes, because the
+seed only inserts missing records. They are part of a fresh install only after
+they went back into the repository:
+
+1. Run the **Export DB Seed** workflow. It dumps the whole instance, both
+   sites, without API keys, vault secrets, logs, sessions and caches.
+2. Download the artifact within three days and decrypt it with
+   `DIAG_PASSPHRASE` (command at the top of
+   `.github/workflows/export-seed.yml`).
+3. Review the dump, commit it as `data/db.sql.gz` and open a pull request.
+
+Three things the export leaves out:
+
+- Files. Uploads live in the fileadmin volume of the host; copy new ones to
+  `data/fileadmin/falkenquell/` in the same pull request.
+- Drafts. Records that exist only in a workspace are removed from the dump.
+- Records deleted for good. A seeded record that is also gone from the
+  recycler comes back with the next deploy; leave deleted records in the
+  recycler.
+
+Take the export while live holds no leftovers of a demonstration, or they
+become part of the seed.
+
+**Changes for a demonstration** (to be thrown away afterwards). Work in the
+workspace "Entwurf" (uid 9001, step 3c3 in `data/seed-extensions.sql`):
+
+1. Switch to the workspace "Entwurf" before the demonstration.
+2. Change content there, by hand or through the AI chat. The live site stays
+   as it was; the workspace preview shows the changes.
+3. Afterwards open the Workspaces module, choose the mass action for the
+   entire workspace and select "Discard".
+
+Discard the entire workspace rather than single records: changing a record
+also creates a workspace version of its translation, and discarding the
+record leaves that version behind. Uploaded files are not versioned and stay
+in fileadmin.
+
+Tried on the Falkenquell start page with a changed headline: the live record
+and the live frontend stayed unchanged, and discarding removed the versions.
+The AI chat was not part of that check.
+
+A reset of the Falkenquell page tree alone does not exist. A target that
+brings only this tree back to the seed would close the gap between the
+workspace and the full reset below.
+
+**Full reset.** **Deploy (Fresh Install)** is the only way to bring the
+instance back to the state in the repository, and it is not a routine step:
+
+- It removes the database, fileadmin, var and config volumes of the whole
+  instance, so the Netresearch demo site is reset as well.
+- Everything changed on live since the committed `data/db.sql.gz` is lost.
+  Export first if any of it should stay.
+- The site is down while the instance is rebuilt.
+- Its last runs, on 2026-03-12, failed. Agree on a run with the maintainer of
+  the instance.
+
 ## Backend languages
 
 The backend is available in German as well as English. The entrypoint adds the
