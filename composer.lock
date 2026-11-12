@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9533f7186d9beac71a19e53ecbc2bae2",
+    "content-hash": "3a7072c8906678ff8b62dc93bb9a78cb",
     "packages": [
         {
             "name": "b13/ai-bots-love-markdown",
@@ -3208,12 +3208,12 @@
             "source": {
                 "type": "git",
                 "url": "git@git.netresearch.de:support/nr-ai-search.git",
-                "reference": "63e895edda5af7f3029b5ba8da517d415694ed62"
+                "reference": "dd6900764808a22eb5595ce0d17cf5181288af25"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://git.netresearch.de/api/v4/projects/support%2Fnr-ai-search/repository/archive.zip?sha=63e895edda5af7f3029b5ba8da517d415694ed62",
-                "reference": "63e895edda5af7f3029b5ba8da517d415694ed62",
+                "url": "https://git.netresearch.de/api/v4/projects/support%2Fnr-ai-search/repository/archive.zip?sha=dd6900764808a22eb5595ce0d17cf5181288af25",
+                "reference": "dd6900764808a22eb5595ce0d17cf5181288af25",
                 "shasum": ""
             },
             "require": {
@@ -3322,7 +3322,7 @@
                 "source": "https://git.netresearch.de/support/nr-ai-search/-/tree/main",
                 "issues": "https://git.netresearch.de/support/nr-ai-search/-/issues"
             },
-            "time": "2026-11-10T13:24:23+01:00"
+            "time": "2026-11-11T21:22:18+01:00"
         },
         {
             "name": "netresearch/nr-browser-ai",
@@ -3525,16 +3525,16 @@
         },
         {
             "name": "netresearch/nr-landingpage",
-            "version": "v0.3.26",
+            "version": "v0.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/nr-landingpage.git",
-                "reference": "b525520cd9176e2910bb4089056c32c34b4ec6cf"
+                "reference": "facb38dc3f5cda2fc751b9b6b426b490da97b395"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/nr-landingpage/zipball/b525520cd9176e2910bb4089056c32c34b4ec6cf",
-                "reference": "b525520cd9176e2910bb4089056c32c34b4ec6cf",
+                "url": "https://api.github.com/repos/netresearch/nr-landingpage/zipball/facb38dc3f5cda2fc751b9b6b426b490da97b395",
+                "reference": "facb38dc3f5cda2fc751b9b6b426b490da97b395",
                 "shasum": ""
             },
             "require": {
@@ -3575,10 +3575,10 @@
             "description": "Landing Page Generator - Generate landing pages with an LLM in a step-by-step backend wizard.",
             "support": {
                 "issues": "https://github.com/netresearch/nr-landingpage/issues",
-                "source": "https://github.com/netresearch/nr-landingpage/tree/v0.3.26"
+                "source": "https://github.com/netresearch/nr-landingpage/tree/v0.4.0"
             },
-            "time": "2026-11-04T02:10:39+00:00",
-            "published-time": "2026-11-04T02:13:51+00:00"
+            "time": "2026-11-12T07:34:12+00:00",
+            "published-time": "2026-11-12T11:20:37+00:00"
         },
         {
             "name": "netresearch/nr-llm",
@@ -4017,16 +4017,16 @@
         },
         {
             "name": "netresearch/nr-repurpose",
-            "version": "v0.14.0",
+            "version": "v0.15.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/t3x-nr-repurpose.git",
-                "reference": "09bc94e4deae0870b76671647b15cddf94998fb5"
+                "reference": "a545dcad072229df7d0c07dcb3fe3cfe835bb8e8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/t3x-nr-repurpose/zipball/09bc94e4deae0870b76671647b15cddf94998fb5",
-                "reference": "09bc94e4deae0870b76671647b15cddf94998fb5",
+                "url": "https://api.github.com/repos/netresearch/t3x-nr-repurpose/zipball/a545dcad072229df7d0c07dcb3fe3cfe835bb8e8",
+                "reference": "a545dcad072229df7d0c07dcb3fe3cfe835bb8e8",
                 "shasum": ""
             },
             "require": {
@@ -4066,7 +4066,7 @@
                             "smalot/pdfparser": ""
                         }
                     },
-                    "version": "0.14.0",
+                    "version": "0.15.0",
                     "web-dir": ".Build/Web",
                     "extension-key": "nr_repurpose"
                 },
@@ -4097,8 +4097,8 @@
                 "issues": "https://github.com/netresearch/t3x-nr-repurpose/issues",
                 "source": "https://github.com/netresearch/t3x-nr-repurpose"
             },
-            "time": "2026-11-02T22:37:57+00:00",
-            "published-time": "2026-11-02T22:49:13+00:00"
+            "time": "2026-11-12T10:45:56+00:00",
+            "published-time": "2026-11-12T11:04:35+00:00"
         },
         {
             "name": "netresearch/nr-scheduler",
@@ -4649,16 +4649,16 @@
         },
         {
             "name": "netresearch/t3-cowriter",
-            "version": "v3.27.0",
+            "version": "v3.28.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/t3x-cowriter.git",
-                "reference": "1370d23db4cc4bece18ad1757d74dae9a165398a"
+                "reference": "4e6eb27928f72367478bfe69b47ec1c30ff5a0a2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/t3x-cowriter/zipball/1370d23db4cc4bece18ad1757d74dae9a165398a",
-                "reference": "1370d23db4cc4bece18ad1757d74dae9a165398a",
+                "url": "https://api.github.com/repos/netresearch/t3x-cowriter/zipball/4e6eb27928f72367478bfe69b47ec1c30ff5a0a2",
+                "reference": "4e6eb27928f72367478bfe69b47ec1c30ff5a0a2",
                 "shasum": ""
             },
             "require": {
@@ -4743,8 +4743,8 @@
                 "issues": "https://github.com/netresearch/t3x-cowriter/issues",
                 "source": "https://github.com/netresearch/t3x-cowriter"
             },
-            "time": "2026-11-08T00:42:26+00:00",
-            "published-time": "2026-11-08T00:58:30+00:00"
+            "time": "2026-11-12T11:01:52+00:00",
+            "published-time": "2026-11-12T11:21:45+00:00"
         },
         {
             "name": "netresearch/typo3-demo-site",
