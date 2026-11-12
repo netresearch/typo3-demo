@@ -22,22 +22,25 @@ RUN --mount=type=secret,id=composer_auth \
     COMPOSER_AUTH="$(cat /run/secrets/composer_auth 2>/dev/null || true)" \
     composer install --no-dev --prefer-dist --no-interaction --ignore-platform-reqs --optimize-autoloader
 
-# mfd/ai-filemetadata's upload listener must run only in a backend request: a
-# CLI job that writes images to FAL (nr_repurpose) would otherwise call the
-# vision model for each image, and a failed call aborts the job. The composer
-# patch patches/mfd-ai-filemetadata-application-type.patch carries that guard,
-# and it catches a failed generation so that it cannot fail the upload.
+# mfd/ai-filemetadata's upload listener imports ApplicationType from a namespace
+# that does not exist and reads $GLOBALS['TYPO3_REQUEST'], which a CLI job such
+# as the nr_repurpose worker does not have. The composer patch
+# patches/mfd-ai-filemetadata-application-type.patch imports the class from
+# TYPO3\CMS\Core\Http, skips the frontend check when there is no request (as
+# upstream PR #77 does), and catches a failed generation so that it cannot fail
+# the upload. nr_repurpose gives its images an alt text when it creates them,
+# so the listener does not call the vision model for those.
 # patches/mfd-ai-filemetadata-fal-adapter-log.patch makes FalAdapter log its
 # DataHandler errors instead of var_dump()ing HTML into the upload response.
 # This check fails the build if the installed extension lacks any of them.
 RUN listener=vendor/mfd/ai-filemetadata/Classes/EventListener/EnrichFileMetadataAfterCreation.php \
     && adapter=vendor/mfd/ai-filemetadata/Classes/Services/FalAdapter.php \
-    && grep -qF 'ApplicationType::fromRequest($request)->isBackend()' "$listener" \
-    && grep -qF '!$this->isBackendRequest()' "$listener" \
+    && grep -qF 'use TYPO3\CMS\Core\Http\ApplicationType;' "$listener" \
+    && grep -qF '$request instanceof ServerRequestInterface' "$listener" \
     && grep -qF "'Alt text generation on upload failed for file {fileUid}" "$listener" \
     && test -f "$adapter" \
     && ! grep -qF 'DebuggerUtility::var_dump' "$adapter" \
-    || { echo "mfd/ai-filemetadata lacks the backend-only guard, the catch" >&2; \
+    || { echo "mfd/ai-filemetadata lacks the request guard, the catch" >&2; \
          echo "around generation, or the FalAdapter logging patch." >&2; \
          echo "Check that the patches/mfd-ai-filemetadata-*.patch files still apply." >&2; \
          exit 1; }
