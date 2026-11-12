@@ -139,7 +139,7 @@ update: ## Update code without purging data
 	@# The two background services report only to their container logs, and the
 	@# host has no other reader than this job. A bad queue state must not abort a
 	@# deploy that has already replaced the containers, for the same reason as above.
-	@$(COMPOSE) logs --tail=5 alt-text-batch llm-agent-worker || true
+	@$(COMPOSE) logs --tail=5 alt-text-batch scheduler || true
 	@$(TYPO3) nrllm:agent:status --minimum-workers=0 || \
 		echo "::warning title=Agent queue::nrllm:agent:status reports an unhealthy queue - see the output above"
 	$(MAKE) prune
