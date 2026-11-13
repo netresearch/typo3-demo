@@ -1037,6 +1037,22 @@ jobs:
           echo "set_file_categories enabled rows: $tool"
           [ "$tool" = 1 ] || { echo "::error::the tool set_file_categories is not enabled"; exit 1; }
 
+      # The background work of the AI stack runs as Scheduler tasks, seeded by
+      # data/seed-extensions.sql and executed by the `scheduler` service. Without
+      # the tasks a queued run stays queued and the Batch Translation module never
+      # translates. The listing must show all three, and one `scheduler:run` must
+      # end with exit 0 and leave a last-execution time on the worker task.
+      - name: Verify the scheduler tasks are seeded and run
+        run: |
+          list=$(docker compose exec -T -u www-data web vendor/bin/typo3 scheduler:list)
+          for t in nrllm:agent:work nrllm:agent:reap autotranslate:batch:run; do
+            printf '%s\n' "$list" | grep -qF "$t" || { echo "::error::scheduler task $t is not seeded"; exit 1; }
+          done
+          docker compose exec -T -u www-data web vendor/bin/typo3 scheduler:run
+          ran=$(docker compose exec -T db sh -c 'MYSQL_PWD="$MARIADB_PASSWORD" mariadb -N -B -u "$MARIADB_USER" "$MARIADB_DATABASE" -e "SELECT COUNT(*) FROM tx_scheduler_task WHERE uid IN (9001,9002,9003) AND lastexecution_time > 0 AND lastexecution_failure = \"\";"')
+          echo "seeded tasks with a successful run: $ran"
+          [ "$ran" = 3 ] || { echo "::error::only $ran of 3 seeded scheduler tasks ran without failure"; exit 1; }
+
       # The seed re-asserts its RTE content on every deploy, after the boot-time
       # upgrade wizard rteImageReferenceValidation has run. An <img> whose
       # data-htmlarea-file-uid names another file than its src therefore comes
@@ -1143,7 +1159,7 @@ jobs:
       # Here the commands are done within a second, so the stop meets a sleep.
       - name: Verify the shell-loop services stop on the stop signal
         run: |
-          for s in chat-cleanup social-publish vector-compact llm-agent-worker alt-text-batch; do
+          for s in chat-cleanup social-publish vector-compact scheduler alt-text-batch; do
             start=$(date +%s)
             # -t 30: a service that ignores the signal is killed (exit 137) and
             # reported below; its default grace period is 10s.

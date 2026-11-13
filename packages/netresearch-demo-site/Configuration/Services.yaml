@@ -355,7 +355,7 @@ services:
           - 'Open Admin Tools > Scheduler in the module menu — nr-scheduler extends this core module rather than adding one.'
           - 'Create a task and note the standard fields; the toolkit adds Enable reporting, Reporting emails, Reporting subject, and Environment to tasks that derive from its base classes.'
           - 'Read the Extensions > Scheduler Toolkit page in the frontend for what the base classes provide.'
-          - 'Note that this demo has no scheduler runner service, so tasks are configured here but not executed on a cron.'
+          - 'The scheduler service of this stack runs scheduler:run once a minute, so a task configured here is executed without a cron.'
         moduleRoute: 'scheduler'
         buttonLabel: 'Open Scheduler module'
     tags:

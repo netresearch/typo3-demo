@@ -130,8 +130,8 @@ services:
   # minutes to failed, so the chat offers Retry instead of spinning forever,
   # and archives idle conversations after the extension's autoArchiveDays.
   # --delete-after-days=0 keeps archived conversations: the demo's chat history
-  # is the input of the usage analysis. The stack has no cron and no scheduler
-  # task, so a loop runs the command every 15 minutes. Each run is killed after
+  # is the input of the usage analysis. The stack has no cron and this has no
+  # scheduler task, so a loop runs the command every 15 minutes. Each run is killed after
   # ten minutes, so a blocked database call cannot stop all later runs.
   chat-cleanup:
     image: ghcr.io/netresearch/typo3-demo:${TYPO3_DEMO_IMAGE_TAG:-latest}
@@ -311,8 +311,8 @@ services:
   # new row per chunk and only soft-deletes the old one, so the store grows by
   # a full corpus generation per run: Reports > Status measured 4209 physical
   # rows for 102 live chunks ("Compaction overdue"). nr_ai_search ships a
-  # Scheduler task for this, but this stack runs no scheduler, so the CLI
-  # command runs in a loop like chat-cleanup above. Compaction holds the
+  # Scheduler task for this, but none is seeded here, so the CLI command runs
+  # in a loop like chat-cleanup above. Compaction holds the
   # store's exclusive lock and blocks searches while it runs; at the demo's
   # size that is seconds. The first run starts after every deploy. After a
   # host reboot Docker restarts this container without waiting for web, so a
@@ -369,15 +369,25 @@ services:
         limits:
           memory: 512M
 
-  # Executes the agent runs nr_llm has queued. nr_llm 0.42 stores a background
-  # run and leaves it there: without a sweep it stays queued for ever, and the
-  # stack has no scheduler, so a loop runs the sweep once a minute. A run that
-  # started finishes after --time-limit, so `timeout` is well above it. The reaper
-  # hands back a run whose worker was killed, which is what a deploy does to a
-  # container in the middle of a run. These commands read the provider key as be_user 994
-  # (worker.technicalBeUserUid, written by entrypoint.sh). fileadmin is mounted
-  # because a vision run reads and scales the image here.
-  llm-agent-worker:
+  # Runs the TYPO3 Scheduler: one `scheduler:run` a minute executes every task
+  # that is due. The tasks are seeded in data/seed-extensions.sql (step 3g):
+  #   * nrllm:agent:work executes the agent runs nr_llm has queued. nr_llm 0.42+
+  #     stores a background run and leaves it there, so without this a queued
+  #     run stays queued for ever. A run that started finishes after
+  #     --time-limit.
+  #   * nrllm:agent:reap hands back a run whose worker was killed, which is what
+  #     a deploy does to a container in the middle of a run.
+  #   * autotranslate:batch:run translates the items of the Batch Translation
+  #     module that are waiting.
+  # They read the provider key as be_user 994 (worker.technicalBeUserUid, written
+  # by entrypoint.sh). fileadmin is mounted because a vision run reads and scales
+  # the image here. `timeout` is well above the 240s time limit of the worker, and
+  # the tasks allow overlapping executions, so a deploy that kills this container
+  # in the middle of a task does not leave the task marked as running.
+  #
+  # The scheduler replaced the former `llm-agent-worker` loop: two executors of
+  # the same queue would make it impossible to tell which one picked a run up.
+  scheduler:
     image: ghcr.io/netresearch/typo3-demo:${TYPO3_DEMO_IMAGE_TAG:-latest}
     logging: *default-logging
     depends_on:
@@ -390,13 +400,11 @@ services:
         trap 'kill -TERM $$! 2>/dev/null; wait; exit 0' TERM INT;
         while true;
         do rc=0;
-        timeout -k 30 600 vendor/bin/typo3 nrllm:agent:work --limit=20 --time-limit=240 &
-        wait $$! || rc=$$?;
-        timeout -k 30 120 vendor/bin/typo3 nrllm:agent:reap --limit=50 &
+        timeout -k 30 900 vendor/bin/typo3 scheduler:run &
         wait $$! || rc=$$?;
         if [ "$$rc" -eq 0 ];
-        then touch /tmp/llm-agent-worker.ok;
-        else echo "nrllm:agent:work or nrllm:agent:reap failed with exit $$rc";
+        then touch /tmp/scheduler.ok;
+        else echo "scheduler:run failed with exit $$rc";
         fi;
         sleep 60 & wait $$!;
         done
@@ -418,15 +426,15 @@ services:
       - typo3-fileadmin:/var/www/public/fileadmin
       - typo3-var:/var/www/var
       - typo3-config:/var/www/config/system
-    # Healthy while the last successful tick is younger than 20 minutes: the two
-    # commands take at most twelve, so a sweep that keeps failing turns the
-    # service unhealthy.
+    # Healthy while the last successful run is younger than 20 minutes: a run
+    # takes at most fifteen, so a scheduler that keeps failing turns the service
+    # unhealthy.
     healthcheck:
-      test: ["CMD-SHELL", "test $$(( $$(date +%s) - $$(stat -c %Y /tmp/llm-agent-worker.ok) )) -lt 1200"]
+      test: ["CMD-SHELL", "test $$(( $$(date +%s) - $$(stat -c %Y /tmp/scheduler.ok) )) -lt 1200"]
       interval: 60s
       timeout: 5s
       retries: 3
-      start_period: 60s
+      start_period: 120s
     restart: unless-stopped
     security_opt:
       - no-new-privileges:true
@@ -442,8 +450,8 @@ services:
   # the folder of five images can never show more than five cards. The folder and
   # the user are seeded in data/seed-extensions.sql; on the first deploy they
   # do not exist yet when this starts, so a failed run retries after five minutes.
-  # The stack has no scheduler, so a loop runs the command once a day and after
-  # every deploy, the way vector-compact does.
+  # No scheduler task is seeded for it, so a loop runs the command once a day and
+  # after every deploy, the way vector-compact does.
   alt-text-batch:
     image: ghcr.io/netresearch/typo3-demo:${TYPO3_DEMO_IMAGE_TAG:-latest}
     logging: *default-logging

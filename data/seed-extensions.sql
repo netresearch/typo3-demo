@@ -2165,6 +2165,42 @@ WHERE s.deleted = 0
 ALTER TABLE IF EXISTS tx_netresearchdemosite_social_webhook_receipt
     ADD COLUMN IF NOT EXISTS uid int(11) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY FIRST;
 
+-- 3g) Scheduler tasks for the background work of the AI stack. The `scheduler`
+--     service in compose.yml runs scheduler:run once a minute; these are the
+--     tasks it finds due:
+--       9001  nrllm:agent:work       executes the queued agent runs, every minute
+--       9002  nrllm:agent:reap       hands back runs whose worker died, every minute
+--       9003  autotranslate:batch:run translates the waiting batch items, every 5 min
+--     Row format as TYPO3 14 stores it for a command task: tasktype is the command
+--     name, parameters carries the options (an option is passed only when its flag
+--     is true) and their values, execution_details the schedule. `multiple` is on
+--     so that a task killed in the middle by a deploy is not held back as "still
+--     running"; the single scheduler:run loop never overlaps itself, and nr_llm
+--     claims each run with a lease, so two workers could not take the same run.
+--
+--     INSERT IGNORE, because the seed runs twice per deploy and must not reset
+--     nextexecution or the last-run state of a task that has been running. A row
+--     somebody changed in the Scheduler module (frequency, disabled) stays as
+--     they left it. Fixed uids from 9001, above anything created by hand here.
+INSERT IGNORE INTO tx_scheduler_task
+    (uid, pid, crdate, disable, deleted, description, nextexecution, tasktype, parameters, execution_details)
+VALUES
+    (9001, 0, UNIX_TIMESTAMP(), 0, 0,
+     'Executes the queued nr_llm agent runs (background runs, batches, AI tasks). Replaces the former llm-agent-worker loop.',
+     UNIX_TIMESTAMP(), 'nrllm:agent:work',
+     '{"arguments":{},"options":{"limit":true,"time-limit":true},"optionValues":{"limit":"20","time-limit":"240"}}',
+     CONCAT('{"start":', UNIX_TIMESTAMP(), ',"end":0,"interval":60,"multiple":true,"cronCmd":"","isNewSingleExecution":false}')),
+    (9002, 0, UNIX_TIMESTAMP(), 0, 0,
+     'Hands back queued nr_llm agent runs whose worker lease has expired, for instance after a deploy stopped the worker.',
+     UNIX_TIMESTAMP(), 'nrllm:agent:reap',
+     '{"arguments":{},"options":{"limit":true},"optionValues":{"limit":"50"}}',
+     CONCAT('{"start":', UNIX_TIMESTAMP(), ',"end":0,"interval":60,"multiple":true,"cronCmd":"","isNewSingleExecution":false}')),
+    (9003, 0, UNIX_TIMESTAMP(), 0, 0,
+     'Translates the items of the Batch Translation module that are waiting (EXT:autotranslate).',
+     UNIX_TIMESTAMP(), 'autotranslate:batch:run',
+     '{"arguments":{},"options":[],"optionValues":[]}',
+     CONCAT('{"start":', UNIX_TIMESTAMP(), ',"end":0,"interval":300,"multiple":true,"cronCmd":"","isNewSingleExecution":false}'));
+
 -- A writing tool ships switched off, and the tool state lives in the database.
 -- IGNORE keeps a decision an admin made in AI > Tools.
 INSERT IGNORE INTO tx_nrllm_tool_state (pid, tool_name, enabled)
@@ -8698,6 +8734,15 @@ SELECT 'SEED-PROBLEM: be_groups 994 does not carry file mount 994' FROM DUAL
 UNION ALL
 SELECT 'SEED-PROBLEM: be_groups 994 does not grant the live workspace (the alt-text batch refuses nr_llm_worker)' FROM DUAL
  WHERE NOT EXISTS (SELECT 1 FROM be_groups WHERE uid = 994 AND deleted = 0 AND hidden = 0 AND workspace_perms & 1 = 1)
+UNION ALL
+-- The scheduler tasks of step 3g. A row held by a foreign uid would skip the
+-- insert silently and the queue would stay unworked. A task somebody disabled or
+-- deleted in the Scheduler module is theirs to decide and is not reported.
+SELECT CONCAT('SEED-PROBLEM: tx_scheduler_task ', e.uid, ' ', e.tasktype, ' missing or foreign') AS seed_verification
+  FROM (SELECT 9001 AS uid, 'nrllm:agent:work' AS tasktype
+        UNION ALL SELECT 9002, 'nrllm:agent:reap'
+        UNION ALL SELECT 9003, 'autotranslate:batch:run') e
+ WHERE NOT EXISTS (SELECT 1 FROM tx_scheduler_task t WHERE t.uid = e.uid AND t.tasktype = e.tasktype)
 UNION ALL
 SELECT 'SEED-PROBLEM: tx_nrllm_model 90 text-embedding-3-small missing or foreign' FROM DUAL
  WHERE NOT EXISTS (SELECT 1 FROM tx_nrllm_model WHERE uid = 90 AND identifier = 'text-embedding-3-small' AND deleted = 0)

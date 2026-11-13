@@ -560,11 +560,22 @@ in `docker/web/entrypoint.sh`.
 
 ## Background AI runs
 
-nr-llm stores a background run and leaves it there, and this stack has no
-scheduler, so two loop services do the work, in the style of `chat-cleanup`:
+nr-llm stores a background run and leaves it there. The `scheduler` service runs
+`scheduler:run` once a minute, and three Scheduler tasks (seeded in
+`data/seed-extensions.sql`, step 3g, uids 9001 to 9003) are what it executes:
 
-- `llm-agent-worker` runs `nrllm:agent:work` and `nrllm:agent:reap` once a minute.
-  Without it a queued run stays queued.
+- `nrllm:agent:work` every minute and `nrllm:agent:reap` every minute. Without
+  them a queued run stays queued. They replaced the former `llm-agent-worker`
+  loop: one executor of the queue keeps the Planer's last-execution time and the
+  run's start time comparable.
+- `autotranslate:batch:run` every five minutes translates the waiting items of the
+  Batch Translation module.
+
+Frequency and the disabled flag can be changed in the Scheduler module; a deploy
+does not reset a changed row. The tasks allow overlapping executions, so a task a
+deploy killed does not stay marked as running. Another loop service does the rest,
+in the style of `chat-cleanup`:
+
 - `alt-text-batch` runs `nrllm:editor-action:batch set_file_alternative_text` over
   `1:/introduction/images/unsplash/` once a day and after every deploy. Each of the
   five images without a text becomes one run, which sends the image to the model
@@ -574,7 +585,7 @@ scheduler, so two loop services do the work, in the style of `chat-cleanup`:
 A repeat costs nothing: a file with an open or decided card, or with a text, is
 skipped. The run history is **Background runs** in the same module.
 
-Both act as `nr_llm_worker` (be_user 994), seeded in
+The worker task and `alt-text-batch` act as `nr_llm_worker` (be_user 994), seeded in
 `data/seed-extensions.sql`. It is not an admin and cannot log in. Its one file mount
 is that folder, because the rights of `--user` decide which files a run reaches. On
 the command line nr_vault refuses the provider key to a process without a logged-in
