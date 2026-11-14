@@ -3599,16 +3599,16 @@
         },
         {
             "name": "netresearch/nr-landingpage",
-            "version": "v0.7.0",
+            "version": "v0.7.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/nr-landingpage.git",
-                "reference": "e4d3eb9a815757675c6a2b110c88fc484f7c37db"
+                "reference": "f4d9bac1ac0a53838643d2a246e379a239e4c39a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/nr-landingpage/zipball/e4d3eb9a815757675c6a2b110c88fc484f7c37db",
-                "reference": "e4d3eb9a815757675c6a2b110c88fc484f7c37db",
+                "url": "https://api.github.com/repos/netresearch/nr-landingpage/zipball/f4d9bac1ac0a53838643d2a246e379a239e4c39a",
+                "reference": "f4d9bac1ac0a53838643d2a246e379a239e4c39a",
                 "shasum": ""
             },
             "require": {
@@ -3649,10 +3649,10 @@
             "description": "Landing Page Generator - Generate landing pages with an LLM in a step-by-step backend wizard.",
             "support": {
                 "issues": "https://github.com/netresearch/nr-landingpage/issues",
-                "source": "https://github.com/netresearch/nr-landingpage/tree/v0.7.0"
+                "source": "https://github.com/netresearch/nr-landingpage/tree/v0.7.1"
             },
-            "time": "2026-11-14T11:26:52+00:00",
-            "published-time": "2026-11-14T11:30:40+00:00"
+            "time": "2026-11-14T13:20:04+00:00",
+            "published-time": "2026-11-14T13:25:05+00:00"
         },
         {
             "name": "netresearch/nr-llm",
