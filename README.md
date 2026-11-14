@@ -856,6 +856,15 @@ Three things the export leaves out:
 Take the export while live holds no leftovers of a demonstration, or they
 become part of the seed.
 
+**Retiring a seeded record.** Removing its `INSERT` only keeps it out of a
+fresh install; the live instance keeps the row, because the seed never deletes.
+Replace the `INSERT` with an idempotent `UPDATE ... SET deleted = 1` that
+matches the uid and a second field of the record (identifier or title), and
+leaves a record that other content still references alone. The wizard
+templates "Event Promotion" and "SaaS Feature Page" (uids 902 and 904 in
+`data/seed-extensions.sql`) were retired this way when nr-landingpage began to
+ship its own "Event" and "SaaS Feature".
+
 **Changes for a demonstration** (to be thrown away afterwards). Work in the
 workspace "Entwurf" (uid 9001, step 3c3 in `data/seed-extensions.sql`):
 

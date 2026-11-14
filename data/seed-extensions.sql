@@ -966,15 +966,6 @@ VALUES (901, 0, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'Product Launch', 'product-l
  'header,text,textmedia,card_group,icon_group,panel,quote',
  'seo_title,description,og_title,og_description', 'required', '#2F99A4', '#FF4D00');
 
--- Structured, event-focused: date, venue, agenda, registration
-INSERT IGNORE INTO tx_nrlandingpage_domain_model_template
-(uid, pid, tstamp, crdate, title, identifier, briefing_mode, description, allowed_ctypes, system_prompt, page_fields, color_primary, color_secondary)
-VALUES (902, 0, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'Event Promotion', 'event-promotion', 'required',
- 'Event page focused on date, venue, agenda, and registration — ideal for conferences, meetups, and webinars.',
- 'header,text,textmedia,timeline,card_group,panel,table',
- 'You are creating an event promotion landing page. The date, venue (or online platform), and registration deadline from the briefing are the most important facts: state them prominently in the hero and repeat them beside the closing call to action. Structure the page as: hero with event name, date, and location; a short "why attend" section with three concrete takeaways; an agenda or schedule as a timeline or table; speaker or host introductions if provided; and a final registration call to action with the deadline. Create urgency through concrete facts (limited seats, deadline), never through hype. Write in the language of the briefing.',
- 'seo_title,description,og_title,og_description', '#2F99A4', '#FF4D00');
-
 -- Creative mode: free-form storytelling, no fixed CType palette
 INSERT IGNORE INTO tx_nrlandingpage_domain_model_template
 (uid, pid, tstamp, crdate, title, identifier, generation_mode, description, system_prompt, page_fields, color_primary, color_secondary)
@@ -983,14 +974,35 @@ VALUES (903, 0, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'Creative One-Pager', 'creat
  'You are a creative editorial writer building a narrative one-page site. Instead of a fixed marketing structure, tell a story: hook the reader with an unexpected opening, build tension or curiosity across two or three scenes, and resolve with what the subject of the briefing means for the reader. Vary rhythm between short punchy statements and longer flowing passages. Metaphors are welcome when they clarify rather than decorate. End with a gentle, fitting invitation to act rather than a hard sales pitch. Write in the language of the briefing.',
  'seo_title,description,og_title,og_description', '#2F99A4', '#FF4D00');
 
--- Structured, software-focused: problem, solution, how it works, FAQ, trial CTA
-INSERT IGNORE INTO tx_nrlandingpage_domain_model_template
-(uid, pid, tstamp, crdate, title, identifier, description, page_fields, system_prompt, allowed_ctypes, color_primary, color_secondary)
-VALUES (904, 0, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'SaaS Feature Page', 'saas-feature-page',
- 'Feature deep-dive for a software product: problem, solution, how it works, FAQ, and trial call to action.',
- 'seo_title,description,og_title,og_description',
- 'You are writing a SaaS feature page for a technical yet business-minded audience. Structure: hero naming the feature and the job it does for the user; a problem section describing the pain in the user''s own words; a solution section explaining how the feature removes that pain; a "how it works" walkthrough in three to five steps; an FAQ answering the most likely objections (pricing, integration, security, migration); and a closing call to action offering a trial or demo. Be specific and factual, quantify benefits where the briefing provides numbers, and never invent metrics. Write in the language of the briefing.',
- 'header,text,textmedia,card_group,accordion,icon_group,table', '#2F99A4', '#FF4D00');
+-- Retired: 902 "Event Promotion" (event-promotion) and 904 "SaaS Feature Page"
+-- (saas-feature-page). nr-landingpage 0.6 ships its own "Event" (event) and
+-- "SaaS Feature" (saas-feature), imported on extension setup under other
+-- identifiers, so the two seeded templates listed the same use cases twice.
+-- Their INSERTs are gone, which only keeps them out of a FRESH database; an
+-- existing instance still holds the rows, and INSERT IGNORE never removes
+-- anything. So the retirement is stated here and runs on every import:
+-- a soft delete (deleted = 1, the record stays in the recycler), and only for
+-- a row that is still ours (uid AND identifier) and that no page was generated
+-- from. A template a page still references stays visible in the wizard.
+UPDATE tx_nrlandingpage_domain_model_template t
+   SET t.deleted = 1, t.tstamp = UNIX_TIMESTAMP()
+ WHERE t.uid IN (902, 904)
+   AND t.identifier IN ('event-promotion', 'saas-feature-page')
+   AND t.deleted = 0
+   AND NOT EXISTS (SELECT 1 FROM pages p
+                    WHERE p.tx_nrlandingpage_template_uid = t.uid AND p.deleted = 0);
+
+-- A template that stays because a page references it must not keep the garbled
+-- description: 902 was inserted on 2026-07-21, before 6f8c0e8 (2026-08-11) made
+-- the import state its client charset, so its em dash reached the column as the
+-- latin1 reading of its UTF-8 bytes (E2 80 94 stored as C3 A2 E2 82 AC E2 80 9D)
+-- and INSERT IGNORE never rewrote it. The hex form keeps this file free of the
+-- garbled characters; REPLACE does nothing on a clean description.
+UPDATE tx_nrlandingpage_domain_model_template
+   SET description = REPLACE(description,
+                             CONVERT(UNHEX('C3A2E282ACE2809D') USING utf8mb4),
+                             CONVERT(UNHEX('E28094') USING utf8mb4))
+ WHERE uid = 902 AND identifier = 'event-promotion' AND deleted = 0;
 
 -- Second dashboard: showcase of the Netresearch extensions' own dashboard widgets.
 -- Fixed uids (9001/9002) keep this idempotent on the primary key; presets only
@@ -8909,11 +8921,11 @@ SELECT CONCAT('SEED-PROBLEM: tx_nrllm_model 1 carries ', model_id,
    AND (model_id = 'chat-latest' OR model_id LIKE 'gpt-5.6-%')
 UNION ALL
 SELECT CONCAT('SEED-PROBLEM: tx_nrlandingpage_domain_model_template ', t.uid, ' missing or foreign')
-  FROM (SELECT 901 AS uid UNION ALL SELECT 902 UNION ALL SELECT 903 UNION ALL SELECT 904) t
+  FROM (SELECT 901 AS uid UNION ALL SELECT 903) t
  WHERE NOT EXISTS (
        SELECT 1 FROM tx_nrlandingpage_domain_model_template x
         WHERE x.uid = t.uid AND x.deleted = 0
-          AND x.identifier IN ('product-launch', 'event-promotion', 'creative-one-pager', 'saas-feature-page'))
+          AND x.identifier IN ('product-launch', 'creative-one-pager'))
 UNION ALL
 SELECT CONCAT('SEED-PROBLEM: be_dashboards ', d.uid, ' Netresearch Widgets missing or foreign')
   FROM (SELECT 9001 AS uid UNION ALL SELECT 9002) d

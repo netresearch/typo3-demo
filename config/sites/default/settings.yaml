@@ -1,0 +1,3 @@
+# nr-landingpage: show the AI notice on pages the Landing Page Generator wrote.
+# Off by default in the extension; the demo exists to show the AI features.
+nr_landingpage.aiLabel.enabled: true
