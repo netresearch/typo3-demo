@@ -3277,25 +3277,28 @@
             "source": {
                 "type": "git",
                 "url": "git@git.netresearch.de:support/nr-ai-search.git",
-                "reference": "0d927ef5eb0d42b4450781aa333677af6d5dec3a"
+                "reference": "6366f5aded2a1124105fd0e65bddc4470da9586d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://git.netresearch.de/api/v4/projects/support%2Fnr-ai-search/repository/archive.zip?sha=0d927ef5eb0d42b4450781aa333677af6d5dec3a",
-                "reference": "0d927ef5eb0d42b4450781aa333677af6d5dec3a",
+                "url": "https://git.netresearch.de/api/v4/projects/support%2Fnr-ai-search/repository/archive.zip?sha=6366f5aded2a1124105fd0e65bddc4470da9586d",
+                "reference": "6366f5aded2a1124105fd0e65bddc4470da9586d",
                 "shasum": ""
             },
             "require": {
                 "centamiv/vektor": "^2.0",
                 "doctrine/dbal": "^4.4",
+                "ext-curl": "*",
                 "league/commonmark": "^2.4",
                 "netresearch/nr-llm": "^0.34 || ^0.35 || ^0.36 || ^0.37 || ^0.38 || ^0.39 || ^0.40 || ^0.41 || ^0.42 || ^0.43 || ^0.44 || ^0.45 || ^0.46",
+                "netresearch/nr-vault": "^1.5.1",
                 "php": "^8.3",
                 "psr/clock": "^1.0",
                 "symfony/ai-platform": "^0.10 || ^0.11 || ^0.12 || ^0.13 || ^0.14 || ^0.15",
                 "symfony/ai-store": "^0.10 || ^0.11 || ^0.12 || ^0.13 || ^0.14 || ^0.15",
                 "symfony/ai-vektor-store": "^0.10 || ^0.11 || ^0.12 || ^0.13 || ^0.14 || ^0.15",
                 "symfony/clock": "^7.3 || ^8.0",
+                "symfony/http-client": "^7.4 || ^8.0",
                 "symfony/messenger": "^7.4 || ^8.0",
                 "symfony/rate-limiter": "^7.4 || ^8.0",
                 "symfony/uid": "^7.3 || ^8.0",
@@ -3305,9 +3308,11 @@
             },
             "require-dev": {
                 "infection/infection": "^0.35",
+                "justinrainbow/json-schema": "^6.0",
                 "lochmueller/index": "^2.2",
                 "netresearch/typo3-ci-workflows": "^1 || ^2",
                 "typo3/cms-fluid-styled-content": "^13.4 || ^14.3",
+                "typo3/cms-redirects": "^13.4 || ^14.3",
                 "typo3/testing-framework": "^9.5"
             },
             "suggest": {
@@ -3391,7 +3396,7 @@
                 "source": "https://git.netresearch.de/support/nr-ai-search/-/tree/main",
                 "issues": "https://git.netresearch.de/support/nr-ai-search/-/issues"
             },
-            "time": "2026-11-14T08:39:27+01:00"
+            "time": "2026-11-14T13:19:17+01:00"
         },
         {
             "name": "netresearch/nr-browser-ai",
