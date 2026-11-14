@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "de56bb5f5fb0724d436e92c08dc6c67b",
+    "content-hash": "2ab28b62432d5dbdca8b4840271a6f2b",
     "packages": [
         {
             "name": "b13/ai-bots-love-markdown",
@@ -3594,16 +3594,16 @@
         },
         {
             "name": "netresearch/nr-landingpage",
-            "version": "v0.6.2",
+            "version": "v0.7.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/nr-landingpage.git",
-                "reference": "30ad8a3717b2082c197e70eefd8e2f979be1ac1a"
+                "reference": "e4d3eb9a815757675c6a2b110c88fc484f7c37db"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/nr-landingpage/zipball/30ad8a3717b2082c197e70eefd8e2f979be1ac1a",
-                "reference": "30ad8a3717b2082c197e70eefd8e2f979be1ac1a",
+                "url": "https://api.github.com/repos/netresearch/nr-landingpage/zipball/e4d3eb9a815757675c6a2b110c88fc484f7c37db",
+                "reference": "e4d3eb9a815757675c6a2b110c88fc484f7c37db",
                 "shasum": ""
             },
             "require": {
@@ -3644,10 +3644,10 @@
             "description": "Landing Page Generator - Generate landing pages with an LLM in a step-by-step backend wizard.",
             "support": {
                 "issues": "https://github.com/netresearch/nr-landingpage/issues",
-                "source": "https://github.com/netresearch/nr-landingpage/tree/v0.6.2"
+                "source": "https://github.com/netresearch/nr-landingpage/tree/v0.7.0"
             },
-            "time": "2026-11-14T01:15:31+00:00",
-            "published-time": "2026-11-14T01:31:35+00:00"
+            "time": "2026-11-14T11:26:52+00:00",
+            "published-time": "2026-11-14T11:30:40+00:00"
         },
         {
             "name": "netresearch/nr-llm",
