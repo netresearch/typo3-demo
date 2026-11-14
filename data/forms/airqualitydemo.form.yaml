@@ -1,0 +1,82 @@
+type: Form
+identifier: airqualitydemo
+label: 'Air quality demo'
+prototypeName: standard
+renderingOptions:
+  submitButtonLabel: 'Run query'
+renderables:
+  -
+    type: Page
+    identifier: page-1
+    label: 'Air quality'
+    renderables:
+      -
+        defaultValue: ''
+        type: Number
+        identifier: latitude
+        label: Latitude
+        properties:
+          elementDescription: 'Latitude of the place in decimal degrees, between -90 and 90, north positive. Work it out from the place the request names, for example about 51.34 for Leipzig.'
+          fluidAdditionalAttributes:
+            step: any
+        validators:
+          -
+            identifier: NotEmpty
+          -
+            identifier: NumberRange
+            options:
+              minimum: '-90'
+              maximum: '90'
+      -
+        defaultValue: ''
+        type: Number
+        identifier: longitude
+        label: Longitude
+        properties:
+          elementDescription: 'Longitude of the place in decimal degrees, between -180 and 180, east positive. Work it out from the place the request names, for example about 12.37 for Leipzig.'
+          fluidAdditionalAttributes:
+            step: any
+        validators:
+          -
+            identifier: NotEmpty
+          -
+            identifier: NumberRange
+            options:
+              minimum: '-180'
+              maximum: '180'
+      -
+        defaultValue:
+          - pm10
+          - pm2_5
+        type: MultiCheckbox
+        identifier: hourly
+        label: 'Hourly variables'
+        properties:
+          elementDescription: 'Air quality values reported for every hour. Pick the ones the question asks about; each one adds a column to the result. pm10 and pm2_5 are particulate matter, european_aqi and us_aqi are summary indices.'
+          options:
+            pm10: 'Particulate matter PM10'
+            pm2_5: 'Particulate matter PM2.5'
+            ozone: Ozone
+            nitrogen_dioxide: 'Nitrogen dioxide'
+            sulphur_dioxide: 'Sulphur dioxide'
+            carbon_monoxide: 'Carbon monoxide'
+            european_aqi: 'European air quality index'
+            us_aqi: 'US air quality index'
+            uv_index: 'UV index'
+            alder_pollen: 'Alder pollen'
+            birch_pollen: 'Birch pollen'
+            grass_pollen: 'Grass pollen'
+      -
+        defaultValue: '1'
+        type: Number
+        identifier: forecast_days
+        label: 'Forecast days'
+        properties:
+          elementDescription: 'How many days ahead to report, counted from today, between 1 and 7. 1 covers today only; use 2 to include tomorrow, 3 for the next few days, 7 for next week.'
+        validators:
+          -
+            identifier: NumberRange
+            options:
+              minimum: '1'
+              maximum: '7'
+finishers: {  }

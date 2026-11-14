@@ -1,3 +1,8 @@
 # nr-landingpage: show the AI notice on pages the Landing Page Generator wrote.
 # Off by default in the extension; the demo exists to show the AI features.
 nr_landingpage.aiLabel.enabled: true
+
+# nr_browser_ai: hosts a form assistant plugin may send its query to when its
+# data source is a JSON endpoint. Empty by default in the extension; the demo
+# names the Open-Meteo air quality API that the form built in the backend uses.
+plugin.tx_nrbrowserai_formassistant.settings.allowedDataSourceHosts: 'air-quality-api.open-meteo.com'
