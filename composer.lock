@@ -3848,16 +3848,16 @@
         },
         {
             "name": "netresearch/nr-mcp-agent",
-            "version": "v0.38.1",
+            "version": "v0.38.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/t3x-nr-mcp-agent.git",
-                "reference": "9dbce9d21f961e82203c9e978b3effe5d3f31a47"
+                "reference": "94c7f00d6a1c089ca565ae06a7e30b55cbe8a1f3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/t3x-nr-mcp-agent/zipball/9dbce9d21f961e82203c9e978b3effe5d3f31a47",
-                "reference": "9dbce9d21f961e82203c9e978b3effe5d3f31a47",
+                "url": "https://api.github.com/repos/netresearch/t3x-nr-mcp-agent/zipball/94c7f00d6a1c089ca565ae06a7e30b55cbe8a1f3",
+                "reference": "94c7f00d6a1c089ca565ae06a7e30b55cbe8a1f3",
                 "shasum": ""
             },
             "require": {
@@ -3925,8 +3925,8 @@
                 "issues": "https://github.com/netresearch/t3x-nr-mcp-agent/issues",
                 "source": "https://github.com/netresearch/t3x-nr-mcp-agent"
             },
-            "time": "2026-11-13T22:43:16+00:00",
-            "published-time": "2026-11-13T22:57:52+00:00"
+            "time": "2026-11-14T09:51:23+00:00",
+            "published-time": "2026-11-14T10:01:16+00:00"
         },
         {
             "name": "netresearch/nr-passkeys-be",
