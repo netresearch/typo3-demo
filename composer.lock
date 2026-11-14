@@ -3277,12 +3277,12 @@
             "source": {
                 "type": "git",
                 "url": "git@git.netresearch.de:support/nr-ai-search.git",
-                "reference": "1c99a2d60434d051406dba7ec719d60258202a3b"
+                "reference": "01b61bde1520f5b71be719e693d15c1e7408167f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://git.netresearch.de/api/v4/projects/support%2Fnr-ai-search/repository/archive.zip?sha=1c99a2d60434d051406dba7ec719d60258202a3b",
-                "reference": "1c99a2d60434d051406dba7ec719d60258202a3b",
+                "url": "https://git.netresearch.de/api/v4/projects/support%2Fnr-ai-search/repository/archive.zip?sha=01b61bde1520f5b71be719e693d15c1e7408167f",
+                "reference": "01b61bde1520f5b71be719e693d15c1e7408167f",
                 "shasum": ""
             },
             "require": {
@@ -3290,7 +3290,7 @@
                 "doctrine/dbal": "^4.4",
                 "ext-curl": "*",
                 "league/commonmark": "^2.4",
-                "netresearch/nr-llm": "^0.34 || ^0.35 || ^0.36 || ^0.37 || ^0.38 || ^0.39 || ^0.40 || ^0.41 || ^0.42 || ^0.43 || ^0.44 || ^0.45 || ^0.46",
+                "netresearch/nr-llm": "^0.34 || ^0.35 || ^0.36 || ^0.37 || ^0.38 || ^0.39 || ^0.40 || ^0.41 || ^0.42 || ^0.43 || ^0.44 || ^0.45 || ^0.46 || ^0.47",
                 "netresearch/nr-vault": "^1.5.1",
                 "php": "^8.3",
                 "psr/clock": "^1.0",
@@ -3398,7 +3398,7 @@
                 "source": "https://git.netresearch.de/support/nr-ai-search/-/tree/main",
                 "issues": "https://git.netresearch.de/support/nr-ai-search/-/issues"
             },
-            "time": "2026-11-14T19:28:22+01:00"
+            "time": "2026-11-14T21:46:24+01:00"
         },
         {
             "name": "netresearch/nr-browser-ai",
