@@ -1041,6 +1041,77 @@ if [ -d /var/www/data/forms ]; then
         chown -R www-data:www-data public/fileadmin
     done
 fi
+
+# A form assistant plugin on the Browser AI form page that renders the form
+# created above (data/forms/airqualitydemo.form.yaml) instead of the form the
+# extension ships. The plugin record refers to the form by its database uid,
+# which only exists after the move, so the record is created here and not in
+# data/seed-extensions.sql: a second `make update` would otherwise write a stale
+# reference over it. Created once (a record that exists, with whatever an editor
+# changed in it, is left alone), and only when the page and the form are there.
+# The data source is the one an editor would pick in the plugin record: a JSON
+# endpoint, on a host the site settings allow (config/sites/default/settings.yaml).
+if [ -f config/system/settings.php ]; then
+    MYSQL_PWD="${MARIADB_PASSWORD:-typo3}" mariadb -h"${MARIADB_HOST:-db}" -u"${MARIADB_USER:-typo3}" "${MARIADB_DATABASE:-typo3}" --default-character-set=utf8mb4 2>/dev/null <<'SQL' || echo "WARNING: air quality form assistant plugin seed failed" >&2
+INSERT INTO tt_content
+    (uid, pid, tstamp, crdate, sys_language_uid, l18n_parent, l10n_source, CType, header, bodytext, pi_flexform, colPos, sorting, hidden, deleted)
+SELECT 9235, 9004, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0, 0, 'nrbrowserai_formassistant', '', '',
+CONCAT('<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<T3FlexForms>
+    <data>
+        <sheet index="sDEF">
+            <language index="lDEF">
+                <field index="settings.persistenceIdentifier"><value index="vDEF">', f.uid, '</value></field>
+                <field index="settings.dataSource"><value index="vDEF">jsonEndpoint</value></field>
+                <field index="settings.dataSourceEndpoint"><value index="vDEF">https://air-quality-api.open-meteo.com/v1/air-quality</value></field>
+                <field index="settings.toolDescription"><value index="vDEF">Look up the air quality forecast for a place. Fills the air quality form on this page with the coordinates of the place and the values the request asks about, then runs it and returns the hourly result. Use it for questions about particulate matter, ozone, pollen or air quality indices at a named place, today or up to seven days ahead.</value></field>
+                <field index="settings.title"><value index="vDEF">A form that was created in the backend</value></field>
+                <field index="settings.headingLevel"><value index="vDEF">h3</value></field>
+                <field index="settings.introduction"><value index="vDEF">This form was built in the TYPO3 form editor and chosen in the plugin. Its fields, options and descriptions are what the assistant is told about. Ask for the air quality at a place and the form fills itself.</value></field>
+                <field index="settings.supplementalInstruction"><value index="vDEF">The place is not a parameter: work out its latitude and longitude yourself. Leave the hourly variables at their defaults unless the request names others.</value></field>
+                <field index="settings.showConfiguration"><value index="vDEF">1</value></field>
+            </language>
+        </sheet>
+    </data>
+</T3FlexForms>'),
+0, 900, 0, 0
+FROM form_definition f
+WHERE f.identifier = 'airqualitydemo' AND f.deleted = 0
+  AND EXISTS (SELECT 1 FROM pages WHERE uid = 9004)
+  AND NOT EXISTS (SELECT 1 FROM tt_content WHERE uid = 9235)
+LIMIT 1;
+
+-- The German translation of that element. Same form, same data source.
+INSERT INTO tt_content
+    (uid, pid, tstamp, crdate, sys_language_uid, l18n_parent, l10n_source, CType, header, bodytext, pi_flexform, colPos, sorting, hidden, deleted)
+SELECT 9236, 9004, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 9235, 9235, 'nrbrowserai_formassistant', '', '',
+CONCAT('<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<T3FlexForms>
+    <data>
+        <sheet index="sDEF">
+            <language index="lDEF">
+                <field index="settings.persistenceIdentifier"><value index="vDEF">', f.uid, '</value></field>
+                <field index="settings.dataSource"><value index="vDEF">jsonEndpoint</value></field>
+                <field index="settings.dataSourceEndpoint"><value index="vDEF">https://air-quality-api.open-meteo.com/v1/air-quality</value></field>
+                <field index="settings.toolDescription"><value index="vDEF">Look up the air quality forecast for a place. Fills the air quality form on this page with the coordinates of the place and the values the request asks about, then runs it and returns the hourly result. Use it for questions about particulate matter, ozone, pollen or air quality indices at a named place, today or up to seven days ahead.</value></field>
+                <field index="settings.title"><value index="vDEF">Ein Formular, das im Backend angelegt wurde</value></field>
+                <field index="settings.headingLevel"><value index="vDEF">h3</value></field>
+                <field index="settings.introduction"><value index="vDEF">Dieses Formular wurde im TYPO3-Formular-Editor gebaut und im Plugin ausgewählt. Seine Felder, Optionen und Beschreibungen sind das, was der Assistent erfährt. Fragen Sie nach der Luftqualität an einem Ort, und das Formular füllt sich selbst.</value></field>
+                <field index="settings.supplementalInstruction"><value index="vDEF">Der Ort ist kein Parameter: Ermittle Breiten- und Längengrad selbst. Lass die stündlichen Größen auf ihren Voreinstellungen, solange die Anfrage keine anderen nennt.</value></field>
+                <field index="settings.showConfiguration"><value index="vDEF">1</value></field>
+            </language>
+        </sheet>
+    </data>
+</T3FlexForms>'),
+0, 900, 0, 0
+FROM form_definition f
+WHERE f.identifier = 'airqualitydemo' AND f.deleted = 0
+  AND EXISTS (SELECT 1 FROM pages WHERE uid = 9004)
+  AND EXISTS (SELECT 1 FROM tt_content WHERE uid = 9235)
+  AND NOT EXISTS (SELECT 1 FROM tt_content WHERE uid = 9236)
+LIMIT 1;
+SQL
+fi
 # ---------------------------------------------------------------------------
 # Demo records for contexts and nr_textdb, and the category tree and prompt
 # snippets of the nr-llm and Cowriter editor actions.

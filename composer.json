@@ -21,7 +21,7 @@
         "netresearch/contexts": "^5.1.1",
         "netresearch/falkenquell-site": "@dev",
         "netresearch/nr-ai-search": "dev-main",
-        "netresearch/nr-browser-ai": "^0.8.0",
+        "netresearch/nr-browser-ai": "^0.9.0",
         "netresearch/nr-bug-reporter": "^0.1.2",
         "netresearch/nr-image-sitemap": "^14.0.3",
         "netresearch/nr-landingpage": "^0.6.2",

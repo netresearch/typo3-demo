@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a969b322b0f139ab4855b8cd0bcd3705",
+    "content-hash": "de56bb5f5fb0724d436e92c08dc6c67b",
     "packages": [
         {
             "name": "b13/ai-bots-love-markdown",
@@ -3391,16 +3391,16 @@
         },
         {
             "name": "netresearch/nr-browser-ai",
-            "version": "v0.8.0",
+            "version": "v0.9.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/t3x-nr-browser-ai.git",
-                "reference": "3a604635b1f9eda70664db3b49caae3307d81ddc"
+                "reference": "41805c2422e556c3d20f17cb97cf08f1e10d0fef"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/t3x-nr-browser-ai/zipball/3a604635b1f9eda70664db3b49caae3307d81ddc",
-                "reference": "3a604635b1f9eda70664db3b49caae3307d81ddc",
+                "url": "https://api.github.com/repos/netresearch/t3x-nr-browser-ai/zipball/41805c2422e556c3d20f17cb97cf08f1e10d0fef",
+                "reference": "41805c2422e556c3d20f17cb97cf08f1e10d0fef",
                 "shasum": ""
             },
             "require": {
@@ -3462,8 +3462,8 @@
                 "issues": "https://github.com/netresearch/t3x-nr-browser-ai/issues",
                 "source": "https://github.com/netresearch/t3x-nr-browser-ai"
             },
-            "time": "2026-10-31T13:44:12+00:00",
-            "published-time": "2026-10-31T14:17:34+00:00"
+            "time": "2026-11-14T05:55:16+00:00",
+            "published-time": "2026-11-14T05:59:04+00:00"
         },
         {
             "name": "netresearch/nr-bug-reporter",
