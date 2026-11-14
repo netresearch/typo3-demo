@@ -1115,7 +1115,7 @@ jobs:
             # form and no schema.
             page=$(get https://localhost/extensions/browser-ai-form-assistant)
             grep -q 'data-data-source-endpoint="https://air-quality-api.open-meteo.com/v1/air-quality"' <<<"$page" \
-              && grep -q 'name="tx_form_formframework\[[^]]*\]\[latitude\]"' <<<"$page" \
+              && grep -q 'name="tx_[a-z_]*\[airqualitydemo\]\[latitude\]"' <<<"$page" \
               || {
                 echo "--- plugin attributes on the page:"
                 grep -oE 'data-(action|data-source-endpoint|tool-name|form-identifier)="[^"]{0,120}"' <<<"$page" || true
