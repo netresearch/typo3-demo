@@ -1116,7 +1116,15 @@ jobs:
             page=$(get https://localhost/extensions/browser-ai-form-assistant)
             grep -q 'data-data-source-endpoint="https://air-quality-api.open-meteo.com/v1/air-quality"' <<<"$page" \
               && grep -q 'name="tx_form_formframework\[[^]]*\]\[latitude\]"' <<<"$page" \
-              || { echo "::error title=Seeded forms::$boot boot: /extensions/browser-ai-form-assistant does not render the air quality form with its JSON endpoint"; exit 1; }
+              || {
+                echo "--- plugin attributes on the page:"
+                grep -oE 'data-(action|data-source-endpoint|tool-name|form-identifier)="[^"]{0,120}"' <<<"$page" || true
+                echo "--- plugin records 9235 and 9236:"
+                docker compose exec -T db sh -c \
+                  'MYSQL_PWD="$MARIADB_PASSWORD" mariadb -N -u "$MARIADB_USER" "$MARIADB_DATABASE" -e "SELECT uid, pid, sys_language_uid, deleted, hidden, LEFT(pi_flexform, 400) FROM tt_content WHERE uid IN (9235, 9236);"' || true
+                echo "::error title=Seeded forms::$boot boot: /extensions/browser-ai-form-assistant does not render the air quality form with its JSON endpoint"
+                exit 1
+              }
           }
           check first
           docker compose restart web
