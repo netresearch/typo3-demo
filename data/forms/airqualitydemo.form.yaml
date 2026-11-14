@@ -72,7 +72,7 @@ renderables:
         identifier: forecast_days
         label: 'Forecast days'
         properties:
-          elementDescription: 'How many days ahead to report, counted from today, between 1 and 7. Use 1 for today or tomorrow, 3 for the next few days, 7 for next week.'
+          elementDescription: 'How many days ahead to report, counted from today, between 1 and 7. 1 covers today only; use 2 to include tomorrow, 3 for the next few days, 7 for next week.'
         validators:
           -
             identifier: NumberRange
