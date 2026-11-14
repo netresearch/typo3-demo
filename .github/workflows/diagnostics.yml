@@ -147,6 +147,17 @@ jobs:
             docker compose exec -T web sh -c \
               'cat var/log/*.log 2>/dev/null | grep -c "Could not list file-based forms"' || true
             q "EXT:form counts" "SELECT (SELECT COUNT(*) FROM form_definition WHERE deleted = 0) database_forms, (SELECT COUNT(*) FROM tt_content WHERE CType = 'form_formframework' AND deleted = 0 AND hidden = 0 AND pi_flexform REGEXP '>[0-9]+:/[^<]*[.]form[.]yaml<') visible_form_elements_on_file_mounts;"
+            # nr_ai_search index state, in plain text: counts only. Since
+            # ADR-050 a page or file indexed before its state was recorded is
+            # not returned until it is indexed again; the wizard
+            # nrAiSearch_rebuildIndexForSourceState queues that, and these
+            # counts show when the consumers have finished: documents_without_state
+            # falls to the pages that cannot be indexed again, and the queue
+            # counts to 0. The condition is that of
+            # ChunkTrackingRepository::countDocumentsWithoutSourceState().
+            echo "===== nr_ai_search index state (counts)"
+            docker compose exec -T db sh -c \
+              'MYSQL_PWD="$MARIADB_PASSWORD" mariadb -t -u "$MARIADB_USER" "$MARIADB_DATABASE" -e "SELECT COUNT(*) chunks, COUNT(DISTINCT document_id) documents, COUNT(DISTINCT CASE WHEN (document_id LIKE \"page:%\" OR document_id LIKE \"%:/%\") AND document_id NOT LIKE \"dirsync:%\" AND source_state IS NULL THEN document_id END) documents_without_state FROM tx_nraisearch_chunk; SELECT queue_name, COUNT(*) queued FROM messenger_messages GROUP BY queue_name;"' 2>&1 || true
             # rteImageReferenceValidation stays listed while ANY issue remains,
             # including the ones it cannot fix. The validator's dry-run report
             # is cut to type, table, uid, field and fixable: enough to name the
