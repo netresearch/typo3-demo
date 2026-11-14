@@ -3277,12 +3277,12 @@
             "source": {
                 "type": "git",
                 "url": "git@git.netresearch.de:support/nr-ai-search.git",
-                "reference": "4aaf90617071f1993ad42718c65973ac2a331653"
+                "reference": "242454ed44754bf660648bcdbabc3e916725bc87"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://git.netresearch.de/api/v4/projects/support%2Fnr-ai-search/repository/archive.zip?sha=4aaf90617071f1993ad42718c65973ac2a331653",
-                "reference": "4aaf90617071f1993ad42718c65973ac2a331653",
+                "url": "https://git.netresearch.de/api/v4/projects/support%2Fnr-ai-search/repository/archive.zip?sha=242454ed44754bf660648bcdbabc3e916725bc87",
+                "reference": "242454ed44754bf660648bcdbabc3e916725bc87",
                 "shasum": ""
             },
             "require": {
@@ -3312,12 +3312,14 @@
                 "lochmueller/index": "^2.2",
                 "netresearch/typo3-ci-workflows": "^1 || ^2",
                 "typo3/cms-fluid-styled-content": "^13.4 || ^14.3",
+                "typo3/cms-install": "^13.4 || ^14.3",
                 "typo3/cms-redirects": "^13.4 || ^14.3",
                 "typo3/testing-framework": "^9.5"
             },
             "suggest": {
                 "ext-poppler": "The poppler binaries pdftoppm and pdfimages on the indexing worker enable PDF vision enrichment (ADR-034); without them that opt-in feature degrades to plain-text extraction.",
-                "lochmueller/index": "Enables IndexAdapter, the reference content-source adapter (ADR-003), and the rebuild_search_index chat tool (ADR-035)."
+                "lochmueller/index": "Enables IndexAdapter, the reference content-source adapter (ADR-003), and the rebuild_search_index chat tool (ADR-035).",
+                "typo3/cms-install": "Provides the upgrade wizard nrAiSearch_rebuildIndexForSourceState, which queues the index rebuild that ADR-050 needs after an upgrade (ADR-053); without it the rebuild is started by hand."
             },
             "default-branch": true,
             "type": "typo3-cms-extension",
@@ -3396,7 +3398,7 @@
                 "source": "https://git.netresearch.de/support/nr-ai-search/-/tree/main",
                 "issues": "https://git.netresearch.de/support/nr-ai-search/-/issues"
             },
-            "time": "2026-11-14T15:51:41+01:00"
+            "time": "2026-11-14T18:40:01+01:00"
         },
         {
             "name": "netresearch/nr-browser-ai",

@@ -110,6 +110,18 @@ update: ## Update code without purging data
 	$(MAKE) provision-social-webhook-secret
 	$(MAKE) seed-extensions
 	$(TYPO3) extension:setup || true
+	@# From nr_ai_search ADR-050 a page or file indexed before its state was
+	@# recorded is not returned by AI search until it is indexed again, and
+	@# nobody can open the backend module to rebuild. The wizard counts those
+	@# documents, prints how many it found and how many index configurations it
+	@# queued, and is marked done after its first successful run, so later
+	@# deploys print that it is done. It queues; the index and nr_ai_search
+	@# consumers process the queue. It runs after extension:setup, which adds the
+	@# column it counts, and with the site base set as for index:queue in the
+	@# entrypoint. A failure is reported and does not abort a deploy that has
+	@# already replaced the containers; the next deploy tries again.
+	@$(COMPOSE) exec -T -u www-data web sh -c 'TYPO3_SITE_BASE="https://$${TYPO3_DOMAIN:-localhost}/" vendor/bin/typo3 upgrade:run nrAiSearch_rebuildIndexForSourceState --no-interaction' || \
+		echo "::warning title=AI search rebuild::The upgrade wizard nrAiSearch_rebuildIndexForSourceState failed - see the output above"
 	$(MAKE) install-usecase-packs
 	$(TYPO3) cache:flush
 	$(TYPO3) cache:warmup
