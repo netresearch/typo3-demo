@@ -20,3 +20,8 @@ dependencies:
   # discovery tag. Its middlewares answer Accept: text/markdown only on a page
   # that carries the tag, so without the set nothing is converted.
   - b13/ai-bots-love-markdown
+  # netresearch/nr-landingpage: defines the nr_landingpage.* site settings. A
+  # setting without a definition is stored under an escaped key and never found
+  # by site->getSettings()->get(), so the AI notice on generated landing pages
+  # (config/sites/default/settings.yaml) stays off without this set.
+  - netresearch/nr-landingpage
