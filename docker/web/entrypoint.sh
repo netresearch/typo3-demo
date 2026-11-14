@@ -1372,20 +1372,6 @@ if [ -f config/system/settings.php ]; then
         || echo "WARNING: index configuration language update failed" >&2
     vendor/bin/typo3 nr-ai-search:index:remove-legacy-page-chunks 2>&1 \
         || echo "WARNING: nr-ai-search:index:remove-legacy-page-chunks failed" >&2
-
-    # From nr_ai_search ADR-050, a page or file indexed before its state was
-    # recorded is not returned by AI search until it is indexed again, and
-    # nobody can open the backend module to rebuild. The wizard queues every
-    # index configuration the way index:queue does (the index runs inline in
-    # the Development context, the embedding jobs go to the nr_ai_search
-    # consumer). It checks for such documents itself, reports how many it found
-    # and is marked done after its first successful run. An unchanged text
-    # keeps its stored vector, so the rebuild embeds only changed text. The
-    # site base is set as for index:queue above.
-    echo "Running upgrade wizard nrAiSearch_rebuildIndexForSourceState..."
-    TYPO3_SITE_BASE="https://${TYPO3_DOMAIN:-localhost}/" \
-        vendor/bin/typo3 upgrade:run nrAiSearch_rebuildIndexForSourceState --no-interaction 2>&1 \
-        || echo "WARNING: upgrade wizard nrAiSearch_rebuildIndexForSourceState failed" >&2
 fi
 CHUNK_COUNT="$(MYSQL_PWD="${MARIADB_PASSWORD:-typo3}" mariadb -h"${MARIADB_HOST:-db}" -u"${MARIADB_USER:-typo3}" "${MARIADB_DATABASE:-typo3}" -N -e "SELECT COUNT(*) FROM tx_nraisearch_chunk" 2>/dev/null || echo 0)"
 if [ -f config/system/settings.php ] && [ "${CHUNK_COUNT:-0}" = "0" ]; then
