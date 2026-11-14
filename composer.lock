@@ -3277,12 +3277,12 @@
             "source": {
                 "type": "git",
                 "url": "git@git.netresearch.de:support/nr-ai-search.git",
-                "reference": "eb720f87a45f926e4becd5f9794fd183e8a8ca24"
+                "reference": "faea90469b27d5730e4be89ecd70056eca8999c3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://git.netresearch.de/api/v4/projects/support%2Fnr-ai-search/repository/archive.zip?sha=eb720f87a45f926e4becd5f9794fd183e8a8ca24",
-                "reference": "eb720f87a45f926e4becd5f9794fd183e8a8ca24",
+                "url": "https://git.netresearch.de/api/v4/projects/support%2Fnr-ai-search/repository/archive.zip?sha=faea90469b27d5730e4be89ecd70056eca8999c3",
+                "reference": "faea90469b27d5730e4be89ecd70056eca8999c3",
                 "shasum": ""
             },
             "require": {
@@ -3387,11 +3387,7 @@
                 "GPL-2.0-or-later"
             ],
             "description": "RAG-based content search and chat for TYPO3 websites.",
-            "support": {
-                "source": "https://git.netresearch.de/support/nr-ai-search/-/tree/main",
-                "issues": "https://git.netresearch.de/support/nr-ai-search/-/issues"
-            },
-            "time": "2026-11-13T22:58:14+01:00"
+            "time": "2026-11-14T05:11:07+00:00"
         },
         {
             "name": "netresearch/nr-browser-ai",
