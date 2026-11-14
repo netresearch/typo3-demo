@@ -1055,7 +1055,7 @@ if [ -f config/system/settings.php ]; then
     MYSQL_PWD="${MARIADB_PASSWORD:-typo3}" mariadb -h"${MARIADB_HOST:-db}" -u"${MARIADB_USER:-typo3}" "${MARIADB_DATABASE:-typo3}" --default-character-set=utf8mb4 2>/dev/null <<'SQL' || echo "WARNING: air quality form assistant plugin seed failed" >&2
 INSERT INTO tt_content
     (uid, pid, tstamp, crdate, sys_language_uid, l18n_parent, l10n_source, CType, header, bodytext, pi_flexform, colPos, sorting, hidden, deleted)
-SELECT 9235, 9004, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0, 0, 'nrbrowserai_formassistant', '', '',
+SELECT 9700, 9004, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0, 0, 'nrbrowserai_formassistant', '', '',
 CONCAT('<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <T3FlexForms>
     <data>
@@ -1078,13 +1078,13 @@ CONCAT('<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 FROM form_definition f
 WHERE f.identifier = 'airqualitydemo' AND f.deleted = 0
   AND EXISTS (SELECT 1 FROM pages WHERE uid = 9004)
-  AND NOT EXISTS (SELECT 1 FROM tt_content WHERE uid = 9235)
+  AND NOT EXISTS (SELECT 1 FROM tt_content WHERE uid = 9700)
 LIMIT 1;
 
 -- The German translation of that element. Same form, same data source.
 INSERT INTO tt_content
     (uid, pid, tstamp, crdate, sys_language_uid, l18n_parent, l10n_source, CType, header, bodytext, pi_flexform, colPos, sorting, hidden, deleted)
-SELECT 9236, 9004, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 9235, 9235, 'nrbrowserai_formassistant', '', '',
+SELECT 9701, 9004, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 9700, 9700, 'nrbrowserai_formassistant', '', '',
 CONCAT('<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <T3FlexForms>
     <data>
@@ -1107,8 +1107,8 @@ CONCAT('<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 FROM form_definition f
 WHERE f.identifier = 'airqualitydemo' AND f.deleted = 0
   AND EXISTS (SELECT 1 FROM pages WHERE uid = 9004)
-  AND EXISTS (SELECT 1 FROM tt_content WHERE uid = 9235)
-  AND NOT EXISTS (SELECT 1 FROM tt_content WHERE uid = 9236)
+  AND EXISTS (SELECT 1 FROM tt_content WHERE uid = 9700)
+  AND NOT EXISTS (SELECT 1 FROM tt_content WHERE uid = 9701)
 LIMIT 1;
 SQL
 fi
