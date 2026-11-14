@@ -6,3 +6,6 @@ dependencies:
   - georgringer/news-twb5
   - derhansen/sf_event_mgt
   - netresearch/nr-llm
+  # Defines nr_landingpage.aiLabel.enabled (config/sites/falkenquell/settings.yaml);
+  # without the set the setting is not readable.
+  - netresearch/nr-landingpage
