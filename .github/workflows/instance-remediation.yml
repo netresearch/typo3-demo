@@ -176,6 +176,21 @@ jobs:
             fi
 
             echo
+            echo "===== vault: readiness check, audit findings (read-only)"
+            # Only the audit.* findings of vault:doctor, by id, severity and
+            # summary: the rest of its report describes the configuration and
+            # stays off this public log. vault:doctor exits non-zero whenever it
+            # reports a finding, so its status is not the result here.
+            t3 vault:doctor --format=json 2>/dev/null \
+              | docker compose exec -T web php -r '
+                  $r = json_decode((string) stream_get_contents(STDIN), true);
+                  if (!is_array($r)) { echo "(vault:doctor returned no JSON)\n"; exit(0); }
+                  $a = array_values(array_filter($r["findings"] ?? [], static fn ($f): bool => is_array($f) && str_starts_with((string) ($f["id"] ?? ""), "audit.")));
+                  echo "audit findings: " . count($a) . "\n";
+                  foreach ($a as $f) { echo $f["severity"] . " " . $f["id"] . ": " . $f["summary"] . "\n"; }
+                ' || echo "(could not read the vault:doctor report)"
+
+            echo
             echo "===== nr-llm: current tool overrides"
             # Guarded like every other read-only step here: a diagnostic run
             # must report what it could not read, not end at the first table
