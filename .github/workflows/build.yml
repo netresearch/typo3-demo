@@ -1027,6 +1027,23 @@ jobs:
           fi
           make seed-extensions
 
+      # The instance remediation run verifies the vault audit chain as be_user
+      # 989 (vault:audit-verify --as-auditor, auditorBeUserUid from the
+      # entrypoint). The seed checks prove the rows exist, not that nr_vault
+      # accepts them. Every refusal, an unusable actor and a missing setting
+      # print a JSON body with an `error` key; a chain finding does not, so a
+      # fresh chain that reports findings does not fail this step.
+      - name: Verify the audit chain verification runs as the seeded auditor
+        run: |
+          out=$(docker compose exec -T -u www-data web vendor/bin/typo3 vault:audit-verify --as-auditor --format=json) || true
+          printf '%s\n' "$out" | jq -e 'type == "object" and has("valid")' > /dev/null \
+            || { echo "::error::vault:audit-verify --as-auditor printed no JSON report"; printf '%s\n' "$out"; exit 1; }
+          if printf '%s\n' "$out" | jq -e 'has("error")' > /dev/null; then
+            echo "::error::vault:audit-verify --as-auditor did not run: $(printf '%s\n' "$out" | jq -r .error)"
+            exit 1
+          fi
+          echo "verification ran as the auditor; valid=$(printf '%s\n' "$out" | jq -r .valid)"
+
       # The editor action "Set categories from the image" is offered only while
       # the tool set_file_categories is enabled, and it ships disabled. The row
       # comes from data/seed-extensions.sql, which the step above has just

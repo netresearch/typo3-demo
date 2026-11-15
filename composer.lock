@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "90f98a6f1aeef61fa6ad0271513c3299",
+    "content-hash": "cc3bdf980c908dd46c42a47bf89a5ce0",
     "packages": [
         {
             "name": "b13/ai-bots-love-markdown",
@@ -3277,12 +3277,12 @@
             "source": {
                 "type": "git",
                 "url": "git@git.netresearch.de:support/nr-ai-search.git",
-                "reference": "a8714d8cd7abc007601e905f7eb412f16c3bc6f9"
+                "reference": "994177b7f5526ccff36f7015821b2071dbe48955"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://git.netresearch.de/api/v4/projects/support%2Fnr-ai-search/repository/archive.zip?sha=a8714d8cd7abc007601e905f7eb412f16c3bc6f9",
-                "reference": "a8714d8cd7abc007601e905f7eb412f16c3bc6f9",
+                "url": "https://git.netresearch.de/api/v4/projects/support%2Fnr-ai-search/repository/archive.zip?sha=994177b7f5526ccff36f7015821b2071dbe48955",
+                "reference": "994177b7f5526ccff36f7015821b2071dbe48955",
                 "shasum": ""
             },
             "require": {
@@ -3290,7 +3290,7 @@
                 "doctrine/dbal": "^4.4",
                 "ext-curl": "*",
                 "league/commonmark": "^2.4",
-                "netresearch/nr-llm": "^0.34 || ^0.35 || ^0.36 || ^0.37 || ^0.38 || ^0.39 || ^0.40 || ^0.41 || ^0.42 || ^0.43 || ^0.44 || ^0.45 || ^0.46 || ^0.47",
+                "netresearch/nr-llm": "^0.34 || ^0.35 || ^0.36 || ^0.37 || ^0.38 || ^0.39 || ^0.40 || ^0.41 || ^0.42 || ^0.43 || ^0.44 || ^0.45 || ^0.46 || ^0.47 || ^0.48",
                 "netresearch/nr-vault": "^1.5.1",
                 "php": "^8.3",
                 "psr/clock": "^1.0",
@@ -3398,7 +3398,7 @@
                 "source": "https://git.netresearch.de/support/nr-ai-search/-/tree/main",
                 "issues": "https://git.netresearch.de/support/nr-ai-search/-/issues"
             },
-            "time": "2026-11-15T06:21:04+01:00"
+            "time": "2026-11-15T16:17:58+01:00"
         },
         {
             "name": "netresearch/nr-browser-ai",
@@ -4482,16 +4482,16 @@
         },
         {
             "name": "netresearch/nr-vault",
-            "version": "v1.8.0",
+            "version": "v1.9.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/t3x-nr-vault.git",
-                "reference": "3d83e17eb2f3f57cbb14ac44e431b6954ba53632"
+                "reference": "bd05a3ae24d036a7d7c7a1605f253ff1fbbd19df"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/t3x-nr-vault/zipball/3d83e17eb2f3f57cbb14ac44e431b6954ba53632",
-                "reference": "3d83e17eb2f3f57cbb14ac44e431b6954ba53632",
+                "url": "https://api.github.com/repos/netresearch/t3x-nr-vault/zipball/bd05a3ae24d036a7d7c7a1605f253ff1fbbd19df",
+                "reference": "bd05a3ae24d036a7d7c7a1605f253ff1fbbd19df",
                 "shasum": ""
             },
             "require": {
@@ -4527,7 +4527,7 @@
                     "Package": {
                         "providesPackages": []
                     },
-                    "version": "1.8.0",
+                    "version": "1.9.0",
                     "web-dir": ".Build/web",
                     "extension-key": "nr_vault"
                 },
@@ -4573,8 +4573,8 @@
                 "issues": "https://github.com/netresearch/t3x-nr-vault/issues",
                 "source": "https://github.com/netresearch/t3x-nr-vault"
             },
-            "time": "2026-11-15T10:15:13+00:00",
-            "published-time": "2026-11-15T10:38:19+00:00"
+            "time": "2026-11-15T15:47:06+00:00",
+            "published-time": "2026-11-15T16:41:47+00:00"
         },
         {
             "name": "netresearch/rte-ckeditor-image",
@@ -9795,16 +9795,16 @@
         },
         {
             "name": "symfony/polyfill-php85",
-            "version": "v1.43.0",
+            "version": "v1.44.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/polyfill-php85.git",
-                "reference": "86a42cbcc07adc331481a5ab310a4024bfc227f6"
+                "reference": "94c794cb5ba51784bc259f11e9f128593297d8dc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/polyfill-php85/zipball/86a42cbcc07adc331481a5ab310a4024bfc227f6",
-                "reference": "86a42cbcc07adc331481a5ab310a4024bfc227f6",
+                "url": "https://api.github.com/repos/symfony/polyfill-php85/zipball/94c794cb5ba51784bc259f11e9f128593297d8dc",
+                "reference": "94c794cb5ba51784bc259f11e9f128593297d8dc",
                 "shasum": ""
             },
             "require": {
@@ -9851,7 +9851,7 @@
                 "shim"
             ],
             "support": {
-                "source": "https://github.com/symfony/polyfill-php85/tree/v1.43.0"
+                "source": "https://github.com/symfony/polyfill-php85/tree/v1.44.0"
             },
             "funding": [
                 {
@@ -9871,8 +9871,8 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-09-25T15:46:47+00:00",
-            "published-time": "2026-09-30T10:23:32+00:00"
+            "time": "2026-10-30T15:20:09+00:00",
+            "published-time": "2026-11-15T14:20:22+00:00"
         },
         {
             "name": "symfony/polyfill-uuid",
@@ -13796,16 +13796,16 @@
         },
         {
             "name": "webmozart/assert",
-            "version": "2.5.0",
+            "version": "2.5.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/webmozarts/assert.git",
-                "reference": "8a163706bbcac613733dba03f51e13b5eb1bb819"
+                "reference": "e578132c01bd0c64108386ab20d8217cd175ddec"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/webmozarts/assert/zipball/8a163706bbcac613733dba03f51e13b5eb1bb819",
-                "reference": "8a163706bbcac613733dba03f51e13b5eb1bb819",
+                "url": "https://api.github.com/repos/webmozarts/assert/zipball/e578132c01bd0c64108386ab20d8217cd175ddec",
+                "reference": "e578132c01bd0c64108386ab20d8217cd175ddec",
                 "shasum": ""
             },
             "require": {
@@ -13856,10 +13856,10 @@
             ],
             "support": {
                 "issues": "https://github.com/webmozarts/assert/issues",
-                "source": "https://github.com/webmozarts/assert/tree/2.5.0"
+                "source": "https://github.com/webmozarts/assert/tree/2.5.1"
             },
-            "time": "2026-10-05T23:14:19+00:00",
-            "published-time": "2026-10-05T23:14:25+00:00"
+            "time": "2026-11-15T13:41:13+00:00",
+            "published-time": "2026-11-15T13:41:42+00:00"
         }
     ],
     "packages-dev": [],

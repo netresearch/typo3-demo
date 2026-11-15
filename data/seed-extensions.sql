@@ -1552,6 +1552,40 @@ VALUES (991, 0, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0, 0,
 -- INSERT IGNORE above skips the row entirely once it exists.
 UPDATE be_users SET usergroup = '991' WHERE uid = 991 AND usergroup <> '991';
 
+-- 3a3) The identity that verifies the vault audit chain from a shell.
+--
+--      `vault:audit-verify` asserts audit.view. The TYPO3 CLI never logs a
+--      backend user in, so a plain shell is the unattributed CLI actor, which
+--      holds audit.view only if allowCliAccess is on and audit.view is in
+--      cliAllowedOperations - a grant to every process in the web container.
+--      `vault:audit-verify --as-auditor` (nr_vault 1.9.0) runs as this user
+--      instead, via TechnicalActorContext::runAs(), and still asserts the
+--      permission. The group carries audit.view and nothing else; this user
+--      reads the audit trail and cannot touch a secret.
+--
+--      Fixed uid 989 sits below the technical users above and below the
+--      auto-increment counters (which the 1000 rows below move to 1001), so it
+--      neither moves a counter nor is a uid the backend hands out. The UPDATEs
+--      check the username and title, so a foreign row with that uid is left
+--      alone; nr_vault would still enter it, so the check at the end of this
+--      file reports it as SEED-PROBLEM and the deploy fails.
+INSERT IGNORE INTO be_groups (uid, pid, tstamp, crdate, deleted, hidden, title, custom_options, description)
+VALUES (989, 0, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0, 'Vault audit verification',
+     'tx_nrvault:audit.view',
+     'Carries the one nr_vault permission the audit chain verification needs. Grants nothing else, and no interactive user belongs in here.');
+
+INSERT IGNORE INTO be_users
+    (uid, pid, tstamp, crdate, deleted, disable, admin, username, password, usergroup, realName, description)
+VALUES (989, 0, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0, 0,
+     'nr_vault_auditor', '!nr_vault_auditor_no_login', '989',
+     'Vault audit verification identity',
+     'Synthetic non-admin identity used by `vault:audit-verify --as-auditor` in the instance remediation workflow. Not for interactive login.');
+
+UPDATE be_groups SET custom_options = 'tx_nrvault:audit.view'
+WHERE uid = 989 AND title = 'Vault audit verification' AND custom_options <> 'tx_nrvault:audit.view';
+UPDATE be_users SET usergroup = '989'
+WHERE uid = 989 AND username = 'nr_vault_auditor' AND admin = 0 AND usergroup <> '989';
+
 -- 3b) Grant the technical user (uid 990) read access to the OpenAI provider key
 --     in nr_vault. Content indexing runs in the bounded 'nr_ai_search' messenger
 --     consumer, where nr_ai_search's IngestContentMessageHandler wraps the work
@@ -8875,6 +8909,24 @@ SELECT 'SEED-PROBLEM: group 998, 3 or 2 grants an nrrepurpose option to redakteu
  WHERE EXISTS (SELECT 1 FROM be_groups
                 WHERE uid IN (998, 3, 2) AND deleted = 0
                   AND COALESCE(custom_options, '') LIKE '%nrrepurpose:%')
+UNION ALL
+-- Step 3a3 leaves a foreign row at uid 989 alone, and nr_vault enters the
+-- configured auditorBeUserUid without checking the username. A foreign or
+-- widened row there would run the audit verification as somebody else.
+SELECT 'SEED-PROBLEM: be_groups 989 "Vault audit verification" missing, foreign, or not exactly tx_nrvault:audit.view'
+  FROM DUAL
+ WHERE NOT EXISTS (SELECT 1 FROM be_groups
+                    WHERE uid = 989 AND deleted = 0 AND hidden = 0
+                      AND title = 'Vault audit verification'
+                      AND custom_options = 'tx_nrvault:audit.view'
+                      AND COALESCE(subgroup, '') = '')
+UNION ALL
+SELECT 'SEED-PROBLEM: be_users 989 nr_vault_auditor missing, foreign, disabled, time-limited, admin or outside group 989'
+  FROM DUAL
+ WHERE NOT EXISTS (SELECT 1 FROM be_users
+                    WHERE uid = 989 AND pid = 0 AND deleted = 0 AND disable = 0 AND admin = 0
+                      AND starttime = 0 AND endtime = 0
+                      AND username = 'nr_vault_auditor' AND usergroup = '989')
 UNION ALL
 -- Step 3c6 skips a row it does not recognise as its own. Without the module,
 -- the grant, the user or the budget the demo has no editor who sees their own
