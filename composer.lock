@@ -3277,12 +3277,12 @@
             "source": {
                 "type": "git",
                 "url": "git@git.netresearch.de:support/nr-ai-search.git",
-                "reference": "d6301805a7db57c0af80509005dec83c77849e78"
+                "reference": "f8ee30535eefdc5e924bfc1745d8eb9bc792350d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://git.netresearch.de/api/v4/projects/support%2Fnr-ai-search/repository/archive.zip?sha=d6301805a7db57c0af80509005dec83c77849e78",
-                "reference": "d6301805a7db57c0af80509005dec83c77849e78",
+                "url": "https://git.netresearch.de/api/v4/projects/support%2Fnr-ai-search/repository/archive.zip?sha=f8ee30535eefdc5e924bfc1745d8eb9bc792350d",
+                "reference": "f8ee30535eefdc5e924bfc1745d8eb9bc792350d",
                 "shasum": ""
             },
             "require": {
@@ -3398,7 +3398,7 @@
                 "source": "https://git.netresearch.de/support/nr-ai-search/-/tree/main",
                 "issues": "https://git.netresearch.de/support/nr-ai-search/-/issues"
             },
-            "time": "2026-11-14T23:44:41+01:00"
+            "time": "2026-11-15T02:55:16+01:00"
         },
         {
             "name": "netresearch/nr-browser-ai",
