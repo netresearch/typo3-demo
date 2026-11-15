@@ -122,6 +122,14 @@ update: ## Update code without purging data
 	@# already replaced the containers; the next deploy tries again.
 	@$(COMPOSE) exec -T -u www-data web sh -c 'TYPO3_SITE_BASE="https://$${TYPO3_DOMAIN:-localhost}/" vendor/bin/typo3 upgrade:run nrAiSearch_rebuildIndexForSourceState --no-interaction' || \
 		echo "::warning title=AI search rebuild::The upgrade wizard nrAiSearch_rebuildIndexForSourceState failed - see the output above"
+	@# From nr_ai_search ADR-061 a record shown on a page (a news detail view)
+	@# has a document of its own. Page documents that an earlier record event
+	@# had overwritten are judged by their page only: this wizard removes them
+	@# and queues a rebuild. It prints how many it removed, is necessary only
+	@# while such a document exists and so does nothing on later deploys. A
+	@# failure is reported and does not abort the deploy; the next one retries.
+	@$(COMPOSE) exec -T -u www-data web sh -c 'TYPO3_SITE_BASE="https://$${TYPO3_DOMAIN:-localhost}/" vendor/bin/typo3 upgrade:run nrAiSearch_removeRecordDerivedPageDocuments --no-interaction' || \
+		echo "::warning title=AI search record documents::The upgrade wizard nrAiSearch_removeRecordDerivedPageDocuments failed - see the output above"
 	$(MAKE) install-usecase-packs
 	$(TYPO3) cache:flush
 	$(TYPO3) cache:warmup
