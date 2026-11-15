@@ -8921,10 +8921,11 @@ SELECT 'SEED-PROBLEM: be_groups 989 "Vault audit verification" missing, foreign,
                       AND custom_options = 'tx_nrvault:audit.view'
                       AND COALESCE(subgroup, '') = '')
 UNION ALL
-SELECT 'SEED-PROBLEM: be_users 989 nr_vault_auditor missing, foreign, disabled, admin or outside group 989'
+SELECT 'SEED-PROBLEM: be_users 989 nr_vault_auditor missing, foreign, disabled, time-limited, admin or outside group 989'
   FROM DUAL
  WHERE NOT EXISTS (SELECT 1 FROM be_users
                     WHERE uid = 989 AND pid = 0 AND deleted = 0 AND disable = 0 AND admin = 0
+                      AND starttime = 0 AND endtime = 0
                       AND username = 'nr_vault_auditor' AND usergroup = '989')
 UNION ALL
 -- Step 3c6 skips a row it does not recognise as its own. Without the module,

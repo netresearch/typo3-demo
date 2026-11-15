@@ -171,8 +171,12 @@ jobs:
             # unattributed CLI actor does not hold audit.view here
             # (allowCliAccess is off). nr_vault runs the command as be_user
             # 989 (auditorBeUserUid, seeded with audit.view only) instead.
-            # "Technical actor uid 989 does not resolve" means the seed has not
-            # run on this instance yet - a deploy problem, not a chain finding.
+            # Three messages are not chain findings but a deploy that has not
+            # landed: "The --as-auditor option does not exist" (nr_vault older
+            # than 1.9.0), "No audit verification actor is configured" (the
+            # entrypoint block is older) and "Technical actor uid 989 does not
+            # resolve" (the seed has not run). The deployed revision is printed
+            # at the top of this log.
             AUDIT_VERIFY_OK=1
             if t3 vault:audit-verify --as-auditor; then
               echo "(chain verifies)"
