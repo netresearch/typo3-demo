@@ -167,8 +167,14 @@ jobs:
             # run against a chain that does not verify and should say so rather
             # than let the command fail. `if cmd; then` rather than `if ! cmd`:
             # inside a negated branch $? belongs to the `!`, not to the command.
+            # --as-auditor: the TYPO3 CLI logs no backend user in, and the
+            # unattributed CLI actor does not hold audit.view here
+            # (allowCliAccess is off). nr_vault runs the command as be_user
+            # 989 (auditorBeUserUid, seeded with audit.view only) instead.
+            # "Technical actor uid 989 does not resolve" means the seed has not
+            # run on this instance yet - a deploy problem, not a chain finding.
             AUDIT_VERIFY_OK=1
-            if t3 vault:audit-verify; then
+            if t3 vault:audit-verify --as-auditor; then
               echo "(chain verifies)"
             else
               AUDIT_VERIFY_OK=0
@@ -251,7 +257,7 @@ jobs:
               # is a backstop, not the reason to skip reading it.
               t3 vault:audit-migrate-hmac
               echo "----- verification after the migration"
-              t3 vault:audit-verify || echo "(still failing after the migration — do not re-run, read the report)"
+              t3 vault:audit-verify --as-auditor || echo "(still failing after the migration — do not re-run, read the report)"
             fi
 
             if [ "${ENABLE_FILE_TOOLS}" = "true" ]; then

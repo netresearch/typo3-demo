@@ -1552,6 +1552,39 @@ VALUES (991, 0, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0, 0,
 -- INSERT IGNORE above skips the row entirely once it exists.
 UPDATE be_users SET usergroup = '991' WHERE uid = 991 AND usergroup <> '991';
 
+-- 3a3) The identity that verifies the vault audit chain from a shell.
+--
+--      `vault:audit-verify` asserts audit.view. The TYPO3 CLI never logs a
+--      backend user in, so a plain shell is the unattributed CLI actor, which
+--      holds audit.view only if allowCliAccess is on and audit.view is in
+--      cliAllowedOperations - a grant to every process in the web container.
+--      `vault:audit-verify --as-auditor` (nr_vault 1.9.0) runs as this user
+--      instead, via TechnicalActorContext::runAs(), and still asserts the
+--      permission. The group carries audit.view and nothing else; this user
+--      reads the audit trail and cannot touch a secret.
+--
+--      Fixed uid 989 sits below the technical users above and below the
+--      auto-increment counters (which the 1000 rows below move to 1001), so it
+--      neither moves a counter nor is a uid the backend hands out. The UPDATEs
+--      check the username and title, so a foreign row with that uid is left
+--      alone and the verification refuses instead of running as somebody else.
+INSERT IGNORE INTO be_groups (uid, pid, tstamp, crdate, deleted, hidden, title, custom_options, description)
+VALUES (989, 0, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0, 'Vault audit verification',
+     'tx_nrvault:audit.view',
+     'Carries the one nr_vault permission the audit chain verification needs. Grants nothing else, and no interactive user belongs in here.');
+
+INSERT IGNORE INTO be_users
+    (uid, pid, tstamp, crdate, deleted, disable, admin, username, password, usergroup, realName, description)
+VALUES (989, 0, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0, 0,
+     'nr_vault_auditor', '!nr_vault_auditor_no_login', '989',
+     'Vault audit verification identity',
+     'Synthetic non-admin identity used by `vault:audit-verify --as-auditor` in the instance remediation workflow. Not for interactive login.');
+
+UPDATE be_groups SET custom_options = 'tx_nrvault:audit.view'
+WHERE uid = 989 AND title = 'Vault audit verification' AND custom_options <> 'tx_nrvault:audit.view';
+UPDATE be_users SET usergroup = '989'
+WHERE uid = 989 AND username = 'nr_vault_auditor' AND admin = 0 AND usergroup <> '989';
+
 -- 3b) Grant the technical user (uid 990) read access to the OpenAI provider key
 --     in nr_vault. Content indexing runs in the bounded 'nr_ai_search' messenger
 --     consumer, where nr_ai_search's IngestContentMessageHandler wraps the work

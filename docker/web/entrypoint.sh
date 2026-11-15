@@ -520,6 +520,11 @@ if [ -f config/system/settings.php ]; then
             // The identity `vault:store --as-provisioner` acts as; seeded in
             // data/seed-extensions.sql with exactly two vault permissions.
             . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"nr_vault\"][\"provisioningBeUserUid\"] = \"991\";\n"
+            // The identity `vault:audit-verify --as-auditor` acts as; seeded in
+            // data/seed-extensions.sql with audit.view and nothing else. A
+            // separate user from 991: one writes secrets, the other reads the
+            // audit trail.
+            . "\$GLOBALS[\"TYPO3_CONF_VARS\"][\"EXTENSIONS\"][\"nr_vault\"][\"auditorBeUserUid\"] = \"989\";\n"
             // The audit chain HMAC epoch. nr_vault ships 3 as its default and
             // in ext_conf_template.txt, but this instance reports 2, so an
             // explicit older value reached its stored extension configuration
