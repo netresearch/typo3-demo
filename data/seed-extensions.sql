@@ -1567,7 +1567,8 @@ UPDATE be_users SET usergroup = '991' WHERE uid = 991 AND usergroup <> '991';
 --      auto-increment counters (which the 1000 rows below move to 1001), so it
 --      neither moves a counter nor is a uid the backend hands out. The UPDATEs
 --      check the username and title, so a foreign row with that uid is left
---      alone and the verification refuses instead of running as somebody else.
+--      alone; nr_vault would still enter it, so the check at the end of this
+--      file reports it as SEED-PROBLEM and the deploy fails.
 INSERT IGNORE INTO be_groups (uid, pid, tstamp, crdate, deleted, hidden, title, custom_options, description)
 VALUES (989, 0, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0, 'Vault audit verification',
      'tx_nrvault:audit.view',
@@ -8908,6 +8909,23 @@ SELECT 'SEED-PROBLEM: group 998, 3 or 2 grants an nrrepurpose option to redakteu
  WHERE EXISTS (SELECT 1 FROM be_groups
                 WHERE uid IN (998, 3, 2) AND deleted = 0
                   AND COALESCE(custom_options, '') LIKE '%nrrepurpose:%')
+UNION ALL
+-- Step 3a3 leaves a foreign row at uid 989 alone, and nr_vault enters the
+-- configured auditorBeUserUid without checking the username. A foreign or
+-- widened row there would run the audit verification as somebody else.
+SELECT 'SEED-PROBLEM: be_groups 989 "Vault audit verification" missing, foreign, or not exactly tx_nrvault:audit.view'
+  FROM DUAL
+ WHERE NOT EXISTS (SELECT 1 FROM be_groups
+                    WHERE uid = 989 AND deleted = 0 AND hidden = 0
+                      AND title = 'Vault audit verification'
+                      AND custom_options = 'tx_nrvault:audit.view'
+                      AND COALESCE(subgroup, '') = '')
+UNION ALL
+SELECT 'SEED-PROBLEM: be_users 989 nr_vault_auditor missing, foreign, disabled, admin or outside group 989'
+  FROM DUAL
+ WHERE NOT EXISTS (SELECT 1 FROM be_users
+                    WHERE uid = 989 AND pid = 0 AND deleted = 0 AND disable = 0 AND admin = 0
+                      AND username = 'nr_vault_auditor' AND usergroup = '989')
 UNION ALL
 -- Step 3c6 skips a row it does not recognise as its own. Without the module,
 -- the grant, the user or the budget the demo has no editor who sees their own
