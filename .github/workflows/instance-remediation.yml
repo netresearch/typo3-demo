@@ -176,6 +176,37 @@ jobs:
             fi
 
             echo
+            echo "===== vault: readiness check, audit findings (read-only)"
+            # Only the audit.* findings of vault:doctor, by id and severity: the
+            # rest of its report describes the configuration and stays off this
+            # public log. The summary is printed only for audit.hash_chain, which
+            # names uids and counts; a sink-state summary can carry a transport
+            # error text, and
+            # an error or a crashed audit check is reported without its message.
+            # vault:doctor exits non-zero whenever it reports a finding, so its
+            # status is not the result here.
+            t3 vault:doctor --format=json 2>/dev/null \
+              | docker compose exec -T web php -r '
+                  $r = json_decode((string) stream_get_contents(STDIN), true);
+                  if (!is_array($r) || isset($r["error"]) || !is_array($r["findings"] ?? null)) { echo "(vault:doctor returned no report)\n"; exit(0); }
+                  $audit = []; $crashed = false;
+                  foreach ($r["findings"] as $f) {
+                      if (!is_array($f)) { continue; }
+                      $id = (string) ($f["id"] ?? "");
+                      if ($id === "check.crashed" && ($f["details"]["check"] ?? null) === "audit") { $crashed = true; }
+                      if (str_starts_with($id, "audit.")) { $audit[] = $f; }
+                  }
+                  if ($crashed) { echo "the audit check crashed; its findings are unavailable\n"; }
+                  echo "audit findings: " . count($audit) . "\n";
+                  foreach ($audit as $f) {
+                      $id   = (string) $f["id"];
+                      $line = (string) ($f["severity"] ?? "?") . " " . $id;
+                      if ($id === "audit.hash_chain") { $line .= ": " . (string) ($f["summary"] ?? ""); }
+                      echo $line . "\n";
+                  }
+                ' || echo "(could not read the vault:doctor report)"
+
+            echo
             echo "===== nr-llm: current tool overrides"
             # Guarded like every other read-only step here: a diagnostic run
             # must report what it could not read, not end at the first table

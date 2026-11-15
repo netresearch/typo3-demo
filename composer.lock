@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "65e5d9d7c7b19e15c5f189da80d03f5d",
+    "content-hash": "90f98a6f1aeef61fa6ad0271513c3299",
     "packages": [
         {
             "name": "b13/ai-bots-love-markdown",
@@ -4482,16 +4482,16 @@
         },
         {
             "name": "netresearch/nr-vault",
-            "version": "v1.7.0",
+            "version": "v1.8.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/t3x-nr-vault.git",
-                "reference": "e68cf8c2f2efff2e4f5a583437e3405d0721777e"
+                "reference": "3d83e17eb2f3f57cbb14ac44e431b6954ba53632"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/t3x-nr-vault/zipball/e68cf8c2f2efff2e4f5a583437e3405d0721777e",
-                "reference": "e68cf8c2f2efff2e4f5a583437e3405d0721777e",
+                "url": "https://api.github.com/repos/netresearch/t3x-nr-vault/zipball/3d83e17eb2f3f57cbb14ac44e431b6954ba53632",
+                "reference": "3d83e17eb2f3f57cbb14ac44e431b6954ba53632",
                 "shasum": ""
             },
             "require": {
@@ -4527,7 +4527,7 @@
                     "Package": {
                         "providesPackages": []
                     },
-                    "version": "1.7.0",
+                    "version": "1.8.0",
                     "web-dir": ".Build/web",
                     "extension-key": "nr_vault"
                 },
@@ -4573,8 +4573,8 @@
                 "issues": "https://github.com/netresearch/t3x-nr-vault/issues",
                 "source": "https://github.com/netresearch/t3x-nr-vault"
             },
-            "time": "2026-11-14T03:04:42+00:00",
-            "published-time": "2026-11-14T03:23:54+00:00"
+            "time": "2026-11-15T10:15:13+00:00",
+            "published-time": "2026-11-15T10:38:19+00:00"
         },
         {
             "name": "netresearch/rte-ckeditor-image",
@@ -13520,21 +13520,21 @@
         },
         {
             "name": "typo3/html-sanitizer",
-            "version": "v2.3.2",
+            "version": "v2.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/TYPO3/html-sanitizer.git",
-                "reference": "8b5d0be44ded457ca993ec9ca93d859941c63764"
+                "reference": "f44e6cafa58404936bdfc00966367c629711bd55"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/TYPO3/html-sanitizer/zipball/8b5d0be44ded457ca993ec9ca93d859941c63764",
-                "reference": "8b5d0be44ded457ca993ec9ca93d859941c63764",
+                "url": "https://api.github.com/repos/TYPO3/html-sanitizer/zipball/f44e6cafa58404936bdfc00966367c629711bd55",
+                "reference": "f44e6cafa58404936bdfc00966367c629711bd55",
                 "shasum": ""
             },
             "require": {
                 "ext-dom": "*",
-                "masterminds/html5": "^2.7.6",
+                "masterminds/html5": "^2.11.0",
                 "php": "^7.2 || ^8.0",
                 "psr/log": "^1.0 || ^2.0 || ^3.0"
             },
@@ -13565,10 +13565,10 @@
             "description": "HTML sanitizer aiming to provide XSS-safe markup based on explicitly allowed tags, attributes and values.",
             "support": {
                 "issues": "https://github.com/TYPO3/html-sanitizer/issues",
-                "source": "https://github.com/TYPO3/html-sanitizer/tree/v2.3.2"
+                "source": "https://github.com/TYPO3/html-sanitizer/tree/v2.4.0"
             },
-            "time": "2026-06-08T15:19:36+00:00",
-            "published-time": "2026-06-08T15:24:27+00:00"
+            "time": "2026-11-15T09:13:12+00:00",
+            "published-time": "2026-11-15T09:14:13+00:00"
         },
         {
             "name": "typo3fluid/fluid",
