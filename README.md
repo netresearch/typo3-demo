@@ -607,9 +607,10 @@ Server-Sent Events, can register a webhook for push notifications and can send a
 text or JSON file.
 
 - **Base URL.** `nrllm.a2a.baseUrl` in `config/sites/default/settings.yaml`, built
-  from `TYPO3_DOMAIN`. The site depends on the set `netresearch/nr-llm`: TYPO3 14.3
-  keeps only the settings a set of the site defines, and without the set the value
-  was dropped.
+  from `TYPO3_DOMAIN`, written nested (`nrllm:` / `a2a:` / `baseUrl:`). TYPO3 reads
+  a dotted key such as `nrllm.a2a.baseUrl` only while a set of the site defines it;
+  the nested form is read either way. The site also depends on the set
+  `netresearch/nr-llm`, which shows nr-llm's settings in the Site Settings module.
 - **nginx.** `nginx.conf` denies every path with a dot segment (`.git`, `.env`
   and the like). One exact location lets `/a2a/.well-known/agent-card.json`
   through to TYPO3; every other dot path stays denied.

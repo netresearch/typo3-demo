@@ -52,9 +52,11 @@ autotranslateTtContentTextfields: 'header,subheader,bodytext'
 dependencies:
   - netresearch/demo-site
   # netresearch/nr-llm: defines the site settings of nr-llm, among them
-  # nrllm.a2a.baseUrl in settings.yaml. TYPO3 14.3 keeps only the settings a set
-  # of the site defines: without this set the base URL was dropped, the A2A
-  # server role matched no request and the agent card answered 404. Its other
-  # settings default to empty, which is the installation default nr-llm used
-  # before.
+  # nrllm.a2a.baseUrl, so the Site Settings module shows and checks them. The
+  # base URL was first written as a dotted key, which TYPO3 reads only while a
+  # set of the site defines it; without this set it was stored with escaped
+  # dots, the A2A server role matched no request and the agent card answered
+  # 404. settings.yaml now writes it nested, which is read with or without the
+  # set (nr-llm #1410). The set's other settings default to empty, which is the
+  # installation default nr-llm used before.
   - netresearch/nr-llm
