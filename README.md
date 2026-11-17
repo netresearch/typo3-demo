@@ -619,7 +619,8 @@ text or JSON file.
   created once:
   - `demo_text`: answers a request with the text skill, read-only;
   - `page_metadata`: writes metadata fields of one page as a draft in the workspace
-    "Entwurf", each write after an approval in **AI > Agent Runs**;
+    "Entwurf", each write after an approval in **AI > Agent Runs**. It reads the
+    page with `get_page_content` first, so the seed enables that tool as well;
   - the client "Demo A2A client", which runs as the non-admin `a2a_demo_client`
     in that workspace.
 - **Token.** The client has none until an administrator issues one in
