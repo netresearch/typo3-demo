@@ -2217,6 +2217,9 @@ ALTER TABLE IF EXISTS tx_netresearchdemosite_social_webhook_receipt
 --       9001  nrllm:agent:work       executes the queued agent runs, every minute
 --       9002  nrllm:agent:reap       hands back runs whose worker died, every minute
 --       9003  autotranslate:batch:run translates the waiting batch items, every 5 min
+--       9004  nrllm:a2a:poll         delivers the A2A push notifications and polls
+--                                    the remote agents nr-llm waits for, every minute
+--                                    (another uid if 9004 is taken; see below)
 --     Row format as TYPO3 14 stores it for a command task: tasktype is the command
 --     name, parameters carries the options (an option is passed only when its flag
 --     is true) and their values, execution_details the schedule. `multiple` is on
@@ -2246,6 +2249,20 @@ VALUES
      UNIX_TIMESTAMP(), 'autotranslate:batch:run',
      '{"arguments":{},"options":[],"optionValues":[]}',
      CONCAT('{"start":', UNIX_TIMESTAMP(), ',"end":0,"interval":300,"multiple":true,"cronCmd":"","isNewSingleExecution":false}'));
+
+-- The poll task came after 9001-9003, when the counter of tx_scheduler_task
+-- already stood past them, so a task created in the Scheduler module may hold
+-- uid 9004. It takes 9004 only while that uid is free, and is otherwise
+-- created with the next uid; it is found by its command, not by its uid.
+INSERT INTO tx_scheduler_task
+    (uid, pid, crdate, disable, deleted, description, nextexecution, tasktype, parameters, execution_details)
+SELECT IF(EXISTS (SELECT 1 FROM tx_scheduler_task WHERE uid = 9004), NULL, 9004), 0, UNIX_TIMESTAMP(), 0, 0,
+     'Delivers the push notifications of the A2A server role and polls the remote A2A agents nr_llm waits for. nr-llm asks for it every minute while push is on.',
+     UNIX_TIMESTAMP(), 'nrllm:a2a:poll',
+     '{"arguments":{},"options":[],"optionValues":[]}',
+     CONCAT('{"start":', UNIX_TIMESTAMP(), ',"end":0,"interval":60,"multiple":true,"cronCmd":"","isNewSingleExecution":false}')
+FROM DUAL
+WHERE NOT EXISTS (SELECT 1 FROM tx_scheduler_task WHERE tasktype = 'nrllm:a2a:poll');
 
 -- A writing tool ships switched off, and the tool state lives in the database.
 -- IGNORE keeps a decision an admin made in AI > Tools.
@@ -8789,6 +8806,9 @@ SELECT CONCAT('SEED-PROBLEM: tx_scheduler_task ', e.uid, ' ', e.tasktype, ' miss
         UNION ALL SELECT 9002, 'nrllm:agent:reap'
         UNION ALL SELECT 9003, 'autotranslate:batch:run') e
  WHERE NOT EXISTS (SELECT 1 FROM tx_scheduler_task t WHERE t.uid = e.uid AND t.tasktype = e.tasktype)
+UNION ALL
+SELECT 'SEED-PROBLEM: tx_scheduler_task nrllm:a2a:poll missing' FROM DUAL
+ WHERE NOT EXISTS (SELECT 1 FROM tx_scheduler_task WHERE tasktype = 'nrllm:a2a:poll')
 UNION ALL
 SELECT 'SEED-PROBLEM: tx_nrllm_model 90 text-embedding-3-small missing or foreign' FROM DUAL
  WHERE NOT EXISTS (SELECT 1 FROM tx_nrllm_model WHERE uid = 90 AND identifier = 'text-embedding-3-small' AND deleted = 0)
