@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f4ac2a82b3b8db3fcaf710946c1c559b",
+    "content-hash": "daa4f7c5104dbe3d16f2faf9ec69b80a",
     "packages": [
         {
             "name": "b13/ai-bots-love-markdown",
@@ -3485,7 +3485,7 @@
             "version": "v0.1.2",
             "source": {
                 "type": "git",
-                "url": "git@github.com:netresearch/t3x-nr-bug-reporter.git",
+                "url": "https://github.com/netresearch/t3x-nr-bug-reporter.git",
                 "reference": "a12a123f0edec9a537bf18129964d7103e394ad8"
             },
             "dist": {
@@ -3605,16 +3605,16 @@
         },
         {
             "name": "netresearch/nr-landingpage",
-            "version": "v0.7.4",
+            "version": "v0.8.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/nr-landingpage.git",
-                "reference": "c1598ad55ac84e0112f312026953c96cef7ac5b1"
+                "reference": "2e8a93a07069ca57616223991a87d69d9d699fe5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/nr-landingpage/zipball/c1598ad55ac84e0112f312026953c96cef7ac5b1",
-                "reference": "c1598ad55ac84e0112f312026953c96cef7ac5b1",
+                "url": "https://api.github.com/repos/netresearch/nr-landingpage/zipball/2e8a93a07069ca57616223991a87d69d9d699fe5",
+                "reference": "2e8a93a07069ca57616223991a87d69d9d699fe5",
                 "shasum": ""
             },
             "require": {
@@ -3655,10 +3655,10 @@
             "description": "Landing Page Generator - Generate landing pages with an LLM in a step-by-step backend wizard.",
             "support": {
                 "issues": "https://github.com/netresearch/nr-landingpage/issues",
-                "source": "https://github.com/netresearch/nr-landingpage/tree/v0.7.4"
+                "source": "https://github.com/netresearch/nr-landingpage/tree/v0.8.0"
             },
-            "time": "2026-11-16T10:09:51+00:00",
-            "published-time": "2026-11-16T11:00:35+00:00"
+            "time": "2026-11-17T13:26:00+00:00",
+            "published-time": "2026-11-17T13:41:19+00:00"
         },
         {
             "name": "netresearch/nr-llm",
@@ -4262,7 +4262,7 @@
             "version": "v1.0.4",
             "source": {
                 "type": "git",
-                "url": "git@github.com:netresearch/t3x-nr-temporal-cache.git",
+                "url": "https://github.com/netresearch/t3x-nr-temporal-cache.git",
                 "reference": "2888a9831aed3d77d85402785791e0a2ee182824"
             },
             "dist": {
@@ -4486,16 +4486,16 @@
         },
         {
             "name": "netresearch/nr-vault",
-            "version": "v1.9.1",
+            "version": "v1.10.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/t3x-nr-vault.git",
-                "reference": "e44f188d083ccf75f274a199ddaab12880342b99"
+                "reference": "a9efab1863451138501a19d70e4ecf28801afdc5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/t3x-nr-vault/zipball/e44f188d083ccf75f274a199ddaab12880342b99",
-                "reference": "e44f188d083ccf75f274a199ddaab12880342b99",
+                "url": "https://api.github.com/repos/netresearch/t3x-nr-vault/zipball/a9efab1863451138501a19d70e4ecf28801afdc5",
+                "reference": "a9efab1863451138501a19d70e4ecf28801afdc5",
                 "shasum": ""
             },
             "require": {
@@ -4531,7 +4531,7 @@
                     "Package": {
                         "providesPackages": []
                     },
-                    "version": "1.9.1",
+                    "version": "1.10.0",
                     "web-dir": ".Build/web",
                     "extension-key": "nr_vault"
                 },
@@ -4577,15 +4577,15 @@
                 "issues": "https://github.com/netresearch/t3x-nr-vault/issues",
                 "source": "https://github.com/netresearch/t3x-nr-vault"
             },
-            "time": "2026-11-16T00:45:06+00:00",
-            "published-time": "2026-11-16T01:20:06+00:00"
+            "time": "2026-11-17T13:12:57+00:00",
+            "published-time": "2026-11-17T13:49:02+00:00"
         },
         {
             "name": "netresearch/rte-ckeditor-image",
             "version": "v13.10.5",
             "source": {
                 "type": "git",
-                "url": "git@github.com:netresearch/t3x-rte_ckeditor_image.git",
+                "url": "https://github.com/netresearch/t3x-rte_ckeditor_image.git",
                 "reference": "634200bd615c5e94e6dc7475e8b59307aa311ce9"
             },
             "dist": {
@@ -4727,6 +4727,10 @@
             ],
             "description": "CKEditor Image Support - Adds FAL image support to CKEditor in the rich text editor.",
             "homepage": "https://github.com/netresearch/t3x-rte_ckeditor_image",
+            "support": {
+                "source": "https://github.com/netresearch/t3x-rte_ckeditor_image/tree/v13.10.5",
+                "issues": "https://github.com/netresearch/t3x-rte_ckeditor_image/issues"
+            },
             "time": "2026-11-05T09:27:33+00:00"
         },
         {
