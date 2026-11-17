@@ -2217,6 +2217,8 @@ ALTER TABLE IF EXISTS tx_netresearchdemosite_social_webhook_receipt
 --       9001  nrllm:agent:work       executes the queued agent runs, every minute
 --       9002  nrllm:agent:reap       hands back runs whose worker died, every minute
 --       9003  autotranslate:batch:run translates the waiting batch items, every 5 min
+--       9004  nrllm:a2a:poll         delivers the A2A push notifications and polls
+--                                    the remote agents nr-llm waits for, every minute
 --     Row format as TYPO3 14 stores it for a command task: tasktype is the command
 --     name, parameters carries the options (an option is passed only when its flag
 --     is true) and their values, execution_details the schedule. `multiple` is on
@@ -2245,7 +2247,12 @@ VALUES
      'Translates the items of the Batch Translation module that are waiting (EXT:autotranslate).',
      UNIX_TIMESTAMP(), 'autotranslate:batch:run',
      '{"arguments":{},"options":[],"optionValues":[]}',
-     CONCAT('{"start":', UNIX_TIMESTAMP(), ',"end":0,"interval":300,"multiple":true,"cronCmd":"","isNewSingleExecution":false}'));
+     CONCAT('{"start":', UNIX_TIMESTAMP(), ',"end":0,"interval":300,"multiple":true,"cronCmd":"","isNewSingleExecution":false}')),
+    (9004, 0, UNIX_TIMESTAMP(), 0, 0,
+     'Delivers the push notifications of the A2A server role and polls the remote A2A agents nr_llm waits for. nr-llm asks for it every minute while push is on.',
+     UNIX_TIMESTAMP(), 'nrllm:a2a:poll',
+     '{"arguments":{},"options":[],"optionValues":[]}',
+     CONCAT('{"start":', UNIX_TIMESTAMP(), ',"end":0,"interval":60,"multiple":true,"cronCmd":"","isNewSingleExecution":false}'));
 
 -- A writing tool ships switched off, and the tool state lives in the database.
 -- IGNORE keeps a decision an admin made in AI > Tools.
@@ -8787,7 +8794,8 @@ UNION ALL
 SELECT CONCAT('SEED-PROBLEM: tx_scheduler_task ', e.uid, ' ', e.tasktype, ' missing or foreign') AS seed_verification
   FROM (SELECT 9001 AS uid, 'nrllm:agent:work' AS tasktype
         UNION ALL SELECT 9002, 'nrllm:agent:reap'
-        UNION ALL SELECT 9003, 'autotranslate:batch:run') e
+        UNION ALL SELECT 9003, 'autotranslate:batch:run'
+        UNION ALL SELECT 9004, 'nrllm:a2a:poll') e
  WHERE NOT EXISTS (SELECT 1 FROM tx_scheduler_task t WHERE t.uid = e.uid AND t.tasktype = e.tasktype)
 UNION ALL
 SELECT 'SEED-PROBLEM: tx_nrllm_model 90 text-embedding-3-small missing or foreign' FROM DUAL

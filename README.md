@@ -561,8 +561,8 @@ in `docker/web/entrypoint.sh`.
 ## Background AI runs
 
 nr-llm stores a background run and leaves it there. The `scheduler` service runs
-`scheduler:run` once a minute, and three Scheduler tasks (seeded in
-`data/seed-extensions.sql`, step 3g, uids 9001 to 9003) are what it executes:
+`scheduler:run` once a minute, and four Scheduler tasks (seeded in
+`data/seed-extensions.sql`, step 3g, uids 9001 to 9004) are what it executes:
 
 - `nrllm:agent:work` every minute and `nrllm:agent:reap` every minute. Without
   them a queued run stays queued. They replaced the former `llm-agent-worker`
@@ -570,6 +570,8 @@ nr-llm stores a background run and leaves it there. The `scheduler` service runs
   run's start time comparable.
 - `autotranslate:batch:run` every five minutes translates the waiting items of the
   Batch Translation module.
+- `nrllm:a2a:poll` every minute delivers the push notifications of the A2A server
+  role (next section).
 
 Frequency and the disabled flag can be changed in the Scheduler module; a deploy
 does not reset a changed row. The tasks allow overlapping executions, so a task a
@@ -595,6 +597,36 @@ holds the read tier on that one secret.
 
 `fieldFill.fields` stays empty on purpose: a save does not start a background run
 here.
+
+## A2A server role (nr-llm)
+
+The default site answers the Agent2Agent protocol (A2A 1.0) of nr-llm. Another
+agent reads the agent card at `https://<domain>/a2a/.well-known/agent-card.json`,
+sends tasks to `https://<domain>/a2a` with a bearer token, follows them with
+Server-Sent Events, can register a webhook for push notifications and can send a
+text or JSON file.
+
+- **Base URL.** `nrllm.a2a.baseUrl` in `config/sites/default/settings.yaml`, built
+  from `TYPO3_DOMAIN`. The site depends on the set `netresearch/nr-llm`: TYPO3 14.3
+  keeps only the settings a set of the site defines, and without the set the value
+  was dropped.
+- **nginx.** `nginx.conf` denies every path with a dot segment (`.git`, `.env`
+  and the like). One exact location lets `/a2a/.well-known/agent-card.json`
+  through to TYPO3; every other dot path stays denied.
+- **Switches.** The entrypoint block `nr_llm_a2a` in `additional.php` turns on the
+  server role, push notifications and client files.
+- **Records.** The entrypoint seeds them after `extension:setup`, found by name,
+  created once:
+  - `demo_text`: answers a request with the text skill, read-only;
+  - `page_metadata`: writes metadata fields of one page as a draft in the workspace
+    "Entwurf", each write after an approval in **AI > Agent Runs**;
+  - the client "Demo A2A client", which runs as the non-admin `a2a_demo_client`
+    in that workspace.
+- **Token.** The client has none until an administrator issues one in
+  **AI > A2A tokens**. Revoke it there after use.
+
+Taking a client's file into a FAL inbox folder is not in the installed nr-llm
+release, so no inbox folder is configured.
 
 ## Social posts and the webhook test receiver (nr-repurpose)
 
