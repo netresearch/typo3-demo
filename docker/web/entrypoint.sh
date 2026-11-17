@@ -1338,6 +1338,12 @@ fi
 #  - The tools check_page_metadata and update_page_metadata, which ship
 #    disabled. Every call of update_page_metadata still waits for an approval
 #    in the backend.
+#  - The tool get_page_content, which reads one page and its content
+#    elements. It ships enabled, but on the live instance an administrator had
+#    switched it off in AI > Betrieb > Tools (the toggle records neither who
+#    nor when), and the page metadata skill then refused to run: it reads the
+#    page before it proposes values. The seeded guided tours seo-optimieren and
+#    inhalt-verbessern call it too. Seeded enabled, so a fresh install keeps it.
 #  - Two publication profiles, public on the agent card:
 #      demo_text      nr_llm.text, read-only, text and JSON input (also as a
 #                     file); answers the message with the configuration.
@@ -1417,7 +1423,7 @@ WHERE identifier = 'a2a.demo.page_metadata' AND deleted = 0
 
 -- A tool state an administrator set in AI > Tools is kept.
 INSERT IGNORE INTO tx_nrllm_tool_state (pid, tool_name, enabled)
-VALUES (0, 'check_page_metadata', 1), (0, 'update_page_metadata', 1);
+VALUES (0, 'check_page_metadata', 1), (0, 'update_page_metadata', 1), (0, 'get_page_content', 1);
 
 INSERT INTO tx_nrllm_a2a_profile
     (pid, tstamp, crdate, skill_id, name, description, tags, examples, handler, configuration_uid, tools,
