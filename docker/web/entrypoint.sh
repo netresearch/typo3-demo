@@ -1466,8 +1466,9 @@ SELECT 'A2A-SEED-PROBLEM: a2a_demo_client is not a member of workspace 9001' FRO
  WHERE NOT EXISTS (SELECT 1 FROM sys_workspace w JOIN be_users u ON u.username = 'a2a_demo_client' AND u.deleted = 0
                    WHERE w.uid = 9001 AND w.deleted = 0 AND FIND_IN_SET(CONCAT('be_users_', u.uid), w.members))
 UNION ALL
-SELECT 'A2A-SEED-PROBLEM: a profile has no LLM configuration' FROM DUAL
- WHERE EXISTS (SELECT 1 FROM tx_nrllm_a2a_profile WHERE skill_id IN ('demo_text', 'page_metadata') AND deleted = 0 AND configuration_uid = 0)
+SELECT CONCAT('A2A-SEED-PROBLEM: profile ', p.skill_id, ' names no existing LLM configuration') FROM tx_nrllm_a2a_profile p
+ WHERE p.skill_id IN ('demo_text', 'page_metadata') AND p.deleted = 0
+   AND NOT EXISTS (SELECT 1 FROM tx_nrllm_configuration c WHERE c.uid = p.configuration_uid AND c.deleted = 0)
 UNION ALL
 SELECT 'A2A-SEED-PROBLEM: client Demo A2A client missing' FROM DUAL
  WHERE NOT EXISTS (SELECT 1 FROM tx_nrllm_a2a_client WHERE title = 'Demo A2A client' AND deleted = 0);
