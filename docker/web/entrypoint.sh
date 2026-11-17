@@ -22,7 +22,7 @@ echo "Database has $TABLE_COUNT tables."
 # Directory Status expects all of this layout (DefaultFactory): index.html and
 # assets/{css,js,images,_processed_}. TYPO3 creates the folders on demand, but
 # without them Directory Status lists one warning each.
-mkdir -p var/log var/cache var/lock var/charset var/labels \
+mkdir -p var/log var/cache var/lock var/charset var/labels var/a2a-inbox \
     public/fileadmin config/system \
     public/typo3temp/assets/_processed_ public/typo3temp/assets/css \
     public/typo3temp/assets/js public/typo3temp/assets/images
@@ -1326,7 +1326,8 @@ fi
 #
 #  - Group "A2A demo client": "Advanced editors" (uid 3, page mount 1 and the
 #    page group of the demo pages), like the workspace editor of the seed, and
-#    nothing else: no module, no file mount of its own.
+#    no module. Its one file mount, on the A2A inbox, comes from the next
+#    block.
 #  - User a2a_demo_client: the technical backend user every task of the client
 #    runs as. Not an administrator, no password (a deliberately invalid hash),
 #    a member of the workspace "Entwurf" (9001), where its writes land as
@@ -1354,8 +1355,7 @@ fi
 #  - The client "Demo A2A client": runs as a2a_demo_client in workspace 9001,
 #    may call both skills, at most two tasks at once. It has no token: an
 #    administrator issues one in AI > A2A tokens and revokes it there.
-# Taking a client's file into a FAL inbox folder (ADR-305) is not in the
-# installed nr-llm release yet, so no inbox folder is configured.
+# The inbox for a client's file is seeded in the next block.
 if [ -f config/system/settings.php ]; then
     echo "Seeding the A2A server role (skills, client, technical user)..."
     MYSQL_PWD="${MARIADB_PASSWORD:-typo3}" mariadb -h"${MARIADB_HOST:-db}" -u"${MARIADB_USER:-typo3}" "${MARIADB_DATABASE:-typo3}" --default-character-set=utf8mb4 <<'SQL' || echo "WARNING: A2A server role seed failed" >&2
@@ -1478,6 +1478,109 @@ SELECT CONCAT('A2A-SEED-PROBLEM: profile ', p.skill_id, ' names no existing LLM 
 UNION ALL
 SELECT 'A2A-SEED-PROBLEM: client Demo A2A client missing' FROM DUAL
  WHERE NOT EXISTS (SELECT 1 FROM tx_nrllm_a2a_client WHERE title = 'Demo A2A client' AND deleted = 0);
+SQL
+fi
+
+# ---------------------------------------------------------------------------
+# A2A server role of nr-llm: the inbox for a client's file (nr-llm ADR-305).
+# ---------------------------------------------------------------------------
+# Its own heredoc after the block above, which creates the group, the
+# configuration and the client it refers to; a failure here leaves that block
+# intact. Same rules: found by natural key, created once, an administrator's
+# later edits kept.
+#  - The storage "A2A inbox": a Local storage with the absolute base path
+#    /var/www/var/a2a-inbox/ (created at the top of this script, owned by
+#    www-data) in the typo3-var volume, which web, worker and scheduler mount.
+#    Outside the web root and not public: nr-llm stores a client's file only
+#    in a non-public folder, and TYPO3 admits an absolute path inside the
+#    project root without lockRootPath.
+#  - The file mount "A2A inbox" on its root, writable, appended to the group
+#    "A2A demo client", and the file permissions to read and write folders and
+#    to add files while the group holds none. The technical user writes the
+#    file; the approving editor's rights do not count.
+#  - The tool adopt_client_file, which ships disabled.
+#  - The publication profile file_inbox: nr_llm.text with adopt_client_file,
+#    May write, text, JSON and PDF input, the storage's root as its inbox
+#    folder. Every adoption waits for an approval in AI > Agent Runs, and
+#    nothing references an adopted file until an editor uses it.
+#  - The client "Demo A2A client" gets file_inbox appended to its skills, as
+#    it gets its workspace membership.
+if [ -f config/system/settings.php ]; then
+    echo "Seeding the A2A inbox (storage, file mount, skill file_inbox)..."
+    MYSQL_PWD="${MARIADB_PASSWORD:-typo3}" mariadb -h"${MARIADB_HOST:-db}" -u"${MARIADB_USER:-typo3}" "${MARIADB_DATABASE:-typo3}" --default-character-set=utf8mb4 <<'SQL' || echo "WARNING: A2A inbox seed failed" >&2
+INSERT INTO sys_file_storage
+    (pid, tstamp, crdate, deleted, name, driver, configuration,
+     is_default, is_browsable, is_public, is_writable, is_online, auto_extract_metadata)
+SELECT 0, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 'A2A inbox', 'Local',
+    '<?xml version="1.0" encoding="utf-8" standalone="yes" ?>\n<T3FlexForms>\n    <data>\n        <sheet index="sDEF">\n            <language index="lDEF">\n                <field index="basePath">\n                    <value index="vDEF">/var/www/var/a2a-inbox/</value>\n                </field>\n                <field index="pathType">\n                    <value index="vDEF">absolute</value>\n                </field>\n                <field index="caseSensitive">\n                    <value index="vDEF">1</value>\n                </field>\n            </language>\n        </sheet>\n    </data>\n</T3FlexForms>',
+    0, 1, 0, 1, 1, 0
+FROM DUAL
+WHERE NOT EXISTS (SELECT 1 FROM sys_file_storage WHERE name = 'A2A inbox' AND deleted = 0);
+
+INSERT INTO sys_filemounts
+    (pid, tstamp, deleted, hidden, title, identifier, read_only)
+SELECT 0, UNIX_TIMESTAMP(), 0, 0, 'A2A inbox', CONCAT(s.uid, ':/'), 0
+FROM sys_file_storage s
+WHERE s.name = 'A2A inbox' AND s.deleted = 0
+  AND NOT EXISTS (SELECT 1 FROM sys_filemounts WHERE title = 'A2A inbox' AND deleted = 0)
+ORDER BY s.uid
+LIMIT 1;
+
+-- Appended, so a mount an administrator added stays.
+UPDATE be_groups g
+JOIN sys_filemounts m ON m.title = 'A2A inbox' AND m.deleted = 0
+SET g.file_mountpoints = IF(g.file_mountpoints = '' OR g.file_mountpoints IS NULL, CAST(m.uid AS CHAR), CONCAT(g.file_mountpoints, ',', m.uid))
+WHERE g.title = 'A2A demo client' AND g.deleted = 0
+  AND NOT FIND_IN_SET(CAST(m.uid AS CHAR), COALESCE(g.file_mountpoints, ''));
+
+UPDATE be_groups
+SET file_permissions = 'readFolder,writeFolder,readFile,writeFile,addFile'
+WHERE title = 'A2A demo client' AND deleted = 0
+  AND (file_permissions = '' OR file_permissions IS NULL);
+
+-- A tool state an administrator set in AI > Tools is kept.
+INSERT IGNORE INTO tx_nrllm_tool_state (pid, tool_name, enabled)
+VALUES (0, 'adopt_client_file', 1);
+
+INSERT INTO tx_nrllm_a2a_profile
+    (pid, tstamp, crdate, skill_id, name, description, tags, examples, handler, configuration_uid, tools,
+     input_modes, output_modes, max_active_tasks, public, may_write, fal_inbox_folder, hidden, deleted)
+SELECT 0, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'file_inbox', 'File into the inbox',
+    'Takes a file you send (text, JSON or PDF) into the inbox folder of this TYPO3 after a person here approved it; without the approval nothing is stored. Send the file with an instruction such as "Store the attached file in the inbox", with returnImmediately, and follow the task: it stays WORKING while it waits for the approval.',
+    'demo,files,inbox',
+    'Store the attached file in the inbox.',
+    'nr_llm.text',
+    (SELECT uid FROM tx_nrllm_configuration WHERE identifier = 'a2a.demo.text' AND deleted = 0 ORDER BY uid LIMIT 1),
+    'adopt_client_file', 'text/plain,application/json,application/pdf', 'text/plain', 2, 1, 1,
+    CONCAT(s.uid, ':/'), 0, 0
+FROM sys_file_storage s
+WHERE s.name = 'A2A inbox' AND s.deleted = 0
+  AND NOT EXISTS (SELECT 1 FROM tx_nrllm_a2a_profile WHERE skill_id = 'file_inbox' AND deleted = 0)
+ORDER BY s.uid
+LIMIT 1;
+
+-- Appended, so a skill an administrator added or removed otherwise stays.
+UPDATE tx_nrllm_a2a_client c
+JOIN tx_nrllm_a2a_profile p ON p.skill_id = 'file_inbox' AND p.deleted = 0
+SET c.profiles = IF(c.profiles = '' OR c.profiles IS NULL, CAST(p.uid AS CHAR), CONCAT(c.profiles, ',', p.uid))
+WHERE c.title = 'Demo A2A client' AND c.deleted = 0
+  AND NOT FIND_IN_SET(CAST(p.uid AS CHAR), COALESCE(c.profiles, ''));
+
+SELECT 'A2A-SEED-PROBLEM: profile file_inbox missing, without inbox folder or configuration' AS a2a_inbox_seed_check FROM DUAL
+ WHERE NOT EXISTS (SELECT 1 FROM tx_nrllm_a2a_profile p JOIN tx_nrllm_configuration c ON c.uid = p.configuration_uid AND c.deleted = 0
+                   WHERE p.skill_id = 'file_inbox' AND p.deleted = 0 AND p.fal_inbox_folder <> '')
+UNION ALL
+SELECT 'A2A-SEED-PROBLEM: group A2A demo client has no writable mount on the A2A inbox' FROM DUAL
+ WHERE NOT EXISTS (SELECT 1 FROM be_groups g JOIN sys_filemounts m ON m.title = 'A2A inbox' AND m.deleted = 0 AND m.read_only = 0
+                   WHERE g.title = 'A2A demo client' AND g.deleted = 0 AND FIND_IN_SET(CAST(m.uid AS CHAR), g.file_mountpoints))
+UNION ALL
+SELECT 'A2A-SEED-PROBLEM: client Demo A2A client may not call file_inbox' FROM DUAL
+ WHERE NOT EXISTS (SELECT 1 FROM tx_nrllm_a2a_client c JOIN tx_nrllm_a2a_profile p ON p.skill_id = 'file_inbox' AND p.deleted = 0
+                   WHERE c.title = 'Demo A2A client' AND c.deleted = 0 AND FIND_IN_SET(CAST(p.uid AS CHAR), c.profiles))
+UNION ALL
+SELECT 'A2A-SEED-PROBLEM: tool adopt_client_file or tool group files is switched off' FROM DUAL
+ WHERE EXISTS (SELECT 1 FROM tx_nrllm_tool_state WHERE tool_name = 'adopt_client_file' AND enabled = 0)
+    OR EXISTS (SELECT 1 FROM tx_nrllm_tool_group_state WHERE group_name = 'files' AND enabled = 0);
 SQL
 fi
 
