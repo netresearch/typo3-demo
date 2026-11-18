@@ -108,6 +108,12 @@ if [ ! -f config/system/settings.php ]; then
 
     echo "First boot: generating settings.php..."
     # Use quoted heredoc to prevent shell expansion, then substitute with sed
+    # data/seed-extensions.sql is imported further down, after extension:setup
+    # has created the extension tables it writes to. The marker lives in the
+    # var volume and is written before settings.php, so a first boot stopped
+    # before the import still imports on the next start.
+    mkdir -p var
+    touch var/.seed-extensions-pending
     cat > config/system/settings.php <<'EOPHP'
 <?php
 return [
@@ -212,12 +218,6 @@ EOPHP
     MYSQL_PWD="${MARIADB_PASSWORD:-typo3}" mariadb -h"${MARIADB_HOST:-db}" -u"${MARIADB_USER:-typo3}" "${MARIADB_DATABASE:-typo3}" \
         -e "DELETE FROM sys_template;" 2>/dev/null || true
 
-    # data/seed-extensions.sql is imported further down, after extension:setup
-    # has created the extension tables it writes to. The marker lives in the
-    # var volume, so a first boot stopped before the import still imports on
-    # the next start.
-    mkdir -p var
-    touch var/.seed-extensions-pending
 fi
 
 # Ensure installToolPassword is set (required by TYPO3; may be absent in older settings.php)
@@ -958,7 +958,7 @@ fi
 # to the generation of settings.php, before extension:setup; the mariadb client
 # stopped at the first table or column that did not exist yet and its stderr
 # went to /dev/null, so a first boot applied the file only up to that point and
-# said nothing. A deploy (`make update`) and the CI build apply the file again
+# logged a bare WARNING without the cause. A deploy (`make update`) and the CI build apply the file again
 # with `make seed-extensions`, which also fails on SEED-PROBLEM lines; here a
 # problem is reported and the boot goes on.
 if [ -f var/.seed-extensions-pending ] && [ -f /var/www/data/seed-extensions.sql ]; then
