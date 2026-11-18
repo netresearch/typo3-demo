@@ -165,20 +165,39 @@ To change installed extension **versions**, edit the constraints in
 composer update <package> --no-install --no-scripts
 ```
 
-A partial update leaves every other package at its locked version and does not
-need the private `git.netresearch.de` credential. `composer validate` in the
-`composer-audit` job is the freshness gate and fails the build when the two
-files disagree — the image and the attested SBOM would otherwise describe
-different resolutions.
+A partial update leaves every other package at its locked version.
+`composer validate` in the `composer-audit` job is the freshness gate and fails
+the build when the two files disagree — the image and the attested SBOM would
+otherwise describe different resolutions.
+
+Every `composer update`, a partial one included, needs two tokens. Composer
+reads each `vcs` repository in `composer.json` in full before it resolves
+anything, whichever package is named:
+
+- `https://git.netresearch.de/support/nr-ai-search.git` is private and needs a
+  GitLab token for `git.netresearch.de` that can read that project.
+- `t3x-nr-temporal-cache`, `t3x-nr-bug-reporter` and `t3x-rte_ckeditor_image`
+  on `github.com` are public, but Composer reads them through the GitHub API,
+  with requests for every tag. That is more than the 60 requests an hour
+  GitHub allows without a token, so the update stops with
+  `Could not authenticate against github.com`.
+
+Pass both in the environment, not in a file:
+
+```bash
+COMPOSER_AUTH='{"gitlab-token": {"git.netresearch.de": "<gitlab-token>"}, "github-oauth": {"github.com": "<github-token>"}}' \
+  composer update <package> --no-install --no-scripts
+```
+
+The Build workflow sets the same `COMPOSER_AUTH`; pull requests from forks
+have neither token.
 
 An extension update on the demo is nevertheless a full update, so that one
 deploy carries everything: raise the netresearch extensions' constraints to
 their newest releases, run `composer update --no-install --no-scripts` without
 a package name, and update the base images in `docker/web/Dockerfile` in the
 same pull request. Close the open dependency-bot pull requests it supersedes,
-with a comment naming it. A full update also resolves the private
-`git.netresearch.de` repository, so it needs a `COMPOSER_AUTH` with a token
-for that host; the Build workflow has one, pull requests from forks do not.
+with a comment naming it. It needs the same two tokens.
 
 Raising `netresearch/nr-llm` past a range its consumers admit (for example to
 a new minor in the 0.x series) only resolves once every extension in
