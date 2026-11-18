@@ -2425,12 +2425,11 @@ ON DUPLICATE KEY UPDATE uid = uid;
 -- Both carry l10n_source, pointing at the record the translation was made from
 -- (the default-language record here).
 --
--- Records whose TABLES do not exist yet at import time (tx_contexts_*,
--- tx_nrtextdb_*) are NOT seeded here: this file is imported BEFORE
--- `typo3 extension:setup` creates them, and the mariadb client aborts the whole
--- import on the first unknown-table error. They live in docker/web/entrypoint.sh
--- instead, next to the lochmueller/index configuration row, which had to move
--- there for the same reason.
+-- Records of the tables tx_contexts_* and tx_nrtextdb_* are NOT seeded here.
+-- They live in docker/web/entrypoint.sh, next to the lochmueller/index
+-- configuration row, after `typo3 extension:setup` has created those tables.
+-- They were moved there while the entrypoint imported this file before
+-- extension:setup on a first boot; it now imports it after.
 
 -- =============================================================================
 -- Contexts (netresearch/contexts)
@@ -2519,9 +2518,8 @@ ON DUPLICATE KEY UPDATE
                 VALUES(bodytext), bodytext);
 
 -- Visible ONLY while the "Demo channel" context matches (?nrdemo=mobile).
--- The context ASSIGNMENT is applied in docker/web/entrypoint.sh: the
--- tt_content.tx_contexts_* columns are created by extension:setup, which runs
--- after this file is imported.
+-- The context ASSIGNMENT is applied in docker/web/entrypoint.sh, after this
+-- file: the tt_content.tx_contexts_* columns are created by extension:setup.
 INSERT INTO tt_content (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, hidden, deleted)
 VALUES (606, 164, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'text', 'Mobile channel',
 '<p style="font-size: 1rem;">You are seeing the <strong>mobile channel</strong> variant. This element has the &quot;Demo channel&quot; context set to <em>enable</em>, so it is only part of the rendered page while <code>nrdemo=mobile</code> is present.</p>',

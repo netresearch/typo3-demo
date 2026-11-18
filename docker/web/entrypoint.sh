@@ -213,8 +213,11 @@ EOPHP
         -e "DELETE FROM sys_template;" 2>/dev/null || true
 
     # data/seed-extensions.sql is imported further down, after extension:setup
-    # has created the extension tables it writes to.
-    FIRST_BOOT=1
+    # has created the extension tables it writes to. The marker lives in the
+    # var volume, so a first boot stopped before the import still imports on
+    # the next start.
+    mkdir -p var
+    touch var/.seed-extensions-pending
 fi
 
 # Ensure installToolPassword is set (required by TYPO3; may be absent in older settings.php)
@@ -945,6 +948,33 @@ if [ -f /var/www/data/seed-schema.sql ]; then
         < /var/www/data/seed-schema.sql 2>/dev/null || echo "WARNING: seed-schema.sql import failed" >&2
 fi
 
+# ---------------------------------------------------------------------------
+# First boot only: the extension demo records of data/seed-extensions.sql.
+# ---------------------------------------------------------------------------
+# Here, right after extension:setup and seed-schema.sql: every table the file
+# writes to exists now, and the blocks further down (the form assistant on page
+# 9004, the contexts of the channel elements, the A2A user's membership of
+# workspace 9001) find the records it seeds. Until 2026-11 the import ran next
+# to the generation of settings.php, before extension:setup; the mariadb client
+# stopped at the first table or column that did not exist yet and its stderr
+# went to /dev/null, so a first boot applied the file only up to that point and
+# said nothing. A deploy (`make update`) and the CI build apply the file again
+# with `make seed-extensions`, which also fails on SEED-PROBLEM lines; here a
+# problem is reported and the boot goes on.
+if [ -f var/.seed-extensions-pending ] && [ -f /var/www/data/seed-extensions.sql ]; then
+    echo "Importing extension demo records (data/seed-extensions.sql, first boot)..."
+    if SEED_OUT="$(MYSQL_PWD="${MARIADB_PASSWORD:-typo3}" mariadb -h"${MARIADB_HOST:-db}" -u"${MARIADB_USER:-typo3}" "${MARIADB_DATABASE:-typo3}" \
+        --default-character-set=utf8mb4 < /var/www/data/seed-extensions.sql 2>&1)"; then
+        rm -f var/.seed-extensions-pending
+    else
+        echo "WARNING: seed-extensions.sql import failed: $SEED_OUT" >&2
+    fi
+    if printf '%s\n' "$SEED_OUT" | grep -q '^SEED-PROBLEM:'; then
+        printf '%s\n' "$SEED_OUT" | grep '^SEED-PROBLEM:' >&2
+        echo "WARNING: seed-extensions.sql reported SEED-PROBLEM lines (above); make seed-extensions fails on them" >&2
+    fi
+fi
+
 # Before 0.14, nr_mcp_agent wrote an English "needs an approval" sentence into
 # the error_message of a conversation that waits for an approval, and the chat
 # showed it in a German backend too (NEXT-159). This wizard removes the stored
@@ -1639,28 +1669,6 @@ if [ -f config/system/settings.php ]; then
         else
             echo "WARNING: no language pack arrived for at least one of: $BACKEND_LANGUAGES - retrying on the next boot" >&2
         fi
-    fi
-fi
-
-# ---------------------------------------------------------------------------
-# First boot only: the extension demo records of data/seed-extensions.sql.
-# ---------------------------------------------------------------------------
-# Imported here, after extension:setup and the blocks above, which is the state
-# `make seed-extensions` meets on a deploy. It stood next to the generation of
-# settings.php until 2026-11, before extension:setup: the mariadb client stopped
-# at the first table that did not exist yet, and its stderr went to /dev/null,
-# so a first boot never applied the file and said nothing. A deploy (`make
-# update`) and the CI build apply the file again with `make seed-extensions`,
-# which also fails on SEED-PROBLEM lines; here a problem is reported and the
-# boot goes on.
-if [ "${FIRST_BOOT:-0}" = "1" ] && [ -f /var/www/data/seed-extensions.sql ]; then
-    echo "Importing extension demo records (data/seed-extensions.sql, first boot)..."
-    SEED_OUT="$(MYSQL_PWD="${MARIADB_PASSWORD:-typo3}" mariadb -h"${MARIADB_HOST:-db}" -u"${MARIADB_USER:-typo3}" "${MARIADB_DATABASE:-typo3}" \
-        --default-character-set=utf8mb4 < /var/www/data/seed-extensions.sql 2>&1)" \
-        || echo "WARNING: seed-extensions.sql import failed: $SEED_OUT" >&2
-    if printf '%s\n' "$SEED_OUT" | grep -q '^SEED-PROBLEM:'; then
-        printf '%s\n' "$SEED_OUT" | grep '^SEED-PROBLEM:' >&2
-        echo "WARNING: seed-extensions.sql reported SEED-PROBLEM lines (above); make seed-extensions fails on them" >&2
     fi
 fi
 
