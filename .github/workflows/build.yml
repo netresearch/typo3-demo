@@ -976,8 +976,8 @@ jobs:
           esac
 
       # The web entrypoint imports data/seed-extensions.sql on first boot and
-      # swallows any error, so a seed that dies half-way still leaves this job
-      # green. Apply it here the way a deploy does (`make seed-extensions` fails
+      # only warns about an error, so a seed that dies half-way still leaves
+      # this job green. Apply it here the way a deploy does (`make seed-extensions` fails
       # on a client error or a SEED-PROBLEM line), twice: on this fresh stack,
       # where docker/db/init.sh made the database utf8mb4_unicode_ci and
       # data/db.sql.gz made the nr-llm tables utf8mb4_uca1400_ai_ci (the wording
