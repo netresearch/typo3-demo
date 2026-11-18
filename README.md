@@ -182,10 +182,13 @@ anything, whichever package is named:
   GitHub allows without a token, so the update stops with
   `Could not authenticate against github.com`.
 
-Pass both in the environment, not in a file:
+Pass both in the environment, not in a file, and read them without echo so
+that neither lands in the shell history:
 
 ```bash
-COMPOSER_AUTH='{"gitlab-token": {"git.netresearch.de": "<gitlab-token>"}, "github-oauth": {"github.com": "<github-token>"}}' \
+read -rsp 'GitLab token: ' GITLAB_TOKEN; echo
+read -rsp 'GitHub token: ' GITHUB_TOKEN; echo
+COMPOSER_AUTH="{\"gitlab-token\": {\"git.netresearch.de\": \"$GITLAB_TOKEN\"}, \"github-oauth\": {\"github.com\": \"$GITHUB_TOKEN\"}}" \
   composer update <package> --no-install --no-scripts
 ```
 
