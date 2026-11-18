@@ -208,6 +208,30 @@ jobs:
           docker compose cp caddy:/data/caddy/pki/authorities/local/root.crt "$RUNNER_TEMP/caddy-root.crt"
           test -s "$RUNNER_TEMP/caddy-root.crt"
 
+      # This stack is a first boot, so the entrypoint imports
+      # data/seed-extensions.sql after extension:setup and removes the marker
+      # var/.seed-extensions-pending once the import succeeds. The later
+      # `make seed-extensions` replays create the same records, so without this
+      # step a failing first-boot import (the path `make up` alone relies on)
+      # would go unnoticed.
+      - name: Verify the first-boot seed import ran
+        run: |
+          logs=$(docker compose logs web 2>&1)
+          if ! printf '%s\n' "$logs" | grep -q 'Importing extension demo records (data/seed-extensions.sql, first boot)'; then
+            echo "::error::the web entrypoint did not run the first-boot import of data/seed-extensions.sql"
+            exit 1
+          fi
+          if printf '%s\n' "$logs" | grep -qE 'seed-extensions\.sql (import failed|reported SEED-PROBLEM)'; then
+            echo "::error::the first-boot import of data/seed-extensions.sql reported a problem"
+            printf '%s\n' "$logs" | grep -E 'seed-extensions\.sql|SEED-PROBLEM' || true
+            exit 1
+          fi
+          if docker compose exec -T web test -e var/.seed-extensions-pending; then
+            echo "::error::var/.seed-extensions-pending is still there after the first boot"
+            exit 1
+          fi
+          echo "The first-boot seed import ran without a reported problem."
+
       # `grep -qi typo3` alone accepts the TYPO3 *exception* page, whose title
       # contains the word — so a site broken badly enough to throw on every
       # request passed this check and only surfaced later as a healthcheck
@@ -976,8 +1000,8 @@ jobs:
           esac
 
       # The web entrypoint imports data/seed-extensions.sql on first boot and
-      # swallows any error, so a seed that dies half-way still leaves this job
-      # green. Apply it here the way a deploy does (`make seed-extensions` fails
+      # only warns about an error, so a seed that dies half-way still leaves
+      # this job green. Apply it here the way a deploy does (`make seed-extensions` fails
       # on a client error or a SEED-PROBLEM line), twice: on this fresh stack,
       # where docker/db/init.sh made the database utf8mb4_unicode_ci and
       # data/db.sql.gz made the nr-llm tables utf8mb4_uca1400_ai_ci (the wording

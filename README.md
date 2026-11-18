@@ -634,7 +634,11 @@ text or JSON file.
   approving editor's rights do not count. Nothing references an adopted file
   until an editor uses it.
 - **Token.** The client has none until an administrator issues one in
-  **AI > A2A tokens**. Revoke it there after use.
+  **AI > A2A tokens**. Revoke it there after use. A revoke also disables the
+  client record, and a token for a disabled record is refused with `401`: the
+  next token takes **Enable and generate token** in the same module (nr-llm
+  0.51.0 and later), which switches the record on and issues the token in one
+  step. The seed does not switch the record on again.
 
 ## Social posts and the webhook test receiver (nr-repurpose)
 

@@ -108,6 +108,12 @@ if [ ! -f config/system/settings.php ]; then
 
     echo "First boot: generating settings.php..."
     # Use quoted heredoc to prevent shell expansion, then substitute with sed
+    # data/seed-extensions.sql is imported further down, after extension:setup
+    # has created the extension tables it writes to. The marker lives in the
+    # var volume and is written before settings.php, so a first boot stopped
+    # before the import still imports on the next start.
+    mkdir -p var
+    touch var/.seed-extensions-pending
     cat > config/system/settings.php <<'EOPHP'
 <?php
 return [
@@ -212,11 +218,6 @@ EOPHP
     MYSQL_PWD="${MARIADB_PASSWORD:-typo3}" mariadb -h"${MARIADB_HOST:-db}" -u"${MARIADB_USER:-typo3}" "${MARIADB_DATABASE:-typo3}" \
         -e "DELETE FROM sys_template;" 2>/dev/null || true
 
-    echo "Importing extension demo pages..."
-    if [ -f /var/www/data/seed-extensions.sql ]; then
-        MYSQL_PWD="${MARIADB_PASSWORD:-typo3}" mariadb -h"${MARIADB_HOST:-db}" -u"${MARIADB_USER:-typo3}" "${MARIADB_DATABASE:-typo3}" \
-            --default-character-set=utf8mb4 < /var/www/data/seed-extensions.sql 2>/dev/null || echo "WARNING: seed-extensions.sql import failed" >&2
-    fi
 fi
 
 # Ensure installToolPassword is set (required by TYPO3; may be absent in older settings.php)
@@ -947,6 +948,33 @@ if [ -f /var/www/data/seed-schema.sql ]; then
         < /var/www/data/seed-schema.sql 2>/dev/null || echo "WARNING: seed-schema.sql import failed" >&2
 fi
 
+# ---------------------------------------------------------------------------
+# First boot only: the extension demo records of data/seed-extensions.sql.
+# ---------------------------------------------------------------------------
+# Here, right after extension:setup and seed-schema.sql: every table the file
+# writes to exists now, and the blocks further down (the form assistant on page
+# 9004, the contexts of the channel elements, the A2A user's membership of
+# workspace 9001) find the records it seeds. Until 2026-11 the import ran next
+# to the generation of settings.php, before extension:setup; the mariadb client
+# stopped at the first table or column that did not exist yet and its stderr
+# went to /dev/null, so a first boot applied the file only up to that point and
+# logged a bare WARNING without the cause. A deploy (`make update`) and the CI build apply the file again
+# with `make seed-extensions`, which also fails on SEED-PROBLEM lines; here a
+# problem is reported and the boot goes on.
+if [ -f var/.seed-extensions-pending ] && [ -f /var/www/data/seed-extensions.sql ]; then
+    echo "Importing extension demo records (data/seed-extensions.sql, first boot)..."
+    if SEED_OUT="$(MYSQL_PWD="${MARIADB_PASSWORD:-typo3}" mariadb -h"${MARIADB_HOST:-db}" -u"${MARIADB_USER:-typo3}" "${MARIADB_DATABASE:-typo3}" \
+        --default-character-set=utf8mb4 < /var/www/data/seed-extensions.sql 2>&1)"; then
+        rm -f var/.seed-extensions-pending
+    else
+        echo "WARNING: seed-extensions.sql import failed: $SEED_OUT" >&2
+    fi
+    if printf '%s\n' "$SEED_OUT" | grep -q '^SEED-PROBLEM:'; then
+        printf '%s\n' "$SEED_OUT" | grep '^SEED-PROBLEM:' >&2
+        echo "WARNING: seed-extensions.sql reported SEED-PROBLEM lines (above); make seed-extensions fails on them" >&2
+    fi
+fi
+
 # Before 0.14, nr_mcp_agent wrote an English "needs an approval" sentence into
 # the error_message of a conversation that waits for an approval, and the chat
 # showed it in a German backend too (NEXT-159). This wizard removes the stored
@@ -1153,11 +1181,11 @@ fi
 # Demo records for contexts and nr_textdb, and the category tree and prompt
 # snippets of the nr-llm and Cowriter editor actions.
 # ---------------------------------------------------------------------------
-# These MUST run after extension:setup, not from data/seed-extensions.sql:
-# neither tx_contexts_contexts / tx_nrtextdb_domain_model_* /
-# tx_nrllm_promptsnippet nor the pages/tt_content tx_contexts_* columns exist
-# when that file is imported on first boot, and
-# the mariadb client aborts the whole import on the first unknown-table error.
+# These MUST run after extension:setup: neither tx_contexts_contexts /
+# tx_nrtextdb_domain_model_* / tx_nrllm_promptsnippet nor the pages/tt_content
+# tx_contexts_* columns exist before it, and the mariadb client aborts a whole
+# import on the first unknown-table error. They were put here when
+# data/seed-extensions.sql was imported before extension:setup on a first boot.
 # Same reason the lochmueller/index configuration row lives down here.
 # Idempotent: guarded INSERTs plus UPDATEs that re-apply the assignment on
 # every boot (INSERT IGNORE never updates an existing row).
@@ -1311,8 +1339,8 @@ fi
 # ---------------------------------------------------------------------------
 # Here and not in data/seed-extensions.sql: the tx_nrllm_a2a_* tables and the
 # columns require_draft_workspace / require_assignment_scope of
-# tx_nrllm_configuration come from extension:setup, and that file is imported
-# before it on a first boot. Its own heredoc, so a failure here leaves the
+# tx_nrllm_configuration come from extension:setup, and the A2A records belong
+# with the rest of this role's setup. Its own heredoc, so a failure here leaves the
 # seeds above intact; stderr is not discarded, so the deploy log shows why.
 #
 # Every record is found by its natural key (username, group title,
@@ -1652,8 +1680,7 @@ vendor/bin/typo3 cache:warmup 2>&1 || echo "WARNING: cache:warmup failed" >&2
 # ---------------------------------------------------------------------------
 # lochmueller/index's configuration table (tx_index_domain_model_configuration)
 # is created by extension:setup above — so its seed row is applied HERE, not in
-# data/seed-extensions.sql (which is imported before setup, when the table does
-# not yet exist). Then one synchronous index run (Development context, see the
+# data/seed-extensions.sql. Then one synchronous index run (Development context, see the
 # index dev-sync flag in additional.php above) emits IndexPageEvent per page;
 # nr_ai_search turns each into an embedding job on its own 'nr_ai_search'
 # Messenger queue, drained by the bounded consume below.
