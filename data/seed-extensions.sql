@@ -91,6 +91,16 @@ VALUES (101, 1, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'Extensions', '/extensions',
 UPDATE pages SET no_index = 0, no_follow = 0
  WHERE uid = 1 AND no_index = 1 AND no_follow = 1;
 
+-- The default carousel also supplies the heading on the German fallback page.
+-- Match the imported English copy so later editorial changes survive a reseed.
+UPDATE tx_bootstrappackage_carousel_item
+   SET header = 'Netresearch TYPO3 Demo'
+ WHERE uid = 9 AND pid = 1 AND tt_content = 224 AND header = 'Create your own website with TYPO3 v.11 including the incredible design possibilities of the Bootstrap Starter Package';
+
+UPDATE tt_content
+   SET bodytext = '<p class="lead text-center">Explore the <a href="/extensions">TYPO3 extensions on this site</a> for writing, translation and content reuse.</p>'
+ WHERE uid = 222 AND pid = 1 AND CType = 'texticon' AND bodytext = '<p class="lead text-center">With our standard package for TYPO3 v.11 we quickly create your own website. Secure, flexible and responsive.</p>';
+
 -- =============================================================================
 -- Footer headings: stop skipping a level
 -- =============================================================================
@@ -706,7 +716,7 @@ VALUES (522, 157, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'Conversational AI
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
         <h6 class="fw-bold" style="font-size: 1rem; color: #2F99A4;">Tool-Grounded Answers</h6>
-        <p class="text-muted mb-0" style="font-size: 1rem;">Every response is grounded in what the MCP tools actually return — pages, records, backend users, extensions, and logs — instead of guessing.</p>
+        <p class="text-muted mb-0" style="font-size: 1rem;">The assistant can look up pages and records with the tools available to the signed-in user. Check the returned records before relying on its interpretation.</p>
       </div>
     </div>
   </div>
@@ -714,7 +724,7 @@ VALUES (522, 157, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'Conversational AI
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
         <h6 class="fw-bold" style="font-size: 1rem; color: #2F99A4;">Reads &amp; Acts</h6>
-        <p class="text-muted mb-0" style="font-size: 1rem;">Look up a record, inspect a failing log entry, or change content directly from the conversation — the agent calls the right tool for you.</p>
+        <p class="text-muted mb-0" style="font-size: 1rem;">Ask the assistant to look up a record. If a built-in writing tool is enabled, review its proposed change and approve or decline it before it runs.</p>
       </div>
     </div>
   </div>
@@ -730,7 +740,7 @@ VALUES (522, 157, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', 'Conversational AI
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
         <h6 class="fw-bold" style="font-size: 1rem; color: #2F99A4;">Speaks Your Language</h6>
-        <p class="text-muted mb-0" style="font-size: 1rem;">Replies in the language you write in and never impersonates another vendor — it is the Netresearch Backend AI Chat.</p>
+        <p class="text-muted mb-0" style="font-size: 1rem;">Ask a question in your preferred language. The chat also supports a configured answer language.</p>
       </div>
     </div>
   </div>
@@ -3809,7 +3819,7 @@ VALUES (9211, 157, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 522, 522, 'html', 'KI 
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
         <h6 class="fw-bold" style="font-size: 1rem; color: #2F99A4;">Antworten aus echten Daten</h6>
-        <p class="text-muted mb-0" style="font-size: 1rem;">Jede Antwort stützt sich auf das, was die MCP-Tools tatsächlich zurückgeben: Seiten, Datensätze, Backend-Benutzer, Erweiterungen und Logs. Geraten wird nicht.</p>
+        <p class="text-muted mb-0" style="font-size: 1rem;">Der Assistent kann Seiten und Datensätze mit den Werkzeugen nachschlagen, die für den angemeldeten Benutzer freigegeben sind. Prüfen Sie die gefundenen Datensätze, bevor Sie sich auf seine Einschätzung verlassen.</p>
       </div>
     </div>
   </div>
@@ -3817,7 +3827,7 @@ VALUES (9211, 157, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 522, 522, 'html', 'KI 
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
         <h6 class="fw-bold" style="font-size: 1rem; color: #2F99A4;">Liest &amp; handelt</h6>
-        <p class="text-muted mb-0" style="font-size: 1rem;">Einen Datensatz nachschlagen, einen auffälligen Log-Eintrag ansehen oder Inhalte ändern — alles aus dem Gespräch heraus. Den passenden Tool-Aufruf übernimmt der Agent.</p>
+        <p class="text-muted mb-0" style="font-size: 1rem;">Lassen Sie einen Datensatz nachschlagen. Ist ein integriertes Schreibwerkzeug aktiviert, können Sie die vorgeschlagene Änderung prüfen und vor der Ausführung freigeben oder ablehnen.</p>
       </div>
     </div>
   </div>
@@ -3833,7 +3843,7 @@ VALUES (9211, 157, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1, 522, 522, 'html', 'KI 
     <div class="card h-100 border-0" style="background: #f8f9fa;">
       <div class="card-body">
         <h6 class="fw-bold" style="font-size: 1rem; color: #2F99A4;">Spricht Ihre Sprache</h6>
-        <p class="text-muted mb-0" style="font-size: 1rem;">Der Agent antwortet in der Sprache, in der Sie schreiben, und gibt sich nie als ein fremdes Produkt aus — es ist der Netresearch Backend AI Chat.</p>
+        <p class="text-muted mb-0" style="font-size: 1rem;">Stellen Sie Ihre Frage in Ihrer bevorzugten Sprache. Die Antwortsprache lässt sich auch konfigurieren.</p>
       </div>
     </div>
   </div>
