@@ -15,4 +15,10 @@ plugin.tx_nrbrowserai_formassistant.settings.allowedDataSourceHosts: 'air-qualit
 # domain Caddy serves the site under. The server role itself is switched on in
 # the extension configuration (entrypoint, block nr_llm_a2a); the profiles and
 # the client are seeded there too.
-nrllm.a2a.baseUrl: 'https://%env(TYPO3_DOMAIN)%/a2a'
+# Nested, not dotted: TYPO3 reads a dotted key such as nrllm.a2a.baseUrl only
+# while a set of the site defines it, and otherwise stores it with its dots
+# escaped and does not read it (nr-llm #1410). The nested form is read with or
+# without the set netresearch/nr-llm.
+nrllm:
+  a2a:
+    baseUrl: 'https://%env(TYPO3_DOMAIN)%/a2a'

@@ -607,9 +607,10 @@ Server-Sent Events, can register a webhook for push notifications and can send a
 text or JSON file.
 
 - **Base URL.** `nrllm.a2a.baseUrl` in `config/sites/default/settings.yaml`, built
-  from `TYPO3_DOMAIN`. The site depends on the set `netresearch/nr-llm`: TYPO3 14.3
-  keeps only the settings a set of the site defines, and without the set the value
-  was dropped.
+  from `TYPO3_DOMAIN`, written nested (`nrllm:` / `a2a:` / `baseUrl:`). TYPO3 reads
+  a dotted key such as `nrllm.a2a.baseUrl` only while a set of the site defines it;
+  the nested form is read either way. The site also depends on the set
+  `netresearch/nr-llm`, which shows nr-llm's settings in the Site Settings module.
 - **nginx.** `nginx.conf` denies every path with a dot segment (`.git`, `.env`
   and the like). One exact location lets `/a2a/.well-known/agent-card.json`
   through to TYPO3; every other dot path stays denied.
@@ -621,13 +622,19 @@ text or JSON file.
   - `page_metadata`: writes metadata fields of one page as a draft in the workspace
     "Entwurf", each write after an approval in **AI > Agent Runs**. It reads the
     page with `get_page_content` first, so the seed enables that tool as well;
+  - `file_inbox`: stores a text, JSON or PDF file the client sent in the inbox
+    folder with `adopt_client_file`, each file after an approval in
+    **AI > Agent Runs**;
   - the client "Demo A2A client", which runs as the non-admin `a2a_demo_client`
     in that workspace.
+- **Inbox.** The storage "A2A inbox" is a Local storage with the absolute base
+  path `/var/www/var/a2a-inbox/` in the `typo3-var` volume: outside the web root
+  and not public, as nr-llm requires for an inbox. The group "A2A demo client"
+  has a writable file mount on it; the technical user writes the file, the
+  approving editor's rights do not count. Nothing references an adopted file
+  until an editor uses it.
 - **Token.** The client has none until an administrator issues one in
   **AI > A2A tokens**. Revoke it there after use.
-
-Taking a client's file into a FAL inbox folder is not in the installed nr-llm
-release, so no inbox folder is configured.
 
 ## Social posts and the webhook test receiver (nr-repurpose)
 
