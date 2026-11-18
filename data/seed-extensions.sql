@@ -5249,6 +5249,47 @@ UPDATE tt_content SET bodytext = '<div class="d-flex align-items-start gap-3 mb-
     </div>
   </div>
 </div>', hidden = 0, deleted = 0 WHERE uid = 9505 AND pid = 103;
+-- Cowriter: the German page falls back to the English introduction and contact
+-- box until these originals have translations. Keep existing editorial overlays,
+-- including hidden and deleted records, and never rewrite a translated body.
+INSERT IGNORE INTO tt_content
+    (uid, pid, tstamp, crdate, CType, header, bodytext, colPos, sorting, sys_language_uid, l18n_parent, l10n_source)
+SELECT translation.uid, original.pid, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'html', '',
+       translation.bodytext, original.colPos, original.sorting, 1, original.uid, original.uid
+  FROM (
+    SELECT 9650 AS uid, 9505 AS parent_uid,
+           '<div class="rounded-3 p-4 mb-4 bg-light">
+  <div class="d-flex align-items-start gap-3">
+    <img src="/fileadmin/user_upload/images/extension-icons/cowriter.svg" alt="" width="56" height="56">
+    <div>
+      <h1 class="h2">Cowriter im TYPO3-Editor</h1>
+      <p>Markieren Sie einen Absatz im CKEditor und lassen Sie ihn kürzen, umformulieren oder übersetzen. Sie prüfen den Vorschlag und entscheiden, ob Sie ihn übernehmen.</p>
+      <p>Die Abbildungen zeigen die Werkzeugleiste und den Cowriter-Dialog. Zum Bearbeiten brauchen Sie einen Zugang zum TYPO3-Backend.</p>
+      <div class="d-flex gap-2 flex-wrap">
+        <a class="btn btn-sm btn-outline-secondary" href="https://extensions.typo3.org/extension/t3_cowriter">TYPO3-Erweiterungsverzeichnis</a>
+        <a class="btn btn-sm btn-outline-secondary" href="https://docs.typo3.org/p/netresearch/t3-cowriter/main/en-us/">Dokumentation (Englisch)</a>
+        <a class="btn btn-sm btn-outline-secondary" href="https://github.com/netresearch/t3x-cowriter">Quellcode auf GitHub</a>
+      </div>
+    </div>
+  </div>
+</div>' AS bodytext
+    UNION ALL
+    SELECT 9651, 9535,
+           '<div class="rounded-3 p-4 mt-4 bg-light">
+  <h2 class="h4">Wie arbeitet Ihre Redaktion mit Cowriter?</h2>
+  <p>Netresearch zeigt Ihnen auf Wunsch im TYPO3-Backend, wie Sie einen Text überarbeiten und den Vorschlag prüfen.</p>
+  <a class="btn btn-primary" href="https://www.netresearch.de/kontakt/">Cowriter-Vorführung anfragen</a>
+</div>'
+  ) AS translation
+  JOIN tt_content AS original ON original.uid = translation.parent_uid
+ WHERE original.pid = 103 AND original.CType = 'html' AND original.sys_language_uid = 0
+   AND original.deleted = 0 AND original.hidden = 0
+   AND NOT EXISTS (
+       SELECT 1 FROM tt_content AS existing
+        WHERE existing.pid = original.pid AND existing.sys_language_uid = 1
+          AND existing.l18n_parent = original.uid
+   );
+
 UPDATE tt_content SET bodytext = '<div class="rounded-3 p-4 mt-4" style="background:#2F99A4; color:#fff;">
   <h2 class="fw-bold mb-2" style="font-size:1.3rem; color:#fff;">Want this in your TYPO3 project?</h2>
   <p class="mb-3" style="font-size:1rem; max-width:60ch;">This instance runs the extension exactly as it ships. We are happy to walk you through it and discuss what it would take in your setup.</p>
@@ -9241,6 +9282,16 @@ SELECT CONCAT('SEED-PROBLEM: page ', x.pid, ' has no diagram element -- #206 did
        SELECT 1 FROM tt_content c
         WHERE c.pid = x.pid AND c.deleted = 0
           AND c.bodytext LIKE '%/user_upload/images/extension-diagrams/%')
+UNION ALL
+SELECT CONCAT('SEED-PROBLEM: Cowriter element ', original.uid, ' has no German translation')
+  FROM tt_content AS original
+ WHERE original.uid IN (9505, 9535) AND original.pid = 103
+   AND original.sys_language_uid = 0 AND original.CType = 'html' AND original.deleted = 0 AND original.hidden = 0
+   AND NOT EXISTS (
+       SELECT 1 FROM tt_content AS existing
+        WHERE existing.pid = original.pid AND existing.sys_language_uid = 1
+          AND existing.l18n_parent = original.uid
+   )
 UNION ALL
 -- The overview page is the parent of the sixteen; it must carry exactly one h1
 -- in each language, like they do.
