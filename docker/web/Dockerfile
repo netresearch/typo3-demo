@@ -105,7 +105,7 @@ RUN --mount=type=bind,from=ghcr.io/php/pie:1.5.5-bin@sha256:3fca03c16df842d02b65
         freetype-dev libjpeg-turbo-dev libpng-dev libzip-dev icu-dev linux-headers \
         libwebp-dev libavif-dev imagemagick-dev $PHPIZE_DEPS \
     && apk add --no-cache \
-        nginx mariadb-client openssl freetype libjpeg-turbo libpng libzip icu-libs \
+        'nginx>=1.30.7-r0' mariadb-client openssl freetype libjpeg-turbo libpng libzip icu-libs \
         imagemagick imagemagick-webp imagemagick-heic libwebp libavif \
         ffmpeg poppler-utils chromium font-liberation nodejs ghostscript \
     && docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp --with-avif \
