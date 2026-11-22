@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e760db72401997e74de641d971522ae8",
+    "content-hash": "6a3539bbd629481dd48518a1507e90f6",
     "packages": [
         {
             "name": "b13/ai-bots-love-markdown",
@@ -3662,16 +3662,16 @@
         },
         {
             "name": "netresearch/nr-llm",
-            "version": "v0.52.0",
+            "version": "v0.52.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/t3x-nr-llm.git",
-                "reference": "9e25fe480b60fe904459c27b79931029619a7ffa"
+                "reference": "dc9d582b85b21616714c5a368ed9e4155ba6537f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/t3x-nr-llm/zipball/9e25fe480b60fe904459c27b79931029619a7ffa",
-                "reference": "9e25fe480b60fe904459c27b79931029619a7ffa",
+                "url": "https://api.github.com/repos/netresearch/t3x-nr-llm/zipball/dc9d582b85b21616714c5a368ed9e4155ba6537f",
+                "reference": "dc9d582b85b21616714c5a368ed9e4155ba6537f",
                 "shasum": ""
             },
             "require": {
@@ -3722,7 +3722,7 @@
                     "Package": {
                         "providesPackages": []
                     },
-                    "version": "0.52.0",
+                    "version": "0.52.1",
                     "web-dir": ".Build/Web",
                     "extension-key": "nr_llm"
                 },
@@ -3767,8 +3767,8 @@
                 "issues": "https://github.com/netresearch/t3x-nr-llm/issues",
                 "source": "https://github.com/netresearch/t3x-nr-llm"
             },
-            "time": "2026-11-20T14:39:11+00:00",
-            "published-time": "2026-11-20T16:10:25+00:00"
+            "time": "2026-11-22T10:07:01+00:00",
+            "published-time": "2026-11-22T10:57:58+00:00"
         },
         {
             "name": "netresearch/nr-llm-compat",
