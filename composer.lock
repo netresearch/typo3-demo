@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6a3539bbd629481dd48518a1507e90f6",
+    "content-hash": "3f08dd61d620a01ef72b5ce751482176",
     "packages": [
         {
             "name": "b13/ai-bots-love-markdown",
@@ -3274,16 +3274,16 @@
         },
         {
             "name": "netresearch/nr-ai-search",
-            "version": "dev-main",
+            "version": "0.2.0",
             "source": {
                 "type": "git",
                 "url": "git@git.netresearch.de:support/nr-ai-search.git",
-                "reference": "b43eec78237f15c842b34ae07b1a74c119c306da"
+                "reference": "d0262eb09b196310777a56a9d0ce973cf2a63129"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://git.netresearch.de/api/v4/projects/support%2Fnr-ai-search/repository/archive.zip?sha=b43eec78237f15c842b34ae07b1a74c119c306da",
-                "reference": "b43eec78237f15c842b34ae07b1a74c119c306da",
+                "url": "https://git.netresearch.de/api/v4/projects/support%2Fnr-ai-search/repository/archive.zip?sha=d0262eb09b196310777a56a9d0ce973cf2a63129",
+                "reference": "d0262eb09b196310777a56a9d0ce973cf2a63129",
                 "shasum": ""
             },
             "require": {
@@ -3291,7 +3291,7 @@
                 "doctrine/dbal": "^4.4",
                 "ext-curl": "*",
                 "league/commonmark": "^2.4",
-                "netresearch/nr-llm": "^0.34 || ^0.35 || ^0.36 || ^0.37 || ^0.38 || ^0.39 || ^0.40 || ^0.41 || ^0.42 || ^0.43 || ^0.44 || ^0.45 || ^0.46 || ^0.47 || ^0.48 || ^0.49 || ^0.50 || ^0.51 || ^0.52",
+                "netresearch/nr-llm": "^0.34 || ^0.35 || ^0.36 || ^0.37 || ^0.38 || ^0.39 || ^0.40 || ^0.41 || ^0.42 || ^0.43 || ^0.44 || ^0.45 || ^0.46 || ^0.47 || ^0.48 || ^0.49 || ^0.50 || ^0.51 || ^0.52 || ^0.53",
                 "netresearch/nr-vault": "^1.5.1",
                 "php": "^8.3",
                 "psr/clock": "^1.0",
@@ -3322,7 +3322,6 @@
                 "lochmueller/index": "Enables IndexAdapter, the reference content-source adapter (ADR-003), and the rebuild_search_index chat tool (ADR-035).",
                 "typo3/cms-install": "Provides the upgrade wizard nrAiSearch_rebuildIndexForSourceState, which queues the index rebuild that ADR-050 needs after an upgrade (ADR-053); without it the rebuild is started by hand."
             },
-            "default-branch": true,
             "type": "typo3-cms-extension",
             "extra": {
                 "captainhook": {
@@ -3331,7 +3330,7 @@
                 "typo3/cms": {
                     "extension-key": "nr_ai_search",
                     "web-dir": ".Build/web",
-                    "version": "0.1.0",
+                    "version": "0.2.0",
                     "Package": {
                         "providesPackages": []
                     }
@@ -3400,10 +3399,10 @@
             ],
             "description": "RAG-based content search and chat for TYPO3 websites.",
             "support": {
-                "source": "https://git.netresearch.de/support/nr-ai-search/-/tree/main",
+                "source": "https://git.netresearch.de/support/nr-ai-search/-/tree/0.2.0",
                 "issues": "https://git.netresearch.de/support/nr-ai-search/-/issues"
             },
-            "time": "2026-11-20T17:46:06+01:00"
+            "time": "2026-11-24T17:30:41+01:00"
         },
         {
             "name": "netresearch/nr-browser-ai",
@@ -13872,7 +13871,6 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "netresearch/falkenquell-site": 20,
-        "netresearch/nr-ai-search": 20,
         "netresearch/typo3-demo-site": 20
     },
     "prefer-stable": true,

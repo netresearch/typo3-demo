@@ -20,7 +20,7 @@
         "mfd/ai-filemetadata": "^1.6",
         "netresearch/contexts": "^5.1.1",
         "netresearch/falkenquell-site": "@dev",
-        "netresearch/nr-ai-search": "dev-main",
+        "netresearch/nr-ai-search": "^0.2.0",
         "netresearch/nr-browser-ai": "^0.9.0",
         "netresearch/nr-bug-reporter": "^0.1.2",
         "netresearch/nr-image-sitemap": "^14.0.3",
