@@ -1780,8 +1780,8 @@ DELETE FROM sys_workspace_stage WHERE parentid NOT IN (SELECT uid FROM sys_works
 --      The group adds only what the chat and the workspace need on top of
 --      "Advanced editors" (uid 3, which brings the page mount 1 and, through
 --      its subgroups, the page group 1 the demo pages are shared with): the
---      Page, Workspaces and AI chat modules and the right to approve the
---      chat's changes to one's own content (nr_mcp_agent ADR-021).
+--      Page, Landing Pages, Workspaces and AI chat modules and the right to
+--      approve the chat's changes to one's own content (nr_mcp_agent ADR-021).
 --
 --      The user starts in workspace 9001. Only the INSERT sets it: once the
 --      row exists, the workspace an administrator or the editor switched to
@@ -1790,8 +1790,8 @@ DELETE FROM sys_workspace_stage WHERE parentid NOT IN (SELECT uid FROM sys_works
 INSERT IGNORE INTO be_groups
     (uid, pid, tstamp, crdate, deleted, hidden, title, description, subgroup, groupMods, custom_options)
 VALUES (995, 0, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0, 'Workspace editors (AI chat)',
-     'Advanced editors plus the Page, Workspaces and AI chat modules, the approval of the chat''s changes to one''s own content, and read access to the AI provider key.',
-     '3', 'web_layout,workspaces_publish,nr_mcp_agent_chat,user_setup', 'tx_nrmcpagent:approve_own_changes,tx_nrvault:secret.use');
+     'Advanced editors plus the Page, Landing Pages, Workspaces and AI chat modules, the approval of the chat''s changes to one''s own content, and read access to the AI provider key.',
+     '3', 'web_layout,nr_landingpage,workspaces_publish,nr_mcp_agent_chat,user_setup', 'tx_nrmcpagent:approve_own_changes,tx_nrvault:secret.use');
 
 INSERT IGNORE INTO be_users
     (uid, pid, tstamp, crdate, deleted, disable, admin, username, password, usergroup, options, lang,
@@ -1816,6 +1816,17 @@ WHERE uid = 9001 AND deleted = 0 AND title = 'Entwurf'
   AND NOT FIND_IN_SET('be_users_995', COALESCE(members, ''))
   AND EXISTS (SELECT 1 FROM be_users WHERE uid = 995 AND deleted = 0 AND username = 'redakteur_entwurf');
 
+-- The Landing Pages module (nr_landingpage, access "user"), so the editor can
+-- generate a landing page in "Entwurf" and preview it there before it is
+-- published. INSERT IGNORE above skipped the existing group. Appended rather
+-- than overwritten, so a module an administrator added stays. The module
+-- nr_landingpage_workspace (drafts with share links) is another feature and
+-- not needed for it.
+UPDATE be_groups
+SET groupMods = CONCAT_WS(',', NULLIF(groupMods, ''), 'nr_landingpage')
+WHERE uid = 995 AND deleted = 0 AND title = 'Workspace editors (AI chat)'
+  AND NOT FIND_IN_SET('nr_landingpage', COALESCE(groupMods, ''));
+
 -- The chat calls the model with the provider key as the editor. nr_vault grants
 -- a non-admin, non-owner user a secret only through its read-tier groups, and
 -- without one the editor's first chat message failed with `Access denied to
@@ -1824,10 +1835,10 @@ WHERE uid = 9001 AND deleted = 0 AND title = 'Entwurf'
 -- both are re-asserted, as INSERT IGNORE above skipped the existing group.
 UPDATE be_groups
 SET custom_options = 'tx_nrmcpagent:approve_own_changes,tx_nrvault:secret.use',
-    description = 'Advanced editors plus the Page, Workspaces and AI chat modules, the approval of the chat''s changes to one''s own content, and read access to the AI provider key.'
+    description = 'Advanced editors plus the Page, Landing Pages, Workspaces and AI chat modules, the approval of the chat''s changes to one''s own content, and read access to the AI provider key.'
 WHERE uid = 995 AND deleted = 0 AND title = 'Workspace editors (AI chat)'
   AND (custom_options <> 'tx_nrmcpagent:approve_own_changes,tx_nrvault:secret.use'
-       OR description <> 'Advanced editors plus the Page, Workspaces and AI chat modules, the approval of the chat''s changes to one''s own content, and read access to the AI provider key.');
+       OR description <> 'Advanced editors plus the Page, Landing Pages, Workspaces and AI chat modules, the approval of the chat''s changes to one''s own content, and read access to the AI provider key.');
 
 -- The content types the editor may edit. "Advanced editors" carries its list in
 -- the format before TYPO3 12 ("tt_content:CType:texticon:ALLOW"), which TYPO3 14
@@ -1840,13 +1851,16 @@ UPDATE be_groups SET explicit_allowdeny = 'tt_content:CType:accordion,tt_content
 WHERE uid = 995 AND deleted = 0 AND title = 'Workspace editors (AI chat)'
   AND COALESCE(explicit_allowdeny, '') <> 'tt_content:CType:accordion,tt_content:CType:audio,tt_content:CType:carousel,tt_content:CType:carousel_small,tt_content:CType:carousel_fullscreen,tt_content:CType:listgroup,tt_content:CType:media,tt_content:CType:menu_thumbnail_list,tt_content:CType:menu_thumbnail_dir,tt_content:CType:panel,tt_content:CType:quote,tt_content:CType:tab,tt_content:CType:textcolumn,tt_content:CType:texticon,tt_content:CType:textteaser,tt_content:CType:header,tt_content:CType:text,tt_content:CType:textpic,tt_content:CType:image,tt_content:CType:textmedia,tt_content:CType:bullets,tt_content:CType:table,tt_content:CType:uploads,tt_content:CType:menu_abstract,tt_content:CType:menu_categorized_content,tt_content:CType:menu_categorized_pages,tt_content:CType:menu_pages,tt_content:CType:menu_subpages,tt_content:CType:menu_recently_updated,tt_content:CType:menu_related_pages,tt_content:CType:menu_section,tt_content:CType:menu_section_pages,tt_content:CType:menu_sitemap,tt_content:CType:menu_sitemap_pages,tt_content:CType:shortcut,tt_content:CType:list,tt_content:CType:div,tt_content:CType:html,tt_content:CType:form_formframework,tt_content:CType:login,tt_content:list_type:indexedsearch_pi2,tx_bootstrappackage_carousel_item:item_type:header,tx_bootstrappackage_carousel_item:item_type:html';
 
--- The images the editor may pick, and the page fields for a social image.
+-- The images the editor may pick, and the page fields for a social image and
+-- for the texts of a generated landing page (the templates' page_fields).
 -- Without a file mount the chat's replace_file_reference refused every new file
 -- ("File reference, content element or file not found, or not permitted"), and
 -- without the field grants set_page_social_image refused pages:og_image ("holds
 -- no field-level ("exclude field") grant"). Both found in the live check of
--- 2026-11-09. The mount is read-only: picking a file needs readFile, and the
--- editor uploads nothing there. Fixed uid 996 is above the seed's file mount
+-- 2026-11-09. Without the grants for seo_title, og_title and og_description the
+-- DataHandler drops these fields of a landing page in silence. The mount is
+-- read-only: picking a file needs readFile, and the editor uploads nothing
+-- there. Fixed uid 996 is above the seed's file mount
 -- 994; options = 3 on be_users 995 makes the user take the group's mounts.
 INSERT IGNORE INTO sys_filemounts (uid, pid, tstamp, deleted, hidden, title, description, identifier, read_only)
 VALUES (996, 0, UNIX_TIMESTAMP(), 0, 0, 'Demo images (workspace editor)',
@@ -1856,11 +1870,11 @@ VALUES (996, 0, UNIX_TIMESTAMP(), 0, 0, 'Demo images (workspace editor)',
 UPDATE be_groups
 SET file_mountpoints = '996',
     file_permissions = 'readFolder,readFile',
-    non_exclude_fields = 'pages:og_image,pages:twitter_image'
+    non_exclude_fields = 'pages:og_image,pages:twitter_image,pages:seo_title,pages:og_title,pages:og_description'
 WHERE uid = 995 AND deleted = 0 AND title = 'Workspace editors (AI chat)'
   AND (COALESCE(file_mountpoints, '') <> '996'
        OR COALESCE(file_permissions, '') <> 'readFolder,readFile'
-       OR COALESCE(non_exclude_fields, '') <> 'pages:og_image,pages:twitter_image')
+       OR COALESCE(non_exclude_fields, '') <> 'pages:og_image,pages:twitter_image,pages:seo_title,pages:og_title,pages:og_description')
   AND EXISTS (SELECT 1 FROM sys_filemounts WHERE uid = 996 AND deleted = 0 AND identifier = '1:/user_upload/images/');
 
 -- The mount stays read-only, and the editor takes the group's file mounts
@@ -8945,6 +8959,15 @@ SELECT 'SEED-PROBLEM: be_groups 995 lacks file mount 996 or the og_image/twitter
                       AND FIND_IN_SET('pages:twitter_image', COALESCE(non_exclude_fields, '')))
    OR NOT EXISTS (SELECT 1 FROM sys_filemounts WHERE uid = 996 AND deleted = 0 AND hidden = 0 AND identifier = '1:/user_upload/images/' AND read_only = 1)
    OR NOT EXISTS (SELECT 1 FROM be_users WHERE uid = 995 AND deleted = 0 AND username = 'redakteur_entwurf' AND options & 2 = 2)
+UNION ALL
+SELECT 'SEED-PROBLEM: be_groups 995 lacks the Landing Pages module or the seo_title/og_title/og_description grants (the workspace editor cannot generate and preview a landing page)'
+  FROM DUAL
+ WHERE NOT EXISTS (SELECT 1 FROM be_groups
+                    WHERE uid = 995 AND deleted = 0 AND hidden = 0
+                      AND FIND_IN_SET('nr_landingpage', COALESCE(groupMods, ''))
+                      AND FIND_IN_SET('pages:seo_title', COALESCE(non_exclude_fields, ''))
+                      AND FIND_IN_SET('pages:og_title', COALESCE(non_exclude_fields, ''))
+                      AND FIND_IN_SET('pages:og_description', COALESCE(non_exclude_fields, '')))
 UNION ALL
 -- An editor group with the Page module but without the Visual Editor leaves
 -- its editors outside the Visual Editor again (see the web_edit update above).
