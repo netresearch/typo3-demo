@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM composer:2@sha256:50ea4d33fdcde1adb0f045547295faa1548b33872e5f789dae5b02ce2fb5de93 AS composer-builder
+FROM composer:2@sha256:0049ce90b432795bf413a738b073963ada1a689e1a8708104684baafe94586ec AS composer-builder
 WORKDIR /app
 COPY composer.json composer.lock* patches.lock.json ./
 COPY packages/ packages/
@@ -100,7 +100,7 @@ FROM php:8.5-fpm-alpine@sha256:51414d5291758fe27f58a64c7e8a078465d32cc7dcef7bda8
 # The encoders were originally added for nr_image_optimize. They stay after its
 # removal because core's conversion needs exactly the same thing — the WebP
 # delivery the build asserts comes from core.
-RUN --mount=type=bind,from=ghcr.io/php/pie:1.5.5-bin@sha256:3fca03c16df842d02b654dc382db3756058d9c128064f57cace14f8728779ce9,source=/pie,target=/usr/local/bin/pie \
+RUN --mount=type=bind,from=ghcr.io/php/pie:1.6.0-bin@sha256:f49c15dbb88a7aec373fdb15ab9004bf08958772db3b476c42364e10a8ea416f,source=/pie,target=/usr/local/bin/pie \
     apk add --no-cache --virtual .build-deps \
         freetype-dev libjpeg-turbo-dev libpng-dev libzip-dev icu-dev linux-headers \
         libwebp-dev libavif-dev imagemagick-dev $PHPIZE_DEPS \
