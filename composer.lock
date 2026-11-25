@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6a3539bbd629481dd48518a1507e90f6",
+    "content-hash": "f96a35850a56d292d6884c9db17ebc74",
     "packages": [
         {
             "name": "b13/ai-bots-love-markdown",
@@ -1562,26 +1562,26 @@
         },
         {
             "name": "egulias/email-validator",
-            "version": "4.0.4",
+            "version": "4.0.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/egulias/EmailValidator.git",
-                "reference": "d42c8731f0624ad6bdc8d3e5e9a4524f68801cfa"
+                "reference": "9bef884e12278a7b89b64adbfb9379c021d3c102"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/egulias/EmailValidator/zipball/d42c8731f0624ad6bdc8d3e5e9a4524f68801cfa",
-                "reference": "d42c8731f0624ad6bdc8d3e5e9a4524f68801cfa",
+                "url": "https://api.github.com/repos/egulias/EmailValidator/zipball/9bef884e12278a7b89b64adbfb9379c021d3c102",
+                "reference": "9bef884e12278a7b89b64adbfb9379c021d3c102",
                 "shasum": ""
             },
             "require": {
-                "doctrine/lexer": "^2.0 || ^3.0",
+                "doctrine/lexer": "^3.0.3",
                 "php": ">=8.1",
-                "symfony/polyfill-intl-idn": "^1.26"
+                "symfony/polyfill-intl-idn": "^1.43"
             },
             "require-dev": {
-                "phpunit/phpunit": "^10.2",
-                "vimeo/psalm": "^5.12"
+                "phpunit/phpunit": "^10.5.67",
+                "vimeo/psalm": "^5.26.1"
             },
             "suggest": {
                 "ext-intl": "PHP Internationalization Libraries are required to use the SpoofChecking validation"
@@ -1617,7 +1617,7 @@
             ],
             "support": {
                 "issues": "https://github.com/egulias/EmailValidator/issues",
-                "source": "https://github.com/egulias/EmailValidator/tree/4.0.4"
+                "source": "https://github.com/egulias/EmailValidator/tree/4.0.5"
             },
             "funding": [
                 {
@@ -1625,8 +1625,8 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-03-06T22:45:56+00:00",
-            "published-time": "2025-03-20T21:39:03+00:00"
+            "time": "2026-11-22T16:52:20+00:00",
+            "published-time": "2026-11-22T22:05:57+00:00"
         },
         {
             "name": "enshrined/svg-sanitize",
@@ -2023,22 +2023,22 @@
         },
         {
             "name": "guzzlehttp/guzzle",
-            "version": "8.5.5",
+            "version": "8.6.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/guzzle.git",
-                "reference": "d1a26e6ce24268e740af501de8748d1c945e6f4b"
+                "reference": "ba6574fd975ab16f87dc356729a36777c03851e8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/guzzle/zipball/d1a26e6ce24268e740af501de8748d1c945e6f4b",
-                "reference": "d1a26e6ce24268e740af501de8748d1c945e6f4b",
+                "url": "https://api.github.com/repos/guzzle/guzzle/zipball/ba6574fd975ab16f87dc356729a36777c03851e8",
+                "reference": "ba6574fd975ab16f87dc356729a36777c03851e8",
                 "shasum": ""
             },
             "require": {
                 "ext-json": "*",
-                "guzzlehttp/promises": "^3.1.1",
-                "guzzlehttp/psr7": "^3.5.1",
+                "guzzlehttp/promises": "^3.2",
+                "guzzlehttp/psr7": "^3.6",
                 "php": "^7.4 || ^8.0",
                 "psr/http-client": "^1.0",
                 "psr/http-factory": "^1.0",
@@ -2130,7 +2130,7 @@
             ],
             "support": {
                 "issues": "https://github.com/guzzle/guzzle/issues",
-                "source": "https://github.com/guzzle/guzzle/tree/8.5.5"
+                "source": "https://github.com/guzzle/guzzle/tree/8.6.0"
             },
             "funding": [
                 {
@@ -2146,8 +2146,8 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-11-21T21:14:02+00:00",
-            "published-time": "2026-11-21T21:14:44+00:00"
+            "time": "2026-11-22T16:48:13+00:00",
+            "published-time": "2026-11-22T16:50:37+00:00"
         },
         {
             "name": "guzzlehttp/promises",
@@ -2596,16 +2596,16 @@
         },
         {
             "name": "league/commonmark",
-            "version": "2.10.7",
+            "version": "2.10.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/commonmark.git",
-                "reference": "8eb53e906fd60c67038d22f1f1cab420ed58b8be"
+                "reference": "681e662a40c805c567f52d603b64d55282ea356c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/commonmark/zipball/8eb53e906fd60c67038d22f1f1cab420ed58b8be",
-                "reference": "8eb53e906fd60c67038d22f1f1cab420ed58b8be",
+                "url": "https://api.github.com/repos/thephpleague/commonmark/zipball/681e662a40c805c567f52d603b64d55282ea356c",
+                "reference": "681e662a40c805c567f52d603b64d55282ea356c",
                 "shasum": ""
             },
             "require": {
@@ -2699,8 +2699,8 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-10-31T13:35:37+00:00",
-            "published-time": "2026-10-31T13:35:57+00:00"
+            "time": "2026-11-24T15:44:47+00:00",
+            "published-time": "2026-11-24T15:45:01+00:00"
         },
         {
             "name": "league/config",
@@ -3274,16 +3274,16 @@
         },
         {
             "name": "netresearch/nr-ai-search",
-            "version": "dev-main",
+            "version": "0.2.1",
             "source": {
                 "type": "git",
                 "url": "git@git.netresearch.de:support/nr-ai-search.git",
-                "reference": "b43eec78237f15c842b34ae07b1a74c119c306da"
+                "reference": "1fd4196cb4ca90394d65aa700713693b6ecd1fa8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://git.netresearch.de/api/v4/projects/support%2Fnr-ai-search/repository/archive.zip?sha=b43eec78237f15c842b34ae07b1a74c119c306da",
-                "reference": "b43eec78237f15c842b34ae07b1a74c119c306da",
+                "url": "https://git.netresearch.de/api/v4/projects/support%2Fnr-ai-search/repository/archive.zip?sha=1fd4196cb4ca90394d65aa700713693b6ecd1fa8",
+                "reference": "1fd4196cb4ca90394d65aa700713693b6ecd1fa8",
                 "shasum": ""
             },
             "require": {
@@ -3291,7 +3291,7 @@
                 "doctrine/dbal": "^4.4",
                 "ext-curl": "*",
                 "league/commonmark": "^2.4",
-                "netresearch/nr-llm": "^0.34 || ^0.35 || ^0.36 || ^0.37 || ^0.38 || ^0.39 || ^0.40 || ^0.41 || ^0.42 || ^0.43 || ^0.44 || ^0.45 || ^0.46 || ^0.47 || ^0.48 || ^0.49 || ^0.50 || ^0.51 || ^0.52",
+                "netresearch/nr-llm": "^0.34 || ^0.35 || ^0.36 || ^0.37 || ^0.38 || ^0.39 || ^0.40 || ^0.41 || ^0.42 || ^0.43 || ^0.44 || ^0.45 || ^0.46 || ^0.47 || ^0.48 || ^0.49 || ^0.50 || ^0.51 || ^0.52 || ^0.53 || ^0.54 || ^0.55",
                 "netresearch/nr-vault": "^1.5.1",
                 "php": "^8.3",
                 "psr/clock": "^1.0",
@@ -3311,7 +3311,7 @@
                 "infection/infection": "^0.35",
                 "justinrainbow/json-schema": "^6.0",
                 "lochmueller/index": "^2.2",
-                "netresearch/typo3-ci-workflows": "^1 || ^2",
+                "netresearch/typo3-ci-workflows": "^2.2",
                 "typo3/cms-fluid-styled-content": "^13.4 || ^14.3",
                 "typo3/cms-install": "^13.4 || ^14.3",
                 "typo3/cms-redirects": "^13.4 || ^14.3",
@@ -3322,7 +3322,6 @@
                 "lochmueller/index": "Enables IndexAdapter, the reference content-source adapter (ADR-003), and the rebuild_search_index chat tool (ADR-035).",
                 "typo3/cms-install": "Provides the upgrade wizard nrAiSearch_rebuildIndexForSourceState, which queues the index rebuild that ADR-050 needs after an upgrade (ADR-053); without it the rebuild is started by hand."
             },
-            "default-branch": true,
             "type": "typo3-cms-extension",
             "extra": {
                 "captainhook": {
@@ -3331,7 +3330,7 @@
                 "typo3/cms": {
                     "extension-key": "nr_ai_search",
                     "web-dir": ".Build/web",
-                    "version": "0.1.0",
+                    "version": "0.2.1",
                     "Package": {
                         "providesPackages": []
                     }
@@ -3400,10 +3399,10 @@
             ],
             "description": "RAG-based content search and chat for TYPO3 websites.",
             "support": {
-                "source": "https://git.netresearch.de/support/nr-ai-search/-/tree/main",
+                "source": "https://git.netresearch.de/support/nr-ai-search/-/tree/0.2.1",
                 "issues": "https://git.netresearch.de/support/nr-ai-search/-/issues"
             },
-            "time": "2026-11-20T17:46:06+01:00"
+            "time": "2026-11-25T08:56:53+01:00"
         },
         {
             "name": "netresearch/nr-browser-ai",
@@ -3606,20 +3605,20 @@
         },
         {
             "name": "netresearch/nr-landingpage",
-            "version": "v0.8.3",
+            "version": "v0.10.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/nr-landingpage.git",
-                "reference": "9912946327171cde8b6b3bb98ed8a58e30fc3253"
+                "reference": "683285d529ba6837bf7f78e15b9b6a08f1a4bc46"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/nr-landingpage/zipball/9912946327171cde8b6b3bb98ed8a58e30fc3253",
-                "reference": "9912946327171cde8b6b3bb98ed8a58e30fc3253",
+                "url": "https://api.github.com/repos/netresearch/nr-landingpage/zipball/683285d529ba6837bf7f78e15b9b6a08f1a4bc46",
+                "reference": "683285d529ba6837bf7f78e15b9b6a08f1a4bc46",
                 "shasum": ""
             },
             "require": {
-                "netresearch/nr-llm": "^0.43.10 || ^0.44 || ^0.45 || ^0.46 || ^0.47 || ^0.48 || ^0.49 || ^0.50 || ^0.51 || ^0.52",
+                "netresearch/nr-llm": "^0.54 || ^0.55",
                 "php": "^8.2",
                 "typo3/cms-backend": "^13.4 || ^14.3",
                 "typo3/cms-core": "^13.4 || ^14.3",
@@ -3656,29 +3655,30 @@
             "description": "Landing Page Generator - Generate landing pages with an LLM in a step-by-step backend wizard.",
             "support": {
                 "issues": "https://github.com/netresearch/nr-landingpage/issues",
-                "source": "https://github.com/netresearch/nr-landingpage/tree/v0.8.3"
+                "source": "https://github.com/netresearch/nr-landingpage/tree/v0.10.0"
             },
-            "time": "2026-11-21T13:30:46+00:00",
-            "published-time": "2026-11-21T14:04:00+00:00"
+            "time": "2026-11-24T23:26:04+00:00",
+            "published-time": "2026-11-24T23:31:00+00:00"
         },
         {
             "name": "netresearch/nr-llm",
-            "version": "v0.52.1",
+            "version": "v0.55.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/t3x-nr-llm.git",
-                "reference": "dc9d582b85b21616714c5a368ed9e4155ba6537f"
+                "reference": "f220548f39c4f3f1ccf111a9d6ee92402a7fc379"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/t3x-nr-llm/zipball/dc9d582b85b21616714c5a368ed9e4155ba6537f",
-                "reference": "dc9d582b85b21616714c5a368ed9e4155ba6537f",
+                "url": "https://api.github.com/repos/netresearch/t3x-nr-llm/zipball/f220548f39c4f3f1ccf111a9d6ee92402a7fc379",
+                "reference": "f220548f39c4f3f1ccf111a9d6ee92402a7fc379",
                 "shasum": ""
             },
             "require": {
                 "helgesverre/toon": "^3.3",
                 "masterminds/html5": "^2.7.6",
                 "netresearch/nr-vault": "^1.5.1",
+                "open-telemetry/api": "^1.7",
                 "php": "^8.2",
                 "psr/event-dispatcher": "^1.0",
                 "psr/http-client": "^1.0",
@@ -3695,6 +3695,7 @@
                 "fakerphp/faker": "^1.24",
                 "netresearch/typo3-ci-workflows": "^2.0.3",
                 "nikic/php-parser": "^5.4",
+                "open-telemetry/sdk": "^1.9",
                 "phpunit/phpcov": "^10.0 || ^11.0 || ^12.0 || ^13.0",
                 "thieleundklose/autotranslate": "^3.6",
                 "tpwd/ke_search": "^7.0",
@@ -3723,7 +3724,7 @@
                     "Package": {
                         "providesPackages": []
                     },
-                    "version": "0.52.1",
+                    "version": "0.55.0",
                     "web-dir": ".Build/Web",
                     "extension-key": "nr_llm"
                 },
@@ -3768,27 +3769,27 @@
                 "issues": "https://github.com/netresearch/t3x-nr-llm/issues",
                 "source": "https://github.com/netresearch/t3x-nr-llm"
             },
-            "time": "2026-11-22T10:07:01+00:00",
-            "published-time": "2026-11-22T10:57:58+00:00"
+            "time": "2026-11-24T22:03:28+00:00",
+            "published-time": "2026-11-24T22:54:00+00:00"
         },
         {
             "name": "netresearch/nr-llm-compat",
-            "version": "v0.5.9",
+            "version": "v0.5.11",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/t3x-nr-llm-compat.git",
-                "reference": "6d427694b6569ec5a6511a3bd8b0f1f2b430b362"
+                "reference": "c9beedd09c9518a2c6870a9c948f2ef4a38ba2b8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/t3x-nr-llm-compat/zipball/6d427694b6569ec5a6511a3bd8b0f1f2b430b362",
-                "reference": "6d427694b6569ec5a6511a3bd8b0f1f2b430b362",
+                "url": "https://api.github.com/repos/netresearch/t3x-nr-llm-compat/zipball/c9beedd09c9518a2c6870a9c948f2ef4a38ba2b8",
+                "reference": "c9beedd09c9518a2c6870a9c948f2ef4a38ba2b8",
                 "shasum": ""
             },
             "require": {
                 "composer-runtime-api": "^2.2",
                 "composer/semver": "^3.4",
-                "netresearch/nr-llm": "^0.35 || ^0.36 || ^0.37 || ^0.38 || ^0.39 || ^0.40 || ^0.41 || ^0.42 || ^0.43 || ^0.44 || ^0.45 || ^0.46 || ^0.47 || ^0.48 || ^0.49 || ^0.50 || ^0.51 || ^0.52",
+                "netresearch/nr-llm": "^0.35 || ^0.36 || ^0.37 || ^0.38 || ^0.39 || ^0.40 || ^0.41 || ^0.42 || ^0.43 || ^0.44 || ^0.45 || ^0.46 || ^0.47 || ^0.48 || ^0.49 || ^0.50 || ^0.51 || ^0.52 || ^0.53 || ^0.54 || ^0.55",
                 "php": "^8.2",
                 "symfony/console": "^6.4 || ^7.0 || ^8.0",
                 "symfony/dependency-injection": "^6.4 || ^7.0 || ^8.0",
@@ -3798,7 +3799,7 @@
                 "georgringer/news": "^14.0",
                 "in2code/sitescore": "^3.1",
                 "in2code/texter": "^3.0",
-                "mfd/ai-filemetadata": "^1.6",
+                "mfd/ai-filemetadata": "^1.6 <1.7.1",
                 "netresearch/typo3-ci-workflows": "^2.0.3",
                 "nitsan/ns-t3ai": "^14.0.2",
                 "passionweb/ai-seo-helper": "^0.7.2",
@@ -3819,7 +3820,7 @@
             "type": "typo3-cms-extension",
             "extra": {
                 "typo3/cms": {
-                    "version": "0.5.9",
+                    "version": "0.5.11",
                     "web-dir": ".Build/Web",
                     "extension-key": "nr_llm_compat"
                 }
@@ -3855,25 +3856,25 @@
                 "issues": "https://github.com/netresearch/t3x-nr-llm-compat/issues",
                 "source": "https://github.com/netresearch/t3x-nr-llm-compat"
             },
-            "time": "2026-11-20T17:16:47+00:00",
-            "published-time": "2026-11-20T18:33:45+00:00"
+            "time": "2026-11-25T08:21:42+00:00",
+            "published-time": "2026-11-25T08:42:13+00:00"
         },
         {
             "name": "netresearch/nr-mcp-agent",
-            "version": "v0.39.4",
+            "version": "v0.40.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/t3x-nr-mcp-agent.git",
-                "reference": "6d394c403f8298739353dd65e084329822c448f2"
+                "reference": "fd6882603feb9460728df438933ba87d59b28c89"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/t3x-nr-mcp-agent/zipball/6d394c403f8298739353dd65e084329822c448f2",
-                "reference": "6d394c403f8298739353dd65e084329822c448f2",
+                "url": "https://api.github.com/repos/netresearch/t3x-nr-mcp-agent/zipball/fd6882603feb9460728df438933ba87d59b28c89",
+                "reference": "fd6882603feb9460728df438933ba87d59b28c89",
                 "shasum": ""
             },
             "require": {
-                "netresearch/nr-llm": "^0.45.0 || ^0.46.0 || ^0.47.0 || ^0.48.0 || ^0.49.0 || ^0.50.0 || ^0.51.0 || ^0.52.0",
+                "netresearch/nr-llm": "^0.45.0 || ^0.46.0 || ^0.47.0 || ^0.48.0 || ^0.49.0 || ^0.50.0 || ^0.51.0 || ^0.52.0 || ^0.53.0 || ^0.54.0 || ^0.55.0",
                 "php": "^8.2",
                 "phpoffice/phpword": "^1.0",
                 "smalot/pdfparser": "^2.0",
@@ -3937,21 +3938,21 @@
                 "issues": "https://github.com/netresearch/t3x-nr-mcp-agent/issues",
                 "source": "https://github.com/netresearch/t3x-nr-mcp-agent"
             },
-            "time": "2026-11-21T13:44:44+00:00",
-            "published-time": "2026-11-21T14:13:12+00:00"
+            "time": "2026-11-25T08:43:05+00:00",
+            "published-time": "2026-11-25T08:53:04+00:00"
         },
         {
             "name": "netresearch/nr-passkeys-be",
-            "version": "v1.0.3",
+            "version": "v1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/t3x-nr-passkeys-be.git",
-                "reference": "f34a6ef7ac0ff5fd9c610e9ab23879b00caba23d"
+                "reference": "3c99a455fc138eb95bee2d3f5cf7920dd449f114"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/t3x-nr-passkeys-be/zipball/f34a6ef7ac0ff5fd9c610e9ab23879b00caba23d",
-                "reference": "f34a6ef7ac0ff5fd9c610e9ab23879b00caba23d",
+                "url": "https://api.github.com/repos/netresearch/t3x-nr-passkeys-be/zipball/3c99a455fc138eb95bee2d3f5cf7920dd449f114",
+                "reference": "3c99a455fc138eb95bee2d3f5cf7920dd449f114",
                 "shasum": ""
             },
             "require": {
@@ -3960,6 +3961,9 @@
                 "typo3/cms-core": "^12.4 || ^13.4 || ^14.3",
                 "typo3/cms-setup": "^12.4 || ^13.4 || ^14.3",
                 "web-auth/webauthn-lib": "^5.3"
+            },
+            "conflict": {
+                "symfony/serializer": ">=8.0,<8.1"
             },
             "require-dev": {
                 "dg/bypass-finals": "^1.9",
@@ -4020,8 +4024,8 @@
                 "issues": "https://github.com/netresearch/t3x-nr-passkeys-be/issues",
                 "source": "https://github.com/netresearch/t3x-nr-passkeys-be"
             },
-            "time": "2026-11-01T02:31:10+00:00",
-            "published-time": "2026-11-01T02:53:21+00:00"
+            "time": "2026-11-24T17:42:09+00:00",
+            "published-time": "2026-11-24T17:51:46+00:00"
         },
         {
             "name": "netresearch/nr-passkeys-fe",
@@ -4101,22 +4105,22 @@
         },
         {
             "name": "netresearch/nr-repurpose",
-            "version": "v0.15.9",
+            "version": "v0.16.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/t3x-nr-repurpose.git",
-                "reference": "6a0bbb11a79799a7fe9e82b60d3bb846ab44dc96"
+                "reference": "89f7f3f5ee78e399a0d0022404e3ea052a7ee33e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/t3x-nr-repurpose/zipball/6a0bbb11a79799a7fe9e82b60d3bb846ab44dc96",
-                "reference": "6a0bbb11a79799a7fe9e82b60d3bb846ab44dc96",
+                "url": "https://api.github.com/repos/netresearch/t3x-nr-repurpose/zipball/89f7f3f5ee78e399a0d0022404e3ea052a7ee33e",
+                "reference": "89f7f3f5ee78e399a0d0022404e3ea052a7ee33e",
                 "shasum": ""
             },
             "require": {
                 "ext-curl": "*",
                 "ext-json": "*",
-                "netresearch/nr-llm": "^0.43.4 || ^0.44 || ^0.45 || ^0.46 || ^0.47 || ^0.48 || ^0.49 || ^0.50 || ^0.51 || ^0.52",
+                "netresearch/nr-llm": "^0.43.4 || ^0.44 || ^0.45 || ^0.46 || ^0.47 || ^0.48 || ^0.49 || ^0.50 || ^0.51 || ^0.52 || ^0.53 || ^0.54 || ^0.55",
                 "netresearch/nr-vault": "^1.1",
                 "php": "^8.3",
                 "psr/log": "^3.0",
@@ -4150,7 +4154,7 @@
                             "smalot/pdfparser": ""
                         }
                     },
-                    "version": "0.15.9",
+                    "version": "0.16.2",
                     "web-dir": ".Build/Web",
                     "extension-key": "nr_repurpose"
                 },
@@ -4181,8 +4185,8 @@
                 "issues": "https://github.com/netresearch/t3x-nr-repurpose/issues",
                 "source": "https://github.com/netresearch/t3x-nr-repurpose"
             },
-            "time": "2026-11-21T13:40:51+00:00",
-            "published-time": "2026-11-21T14:10:27+00:00"
+            "time": "2026-11-25T08:22:37+00:00",
+            "published-time": "2026-11-25T08:42:16+00:00"
         },
         {
             "name": "netresearch/nr-scheduler",
@@ -4487,16 +4491,16 @@
         },
         {
             "name": "netresearch/nr-vault",
-            "version": "v1.10.0",
+            "version": "v1.11.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/t3x-nr-vault.git",
-                "reference": "a9efab1863451138501a19d70e4ecf28801afdc5"
+                "reference": "df46cadb904d1f018278b19cba031694ae621911"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/t3x-nr-vault/zipball/a9efab1863451138501a19d70e4ecf28801afdc5",
-                "reference": "a9efab1863451138501a19d70e4ecf28801afdc5",
+                "url": "https://api.github.com/repos/netresearch/t3x-nr-vault/zipball/df46cadb904d1f018278b19cba031694ae621911",
+                "reference": "df46cadb904d1f018278b19cba031694ae621911",
                 "shasum": ""
             },
             "require": {
@@ -4532,7 +4536,7 @@
                     "Package": {
                         "providesPackages": []
                     },
-                    "version": "1.10.0",
+                    "version": "1.11.0",
                     "web-dir": ".Build/web",
                     "extension-key": "nr_vault"
                 },
@@ -4578,21 +4582,21 @@
                 "issues": "https://github.com/netresearch/t3x-nr-vault/issues",
                 "source": "https://github.com/netresearch/t3x-nr-vault"
             },
-            "time": "2026-11-17T13:12:57+00:00",
-            "published-time": "2026-11-17T13:49:02+00:00"
+            "time": "2026-11-23T22:50:02+00:00",
+            "published-time": "2026-11-23T23:16:29+00:00"
         },
         {
             "name": "netresearch/rte-ckeditor-image",
-            "version": "v13.10.5",
+            "version": "v13.11.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/t3x-rte_ckeditor_image.git",
-                "reference": "634200bd615c5e94e6dc7475e8b59307aa311ce9"
+                "reference": "f422a12e87caaf281b3b9ce3d1a660c401ad0fa9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/t3x-rte_ckeditor_image/zipball/634200bd615c5e94e6dc7475e8b59307aa311ce9",
-                "reference": "634200bd615c5e94e6dc7475e8b59307aa311ce9",
+                "url": "https://api.github.com/repos/netresearch/t3x-rte_ckeditor_image/zipball/f422a12e87caaf281b3b9ce3d1a660c401ad0fa9",
+                "reference": "f422a12e87caaf281b3b9ce3d1a660c401ad0fa9",
                 "shasum": ""
             },
             "require": {
@@ -4649,7 +4653,7 @@
                     ".Build/bin/phpunit -c Build/phpunit/UnitTests.xml"
                 ],
                 "ci:test:php:lint": [
-                    "phplint --configuration Build/.phplint.yml"
+                    "phplint lint --configuration Build/.phplint.yml"
                 ],
                 "ci:test:php:phpstan": [
                     "phpstan analyze --configuration Build/phpstan.neon --memory-limit=-1"
@@ -4672,6 +4676,7 @@
                     "@ci:test:php:rector",
                     "@ci:test:php:cgl",
                     "@ci:test:php:unit",
+                    "@ci:test:js:lint",
                     "@ci:test:js:unit",
                     "@ci:test:php:functional"
                 ],
@@ -4694,6 +4699,9 @@
                 ],
                 "ci:mutation:quick": [
                     ".Build/bin/infection --configuration=infection.json5 --threads=4 --only-covered --skip-initial-tests"
+                ],
+                "ci:test:js:lint": [
+                    "cd Tests/JavaScript && npm ci --silent && npm run lint"
                 ],
                 "ci:test:js:unit": [
                     "cd Tests/JavaScript && npm ci --silent && npm test"
@@ -4729,28 +4737,28 @@
             "description": "CKEditor Image Support - Adds FAL image support to CKEditor in the rich text editor.",
             "homepage": "https://github.com/netresearch/t3x-rte_ckeditor_image",
             "support": {
-                "source": "https://github.com/netresearch/t3x-rte_ckeditor_image/tree/v13.10.5",
+                "source": "https://github.com/netresearch/t3x-rte_ckeditor_image/tree/v13.11.0",
                 "issues": "https://github.com/netresearch/t3x-rte_ckeditor_image/issues"
             },
-            "time": "2026-11-05T09:27:33+00:00"
+            "time": "2026-11-23T12:36:10+00:00"
         },
         {
             "name": "netresearch/t3-cowriter",
-            "version": "v3.28.9",
+            "version": "v3.28.11",
             "source": {
                 "type": "git",
                 "url": "https://github.com/netresearch/t3x-cowriter.git",
-                "reference": "9d9e280d6e04e137151f2c749b207602e71a032f"
+                "reference": "54a4c4cd0d2d3d578f81a2151fef2cb5b4f3f504"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/netresearch/t3x-cowriter/zipball/9d9e280d6e04e137151f2c749b207602e71a032f",
-                "reference": "9d9e280d6e04e137151f2c749b207602e71a032f",
+                "url": "https://api.github.com/repos/netresearch/t3x-cowriter/zipball/54a4c4cd0d2d3d578f81a2151fef2cb5b4f3f504",
+                "reference": "54a4c4cd0d2d3d578f81a2151fef2cb5b4f3f504",
                 "shasum": ""
             },
             "require": {
                 "masterminds/html5": "^2.9",
-                "netresearch/nr-llm": "^0.43.9 || ^0.44 || ^0.45 || ^0.46 || ^0.47 || ^0.48 || ^0.49 || ^0.50 || ^0.51 || ^0.52",
+                "netresearch/nr-llm": "^0.43.9 || ^0.44 || ^0.45 || ^0.46 || ^0.47 || ^0.48 || ^0.49 || ^0.50 || ^0.51 || ^0.52 || ^0.53 || ^0.54 || ^0.55",
                 "php": "^8.2",
                 "typo3/cms-backend": "^13.4 || ^14.3",
                 "typo3/cms-core": "^13.4 || ^14.3",
@@ -4830,8 +4838,8 @@
                 "issues": "https://github.com/netresearch/t3x-cowriter/issues",
                 "source": "https://github.com/netresearch/t3x-cowriter"
             },
-            "time": "2026-11-21T15:13:29+00:00",
-            "published-time": "2026-11-21T15:31:31+00:00"
+            "time": "2026-11-25T08:28:38+00:00",
+            "published-time": "2026-11-25T08:42:18+00:00"
         },
         {
             "name": "netresearch/typo3-demo-site",
@@ -5090,6 +5098,143 @@
             "published-time": "2026-09-13T18:53:16+00:00"
         },
         {
+            "name": "open-telemetry/api",
+            "version": "1.12.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/opentelemetry-php/api.git",
+                "reference": "b0884741f3f9d5dc60477784c8671bd2acef4ceb"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/opentelemetry-php/api/zipball/b0884741f3f9d5dc60477784c8671bd2acef4ceb",
+                "reference": "b0884741f3f9d5dc60477784c8671bd2acef4ceb",
+                "shasum": ""
+            },
+            "require": {
+                "open-telemetry/context": "^1.4",
+                "php": "^8.2",
+                "psr/log": "^1.1|^2.0|^3.0"
+            },
+            "conflict": {
+                "open-telemetry/sdk": "<=1.11",
+                "open-telemetry/sdk-configuration": "<0.10"
+            },
+            "suggest": {
+                "symfony/config": "To implement a ComponentProvider for declarative configuration"
+            },
+            "type": "library",
+            "extra": {
+                "spi": {
+                    "OpenTelemetry\\API\\Configuration\\Config\\ComponentProvider": [
+                        "OpenTelemetry\\API\\Baggage\\Propagation\\Config\\TextMapPropagatorBaggage",
+                        "OpenTelemetry\\API\\Trace\\Propagation\\Config\\TextMapPropagatorTraceContext"
+                    ],
+                    "OpenTelemetry\\API\\Instrumentation\\AutoInstrumentation\\HookManagerInterface": [
+                        "OpenTelemetry\\API\\Instrumentation\\AutoInstrumentation\\ExtensionHookManager"
+                    ]
+                },
+                "branch-alias": {
+                    "dev-main": "1.12.x-dev"
+                }
+            },
+            "autoload": {
+                "files": [
+                    "Trace/functions.php"
+                ],
+                "psr-4": {
+                    "OpenTelemetry\\API\\": "."
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "opentelemetry-php contributors",
+                    "homepage": "https://github.com/open-telemetry/opentelemetry-php/graphs/contributors"
+                }
+            ],
+            "description": "API for OpenTelemetry PHP.",
+            "keywords": [
+                "Metrics",
+                "api",
+                "apm",
+                "logging",
+                "opentelemetry",
+                "otel",
+                "tracing"
+            ],
+            "support": {
+                "chat": "https://app.slack.com/client/T08PSQ7BQ/C01NFPCV44V",
+                "docs": "https://opentelemetry.io/docs/languages/php",
+                "issues": "https://github.com/open-telemetry/opentelemetry-php/issues",
+                "source": "https://github.com/open-telemetry/opentelemetry-php"
+            },
+            "time": "2026-11-19T08:10:15+00:00",
+            "published-time": "2026-11-19T08:15:35+00:00"
+        },
+        {
+            "name": "open-telemetry/context",
+            "version": "1.6.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/opentelemetry-php/context.git",
+                "reference": "711e7291d9cf8a984c059c5afd926e45ab444b7f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/opentelemetry-php/context/zipball/711e7291d9cf8a984c059c5afd926e45ab444b7f",
+                "reference": "711e7291d9cf8a984c059c5afd926e45ab444b7f",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^8.2"
+            },
+            "suggest": {
+                "ext-ffi": "To allow context switching in Fibers"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-main": "1.6.x-dev"
+                }
+            },
+            "autoload": {
+                "files": [
+                    "fiber/initialize_fiber_handler.php"
+                ],
+                "psr-4": {
+                    "OpenTelemetry\\Context\\": "."
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "opentelemetry-php contributors",
+                    "homepage": "https://github.com/open-telemetry/opentelemetry-php/graphs/contributors"
+                }
+            ],
+            "description": "Context implementation for OpenTelemetry PHP.",
+            "keywords": [
+                "Context",
+                "opentelemetry",
+                "otel"
+            ],
+            "support": {
+                "chat": "https://app.slack.com/client/T08PSQ7BQ/C01NFPCV44V",
+                "docs": "https://opentelemetry.io/docs/languages/php",
+                "issues": "https://github.com/open-telemetry/opentelemetry-php/issues",
+                "source": "https://github.com/open-telemetry/opentelemetry-php"
+            },
+            "time": "2026-11-05T11:54:49+00:00",
+            "published-time": "2026-11-05T12:00:45+00:00"
+        },
+        {
             "name": "openai-php/client",
             "version": "v0.20.1",
             "source": {
@@ -5183,16 +5328,16 @@
         },
         {
             "name": "opis/json-schema",
-            "version": "2.6.2",
+            "version": "2.6.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/opis/json-schema.git",
-                "reference": "b87b424da3fbeaab09567910fda48dc88d9dcbd8"
+                "reference": "fa37275e1604aee00d2868a22c432302e4455751"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/opis/json-schema/zipball/b87b424da3fbeaab09567910fda48dc88d9dcbd8",
-                "reference": "b87b424da3fbeaab09567910fda48dc88d9dcbd8",
+                "url": "https://api.github.com/repos/opis/json-schema/zipball/fa37275e1604aee00d2868a22c432302e4455751",
+                "reference": "fa37275e1604aee00d2868a22c432302e4455751",
                 "shasum": ""
             },
             "require": {
@@ -5242,23 +5387,23 @@
             ],
             "support": {
                 "issues": "https://github.com/opis/json-schema/issues",
-                "source": "https://github.com/opis/json-schema/tree/2.6.2"
+                "source": "https://github.com/opis/json-schema/tree/2.6.3"
             },
-            "time": "2026-11-08T08:09:42+00:00",
-            "published-time": "2026-11-11T10:35:41+00:00"
+            "time": "2026-11-24T20:14:32+00:00",
+            "published-time": "2026-11-24T20:18:28+00:00"
         },
         {
             "name": "opis/string",
-            "version": "2.1.0",
+            "version": "2.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/opis/string.git",
-                "reference": "3e4d2aaff518ac518530b89bb26ed40f4503635e"
+                "reference": "56523d2610f4bf77b7400644b4cadf578b157a11"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/opis/string/zipball/3e4d2aaff518ac518530b89bb26ed40f4503635e",
-                "reference": "3e4d2aaff518ac518530b89bb26ed40f4503635e",
+                "url": "https://api.github.com/repos/opis/string/zipball/56523d2610f4bf77b7400644b4cadf578b157a11",
+                "reference": "56523d2610f4bf77b7400644b4cadf578b157a11",
                 "shasum": ""
             },
             "require": {
@@ -5305,23 +5450,23 @@
             ],
             "support": {
                 "issues": "https://github.com/opis/string/issues",
-                "source": "https://github.com/opis/string/tree/2.1.0"
+                "source": "https://github.com/opis/string/tree/2.2.0"
             },
-            "time": "2025-10-17T12:38:41+00:00",
-            "published-time": "2025-10-17T12:40:48+00:00"
+            "time": "2026-11-24T21:41:01+00:00",
+            "published-time": "2026-11-24T21:46:44+00:00"
         },
         {
             "name": "opis/uri",
-            "version": "1.1.0",
+            "version": "1.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/opis/uri.git",
-                "reference": "0f3ca49ab1a5e4a6681c286e0b2cc081b93a7d5a"
+                "reference": "d3d5d7fd43acb178d5dc16d2e1b18b2ab8235c47"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/opis/uri/zipball/0f3ca49ab1a5e4a6681c286e0b2cc081b93a7d5a",
-                "reference": "0f3ca49ab1a5e4a6681c286e0b2cc081b93a7d5a",
+                "url": "https://api.github.com/repos/opis/uri/zipball/d3d5d7fd43acb178d5dc16d2e1b18b2ab8235c47",
+                "reference": "d3d5d7fd43acb178d5dc16d2e1b18b2ab8235c47",
                 "shasum": ""
             },
             "require": {
@@ -5369,10 +5514,10 @@
             ],
             "support": {
                 "issues": "https://github.com/opis/uri/issues",
-                "source": "https://github.com/opis/uri/tree/1.1.0"
+                "source": "https://github.com/opis/uri/tree/1.2.0"
             },
-            "time": "2021-05-22T15:57:08+00:00",
-            "published-time": "2021-05-22T16:01:15+00:00"
+            "time": "2026-11-24T20:01:02+00:00",
+            "published-time": "2026-11-24T20:08:31+00:00"
         },
         {
             "name": "oskarstark/enum-helper",
@@ -13714,16 +13859,16 @@
         },
         {
             "name": "web-auth/webauthn-lib",
-            "version": "5.3.15",
+            "version": "5.3.17",
             "source": {
                 "type": "git",
                 "url": "https://github.com/web-auth/webauthn-lib.git",
-                "reference": "768fb8cf7bebaad8a08b3015e206dda95e3320fa"
+                "reference": "7f38dbcf07cd22ec104fa6eb720df22eb4196b47"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/web-auth/webauthn-lib/zipball/768fb8cf7bebaad8a08b3015e206dda95e3320fa",
-                "reference": "768fb8cf7bebaad8a08b3015e206dda95e3320fa",
+                "url": "https://api.github.com/repos/web-auth/webauthn-lib/zipball/7f38dbcf07cd22ec104fa6eb720df22eb4196b47",
+                "reference": "7f38dbcf07cd22ec104fa6eb720df22eb4196b47",
                 "shasum": ""
             },
             "require": {
@@ -13784,7 +13929,7 @@
                 "webauthn"
             ],
             "support": {
-                "source": "https://github.com/web-auth/webauthn-lib/tree/5.3.15"
+                "source": "https://github.com/web-auth/webauthn-lib/tree/5.3.17"
             },
             "funding": [
                 {
@@ -13796,8 +13941,8 @@
                     "type": "patreon"
                 }
             ],
-            "time": "2026-11-18T16:46:55+00:00",
-            "published-time": "2026-11-19T11:40:19+00:00"
+            "time": "2026-11-23T18:46:47+00:00",
+            "published-time": "2026-11-24T07:58:53+00:00"
         },
         {
             "name": "webmozart/assert",
@@ -13872,7 +14017,6 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "netresearch/falkenquell-site": 20,
-        "netresearch/nr-ai-search": 20,
         "netresearch/typo3-demo-site": 20
     },
     "prefer-stable": true,
