@@ -86,7 +86,7 @@ RUN sha256sum -c /tmp/bootstrap-text-templates.sha256 \
          echo "and record the new checksum in docker/web/bootstrap-text-templates.sha256." >&2; \
          exit 1; }
 
-FROM php:8.5-fpm-alpine@sha256:51414d5291758fe27f58a64c7e8a078465d32cc7dcef7bda803f5b36019802e0 AS runtime
+FROM php:8.6-fpm-alpine@sha256:31d659619113bbf45ca69dfb04c7220f095c2b814d58ea373204aaa237eeb2a1 AS runtime
 # Both imagick and GD are built with WebP and AVIF: TYPO3 picks its processor
 # from the install-wide setting, and core's imageFileConversionFormats can only
 # deliver a modern format if the one in use can encode it. AVIF reaches
