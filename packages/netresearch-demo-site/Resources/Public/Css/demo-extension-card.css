@@ -79,8 +79,17 @@
 }
 
 .nrdemo-card__steps > summary::before {
+    /* Empty alternative text: the chevron is decoration, not part of the
+       disclosure's accessible name. A browser without the alt syntax keeps
+       the first declaration. */
     content: '▸';
-    transition: transform 0.15s ease;
+    content: '▸' / '';
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .nrdemo-card__steps > summary::before {
+        transition: transform 0.15s ease;
+    }
 }
 
 .nrdemo-card__steps[open] > summary::before {
