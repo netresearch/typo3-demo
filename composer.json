@@ -17,7 +17,7 @@
         "guzzlehttp/guzzle": "^8.0",
         "in2code/sitescore": "^3.1",
         "lochmueller/index": "^3.0.1",
-        "mfd/ai-filemetadata": "^1.7 <1.7.1",
+        "mfd/ai-filemetadata": "<1.7.2",
         "netresearch/contexts": "^5.1.1",
         "netresearch/falkenquell-site": "@dev",
         "netresearch/nr-ai-search": "^0.2.1",
