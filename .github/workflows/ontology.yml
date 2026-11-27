@@ -1,0 +1,23 @@
+name: Ontology
+
+# Checks docs/ontology/ against the files it cites: a change that removes the
+# evidence of a relation fails here, in the same pull request.
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Check the ontology
+        run: python3 scripts/check-ontology.py docs/ontology
