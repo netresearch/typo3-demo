@@ -25,6 +25,8 @@ python3 scripts/check-ontology.py docs/ontology --impact concepts/extensions/nr-
 concepts/extensions/nr-llm
 concepts/demo-account
   via concepts/demo-account uses concepts/extensions/nr-llm
+concepts/extension-seed
+  via concepts/extension-seed uses concepts/extensions/nr-llm
 concepts/extensions/nr-ai-search
   via concepts/extensions/nr-ai-search uses concepts/extensions/nr-llm (hypothesis)
 concepts/extensions/nr-landingpage
@@ -40,12 +42,12 @@ concepts/extensions/nr-repurpose
   via concepts/extensions/nr-repurpose uses concepts/extensions/nr-llm (hypothesis)
 concepts/extensions/t3-cowriter
   via concepts/extensions/t3-cowriter uses concepts/extensions/nr-llm (hypothesis)
+concepts/deployment
+  via concepts/extension-seed uses concepts/extensions/nr-llm
+  via concepts/deployment uses concepts/extension-seed
 concepts/app-container
   via concepts/extensions/nr-llm partOf concepts/container-image
   via concepts/app-container uses concepts/container-image
-concepts/deployment
-  via concepts/extensions/nr-llm partOf concepts/container-image
-  via concepts/deployment uses concepts/container-image
 concepts/demo-instance
   via concepts/extensions/nr-llm partOf concepts/container-image
   via concepts/app-container uses concepts/container-image
@@ -59,4 +61,4 @@ Scope: only the relations this bundle models; coverage.md names what it leaves o
 
 # Limits
 
-An extension update on the demo is always a full update: all Netresearch extensions to their newest releases, `composer update` without a package name, the base images, and the superseded dependency-bot pull requests closed (`AGENTS.md`). The merge to `main` builds the image, and "Deploy (Update)" rolls it out. Data in the live database, for example nr-llm configurations, is not part of the image; the seed data covers only a fresh install.
+An extension update on the demo is always a full update: all Netresearch extensions to their newest releases, `composer update` without a package name, the base images, and the superseded dependency-bot pull requests closed (`AGENTS.md`). The merge to `main` builds the image, and "Deploy (Update)" rolls it out. Data in the live database is not part of the image. The seed data (`data/db.sql.gz`) enters only an empty database, but the extension seed (`data/seed-extensions.sql`) is applied again by `make update` on every deploy, so a change to the nr-llm records there reaches the live instance with the next merge.

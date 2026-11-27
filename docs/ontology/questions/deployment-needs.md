@@ -26,6 +26,8 @@ concepts/deployment
 concepts/container-image
   via concepts/deployment uses concepts/container-image
   test .github/workflows/build.yml
+concepts/extension-seed
+  via concepts/deployment uses concepts/extension-seed
 concepts/demo-instance
   via concepts/deployment uses concepts/demo-instance
 concepts/composer-manifest

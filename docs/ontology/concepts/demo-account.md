@@ -15,4 +15,4 @@ The demo accounts are backend users of the seed data. `nr_admin` is the administ
 | Relation | Target | Evidence file | Evidence text | Status |
 |---|---|---|---|---|
 | `uses` | [netresearch/nr-llm](extensions/nr-llm.md) | `README.md` | `a non-admin with the AI Tasks module and a` | asserted |
-| `derivedFrom` | [Seed data](seed-data.md) | `README.md` | `have no password and are entered` | asserted |
+| `derivedFrom` | [Extension seed](extension-seed.md) | `data/seed-extensions.sql` | `WHERE uid = 1000 AND username = 'redakteur_ki' AND admin = 0` | asserted |

@@ -15,4 +15,5 @@ Deployment is GitOps-driven: a merge to `main` builds and pushes the container i
 | Relation | Target | Evidence file | Evidence text | Status |
 |---|---|---|---|---|
 | `uses` | [Container image](container-image.md) | `.github/workflows/update.yml` | `workflows: ["Build"]` | asserted |
+| `uses` | [Extension seed](extension-seed.md) | `.github/workflows/update.yml` | `docker compose version make update` | asserted |
 | `uses` | [TYPO3 demo instance](demo-instance.md) | `.github/workflows/update.yml` | `name: Deploy (Update)` | asserted |

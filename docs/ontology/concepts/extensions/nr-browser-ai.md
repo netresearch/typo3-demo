@@ -8,7 +8,7 @@ timestamp: 2026-11-27
 
 # Definition
 
-The package `netresearch/nr-browser-ai` (On-device page assistant in the browser) as this instance installs it. `composer.json` names the allowed range and `composer.lock` the version the image contains. The instance requires the package directly, so its version can differ from the version the TYPO3 AI Edition tested.
+The package `netresearch/nr-browser-ai` (On-device page assistant in the browser) as this instance installs it. `composer.json` names the allowed range and `composer.lock` the version the image contains. The instance requires the package directly, so its version can differ from the range the TYPO3 AI Edition tested it in as a suggested member.
 
 # Relations
 
