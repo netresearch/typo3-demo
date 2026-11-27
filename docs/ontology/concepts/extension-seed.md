@@ -20,3 +20,7 @@ The extension seed is `data/seed-extensions.sql` with `data/seed-falkenquell.sql
 |---|---|---|---|---|
 | `implementedBy` | `data/seed-extensions.sql` | `Makefile` | `seed-extensions: ## Apply data/seed-extensions.sql and data/seed-falkenquell.sql to the DB` | asserted |
 | `uses` | [netresearch/nr-llm](extensions/nr-llm.md) | `data/seed-extensions.sql` | `SELECT 'SEED-PROBLEM: tx_nrllm_user_budget 9304 for redakteur_ki (be_user 1000) missing, foreign or inactive'` | asserted |
+| `uses` | [netresearch/nr-landingpage](extensions/nr-landingpage.md) | `data/seed-extensions.sql` | `SEED-PROBLEM: tx_nrlandingpage_domain_model_template ` | asserted |
+| `uses` | [netresearch/nr-vault](extensions/nr-vault.md) | `data/seed-extensions.sql` | `SEED-PROBLEM: be_users 989 nr_vault_auditor` | asserted |
+| `uses` | [netresearch/nr-repurpose](extensions/nr-repurpose.md) | `data/seed-extensions.sql` | `SEED-PROBLEM: be_users 998 redakteur_repurpose` | asserted |
+| `uses` | [netresearch/nr-ai-search](extensions/nr-ai-search.md) | `data/seed-extensions.sql` | `SEED-PROBLEM: be_users 990 nr_ai_search_technical` | asserted |

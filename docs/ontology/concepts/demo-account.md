@@ -14,6 +14,7 @@ The demo accounts are backend users in the database. The admin `nr_admin` comes 
 
 | Relation | Target | Evidence file | Evidence text | Status |
 |---|---|---|---|---|
+| `uses` | [netresearch/nr-repurpose](extensions/nr-repurpose.md) | `data/seed-extensions.sql` | `grants an nrrepurpose option to redakteur_repurpose` | asserted |
 | `uses` | [netresearch/nr-llm](extensions/nr-llm.md) | `README.md` | `a non-admin with the AI Tasks module and a` | asserted |
 | `uses` | [Database](database.md) | `README.md` | `(run once after a fresh install or reset)` | asserted |
 | `derivedFrom` | [Extension seed](extension-seed.md) | `data/seed-extensions.sql` | `WHERE uid = 1000 AND username = 'redakteur_ki' AND admin = 0` | asserted |
