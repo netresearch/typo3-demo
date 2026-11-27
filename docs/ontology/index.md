@@ -42,4 +42,4 @@ Every concept file has the sections `# Definition`, an optional `# Not to be con
 | Evidence text | A literal from one line of that file; the check requires it to be present |
 | Status | `asserted`: read in the code and checked by the script. `hypothesis`: not yet backed by evidence |
 
-The relation vocabulary is the same in every Netresearch bundle. Its canonical copy, and the relations between repositories, are kept in software-factory/ontology, an internal repository of Netresearch.
+The relation vocabulary is the same in every Netresearch bundle. Netresearch keeps the canonical copy of the vocabulary and of this script, and the relations between repositories, in an internal repository.
