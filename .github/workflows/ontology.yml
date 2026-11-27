@@ -1,7 +1,8 @@
 name: Ontology
 
 # Checks docs/ontology/ against the files it cites: a change that removes the
-# evidence of a relation fails here, in the same pull request.
+# evidence of a relation turns this check red in the same pull request.
+# The merge waits for it only once "ontology" is a required status check.
 
 on:
   pull_request:
@@ -13,7 +14,8 @@ permissions:
   contents: read
 
 jobs:
-  check:
+  ontology:
+    name: ontology
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
