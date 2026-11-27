@@ -24,11 +24,11 @@ python3 scripts/check-ontology.py docs/ontology --impact concepts/database
 ```text
 concepts/database
 concepts/app-container
-  via concepts/app-container uses concepts/database
+  via concepts/app-container uses concepts/database (hypothesis)
 concepts/demo-instance
   via concepts/demo-instance uses concepts/database
 concepts/proxy
-  via concepts/app-container uses concepts/database
+  via concepts/app-container uses concepts/database (hypothesis)
   via concepts/proxy uses concepts/app-container
 concepts/deployment
   via concepts/demo-instance uses concepts/database

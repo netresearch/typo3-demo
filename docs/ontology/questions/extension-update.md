@@ -30,17 +30,17 @@ concepts/container-image
   test .github/workflows/build.yml
 concepts/app-container
   via concepts/extensions/nr-llm partOf concepts/container-image
-  via concepts/app-container uses concepts/container-image
+  via concepts/app-container uses concepts/container-image (hypothesis)
 concepts/deployment
   via concepts/extensions/nr-llm partOf concepts/container-image
   via concepts/deployment uses concepts/container-image
 concepts/demo-instance
   via concepts/extensions/nr-llm partOf concepts/container-image
-  via concepts/app-container uses concepts/container-image
+  via concepts/app-container uses concepts/container-image (hypothesis)
   via concepts/demo-instance uses concepts/app-container
 concepts/proxy
   via concepts/extensions/nr-llm partOf concepts/container-image
-  via concepts/app-container uses concepts/container-image
+  via concepts/app-container uses concepts/container-image (hypothesis)
   via concepts/proxy uses concepts/app-container
 Scope: only the relations this bundle models; coverage.md names what it leaves out.
 ```
