@@ -33,8 +33,8 @@ individually, so its installed versions can differ from the ones the edition
 has tested.
 
 The backend has two dashboards: **Netresearch Demo** (one explainer card per
-extension, each with a "how to demo it" recipe) and **Netresearch Widgets**
-(the extensions' own live dashboard widgets).
+extension, each with its demo steps under a collapsed "Try it yourself") and
+**Netresearch Widgets** (the extensions' own live dashboard widgets).
 
 ## Quick start
 
