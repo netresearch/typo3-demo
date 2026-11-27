@@ -4,7 +4,7 @@ title: "An extension gets a new version"
 description: "What in the instance follows when an installed extension, for example nr-llm, gets a new version?"
 x-nr-query: --impact concepts/extensions/nr-llm
 status: draft
-generated: {by: claude-code/2.1.332, at: 2026-11-27T21:06:57Z}
+timestamp: 2026-11-27
 ---
 
 # Question
@@ -25,22 +25,34 @@ python3 scripts/check-ontology.py docs/ontology --impact concepts/extensions/nr-
 concepts/extensions/nr-llm
 concepts/demo-account
   via concepts/demo-account uses concepts/extensions/nr-llm
+concepts/extensions/nr-ai-search
+  via concepts/extensions/nr-ai-search uses concepts/extensions/nr-llm (hypothesis)
+concepts/extensions/nr-landingpage
+  via concepts/extensions/nr-landingpage uses concepts/extensions/nr-llm (hypothesis)
+concepts/extensions/nr-llm-compat
+  via concepts/extensions/nr-llm-compat uses concepts/extensions/nr-llm (hypothesis)
 concepts/container-image
   via concepts/extensions/nr-llm partOf concepts/container-image
   test .github/workflows/build.yml
+concepts/extensions/nr-mcp-agent
+  via concepts/extensions/nr-mcp-agent uses concepts/extensions/nr-llm (hypothesis)
+concepts/extensions/nr-repurpose
+  via concepts/extensions/nr-repurpose uses concepts/extensions/nr-llm (hypothesis)
+concepts/extensions/t3-cowriter
+  via concepts/extensions/t3-cowriter uses concepts/extensions/nr-llm (hypothesis)
 concepts/app-container
   via concepts/extensions/nr-llm partOf concepts/container-image
-  via concepts/app-container uses concepts/container-image (hypothesis)
+  via concepts/app-container uses concepts/container-image
 concepts/deployment
   via concepts/extensions/nr-llm partOf concepts/container-image
   via concepts/deployment uses concepts/container-image
 concepts/demo-instance
   via concepts/extensions/nr-llm partOf concepts/container-image
-  via concepts/app-container uses concepts/container-image (hypothesis)
+  via concepts/app-container uses concepts/container-image
   via concepts/demo-instance uses concepts/app-container
 concepts/proxy
   via concepts/extensions/nr-llm partOf concepts/container-image
-  via concepts/app-container uses concepts/container-image (hypothesis)
+  via concepts/app-container uses concepts/container-image
   via concepts/proxy uses concepts/app-container
 Scope: only the relations this bundle models; coverage.md names what it leaves out.
 ```

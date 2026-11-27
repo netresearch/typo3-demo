@@ -3,7 +3,7 @@ type: Installed Extension
 title: "netresearch/nr-mcp-agent"
 description: "The nr-mcp-agent extension as this instance installs it: Tool-using AI chat in the backend."
 status: draft
-generated: {by: claude-code/2.1.332, at: 2026-11-27T21:06:57Z}
+timestamp: 2026-11-27
 ---
 
 # Definition
@@ -15,4 +15,9 @@ The package `netresearch/nr-mcp-agent` (Tool-using AI chat in the backend) as th
 | Relation | Target | Evidence file | Evidence text | Status |
 |---|---|---|---|---|
 | `partOf` | [Container image](../container-image.md) | `composer.lock` | `"name": "netresearch/nr-mcp-agent",` | asserted |
-| `implementedBy` | [netresearch/nr-mcp-agent](https://packagist.org/packages/netresearch/nr-mcp-agent) | `composer.json` | `"netresearch/nr-mcp-agent": "^` | asserted |
+| `implementedBy` | `composer.json` | `composer.json` | `"netresearch/nr-mcp-agent": "^` | asserted |
+| `uses` | [netresearch/nr-llm](nr-llm.md) |  |  | hypothesis |
+
+# Notes
+
+- The `uses` rows are hypotheses: the `require` block of `netresearch/nr-mcp-agent` in `composer.lock` names `netresearch/nr-llm`, but the same constraint text occurs in several packages there, so no literal occurs exactly once.

@@ -4,7 +4,7 @@ title: "What a deployment needs"
 description: "What must be in place for a deployment to roll out?"
 x-nr-query: --needs concepts/deployment
 status: draft
-generated: {by: claude-code/2.1.332, at: 2026-11-27T21:06:57Z}
+timestamp: 2026-11-27
 ---
 
 # Question
@@ -31,6 +31,33 @@ concepts/demo-instance
 concepts/composer-manifest
   via concepts/deployment uses concepts/container-image
   via concepts/container-image derivedFrom concepts/composer-manifest
+concepts/extensions/nr-ai-search
+  via concepts/deployment uses concepts/container-image
+  via concepts/extensions/nr-ai-search partOf concepts/container-image
+concepts/extensions/nr-browser-ai
+  via concepts/deployment uses concepts/container-image
+  via concepts/extensions/nr-browser-ai partOf concepts/container-image
+concepts/extensions/nr-landingpage
+  via concepts/deployment uses concepts/container-image
+  via concepts/extensions/nr-landingpage partOf concepts/container-image
+concepts/extensions/nr-llm-compat
+  via concepts/deployment uses concepts/container-image
+  via concepts/extensions/nr-llm-compat partOf concepts/container-image
+concepts/extensions/nr-llm
+  via concepts/deployment uses concepts/container-image
+  via concepts/extensions/nr-llm partOf concepts/container-image
+concepts/extensions/nr-mcp-agent
+  via concepts/deployment uses concepts/container-image
+  via concepts/extensions/nr-mcp-agent partOf concepts/container-image
+concepts/extensions/nr-repurpose
+  via concepts/deployment uses concepts/container-image
+  via concepts/extensions/nr-repurpose partOf concepts/container-image
+concepts/extensions/nr-vault
+  via concepts/deployment uses concepts/container-image
+  via concepts/extensions/nr-vault partOf concepts/container-image
+concepts/extensions/t3-cowriter
+  via concepts/deployment uses concepts/container-image
+  via concepts/extensions/t3-cowriter partOf concepts/container-image
 concepts/app-container
   via concepts/deployment uses concepts/demo-instance
   via concepts/demo-instance uses concepts/app-container

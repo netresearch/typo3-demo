@@ -3,7 +3,7 @@ type: Installed Extension
 title: "netresearch/nr-repurpose"
 description: "The nr-repurpose extension as this instance installs it: Turns a page or PDF into a podcast, diagram and story."
 status: draft
-generated: {by: claude-code/2.1.332, at: 2026-11-27T21:06:57Z}
+timestamp: 2026-11-27
 ---
 
 # Definition
@@ -15,4 +15,10 @@ The package `netresearch/nr-repurpose` (Turns a page or PDF into a podcast, diag
 | Relation | Target | Evidence file | Evidence text | Status |
 |---|---|---|---|---|
 | `partOf` | [Container image](../container-image.md) | `composer.lock` | `"name": "netresearch/nr-repurpose",` | asserted |
-| `implementedBy` | [netresearch/nr-repurpose](https://packagist.org/packages/netresearch/nr-repurpose) | `composer.json` | `"netresearch/nr-repurpose": "^` | asserted |
+| `implementedBy` | `composer.json` | `composer.json` | `"netresearch/nr-repurpose": "^` | asserted |
+| `uses` | [netresearch/nr-llm](nr-llm.md) |  |  | hypothesis |
+| `uses` | [netresearch/nr-vault](nr-vault.md) |  |  | hypothesis |
+
+# Notes
+
+- The `uses` rows are hypotheses: the `require` block of `netresearch/nr-repurpose` in `composer.lock` names `netresearch/nr-llm` and `netresearch/nr-vault`, but the same constraint text occurs in several packages there, so no literal occurs exactly once.

@@ -4,7 +4,7 @@ title: "The database changes"
 description: "What depends on the database service, for example when its image changes?"
 x-nr-query: --impact concepts/database
 status: draft
-generated: {by: claude-code/2.1.332, at: 2026-11-27T21:06:57Z}
+timestamp: 2026-11-27
 ---
 
 # Question

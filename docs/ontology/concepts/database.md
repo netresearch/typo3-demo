@@ -3,7 +3,7 @@ type: Instance Component
 title: "Database"
 description: "MariaDB from the Docker Hardened Image, created and seeded by the one-shot db-init service."
 status: draft
-generated: {by: claude-code/2.1.332, at: 2026-11-27T21:06:57Z}
+timestamp: 2026-11-27
 ---
 
 # Definition

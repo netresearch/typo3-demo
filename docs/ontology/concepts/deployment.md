@@ -3,7 +3,7 @@ type: Instance Component
 title: "Deployment"
 description: "The GitOps path: a merge to main builds the image, and the workflow Deploy (Update) rolls it out on the host."
 status: draft
-generated: {by: claude-code/2.1.332, at: 2026-11-27T21:06:57Z}
+timestamp: 2026-11-27
 ---
 
 # Definition

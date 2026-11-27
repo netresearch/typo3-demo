@@ -3,7 +3,7 @@ type: Instance Component
 title: "Demo account"
 description: "The backend accounts of the demo, among them the admin nr_admin and the AI editor redakteur_ki with a small AI budget."
 status: draft
-generated: {by: claude-code/2.1.332, at: 2026-11-27T21:06:57Z}
+timestamp: 2026-11-27
 ---
 
 # Definition

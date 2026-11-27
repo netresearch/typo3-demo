@@ -3,7 +3,7 @@ type: Installed Extension
 title: "netresearch/nr-browser-ai"
 description: "The nr-browser-ai extension as this instance installs it: On-device page assistant in the browser."
 status: draft
-generated: {by: claude-code/2.1.332, at: 2026-11-27T21:06:57Z}
+timestamp: 2026-11-27
 ---
 
 # Definition
@@ -15,4 +15,4 @@ The package `netresearch/nr-browser-ai` (On-device page assistant in the browser
 | Relation | Target | Evidence file | Evidence text | Status |
 |---|---|---|---|---|
 | `partOf` | [Container image](../container-image.md) | `composer.lock` | `"name": "netresearch/nr-browser-ai",` | asserted |
-| `implementedBy` | [netresearch/nr-browser-ai](https://packagist.org/packages/netresearch/nr-browser-ai) | `composer.json` | `"netresearch/nr-browser-ai": "^` | asserted |
+| `implementedBy` | `composer.json` | `composer.json` | `"netresearch/nr-browser-ai": "^` | asserted |

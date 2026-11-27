@@ -3,7 +3,7 @@ type: Installed Extension
 title: "netresearch/t3-cowriter"
 description: "The t3-cowriter extension as this instance installs it: AI writing assistant in CKEditor."
 status: draft
-generated: {by: claude-code/2.1.332, at: 2026-11-27T21:06:57Z}
+timestamp: 2026-11-27
 ---
 
 # Definition
@@ -15,4 +15,9 @@ The package `netresearch/t3-cowriter` (AI writing assistant in CKEditor) as this
 | Relation | Target | Evidence file | Evidence text | Status |
 |---|---|---|---|---|
 | `partOf` | [Container image](../container-image.md) | `composer.lock` | `"name": "netresearch/t3-cowriter",` | asserted |
-| `implementedBy` | [netresearch/t3-cowriter](https://packagist.org/packages/netresearch/t3-cowriter) | `composer.json` | `"netresearch/t3-cowriter": "^` | asserted |
+| `implementedBy` | `composer.json` | `composer.json` | `"netresearch/t3-cowriter": "^` | asserted |
+| `uses` | [netresearch/nr-llm](nr-llm.md) |  |  | hypothesis |
+
+# Notes
+
+- The `uses` rows are hypotheses: the `require` block of `netresearch/t3-cowriter` in `composer.lock` names `netresearch/nr-llm`, but the same constraint text occurs in several packages there, so no literal occurs exactly once.
