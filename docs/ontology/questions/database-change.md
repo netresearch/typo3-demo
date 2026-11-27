@@ -25,6 +25,8 @@ python3 scripts/check-ontology.py docs/ontology --impact concepts/database
 concepts/database
 concepts/app-container
   via concepts/app-container uses concepts/database (hypothesis)
+concepts/demo-account
+  via concepts/demo-account uses concepts/database
 concepts/demo-instance
   via concepts/demo-instance uses concepts/database
 concepts/proxy
@@ -38,4 +40,4 @@ Scope: only the relations this bundle models; coverage.md names what it leaves o
 
 # Limits
 
-A reset imports the seed data again, so content created on the live instance since the last export is lost unless it was exported first.
+A reset imports the seed data again, so content created on the live instance since the last export is lost unless it was exported first. The editor `redakteur_ki` then has its placeholder password again; the workflow "Set AI Tasks Editor Password" sets it.

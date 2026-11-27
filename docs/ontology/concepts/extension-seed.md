@@ -8,7 +8,7 @@ timestamp: 2026-11-27
 
 # Definition
 
-The extension seed is `data/seed-extensions.sql` with `data/seed-falkenquell.sql`. It holds the records the extensions need on the demo: the landing-page templates, both dashboards, the demo editors (`redakteur_entwurf`, `redakteur_repurpose`, `redakteur_ki`) and the nr-llm records. `make seed-extensions` applies it idempotently, and `make update`, which the deployment runs, calls it on every deploy. A change to it therefore reaches the live database with the next merge.
+The extension seed is `data/seed-extensions.sql` with `data/seed-falkenquell.sql`. It holds the records the extensions need on the demo: the landing-page templates, the dashboards, the demo editors (`redakteur_entwurf`, `redakteur_repurpose`, `redakteur_ki`) and the nr-llm records. `make seed-extensions` applies it idempotently, and `make update`, which the deployment runs, calls it on every deploy. A change to it therefore reaches the live database with the next merge.
 
 # Not to be confused with
 
