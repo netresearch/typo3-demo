@@ -10,6 +10,27 @@ timestamp: 2026-11-27
 
 The package `netresearch/nr-ai-search` (Vector search and RAG chat over the site content) as this instance installs it. `composer.json` names the allowed range and `composer.lock` the version the image contains. The package is not a member of the TYPO3 AI Edition.
 
+# Neighbours
+
+Generated from the relation tables by `check-ontology.py --write-diagrams`. A solid arrow is an asserted relation, a dotted arrow a hypothesis; a slanted box is a file of the repository.
+
+```mermaid
+flowchart LR
+  c["netresearch/nr-ai-search"]
+  n1[/"composer.json"/]
+  n2["Container image"]
+  n3["netresearch/nr-llm"]
+  n4["netresearch/nr-vault"]
+  n5["Extension seed"]
+  c -->|"implementedBy"| n1
+  c -->|"partOf"| n2
+  c -.->|"uses (hypothesis)"| n3
+  c -.->|"uses (hypothesis)"| n4
+  n5 -->|"uses"| c
+  classDef focus fill:#2F99A4,stroke:#15585E,color:#ffffff
+  class c focus
+```
+
 # Relations
 
 | Relation | Target | Evidence file | Evidence text | Status |
