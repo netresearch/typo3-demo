@@ -7,7 +7,7 @@ license: GPL-2.0-or-later
 
 # TYPO3 demo instance ontology
 
-This bundle describes one instance, not a product: the demo at https://typo3-demo.netresearch.de/, its services, its container image, its seed data, its deployment and the AI extensions it installs. Every relation names the file in this repository that shows it. The concepts inside an extension belong to the bundle of that extension, and the product concepts of the TYPO3 AI Edition to the bundle of the edition.
+This bundle describes one instance, not a product: the demo at https://typo3-demo.netresearch.de/, its services, its container image, its seed data, its deployment and the Netresearch AI extensions it installs. Every relation names the file in this repository that shows it. The concepts inside an extension belong to the bundle of that extension, and the product concepts of the TYPO3 AI Edition to the bundle of the edition.
 
 This bundle follows the Open Knowledge Format 0.3 (https://okf.md): one Markdown file per concept, with a YAML frontmatter block that names its `type`.
 

@@ -20,4 +20,4 @@ The package `netresearch/nr-mcp-agent` (Tool-using AI chat in the backend) as th
 
 # Notes
 
-- The `uses` rows are hypotheses: the `require` block of `netresearch/nr-mcp-agent` in `composer.lock` names `netresearch/nr-llm`, but the same constraint text occurs in several packages there, so no literal occurs exactly once.
+- The `uses` rows are hypotheses: the `require` block of `netresearch/nr-mcp-agent` in `composer.lock` names `netresearch/nr-llm`. The rows are not asserted, because the only literal that names the dependency is its version constraint, which changes with every release of the package and would make the check fail on each lock update.

@@ -14,4 +14,4 @@
 
 # Installed extensions
 
-* [Installed extensions](extensions/index.md) - The AI extensions this instance installs, one file each
+* [Installed extensions](extensions/index.md) - The Netresearch AI extensions this instance installs, one file each

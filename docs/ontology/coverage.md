@@ -8,7 +8,7 @@ timestamp: 2026-11-27
 
 # Scope
 
-The bundle models the parts of the demo instance that its competency questions need: the services, the container image, the Composer manifest, the seed data, the deployment, the demo accounts and the AI extensions the instance installs.
+The bundle models the parts of the demo instance that its competency questions need: the services, the container image, the Composer manifest, the seed data, the deployment, the demo accounts and the Netresearch AI extensions the instance installs.
 
 # Not modelled
 
@@ -17,6 +17,7 @@ A missing relation means "not modelled", never "not related". Out of scope for n
 - The host, its secrets, DNS and the Caddy certificates.
 - The operations workflows (diagnostics, maintenance, remediation, password resets).
 - The extensions outside the AI suite (for example passkeys, temporal cache, news) and the TYPO3 core packages.
+- The AI extensions of other vendors that `composer.json` requires: `b13/ai-label`, `b13/ai-bots-love-markdown`, `mfd/ai-filemetadata` and `thieleundklose/autotranslate`. Some of them reach nr-llm through nr-llm-compat or a patch, so a change of nr-llm can affect them although `--impact` does not list them.
 - The content of the database at runtime: configurations, pages and records created on the live instance.
 
 # Statuses

@@ -21,4 +21,4 @@ The package `netresearch/nr-repurpose` (Turns a page or PDF into a podcast, diag
 
 # Notes
 
-- The `uses` rows are hypotheses: the `require` block of `netresearch/nr-repurpose` in `composer.lock` names `netresearch/nr-llm` and `netresearch/nr-vault`, but the same constraint text occurs in several packages there, so no literal occurs exactly once.
+- The `uses` rows are hypotheses: the `require` block of `netresearch/nr-repurpose` in `composer.lock` names `netresearch/nr-llm` and `netresearch/nr-vault`. The rows are not asserted, because the only literal that names the dependency is its version constraint, which changes with every release of the package and would make the check fail on each lock update.
