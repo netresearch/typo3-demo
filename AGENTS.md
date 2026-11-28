@@ -6,3 +6,4 @@
 - **Deploying:** README § "How deployment works". A merge to `main` builds the image, and Deploy (Update) rolls it out.
 - **Changing content on the live instance:** README § "Content changes on the live instance".
 - **Running an operation on the server:** README § "Operations workflows (manual, `workflow_dispatch`)".
+- **Ontology of the instance:** `docs/ontology/index.md` names the parts of the instance and the extensions it installs, with relations checked against this repository; `python3 scripts/check-ontology.py docs/ontology --impact concepts/<name>` lists what a change can affect. A change that removes cited evidence fails the workflow `Ontology`; update the bundle in the same pull request.
