@@ -22,4 +22,4 @@ The demo instance is the live, disposable TYPO3 14 showcase of the Netresearch e
 | `uses` | [Database](database.md) | `compose.yml` | `- typo3-db-v2:/var/lib/mysql` | asserted |
 | `uses` | [Cache](cache.md) | `compose.yml` | `image: valkey/valkey:` | asserted |
 | `uses` | [Proxy](proxy.md) | `compose.yml` | `image: dhi.io/caddy:` | asserted |
-| `implementedBy` | `compose.yml` | `README.md` | `A reproducible, disposable TYPO3 14 showcase for the Netresearch extension suite.` | asserted |
+| `implementedBy` | `compose.yml` | `compose.yml` | `name: typo3-demo` | asserted |

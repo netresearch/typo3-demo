@@ -8,7 +8,7 @@ timestamp: 2026-11-27
 
 # Definition
 
-The extension seed is `data/seed-extensions.sql` with `data/seed-falkenquell.sql`. It holds the records the extensions need on the demo: the landing-page templates, the dashboards, the demo editors (`redakteur_entwurf`, `redakteur_repurpose`, `redakteur_ki`) and the nr-llm records. `make seed-extensions` applies it idempotently, and `make update`, which the deployment runs, calls it on every deploy. A row that the file writes with `UPDATE` reaches the live database with the next deploy. A row that it only inserts with `INSERT IGNORE` reaches only a database that lacks it, so a changed value of such a row stays unchanged on the live instance. `data/seed-falkenquell.sql` holds only `INSERT IGNORE` rows.
+The extension seed is `data/seed-extensions.sql` with `data/seed-falkenquell.sql`. It holds the records the extensions need on the demo: the landing-page templates, the dashboards, the demo editors (`redakteur_entwurf`, `redakteur_repurpose`, `redakteur_ki`) and the nr-llm records. `make seed-extensions` applies it idempotently, and `make update`, which the deployment runs, calls it on every deploy. The rule holds per column. A value that the file writes with `UPDATE` or `ON DUPLICATE KEY UPDATE` reaches the live database with the next deploy. A value that it writes only in an `INSERT IGNORE` statement reaches only a database that lacks the row, so a changed value there stays unchanged on the live instance. `data/seed-falkenquell.sql` holds only `INSERT IGNORE` statements.
 
 # Not to be confused with
 
