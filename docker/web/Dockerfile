@@ -100,7 +100,7 @@ FROM php:8.5-fpm-alpine@sha256:51414d5291758fe27f58a64c7e8a078465d32cc7dcef7bda8
 # The encoders were originally added for nr_image_optimize. They stay after its
 # removal because core's conversion needs exactly the same thing — the WebP
 # delivery the build asserts comes from core.
-RUN --mount=type=bind,from=ghcr.io/php/pie:1.6.0-bin@sha256:f49c15dbb88a7aec373fdb15ab9004bf08958772db3b476c42364e10a8ea416f,source=/pie,target=/usr/local/bin/pie \
+RUN --mount=type=bind,from=ghcr.io/php/pie:1.6.1-bin@sha256:2ca18ec63249ff2d8b9936afeea88ab2e9225041980c16b7ad99ce0fccb014a6,source=/pie,target=/usr/local/bin/pie \
     apk add --no-cache --virtual .build-deps \
         freetype-dev libjpeg-turbo-dev libpng-dev libzip-dev icu-dev linux-headers \
         libwebp-dev libavif-dev imagemagick-dev $PHPIZE_DEPS \
