@@ -14,6 +14,33 @@ The extension seed is `data/seed-extensions.sql` with `data/seed-falkenquell.sql
 
 - The seed data (`data/db.sql.gz`), which is imported only into an empty database.
 
+# Neighbours
+
+Generated from the relation tables by `check-ontology.py --write-diagrams`. A solid arrow is an asserted relation, a dotted arrow a hypothesis; a slanted box is a file of the repository.
+
+```mermaid
+flowchart LR
+  c["Extension seed"]
+  n1[/"data/seed-extensions.sql"/]
+  n2["netresearch/nr-ai-search"]
+  n3["netresearch/nr-landingpage"]
+  n4["netresearch/nr-llm"]
+  n5["netresearch/nr-repurpose"]
+  n6["netresearch/nr-vault"]
+  n7["Demo account"]
+  n8["Deployment"]
+  c -->|"implementedBy"| n1
+  c -->|"uses"| n2
+  c -->|"uses"| n3
+  c -->|"uses"| n4
+  c -->|"uses"| n5
+  c -->|"uses"| n6
+  n7 -->|"derivedFrom"| c
+  n8 -->|"uses"| c
+  classDef focus fill:#2F99A4,stroke:#15585E,color:#ffffff
+  class c focus
+```
+
 # Relations
 
 | Relation | Target | Evidence file | Evidence text | Status |
