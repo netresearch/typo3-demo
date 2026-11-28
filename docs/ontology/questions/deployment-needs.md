@@ -77,6 +77,7 @@ concepts/seed-data
   via concepts/demo-instance uses concepts/database
   via concepts/database uses concepts/seed-data
 Scope: only the relations this bundle models; coverage.md names what it leaves out.
+A test line names a test file that covers the concept; it does not show that the test ran.
 ```
 
 # Limits

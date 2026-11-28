@@ -57,6 +57,7 @@ concepts/proxy
   via concepts/app-container uses concepts/container-image
   via concepts/proxy uses concepts/app-container
 Scope: only the relations this bundle models; coverage.md names what it leaves out.
+A test line names a test file that covers the concept; it does not show that the test ran.
 ```
 
 # Limits
