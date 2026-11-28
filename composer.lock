@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "321d91d5f782f3b183de4c2d2b67f8fa",
+    "content-hash": "84f004e578b639171e4eda1211ab6ede",
     "packages": [
         {
             "name": "b13/ai-bots-love-markdown",
@@ -3099,16 +3099,16 @@
         },
         {
             "name": "mfd/ai-filemetadata",
-            "version": "1.7.0",
+            "version": "1.7.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/marketing-factory/ai-filemetadata.git",
-                "reference": "060d69907ff2162461b0a48c36d2bb6cc00554f2"
+                "reference": "2245508860446874b44148520a8b785032a2d4eb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/marketing-factory/ai-filemetadata/zipball/060d69907ff2162461b0a48c36d2bb6cc00554f2",
-                "reference": "060d69907ff2162461b0a48c36d2bb6cc00554f2",
+                "url": "https://api.github.com/repos/marketing-factory/ai-filemetadata/zipball/2245508860446874b44148520a8b785032a2d4eb",
+                "reference": "2245508860446874b44148520a8b785032a2d4eb",
                 "shasum": ""
             },
             "require": {
@@ -3167,10 +3167,10 @@
             ],
             "support": {
                 "issues": "https://github.com/marketing-factory/ai-filemetadata/issues",
-                "source": "https://github.com/marketing-factory/ai-filemetadata/tree/1.7.0"
+                "source": "https://github.com/marketing-factory/ai-filemetadata/tree/1.7.1"
             },
-            "time": "2026-11-19T16:04:23+00:00",
-            "published-time": "2026-11-19T16:04:59+00:00"
+            "time": "2026-11-23T12:35:36+00:00",
+            "published-time": "2026-11-23T12:36:41+00:00"
         },
         {
             "name": "netresearch/contexts",
